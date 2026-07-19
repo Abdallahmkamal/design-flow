@@ -1,0 +1,6 @@
+-- Phase 1 seed harness.
+--
+-- The first application migration is deliberately not represented by a
+-- partial schema. Once the complete schema and RLS migration exists, this
+-- file will seed the stable reference rows and visibly synthetic
+-- `example.invalid` development personas required by docs/schema-contract.md.

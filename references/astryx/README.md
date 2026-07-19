@@ -21,11 +21,11 @@ Every note must:
 
 | File | Scope | Status |
 |---|---|---|
-| [accessibility.md](accessibility.md) | Cross-component accessibility and keyboard guidance | Seeded; source distillation required before UI implementation |
-| [patterns.md](patterns.md) | Reusable interaction and responsive patterns | Seeded; expand just in time |
-| [tokens.md](tokens.md) | Token-architecture lessons only; no Astryx runtime tokens | Seeded |
-| [button.md](button.md) | Button anatomy, states, and interaction | Scaffolded; distill before Button implementation |
-| [input.md](input.md) | Text-input anatomy, states, validation, and interaction | Scaffolded; distill before Input implementation |
+| [accessibility.md](accessibility.md) | Cross-component accessibility and keyboard guidance | Phase 1 baseline reviewed |
+| [patterns.md](patterns.md) | Reusable interaction and responsive patterns | App-shell baseline reviewed |
+| [tokens.md](tokens.md) | Token-architecture lessons only; no Astryx runtime tokens | Shape and motion architecture reviewed |
+| [button.md](button.md) | Button anatomy, states, and interaction | Ready for the Phase 1 Button |
+| [input.md](input.md) | Text-input anatomy, states, validation, and interaction | Ready for the Phase 1 Input |
 | [modal.md](modal.md) | Dialog anatomy, focus management, keyboard, and responsive behavior | Scaffolded; distill before Modal implementation |
 | [table.md](table.md) | Table semantics, interaction, overflow, and responsive behavior | Scaffolded; distill before Table implementation |
 

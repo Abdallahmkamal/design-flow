@@ -4,6 +4,8 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
+**Last amended:** 2026-07-19 — D-097 adds independent Create New Ticket and optional status paths to ticket-mode Log Work
+
 This document is the current product source of truth for Design Flow. It records approved MVP behavior, not every idea discussed while reaching it. Open decisions are listed at the end and must not be invented during implementation.
 
 ## 1. Product purpose
@@ -102,7 +104,7 @@ Viewer is trusted internal, whole-team read-only access:
 1. **Dashboard** — approved position-aware overview with scoped cards, attention signals, workload by person, recent recorded work, and quick actions. See [dashboard.md](dashboard.md).
 2. **All Tickets** — approved searchable/filterable list with position-aware people scope, explicit ownership/contribution relationships, responsive ticket summaries, and direct Figma access. See [all-tickets.md](all-tickets.md).
 3. **Work Item** — approved complete ticket view with glanceable metadata, parent-only subtasks, a five-column actual Work Dates grid, vertical history timeline, comments, and PDF export. See [work-item.md](work-item.md).
-4. **Log Work** — ticket work by default, with an alternative standalone visual-work mode.
+4. **Log Work** — ticket work by default, with an alternative standalone visual-work mode, an optional independently authorized status change, and an independent Create New Ticket path that returns to the unfinished log draft.
 5. **Reports** — approved Tickets, Designers, and Visual Work views with neutral charts, source drill-down, and filtered CSV exports. See [reporting.md](reporting.md) and [reports-ui.md](reports-ui.md).
 6. **Team and Settings** — approved shared directory plus Admin-only accounts, positions/Admin privilege, reporting hierarchy, Areas/Squads, labels, team timezone, and administration audit. See [team-settings.md](team-settings.md).
 7. **Notifications** — approved narrow in-app inbox for primary-assignee assignment, status, blocker, and comment events. See [notifications.md](notifications.md).
@@ -256,6 +258,18 @@ Each entry has:
 - Optional description.
 
 Description is optional for every work type, including Other.
+
+### Integrated ticket actions
+
+Ticket-mode Log Work adds two launch paths without combining their domain operations:
+
+- **Create New Ticket** is available only to a caller with the existing ticket-creation capability. The client preserves the unfinished Log Work draft while launching the normal ticket-creation flow. After `create_work_item` succeeds, Log Work resumes with the returned Work Item selected and every existing draft value preserved. Ticket creation does not submit work or change status.
+- **Optional status change** is available only when the caller independently satisfies the existing status-transition capability for the selected Work Item. Permission to log work on a visible ticket does not grant permission to change its status, and a prospective contribution from the unfinished log is not used to pre-authorize the transition.
+- On final submission, `submit_work_log` runs first as the primary action. Only after it succeeds does the client call `transition_work_item_status` when a different target status was requested.
+- If work-log submission fails, no status transition is attempted and the draft remains available. If the work log succeeds but the status transition fails, the log remains committed; the interface reports the successful log and failed status separately and permits only the status action to be retried after authoritative state is refreshed.
+- Each operation uses its own operation ID and keeps its existing validation, history, audit, notification, and retry behavior. There is no combined Log Work/create/status transaction or automatic compensation across them.
+
+Create New Ticket and optional status change do not appear in standalone visual-work mode, which has no Work Item lifecycle.
 
 ### Ticket work types
 

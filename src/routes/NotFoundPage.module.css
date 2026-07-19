@@ -1,0 +1,20 @@
+.panel {
+  display: grid;
+  max-inline-size: 36rem;
+  gap: var(--space-md);
+}
+
+.panel p,
+.panel h1 {
+  margin: 0;
+}
+
+.panel p {
+  color: var(--color-text-accent);
+  font: var(--type-display);
+}
+
+.panel a {
+  justify-self: start;
+  font: var(--type-link);
+}

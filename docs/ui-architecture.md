@@ -5,6 +5,8 @@
 
 Design Flow uses three complementary layers. They are not competing design systems.
 
+[ui-direction.md](ui-direction.md) defines the stable product character, information-density, responsive, state, accessibility, and composition principles that apply across those layers. Feature-specific screen briefs apply that direction to a bounded screen or flow without replacing the authorities below.
+
 | Layer | Owns | Does not own |
 |---|---|---|
 | Vodafone Foundations | Brand identity, color, semantic tokens, typography, spacing, elevation, and later Vodafone foundation additions | Runtime component code, project component APIs, or unspecified behavior |

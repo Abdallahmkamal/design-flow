@@ -1,0 +1,24 @@
+.panel {
+  display: grid;
+  inline-size: min(100%, 42rem);
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+}
+
+.panel h1,
+.panel p,
+.panel span {
+  margin: 0;
+}
+
+.panel p {
+  color: var(--color-text-accent);
+  font: var(--type-label);
+}
+
+.panel span {
+  color: var(--color-text-secondary);
+}

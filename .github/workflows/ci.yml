@@ -1,0 +1,82 @@
+name: Foundation verification
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend and browser checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use pinned Node and npm
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run static, unit, and build checks
+        run: npm run verify
+
+      - name: Run browser and accessibility checks
+        run: npm run test:e2e
+
+  local-backend:
+    name: Local Supabase and Deno harnesses
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use pinned Node and npm
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Use pinned Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version-file: .dvmrc
+
+      - name: Start and reset local Supabase
+        run: |
+          npm run db:start
+          npm run db:reset
+
+      - name: Run pgTAP harness
+        run: npm run db:test
+
+      - name: Run Deno harness
+        run: |
+          npm run functions:check
+          npm run functions:test
+
+      - name: Stop local Supabase
+        if: always()
+        run: npm run db:stop

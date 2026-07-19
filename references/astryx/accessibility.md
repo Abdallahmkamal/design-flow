@@ -1,10 +1,30 @@
 # Astryx reference: accessibility
 
-**Status:** Seeded; official source distillation required before shared UI implementation  
-**Last source review:** Not yet reviewed
+**Status:** Phase 1 baseline reviewed; expand with later components
+**Last source review:** 2026-07-19
 
-This note will hold cross-component Astryx guidance for semantic structure, accessible names and descriptions, keyboard access, focus visibility and restoration, error communication, live regions, reduced motion, contrast, and touch targets.
+## Official sources
 
-Until it is source-reviewed, treat those topics as a Design Flow implementation checklist, not as verified Astryx claims. Component-specific behavior belongs in the corresponding component note.
+- [Astryx principles](https://astryx.atmeta.com/docs/principles)
+- [Astryx motion](https://astryx.atmeta.com/docs/motion)
+- [Astryx App Shell](https://astryx.atmeta.com/components/AppShell)
+- Component-specific Button, Text Input, and Field pages linked from their notes
 
-Visual contrast values and modes remain governed by `docs/design-system.md`. Design Flow owns all implementation choices under `src/ui/`.
+## Verified baseline
+
+- Start with semantic components and native behavior before adding custom interaction.
+- Use semantic tokens instead of component-local visual literals.
+- Keep navigation, actions, labels, descriptions, and state programmatically identifiable.
+- The application shell provides one main content destination and a skip path from repeated navigation.
+- Honor the operating system reduced-motion preference and do not let animation block the next interaction.
+- Preserve visible focus and communicate validation/status with text rather than color alone.
+
+## Design Flow application
+
+- `src/ui/` owns semantics and behavior. Vodafone/Design Flow tokens own contrast and visuals.
+- Every product slice tests keyboard access, accessible names, loading, empty, error, and unauthorized behavior as applicable.
+- Later composite widgets must add component-specific keyboard and focus guidance before implementation.
+
+## Open gaps
+
+- Dialog focus trapping/restoration, roving focus, live-region announcements, data-table navigation, and tooltip behavior remain deferred to their component notes.
