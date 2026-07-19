@@ -1,17 +1,37 @@
 import { z } from 'zod';
 
+const localSupabaseHostnames = new Set(['127.0.0.1', 'localhost']);
+
+function parseUrl(value: string): URL | null {
+  try {
+    return new URL(value);
+  } catch {
+    return null;
+  }
+}
+
+function isLocalSupabaseUrl(value: string): boolean {
+  const url = parseUrl(value);
+
+  return url !== null && localSupabaseHostnames.has(url.hostname);
+}
+
+function hasAllowedProtocol(value: string): boolean {
+  const url = parseUrl(value);
+
+  return (
+    url !== null &&
+    (url.protocol === 'https:' ||
+      (url.protocol === 'http:' && localSupabaseHostnames.has(url.hostname)))
+  );
+}
+
 const publicEnvironmentSchema = z
   .object({
     VITE_APP_ENV: z.enum(['local', 'test', 'preview', 'staging', 'production']),
-    VITE_SUPABASE_URL: z
-      .url()
-      .refine(
-        (value) =>
-          value.startsWith('https://') || value.startsWith('http://127.0.0.1'),
-        {
-          message: 'Use HTTPS except for the local Supabase address.',
-        },
-      ),
+    VITE_SUPABASE_URL: z.url().refine(hasAllowedProtocol, {
+      message: 'Use HTTPS except for the local Supabase address.',
+    }),
     VITE_SUPABASE_PUBLISHABLE_KEY: z
       .string()
       .min(1, 'A Supabase publishable key is required.')
@@ -26,9 +46,7 @@ const publicEnvironmentSchema = z
       ),
   })
   .superRefine((environment, context) => {
-    const isLocalUrl =
-      environment.VITE_SUPABASE_URL.includes('127.0.0.1') ||
-      environment.VITE_SUPABASE_URL.includes('localhost');
+    const isLocalUrl = isLocalSupabaseUrl(environment.VITE_SUPABASE_URL);
 
     if (environment.VITE_APP_ENV !== 'local' && isLocalUrl) {
       context.addIssue({

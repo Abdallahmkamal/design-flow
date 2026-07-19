@@ -70,8 +70,12 @@
   --color-action-destructive-text: #ffffff;
   --color-action-neutral-text-inverse: #1c1d1d;
   --color-action-disabled-background: #f4f6f7;
-  --color-action-hover: #1c1d1d14;
-  --color-action-pressed: #1c1d1d1f;
+  --color-action-brand-hover: #1c1d1d14;
+  --color-action-brand-pressed: #1c1d1d1f;
+  --color-action-destructive-hover: #fb374814;
+  --color-action-destructive-pressed: #fb374829;
+  --color-action-neutral-hover: #1c1d1d14;
+  --color-action-neutral-pressed: #1c1d1d1f;
   --color-border-default: #dbdedf;
   --color-border-strong: #a4a8a9;
   --color-border-subtle: #e9ebec;
@@ -84,7 +88,7 @@
   --color-status-success-text: #0b4026;
   --color-status-warning-background: #fff8dd;
   --color-status-warning-text: #5a4200;
-  --color-surface-bg: #fdfeff;
+  --color-surface-bg: #fdfefe;
   --color-surface-default: #fafbfb;
   --color-surface-raised: #f7f8f9;
   --color-surface-raised-prominent: #f4f6f7;
@@ -105,8 +109,10 @@
   --color-action-border-neutral: #ffffff29;
   --color-action-neutral-text-inverse: #fdfefe;
   --color-action-disabled-background: #2a2c2c;
-  --color-action-hover: #ffffff14;
-  --color-action-pressed: #ffffff1f;
+  --color-action-brand-hover: #1c1d1d1f;
+  --color-action-brand-pressed: #1c1d1d29;
+  --color-action-neutral-hover: #ffffff14;
+  --color-action-neutral-pressed: #ffffff1f;
   --color-border-default: #444848;
   --color-border-strong: #747879;
   --color-border-subtle: #383b3b;
@@ -114,7 +120,7 @@
   --color-status-error-border: #fb3748;
   --color-status-error-text: #ffb8be;
   --color-status-info-background: #a9d1f5;
-  --color-status-info-text: #002e4d;
+  --color-status-info-text: #a9d1f5;
   --color-status-success-background: #115635;
   --color-status-success-text: #b2f0cc;
   --color-status-warning-background: #7a5a00;

@@ -24,34 +24,46 @@
 }
 
 .primary {
+  --button-state-hover: var(--color-action-brand-hover);
+  --button-state-pressed: var(--color-action-brand-pressed);
+
   color: var(--color-action-primary-text);
   background: var(--color-action-accent-background);
 }
 
 .secondary {
+  --button-state-hover: var(--color-action-neutral-hover);
+  --button-state-pressed: var(--color-action-neutral-pressed);
+
   color: var(--color-action-neutral-text-inverse);
   border-color: var(--color-action-border-neutral);
   background: var(--color-action-secondary-background);
 }
 
 .ghost {
+  --button-state-hover: var(--color-action-neutral-hover);
+  --button-state-pressed: var(--color-action-neutral-pressed);
+
   color: var(--color-text-accent);
   background: transparent;
 }
 
 .destructive {
+  --button-state-hover: var(--color-action-destructive-hover);
+  --button-state-pressed: var(--color-action-destructive-pressed);
+
   color: var(--color-action-destructive-text);
   background: var(--color-action-destructive-background);
 }
 
 @media (hover: hover) {
   .button:not(:disabled):hover {
-    box-shadow: inset 0 0 0 100vmax var(--color-action-hover);
+    box-shadow: inset 0 0 0 100vmax var(--button-state-hover);
   }
 }
 
 .button:not(:disabled):active {
-  box-shadow: inset 0 0 0 100vmax var(--color-action-pressed);
+  box-shadow: inset 0 0 0 100vmax var(--button-state-pressed);
 }
 
 .small {
