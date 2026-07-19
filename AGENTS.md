@@ -27,9 +27,9 @@ Read these before planning or changing implementation:
 
 If code and documentation disagree, stop and surface the mismatch. Do not silently choose one.
 
-Product behavior is governed by the product specifications and approved decisions. Vodafone visual language and tokens are governed by `docs/design-system.md`, with its linked foundation sources remaining authoritative for extracted foundation facts. Design Flow's UI architecture and component-ownership rules are governed by `docs/ui-architecture.md`; stable cross-product UI direction and feature-brief expectations are governed by `docs/ui-direction.md`.
+Product behavior is governed by the product specifications and approved decisions. Vodafone color and typography are governed by `docs/design-system.md`, with its linked foundation sources remaining authoritative for those extracted facts. Verified Astryx references govern the preferred non-color, non-typographic component presentation and engineering baseline. Design Flow's UI architecture and component-ownership rules are governed by `docs/ui-architecture.md`; stable cross-product UI direction and feature-brief expectations are governed by `docs/ui-direction.md`.
 
-Astryx is an advisory engineering reference only. Distilled notes in `references/astryx/` may guide anatomy, interaction, accessibility, keyboard behavior, states, responsive behavior, and implementation recommendations. Astryx code and component APIs are not source of truth, and Astryx must not be installed as a runtime dependency. When a required reference note is missing, distill the relevant official Astryx guidance before implementing the component; do not guess or copy upstream documentation wholesale.
+Astryx is the preferred reference baseline for component anatomy, proportions, density, sizing, internal spacing, shape, border and elevation geometry, motion, interaction, accessibility, keyboard behavior, states, responsive behavior, and implementation recommendations. This authority excludes color and typography, which remain Vodafone-owned. Astryx code and component APIs are not source of truth, and Astryx must not be installed as a runtime dependency. “Astryx fidelity” means a Design Flow-owned reimplementation from verified official guidance, not copied source, styling files, documentation, or APIs. When a required reference note or measurable value is missing, distill the relevant official Astryx guidance and record any remaining gap before implementing the component; do not guess or claim unverified fidelity.
 
 ## Working method
 
@@ -38,10 +38,10 @@ Astryx is an advisory engineering reference only. Distilled notes in `references
 - Confirm or document acceptance criteria before implementing a module.
 - Do not invent behavior for an item marked open in `docs/decisions.md`.
 - Keep the product mobile-first and usable at every checkpoint.
-- Reuse the semantic tokens, text styles, responsive spacing, and elevation documented in `docs/design-system.md`.
-- Treat CSS custom properties only as the runtime representation of approved Vodafone/Design Flow tokens, and CSS Modules only as style scoping. Neither may introduce a parallel token source or undocumented visual values.
+- Reuse Vodafone semantic color tokens and text styles, plus approved Design Flow aliases that map verified Astryx non-color presentation into the runtime.
+- Treat CSS custom properties only as the runtime representation of approved Vodafone color/typography and Design Flow mappings of verified Astryx presentation; use CSS Modules only for style scoping. Neither may introduce a parallel token source or undocumented visual values.
 - Build and consume Design Flow-owned components under `src/ui/`; do not wrap, import, or recreate Astryx APIs as a project dependency.
-- Give every shared UI component a documented public API, token-based Vodafone styling, accessible interaction behavior, responsive behavior where relevant, and automated tests.
+- Give every shared UI component a documented public API, Vodafone color/typography, verified Astryx-aligned non-color presentation, accessible interaction behavior, responsive behavior where relevant, and automated tests.
 - Preserve Light/Dark behavior and responsive accessibility requirements. The current portal scope is English/LTR; do not add Arabic/RTL product scope unless a later approved decision requires it.
 - Keep route/page composition thin; place behavior with its feature/domain module.
 - Use Supabase as the data and authentication layer.

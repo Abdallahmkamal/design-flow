@@ -1,6 +1,6 @@
 # Astryx reference: interaction patterns
 
-**Status:** App-shell baseline reviewed; expand just in time
+**Status:** App-shell behavior reviewed; D-099 non-color presentation review required
 **Last source review:** 2026-07-19
 
 ## Official sources
@@ -21,7 +21,9 @@
 - The Phase 1 shell has one header, one responsive primary-navigation region, one main landmark, and a visible synthetic-environment disclosure.
 - Mobile primary navigation remains reachable without opening an unfinished menu; desktop uses a persistent side region.
 - Product routes remain visibly synthetic until their approved phases.
+- Current Phase 1 shell geometry, spacing, density, shape, elevation, and motion are provisional until verified against official Astryx presentation guidance; Vodafone color and typography remain unchanged.
 
 ## Open gaps
 
+- App-shell presentation measurements exposed by the official source still require D-099 distillation before Phase 2 UI implementation.
 - Responsive drawers, banners, breadcrumbs, overlays, destructive confirmation, and dense-data patterns are distilled only when their approved slices require them.

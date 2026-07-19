@@ -1,6 +1,6 @@
 # Astryx reference: Button
 
-**Status:** Ready for the Phase 1 Design Flow Button
+**Status:** Behavior ready; D-099 non-color presentation review required
 **Last source review:** 2026-07-19
 
 ## Official sources
@@ -37,7 +37,7 @@
 
 ### Responsive behavior
 
-- Keep the visible target large enough for the intended density. Design Flow resolves heights through the central control-size aliases and uses larger controls for mobile or prominent form actions.
+- Keep the visible target large enough for the intended density. Exact Astryx sizing and spacing must be verified and mapped through central Design Flow aliases before visual approval.
 
 ### Edge cases
 
@@ -52,10 +52,12 @@
 
 ## Design Flow decisions
 
-- Visuals, sizes, and radius values come from `docs/design-system.md`.
+- Vodafone supplies color and typography.
+- Verified Astryx guidance supplies the preferred remaining presentation, represented through Design Flow aliases in `docs/design-system.md`.
 - The public API is owned by `src/ui/Button`; it does not reproduce the Astryx API.
-- The Phase 1 component supports visible-label actions, four emphasis variants, three sizes, optional leading decoration, and a non-interruptible loading state.
+- The Phase 1 component supports visible-label actions, four emphasis variants, three sizes, optional leading decoration, and a non-interruptible loading state; its current geometry is provisional pending the D-099 visual review.
 
 ## Open gaps
 
 - Icon-only actions, async interruption, tooltips, and destructive confirmation are added only with a product need and their own acceptance criteria.
+- Official Astryx measurements for size, padding, gap, shape, border/elevation geometry, and motion must be distilled before the Phase 1 Button receives visual approval.

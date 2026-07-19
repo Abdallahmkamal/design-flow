@@ -21,7 +21,7 @@
 
 ## Design Flow application
 
-- `src/ui/` owns semantics and behavior. Vodafone/Design Flow tokens own contrast and visuals.
+- `src/ui/` owns implementation and public APIs. Vodafone owns color/typography and contrast mappings; verified Astryx guidance owns the preferred remaining presentation and behavior baseline.
 - Every product slice tests keyboard access, accessible names, loading, empty, error, and unauthorized behavior as applicable.
 - Later composite widgets must add component-specific keyboard and focus guidance before implementation.
 

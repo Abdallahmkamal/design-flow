@@ -3,15 +3,17 @@
 **Status:** Approved MVP architecture  
 **Decision date:** 2026-07-18
 
+**Last amended:** 2026-07-19 — D-099 refines visual authority
+
 Design Flow uses three complementary layers. They are not competing design systems.
 
 [ui-direction.md](ui-direction.md) defines the stable product character, information-density, responsive, state, accessibility, and composition principles that apply across those layers. Feature-specific screen briefs apply that direction to a bounded screen or flow without replacing the authorities below.
 
 | Layer | Owns | Does not own |
 |---|---|---|
-| Vodafone Foundations | Brand identity, color, semantic tokens, typography, spacing, elevation, and later Vodafone foundation additions | Runtime component code, project component APIs, or unspecified behavior |
-| Astryx references | Advisory engineering knowledge for anatomy, interaction, accessibility, keyboard behavior, states, responsive behavior, UX patterns, and implementation recommendations | Runtime dependencies, source code, Design Flow visuals, or final APIs |
-| Design Flow UI library | Component code, public APIs, tests, documentation, and product-specific implementation decisions | Independent hardcoded visuals that bypass the token system |
+| Vodafone Foundations | Color, semantic color modes and roles, typography, and text styles | Non-color component geometry, runtime component code, project component APIs, or unspecified behavior |
+| Astryx references | Preferred non-color, non-typographic component presentation and engineering baseline: anatomy, proportions, density, sizing, internal spacing, shape, border/elevation geometry, motion, interaction, accessibility, keyboard behavior, states, responsive behavior, UX patterns, and implementation recommendations | Product color, typography, runtime dependencies, copied source/styling, or final Design Flow APIs |
+| Design Flow UI library | Component code, public APIs, tests, documentation, centralized runtime mappings, and product-specific implementation decisions | Undocumented divergence from Vodafone color/typography or verified Astryx presentation |
 
 ## Runtime boundary
 
@@ -23,7 +25,23 @@ Design Flow has zero runtime dependency on Astryx.
 - Do not copy Astryx source code or documentation into the repository.
 - Do not treat an Astryx component API as the required Design Flow API.
 
-Astryx is an engineering handbook. Official guidance is distilled into concise, project-specific notes under `references/astryx/`, with source links and review dates.
+Astryx is a reference specification, not a library dependency. Official guidance is distilled into concise, project-specific notes under `references/astryx/`, with exact source links, review dates, verified presentation details, and explicit gaps.
+
+## Fidelity boundary
+
+“Use Astryx styling” means faithfully reimplement the verified Astryx component and pattern presentation while substituting Vodafone color and typography. It does not mean importing packages, copying source or styling files, reproducing component APIs, or treating Astryx screens as Design Flow product specifications.
+
+Where official Astryx guidance exists, the target includes:
+
+- anatomy, proportions, density, and content arrangement;
+- component sizing, internal spacing, shape, and border geometry;
+- elevation structure and motion behavior;
+- state presentation, interaction, keyboard, and responsive transitions; and
+- documented accessibility behavior and edge-case handling.
+
+Vodafone semantic colors replace Astryx colors, including color used for surfaces, text, icons, borders, focus, shadows, and statuses. Vodafone text styles replace Astryx typography. When those substitutions or a mandatory product/accessibility rule make exact geometry impractical, the component note must record the smallest justified deviation.
+
+Fidelity can be claimed only for guidance verified from an official, source-linked Astryx reference. If a value or behavior is not exposed, record the gap; do not infer it from memory, an unrelated component, or a screenshot without measurable evidence.
 
 ## Component ownership
 
@@ -34,7 +52,7 @@ Shared UI components live under `src/ui/`. The initial expected set includes:
 - Modal, Drawer, Tooltip
 - Table and Pagination
 
-These are Design Flow components. Their visuals resolve through Vodafone and Design Flow semantic tokens. Their behavior may be informed by Astryx notes, but their implementation and API are owned by this repository.
+These are Design Flow components. Their colors and typography resolve through Vodafone semantic tokens and text styles. Their remaining presentation and behavior follow verified Astryx notes through centralized Design Flow aliases. Their implementation and API remain owned by this repository.
 
 The technical plan may refine the internal file layout and documentation tooling, but it must preserve the `src/ui/` ownership boundary and zero-Astryx-runtime rule.
 
@@ -43,10 +61,10 @@ The technical plan may refine the internal file layout and documentation tooling
 For each shared component:
 
 1. Read the product need and acceptance criteria.
-2. Read `docs/design-system.md` for the visual rules and tokens.
-3. Read the relevant note in `references/astryx/` for engineering guidance.
-4. If the note is missing or insufficient, distill the required official Astryx guidance before implementation.
-5. Record any missing visual foundation as a centralized Design Flow token decision before using it.
+2. Read the relevant note in `references/astryx/` for verified presentation and engineering guidance.
+3. If the note is missing, insufficient, or does not cover measurable presentation, distill the required official Astryx guidance before implementation.
+4. Read `docs/design-system.md` for Vodafone color/typography and the approved Design Flow runtime mappings.
+5. Map verified Astryx non-color presentation through centralized semantic aliases; record any unavailable Astryx value and approved fallback before using it.
 6. Define a project-appropriate public API.
 7. Implement the component under `src/ui/`.
 8. Document usage, states, and constraints.
@@ -55,20 +73,20 @@ For each shared component:
 Conceptually:
 
 ```text
-docs/design-system.md + references/astryx/<component>.md + product need
+Vodafone color/type + references/astryx/<component>.md + product need
                                   ↓
                         src/ui/<Component>
 ```
 
-## Foundation gaps
+## Presentation mapping and gaps
 
-Vodafone Foundations may not yet define every value Design Flow needs. For radius, motion, sizing, or another missing foundation:
+For spacing, radius, motion, sizing, elevation, or another non-color/non-typographic presentation value:
 
-1. Confirm that no suitable Vodafone semantic token exists.
-2. Review relevant Astryx guidance for the engineering rationale.
-3. Define a Design Flow semantic token or rule in `docs/design-system.md`.
-4. Centralize the implementation so it can later map to a mature Vodafone token without component-by-component rewrites.
-5. Record the change in `docs/decisions.md` when it establishes a reusable product rule.
+1. Verify the relevant official Astryx guidance and record its source date.
+2. Define a source-traceable Design Flow semantic alias or rule in `docs/design-system.md`.
+3. Keep the runtime mapping centralized so reference updates do not require component-by-component literals.
+4. If official guidance does not expose the value, record the gap and approve an explicit Design Flow fallback before implementation.
+5. Record the change in `docs/decisions.md` when it establishes a reusable product rule or intentional deviation.
 
 Never scatter fallback literals across components.
 
@@ -77,7 +95,7 @@ Never scatter fallback literals across components.
 A shared component is complete only when it has:
 
 - a documented Design Flow public API and intended use;
-- Vodafone/Design Flow token-based styling for every supported mode and state;
+- Vodafone color/typography plus verified Astryx-aligned presentation for every supported mode and state;
 - defined anatomy, variants, states, and content constraints;
 - keyboard and focus behavior where interactive;
 - appropriate semantic HTML and accessible naming;
@@ -91,10 +109,10 @@ A shared component is complete only when it has:
 
 When sources appear to disagree:
 
-1. Approved Design Flow product behavior wins for workflow and domain needs.
-2. Vodafone Foundations win for existing visual tokens and brand rules.
-3. Approved Design Flow foundation extensions fill documented visual gaps.
-4. Distilled Astryx notes guide engineering behavior but remain advisory.
-5. Design Flow owns the final component API and implementation decision.
+1. Approved Design Flow product behavior and mandatory accessibility requirements win for workflow, domain needs, and usable interaction.
+2. Vodafone Foundations win for color and typography.
+3. Verified, source-linked Astryx guidance wins for non-color, non-typographic component presentation and engineering behavior.
+4. Approved Design Flow fallbacks fill explicitly documented Astryx gaps or record the smallest necessary product/accessibility deviation.
+5. Design Flow owns the final component API and runtime implementation without changing those authority boundaries.
 
 Surface unresolved conflicts rather than silently choosing a source.

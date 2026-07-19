@@ -2,11 +2,11 @@
 
 **Status:** Approved product UI direction
 
-**Decision:** D-098
+**Decisions:** D-098, D-099
 
-**Last updated:** 2026-07-19
+**Last updated:** 2026-07-19 — D-099 refines Vodafone/Astryx visual authority
 
-This document defines stable UI principles and high-level visual direction for Design Flow. It is not a screen-by-screen specification and does not replace product specifications, feature acceptance criteria, Vodafone Foundations, or approved screen briefs.
+This document defines stable UI principles and high-level visual direction for Design Flow. It is not a screen-by-screen specification and does not replace product specifications, feature acceptance criteria, Vodafone color/typography foundations, verified Astryx references, or approved screen briefs.
 
 ## Product character
 
@@ -25,19 +25,29 @@ Use moderate operational density: compact enough to scan lists, histories, filte
 ## Authority and ownership
 
 - Approved product specifications and decisions own workflow, permissions, domain behavior, and acceptance criteria.
-- Vodafone Foundations own tokens, typography, colors, spacing, elevation, and brand expression. [design-system.md](design-system.md) remains the visual source of truth.
+- Vodafone Foundations own color and typography, including semantic color roles/modes and role-based text styles. [design-system.md](design-system.md) documents those authorities.
 - Design Flow owns its implementation, public component APIs, tests, documentation, and product-specific components under `src/ui/`. [ui-architecture.md](ui-architecture.md) defines this boundary in detail.
-- Astryx is reference material only for accessibility, component anatomy, interaction patterns, keyboard behavior, responsive behavior, and implementation best practices.
-- Astryx must not be added as a dependency, wrapper, runtime integration, copied implementation, or source of copied styling.
+- Verified Astryx references are the preferred baseline for the remaining component presentation and engineering behavior: anatomy, proportions, density, sizing, internal spacing, shape, border/elevation geometry, motion, interaction patterns, accessibility, keyboard behavior, states, and responsive behavior.
+- Astryx must not be added as a dependency, wrapper, runtime integration, copied implementation, copied styling file, or copied component API. Design Flow reimplements verified guidance through its own components and semantic aliases.
 
 When sources appear to disagree, use the authority and conflict-resolution order in [ui-architecture.md](ui-architecture.md). Surface unresolved conflicts before implementation.
 
+## Astryx fidelity
+
+“Astryx as styled” means close fidelity to source-linked, measurable Astryx component and pattern guidance after replacing Astryx color and typography with Vodafone equivalents. It does not make Astryx a runtime library or a screen-by-screen product specification.
+
+- Record the official source and review date for every adopted pattern.
+- Capture verifiable non-color presentation details instead of describing a component as “Astryx-like.”
+- Do not claim fidelity for a value or state that the official guidance does not expose.
+- Record unavailable values as gaps and approve a centralized Design Flow fallback before implementation.
+- Document the smallest necessary deviation when Vodafone typography, Vodafone color contrast, product behavior, or mandatory accessibility prevents an exact match.
+
 ## Tokens and visual expression
 
-- Prefer semantic Vodafone or approved Design Flow tokens in product UI.
-- Do not use raw colors, arbitrary spacing, or one-off elevation where an approved token exists.
-- If a necessary foundation is missing, document and approve a centralized semantic extension before implementation; do not scatter fallback literals through components.
-- Use typography, color, spacing, and elevation to reinforce information hierarchy and state, not to create decorative variety.
+- Prefer semantic Vodafone color/typography tokens and approved Design Flow aliases that trace non-color presentation to verified Astryx guidance.
+- Do not use raw colors, arbitrary spacing, one-off shape, motion, or elevation where an approved semantic mapping exists.
+- If verified Astryx guidance does not expose a necessary presentation value, document the gap and approve a centralized semantic fallback before implementation; do not scatter fallback literals through components.
+- Use Vodafone typography/color and Astryx-aligned spacing, shape, motion, and elevation to reinforce information hierarchy and state, not to create decorative variety.
 - Status communication must remain understandable without relying on color alone.
 
 Avoid excessive cards, shadows, decorative gradients, oversized dashboard elements, and consumer-marketing styling. Elevation should communicate genuine surface hierarchy, especially temporary or overlapping surfaces, rather than decorate static content.
@@ -104,4 +114,4 @@ Keyboard access, visible focus, semantic HTML, accessible names, and color-indep
 
 Before feature UI implementation, create a short screen or flow brief using [ui/screen-brief-template.md](ui/screen-brief-template.md). Briefs should resolve the feature-specific application of these principles without becoming pixel specifications or inventing visual foundations.
 
-Material UI choices that affect product behavior, permissions, domain consequences, navigation, or durable state must be added to the decision register before implementation. Purely presentational choices remain governed by Vodafone Foundations, this direction, the relevant brief, and the component contract.
+Material UI choices that affect product behavior, permissions, domain consequences, navigation, or durable state must be added to the decision register before implementation. Purely presentational choices remain governed by Vodafone color/typography, verified Astryx references, this direction, the relevant brief, and the component contract.

@@ -1,6 +1,6 @@
 # Screen brief template
 
-Use this template before implementing a feature screen or multi-step flow. Keep the brief concise and behavior-focused. Reference approved product documents and Vodafone Foundations instead of inventing workflow or visual rules.
+Use this template before implementing a feature screen or multi-step flow. Keep the brief concise and behavior-focused. Reference approved product documents, Vodafone color/typography, and verified Astryx presentation instead of inventing workflow or visual rules.
 
 ## Screen or flow name
 
@@ -40,7 +40,7 @@ Identify existing Design Flow components and compositions first. Explain any pro
 
 ## Desktop layout
 
-Describe regions, order, hierarchy, action placement, density, and any table or reporting behavior without prescribing unsupported visual values.
+Describe regions, order, hierarchy, action placement, density, and any table or reporting behavior. Trace component presentation to ready Astryx notes and identify any documented gap rather than prescribing unsupported values.
 
 ## Mobile layout
 
@@ -88,7 +88,7 @@ Identify approved analytics events or domain audit/history consequences. State `
 
 ## Astryx reference patterns
 
-Link only to relevant distilled notes under `references/astryx/` and summarize the anatomy, accessibility, interaction, keyboard, state, or responsive guidance being used. Do not copy styling, source code, or component APIs.
+Link only to relevant distilled notes under `references/astryx/`. Summarize the verified anatomy, proportions, density, sizing, spacing, shape, elevation, motion, accessibility, interaction, keyboard, state, and responsive guidance being used. Identify unavailable official guidance and the approved fallback. Do not copy source code, styling files, documentation, or component APIs.
 
 ## Design Flow reference screens or components
 

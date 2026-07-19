@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-19 — D-098 adds UI direction, screen-brief, and readiness gates without changing implementation order
+**Last updated:** 2026-07-19 — D-099 adds Astryx presentation-fidelity gates without changing implementation order
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -10,7 +10,7 @@ This document defines the required implementation order and completion gates for
 
 - Complete Phase 0 in the local Codex project before scaffolding application code.
 - Build the Design Flow component library just in time for approved product slices; do not create a speculative catalogue of every possible component upfront.
-- Add or update the relevant distilled Astryx reference before implementing a shared component whose engineering contract is not already covered.
+- Add or update the relevant distilled Astryx reference before implementing a shared component. The note must cover both engineering behavior and verifiable non-color presentation, or identify explicit gaps and approved fallbacks.
 - Every persisted feature ships with its migration, RLS, permission tests, generated types, audit/history behavior, and representative seed/test data in the same slice.
 - Every interface slice includes responsive, keyboard, loading, empty, error, and unauthorized behavior rather than deferring them to a final polish phase.
 - Reports and exports are built only after their source records and derived formulas are stable and tested.
@@ -20,11 +20,12 @@ This document defines the required implementation order and completion gates for
 
 ## UI documentation and readiness gates
 
-The stable cross-product direction lives in [ui-direction.md](ui-direction.md). Feature-specific UI decisions are recorded in short screen or flow briefs created from [ui/screen-brief-template.md](ui/screen-brief-template.md); briefs apply approved product behavior and Vodafone Foundations without becoming pixel specifications.
+The stable cross-product direction lives in [ui-direction.md](ui-direction.md). Feature-specific UI decisions are recorded in short screen or flow briefs created from [ui/screen-brief-template.md](ui/screen-brief-template.md); briefs apply approved product behavior, Vodafone color/typography, and verified Astryx presentation without becoming unsupported pixel specifications.
 
 Every UI-bearing feature phase must pass this readiness gate:
 
 - An approved screen or flow brief exists before implementation begins.
+- Every reused, extended, or new shared component has a source-linked Astryx note marked ready for its required behavior and non-color presentation; unavailable guidance and approved Design Flow fallbacks are explicit.
 - Existing Design Flow components are identified for reuse or extension before a new component is proposed.
 - Required desktop and mobile behavior, including responsive transitions, is documented.
 - Loading, empty, error, no-results, permission, disabled, and long-content states are documented where relevant.
@@ -61,10 +62,13 @@ Finalize the implementation contracts before scaffolding:
 
 ## Phase 1 — Project foundation
 
+**Amended:** 2026-07-19 — D-099 requires visual revalidation before Phase 2 UI implementation
+
 ### UI documentation gate
 
 - Create and approve `docs/ui-direction.md` before continuing feature UI implementation.
 - This direction gate does not expand the just-in-time component scope or authorize screen-by-screen design work in Phase 1.
+- Before Phase 2 UI implementation, refresh the Astryx notes for the application shell, Button, Input, and any supporting foundation pattern to cover verifiable non-color presentation. Revalidate the existing Phase 1 UI against those notes while retaining Vodafone color and typography.
 
 Create the implementation baseline:
 
@@ -74,7 +78,7 @@ Create the implementation baseline:
 - environment validation with strict separation of local, staging, preview, and production values;
 - ESLint, Prettier, Vitest, React Testing Library, Playwright, pgTAP, Deno tests, accessibility checks, type checking, and production build commands;
 - GitHub Actions pull-request verification and staging deployment baseline;
-- Vodafone/Design Flow token delivery through CSS custom properties, CSS Modules, global reset/base styles, and Light/Dark theme plumbing;
+- Vodafone color/typography and source-traceable Astryx presentation mappings through CSS custom properties, CSS Modules, global reset/base styles, and Light/Dark theme plumbing;
 - the responsive application shell, routing/error boundary, and only the shared UI primitives immediately needed by the shell and authentication; and
 - visibly synthetic seed accounts/data for development and automated permission tests.
 
@@ -83,8 +87,9 @@ Create the implementation baseline:
 - A clean clone can install dependencies, start local Supabase, reset/seed the database, run the full baseline test suite, and create a production build using documented commands.
 - Pull-request CI passes and a non-production placeholder deploys using staging credentials only.
 - No secret or production datum exists in committed, local-seed, preview, or staging content.
-- Initial shared components use documented tokens, keyboard behavior, tests, and owned Design Flow APIs with zero Astryx runtime dependency.
+- Initial shared components use Vodafone color/typography, verified Astryx-aligned non-color presentation, documented keyboard behavior, tests, and owned Design Flow APIs with zero Astryx runtime dependency.
 - `docs/ui-direction.md` is approved and agrees with the design-system, UI-architecture, product, and decision-register authorities.
+- The shell, Button, Input, and supporting Phase 1 presentation aliases pass the D-099 Astryx fidelity review; any unavailable official measurement or necessary deviation is documented before Phase 2 UI implementation.
 
 ## Phase 2 — Authentication, Team, and Settings
 
