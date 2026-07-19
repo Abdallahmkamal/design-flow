@@ -8,9 +8,9 @@ shell, Vodafone typography/color and Astryx-aligned non-color presentation,
 initial Design Flow UI primitives, environment validation, automated checks,
 and local Supabase/Edge Function test harnesses.
 
-A Supabase Free staging project exists without migrations, accounts, or data.
-No Cloudflare project, deployment, production service, or real account/data has
-been created.
+Supabase Free and Cloudflare Pages Free staging projects exist without
+migrations, accounts, data, or a deployment. No production service or real
+account/data has been created.
 
 ## Local setup
 
@@ -104,8 +104,9 @@ those checks and runs the local pgTAP and Deno harnesses.
   while the documented Phase 1 complete-schema requirement is reconciled with
   the build plan's Phase 2–4 ownership of domain mutation operations. The local
   Docker-compatible runtime is now available for reset and verification.
-- The Supabase Free staging project is healthy and empty. Cloudflare Pages Free
-  setup and the non-production placeholder deployment remain to be completed.
+- The Supabase Free staging project is healthy and empty. The Cloudflare Pages
+  Free project `design-flow-staging` exists, but no source-derived artifact has
+  been uploaded and no deployment exists yet.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
   across its documented 200–900 weight range, and protected against synthetic
   weights. Asset provenance and checksum are recorded under
