@@ -2,9 +2,9 @@
 
 **Checkpoint:** MVP specification v1.0  
 **Checkpoint date:** 2026-07-18  
-**Last amended:** 2026-07-19 — D-097 records the independent Create New Ticket and optional status paths launched from Log Work
+**Last amended:** 2026-07-19 — D-098 records the stable UI direction and phase readiness gates
 
-This register summarizes approved, rejected, and still-open decisions. Detailed behavior lives in [product-spec.md](product-spec.md), [data-model.md](data-model.md), and [reporting.md](reporting.md).
+This register summarizes approved, rejected, and still-open decisions. Detailed behavior lives in [product-spec.md](product-spec.md), [data-model.md](data-model.md), and [reporting.md](reporting.md); stable cross-product interface direction lives in [ui-direction.md](ui-direction.md).
 
 ## Locked decisions
 
@@ -107,6 +107,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-095 | MVP build order | Build in eight gated phases: schema/security contracts; project foundation; authentication/Team/Settings; work-item foundation; work logging; operational experience; reports/exports; and production hardening/rollout. Grow `src/ui/` just in time, keep every phase vertically testable, and require the shared definition of done in `docs/build-plan.md` before advancing |
 | D-096 | Phase 1 foundation gaps | Until Vodafone publishes adopted runtime aliases, centralize Design Flow element/container/overlay/full radii at 4/8/12/999px, control heights at the documented Vodafone 32/40/48/64px sizes, a 2px focus ring with 2px offset, and a 700ms spinner duration that becomes static under reduced motion; keep `Vodafone VF` as the required family but treat the system fallback as local-only until an approved licensed font asset is supplied |
 | D-097 | Integrated Log Work launch paths | Ticket-mode Log Work may include an optional status change and a Create New Ticket path. Status transition, ticket creation, and work-log submission remain independent operations with their own authorization, validation, idempotency, history/audit, and notification effects. After successful ticket creation, the unfinished Log Work form resumes with the new ticket selected and all existing draft data preserved |
+| D-098 | UI direction and readiness | `docs/ui-direction.md` governs stable cross-product UI character, hierarchy, density, responsive, state, composition, and accessibility principles without becoming a screen specification. Every UI-bearing feature phase requires an approved brief, component-reuse analysis, desktop/mobile and state behavior, keyboard/accessibility behavior, and staging verification against the brief before completion |
 
 ## Explicitly rejected or replaced
 

@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-19 — D-097 adds independent Create New Ticket and optional status orchestration to Phase 4
+**Last updated:** 2026-07-19 — D-098 adds UI direction, screen-brief, and readiness gates without changing implementation order
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -17,6 +17,21 @@ This document defines the required implementation order and completion gates for
 - Notifications are built only after the domain events that produce them are stable.
 - A cross-surface launch path may preserve client draft state, but it never collapses independently authorized domain operations into one RPC or transaction.
 - A phase may be split into smaller pull requests, but its exit gate remains unchanged.
+
+## UI documentation and readiness gates
+
+The stable cross-product direction lives in [ui-direction.md](ui-direction.md). Feature-specific UI decisions are recorded in short screen or flow briefs created from [ui/screen-brief-template.md](ui/screen-brief-template.md); briefs apply approved product behavior and Vodafone Foundations without becoming pixel specifications.
+
+Every UI-bearing feature phase must pass this readiness gate:
+
+- An approved screen or flow brief exists before implementation begins.
+- Existing Design Flow components are identified for reuse or extension before a new component is proposed.
+- Required desktop and mobile behavior, including responsive transitions, is documented.
+- Loading, empty, error, no-results, permission, disabled, and long-content states are documented where relevant.
+- Keyboard and accessibility behavior is documented.
+- The implemented result is verified in staging against the approved brief before the phase is considered complete.
+
+D-095 defines eight implementation phases numbered Phase 0 through Phase 7. The cross-product UI review therefore belongs to the existing Phase 7 production-hardening gate; no separate Phase 8 is introduced and no implementation phase is added or renumbered. The feature sequence remains Foundation → Authentication/Team/Settings → Work items → Work logging → Operational experience → Reports → Hardening.
 
 ## Phase 0 — Schema and security contract
 
@@ -46,6 +61,11 @@ Finalize the implementation contracts before scaffolding:
 
 ## Phase 1 — Project foundation
 
+### UI documentation gate
+
+- Create and approve `docs/ui-direction.md` before continuing feature UI implementation.
+- This direction gate does not expand the just-in-time component scope or authorize screen-by-screen design work in Phase 1.
+
 Create the implementation baseline:
 
 - React, strict TypeScript, Vite, React Router, npm, and pinned Node LTS;
@@ -64,8 +84,13 @@ Create the implementation baseline:
 - Pull-request CI passes and a non-production placeholder deploys using staging credentials only.
 - No secret or production datum exists in committed, local-seed, preview, or staging content.
 - Initial shared components use documented tokens, keyboard behavior, tests, and owned Design Flow APIs with zero Astryx runtime dependency.
+- `docs/ui-direction.md` is approved and agrees with the design-system, UI-architecture, product, and decision-register authorities.
 
 ## Phase 2 — Authentication, Team, and Settings
+
+### UI readiness gate
+
+Before Phase 2 UI implementation, create and approve short briefs for Authentication, Team, Settings, and the shared application shell. Each brief must satisfy the common UI readiness gate above. Because Phase 1 already permits a minimal shell baseline, the shared-shell brief must be approved before further shell refinement or Phase 2 feature integration; it does not require speculative shell rework during this documentation update.
 
 Implement the identity and administrative foundation:
 
@@ -85,8 +110,18 @@ Implement the identity and administrative foundation:
 - Admin privilege changes capability without changing position, reporting line, or default people scope.
 - Deactivation preserves history and prevents further access; reactivation restores access without recreating the member.
 - Team and Settings pass responsive, keyboard, empty, loading, error, and unauthorized-state checks.
+- Authentication, Team, Settings, and shared-shell staging behavior is verified against the approved briefs.
 
 ## Phase 3 — Work-item foundation
+
+### UI readiness gate
+
+Before Phase 3 UI implementation:
+
+- create and approve `docs/ui-component-map.md`; and
+- create and approve short briefs for ticket creation, All Tickets, and Work Item.
+
+The component map and each brief must satisfy the common UI readiness gate above.
 
 Implement the core ticket lifecycle:
 
@@ -108,8 +143,13 @@ Implement the core ticket lifecycle:
 - Only Backlog, Paused, and Done can be archived, by an authorized actor.
 - All Tickets filters/sort/search are URL-backed and responsive, with no inline editing or unsupported bulk/customization behavior.
 - The Work Item header, history, Figma behavior, and subtask presentation match the approved specifications.
+- Ticket creation, All Tickets, and Work Item staging behavior is verified against the approved briefs and component map.
 
 ## Phase 4 — Work logging
+
+### UI readiness gate
+
+Before Phase 4 UI implementation, create or update the Log Work brief. It must cover ticket selection, optional independently authorized status change, inline Create New Ticket, preserved unfinished-draft state, and standalone Visual Work, and it must satisfy the common UI readiness gate above.
 
 Implement actual-work capture and correction:
 
@@ -135,8 +175,13 @@ Implement actual-work capture and correction:
 - Multiple entries or designers on one ticket date count once for ticket Active work days.
 - Standalone visual work remains outside ticket lifecycle/ownership metrics and is available as a separate reporting source.
 - Work logging is keyboard-usable and clear on mobile for every authorized position; Viewer remains read-only.
+- Ticket and standalone Visual Work staging behavior is verified against the approved Log Work brief.
 
 ## Phase 5 — Operational experience
+
+### UI readiness gate
+
+Before Phase 5 UI implementation, create and approve short briefs for Dashboard, Notifications, and History. Each brief must satisfy the common UI readiness gate above.
 
 Complete the everyday management surfaces:
 
@@ -153,8 +198,13 @@ Complete the everyday management surfaces:
 - Leads and Managers can deliberately broaden or change people scope as approved.
 - Stale work uses five Sunday–Thursday working days and never uses sign-in recency as a performance signal.
 - Notifications fire only for approved events/recipients, exclude self-events, and do not introduce email, push, reminders, mentions, or subscriptions.
+- Dashboard, Notifications, and History staging behavior is verified against the approved briefs.
 
 ## Phase 6 — Reports and exports
+
+### UI readiness gate
+
+Before Phase 6 UI implementation, create and approve short briefs for Reports and export experiences. Each brief must satisfy the common UI readiness gate above.
 
 Implement the approved reporting layer:
 
@@ -172,8 +222,13 @@ Implement the approved reporting layer:
 - CSV exports contain all matching rows rather than only the visible page and preserve the visible view controls defined by the specification.
 - CSV access is limited to Lead, Manager, or Admin privilege; Work Item PDF access follows its approved capability rule.
 - Charts remain understandable through their accessible text/table alternative and do not imply productivity scoring.
+- Reports and export staging behavior is verified against the approved briefs.
 
 ## Phase 7 — Production hardening and rollout
+
+### Cross-product UI review gate
+
+During Phase 7, perform and evidence a cross-product review for UI consistency, responsive behavior, accessibility, and required-state coverage. Resolve material inconsistencies against the approved direction, component map, screen briefs, and product contracts before rollout.
 
 Complete the approved operating model:
 
@@ -193,6 +248,7 @@ Complete the approved operating model:
 - A previous known-good application release can be redeployed and a failed migration cannot continue to later delivery stages.
 - The pilot group completes one working week without an unresolved security, data-integrity, authentication, or core-workflow blocker.
 - Admin operational ownership and Manager organizational responsibility remain distinct in the system and runbooks.
+- The cross-product UI consistency, responsive, accessibility, and state-coverage review is complete with no unresolved release-blocking issue.
 
 ## Definition of done for every implementation slice
 

@@ -9,24 +9,25 @@ Read these before planning or changing implementation:
 1. `docs/product-spec.md`
 2. `docs/design-system.md`
 3. `docs/ui-architecture.md`
-4. `docs/technical-plan.md`
-5. `docs/build-plan.md`
-6. `docs/schema-contract.md`
-7. `docs/permission-matrix.md`
-8. `docs/operation-contracts.md`
-9. `docs/dashboard.md`
-10. `docs/all-tickets.md`
-11. `docs/work-item.md`
-12. `docs/reporting.md`
-13. `docs/reports-ui.md`
-14. `docs/team-settings.md`
-15. `docs/notifications.md`
-16. `docs/data-model.md`
-17. `docs/decisions.md`
+4. `docs/ui-direction.md`
+5. `docs/technical-plan.md`
+6. `docs/build-plan.md`
+7. `docs/schema-contract.md`
+8. `docs/permission-matrix.md`
+9. `docs/operation-contracts.md`
+10. `docs/dashboard.md`
+11. `docs/all-tickets.md`
+12. `docs/work-item.md`
+13. `docs/reporting.md`
+14. `docs/reports-ui.md`
+15. `docs/team-settings.md`
+16. `docs/notifications.md`
+17. `docs/data-model.md`
+18. `docs/decisions.md`
 
 If code and documentation disagree, stop and surface the mismatch. Do not silently choose one.
 
-Product behavior is governed by the product specifications and approved decisions. Vodafone visual language and tokens are governed by `docs/design-system.md`, with its linked foundation sources remaining authoritative for extracted foundation facts. Design Flow's UI architecture and component-ownership rules are governed by `docs/ui-architecture.md`.
+Product behavior is governed by the product specifications and approved decisions. Vodafone visual language and tokens are governed by `docs/design-system.md`, with its linked foundation sources remaining authoritative for extracted foundation facts. Design Flow's UI architecture and component-ownership rules are governed by `docs/ui-architecture.md`; stable cross-product UI direction and feature-brief expectations are governed by `docs/ui-direction.md`.
 
 Astryx is an advisory engineering reference only. Distilled notes in `references/astryx/` may guide anatomy, interaction, accessibility, keyboard behavior, states, responsive behavior, and implementation recommendations. Astryx code and component APIs are not source of truth, and Astryx must not be installed as a runtime dependency. When a required reference note is missing, distill the relevant official Astryx guidance before implementing the component; do not guess or copy upstream documentation wholesale.
 
