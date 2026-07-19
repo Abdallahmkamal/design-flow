@@ -4,19 +4,20 @@
 
 ## Design Flow interpretation
 
-For Design Flow, this document is the **visual foundation**, not the runtime component library. Its authoritative scope is Vodafone brand identity, color, semantic tokens, typography, spacing, elevation, and later Vodafone foundation additions.
+For Design Flow, this document is the contract for **Vodafone color and typography** plus the centralized runtime mappings used by Design Flow-owned components. Under D-099, Vodafone Foundations are authoritative for color and typography only. The extracted Vodafone spacing, elevation, and component inventories remain source research, but they do not determine Design Flow's non-color component presentation.
 
 - Design Flow owns its component code and public APIs under `src/ui/`.
-- Astryx is used only as distilled engineering guidance under `references/astryx/`; it is not installed or wrapped.
-- The Vodafone component inventories later in this file are visual/source research only. They do not bind Design Flow to Vodafone Figma property names or prescribe a code API.
-- If a required foundation such as radius, motion, or sizing is absent, define a centralized Design Flow semantic value here before implementation. Astryx guidance may inform that choice, but does not own the value.
+- Vodafone semantic color roles/modes and Vodafone text styles remain authoritative.
+- Verified Astryx references under `references/astryx/` are the preferred baseline for anatomy, proportions, density, sizing, spacing, shape, border/elevation geometry, motion, states, responsive behavior, interaction, and accessibility. Astryx is not installed, imported, copied, or wrapped.
+- The Vodafone spacing, elevation, shared-component, and product-component inventories later in this file are provenance records only after D-099. They do not override verified Astryx non-color presentation, bind Design Flow to Vodafone Figma properties, or prescribe a code API.
+- Translate verified Astryx presentation into centralized Design Flow semantic aliases here. If official Astryx guidance does not expose a required value, record the gap and approve an explicit fallback before implementation.
 - See [ui-architecture.md](ui-architecture.md) for the full precedence and component workflow.
 
 ## 1. Foundation model
 
 The system uses a deliberate token hierarchy:
 
-1. **Core primitives** contain raw palette, spacing, size, and type values.
+1. **Core primitives** contain extracted raw palette, spacing, size, and type values; only color and typography are automatically adopted as Design Flow authority.
 2. **Typography variables** provide language-aware font primitives for English and Arabic.
 3. **Responsive variables** map semantic spacing to mobile, tablet, small desktop, and large desktop modes.
 4. **Semantic variables** express intent and switch between Light and Dark modes.
@@ -24,12 +25,12 @@ The system uses a deliberate token hierarchy:
 
 ### Rules for agents and implementers
 
-- Prefer semantic tokens in product UI. Use core tokens only when defining or extending semantic tokens, or when a primitive palette is explicitly required.
+- Prefer semantic tokens in product UI. Use core color/type tokens only when defining or extending semantic color/type tokens, or when a primitive is explicitly required.
 - Preserve aliases. Do not replace semantic references with copied hex or pixel literals.
 - Treat mode values as one token with multiple values, not as separately named tokens.
 - Use the nearest existing text style. Do not invent intermediate type sizes or weights.
-- Use responsive `space/*` tokens for layout; reserve `core/spacing/*` for fixed internal geometry and token construction.
-- Elevation communicates temporary surface hierarchy, not decoration. Increase it only when a surface moves closer to the user.
+- Do not adopt Vodafone `space/*`, elevation, sizing, or shape values solely because they appear in this extraction. Runtime non-color presentation must trace to verified Astryx guidance or an explicit Design Flow fallback.
+- Preserve semantic aliases for Astryx-aligned presentation so reference changes can be remapped centrally.
 - Meet WCAG contrast requirements in every mode; a token name does not guarantee contrast in every composition.
 
 ## 2. Typography
@@ -512,11 +513,13 @@ The following product-level semantic aliases are the current Design Flow impleme
 | Blocked indicator | `product/indicator/blocked` | `#FFE3E6` | `#5A1117` | `#7A1A22` | `#FFB8BE` |
 | Archived indicator | `product/indicator/archived` | `#F4F6F7` | `#5E6162` | `#383B3B` | `#BEC1C2` |
 
-Status and indicator badges have no border. Their visible label remains required, and color is never the only carrier of meaning. Blocked remains independent of workflow status, and Archived remains a record state rather than a workflow status.
+Their visible label remains required, and color is never the only carrier of meaning. Border presence, shape, sizing, spacing, and other non-color badge presentation follow verified Astryx guidance under D-099; the former global no-border rule is no longer authoritative. Blocked remains independent of workflow status, and Archived remains a record state rather than a workflow status.
 
 These aliases are intentionally centralized and may be remapped during implementation or after a revised Figma decision. A palette change updates token values and visual regression expectations, not persisted work-item data or reporting rules.
 
 ## 4. Spacing
+
+> **D-099 authority note:** The following values document the Vodafone source. They are not the default Design Flow spacing authority. Design Flow runtime spacing must map verified Astryx component/pattern presentation through centralized aliases, or use an explicitly approved fallback when official guidance is unavailable.
 
 ### Core spacing primitives
 
@@ -555,19 +558,18 @@ Use these for padding, margin, gaps, and layout spacing. The semantic name stays
 | `space/2xl` | `32px` | `48px` | `64px` | `64px` |
 | `space/3xl` | `40px` | `40px` | `40px` | `40px` |
 
-### Spacing guardrails
+### Vodafone spacing inventory guardrails
 
-- Do use `space/md` through `space/2xl` to create responsive breathing room without breakpoint-specific literals.
-- Do use `space/2xs`, `space/xs`, and `space/sm` for stable compact relationships.
-- Do use `space/none` instead of a raw zero when the property participates in token-driven layout.
-- Do not use negative spacing for ordinary alignment. `core/spacing/neg8` and `neg16` require a documented overlap or optical-compensation reason.
-- Do not introduce 6px, 10px, 14px, or other off-scale values unless the design system explicitly adds them.
+- Preserve these names and values when documenting or consuming Vodafone source facts.
+- Do not use this inventory to override a verified Astryx spacing target.
+- Runtime component spacing uses a Design Flow semantic alias with Astryx source traceability; raw literals and undocumented approximations remain prohibited.
+- If an Astryx target cannot be represented by an existing runtime alias, add a documented alias rather than forcing it onto the Vodafone spacing scale.
 
 ## 4A. Design Flow shape, control-size, and focus extension
 
-Vodafone Foundations does not currently expose runtime radius, control-size, or focus-ring variables in this checkpoint. D-080 and D-096 therefore establish the following centralized Design Flow aliases before the first shared components use them.
+The Phase 1 scaffold introduced the following centralized aliases under D-080 and D-096. D-099 makes their non-color values provisional until the relevant official Astryx presentation is distilled and the Phase 1 components are revalidated.
 
-Astryx shape guidance informed the semantic separation between interactive elements, containers, overlays, and pills; it does not supply these values. The control-height scale maps the documented Vodafone shared Button sizes so later Vodafone foundation tokens can replace the aliases centrally.
+Astryx shape guidance informed the semantic separation between interactive elements, containers, overlays, and pills, but the current notes do not yet verify every listed measurement. These values describe the existing implementation baseline, not approved final Astryx fidelity.
 
 | Product token | Value | Use |
 | --- | --- | --- |
@@ -590,13 +592,15 @@ Guardrails:
 - Prefer `md`; use `lg` when touch density or input prominence requires it. `xl` is exceptional rather than the application default.
 - Focus remains visible in Light and Dark modes and cannot be removed without an accessible replacement.
 - Continuous spinner motion uses the centralized duration and becomes a static progress indicator when reduced motion is requested.
-- These values may be remapped centrally when Vodafone publishes adopted foundation tokens; component APIs and persisted data must not change.
+- Before Phase 2 UI implementation, verify and remap these values against official Astryx guidance where exposed. Record an explicit Design Flow fallback for every unavailable measurement; component APIs and persisted data must not change.
 
 ### Phase 1 font-asset gate
 
 The checkpoint identifies `Vodafone VF` as the required family but contains no licensed webfont files. The runtime token names `Vodafone VF` first and uses an explicit system fallback only for local foundation development. This fallback is not final visual approval. Production visual fidelity remains gated on an approved licensed font asset and real-face weight verification; the application must not synthesize or download an unapproved Vodafone face.
 
 ## 5. Depth and elevation
+
+> **D-099 authority note:** Vodafone shadow colors remain relevant color-source facts. The following offset, blur, spread, and elevation-role geometry is retained as Vodafone provenance only; Design Flow runtime elevation geometry follows verified Astryx guidance or an explicit documented fallback.
 
 ### Semantic shadow color variables
 
@@ -3331,19 +3335,21 @@ _Not specified in the public Figma component API._
 
 ### Precedence
 
-1. **VF Foundations** owns Vodafone visual primitives, typography, responsive spacing, semantic color, elevation, and brand identity.
-2. **Design Flow foundation extensions** own centrally documented values missing from Vodafone, such as radius, motion, or sizing, until Vodafone supplies an adopted equivalent.
-3. **Distilled Astryx references** advise component behavior, anatomy, accessibility, keyboard interaction, states, and responsive patterns; they do not own code or visuals.
-4. **Design Flow `src/ui/` components** own runtime implementation and public component APIs.
-5. **Product modules** compose `src/ui/` components and own Design Flow-specific workflows without redefining foundation tokens.
+1. **Approved Design Flow product behavior and mandatory accessibility** own workflow, domain consequences, and usable interaction requirements.
+2. **VF Foundations** own color, semantic color roles/modes, typography, and text styles.
+3. **Verified Astryx references** own the preferred non-color, non-typographic presentation and engineering baseline where official guidance is available.
+4. **Approved Design Flow fallbacks** fill explicitly documented Astryx gaps or record the smallest necessary product/accessibility deviation.
+5. **Design Flow `src/ui/` components** own runtime implementation and public component APIs without changing those authority boundaries.
+6. **Product modules** compose `src/ui/` components and own Design Flow-specific workflows without redefining foundation tokens.
 
 ### Composition rules
 
 - Define project-appropriate component APIs; do not mirror Astryx or Vodafone Figma property names by default.
 - Use product patterns as compositions of `src/ui/` components; do not flatten them into duplicated one-off elements.
-- Resolve color, typography, spacing, and elevation through existing foundation aliases.
-- Add a documented semantic foundation extension before using a missing radius, motion, sizing, or similar value.
-- Keep unspecified behavior, responsive rules, and accessibility gaps explicit until the relevant Astryx guidance is distilled and a Design Flow decision is recorded.
+- Resolve color and typography through Vodafone aliases.
+- Resolve spacing, shape, sizing, elevation geometry, motion, state presentation, and responsive patterns through source-traceable Design Flow aliases mapped from verified Astryx guidance.
+- Add a documented semantic fallback before using a missing or unavailable Astryx presentation value.
+- Keep unspecified presentation, behavior, responsive rules, and accessibility gaps explicit until the relevant Astryx guidance is distilled and a Design Flow decision is recorded.
 - Do not copy Astryx documentation or source code into the project.
 
 
@@ -3352,13 +3358,13 @@ _Not specified in the public Figma component API._
 When generating UI:
 
 1. Read the relevant product specification and `docs/ui-architecture.md`.
-2. Select semantic Vodafone/Design Flow tokens for the target surface and mode.
-3. Choose an existing text style by role and preserve its defined metrics.
-4. Use responsive `space/*` tokens for layout and core spacing only for fixed internal geometry.
-5. Add the lowest elevation that accurately communicates the surface hierarchy.
-6. Read the relevant distilled Astryx note for behavior, accessibility, keyboard interaction, states, and responsive recommendations.
-7. If the necessary Astryx note is missing, distill it from official Astryx documentation before coding.
-8. If a visual foundation value is missing, define and document a centralized semantic Design Flow extension before use.
+2. Select semantic Vodafone color tokens for the target surface and mode.
+3. Choose an existing Vodafone text style by role and preserve its defined metrics.
+4. Read the relevant distilled Astryx note for anatomy, geometry, density, spacing, sizing, shape, elevation, motion, states, behavior, accessibility, keyboard interaction, and responsiveness.
+5. If the necessary Astryx note or measurable presentation detail is missing, distill it from official Astryx documentation before coding.
+6. Map verified Astryx presentation through centralized Design Flow semantic aliases.
+7. If official guidance does not expose a needed value, record the gap and approve a centralized Design Flow fallback before use.
+8. Document any smallest necessary deviation caused by product behavior, mandatory accessibility, Vodafone color contrast, or Vodafone text metrics.
 9. Implement or reuse the Design Flow-owned component under `src/ui/`; document its API and cover its behavior with tests.
 10. Validate Light/Dark contrast, responsive behavior, focus visibility, and relevant keyboard and assistive-technology paths.
 
@@ -3366,9 +3372,9 @@ When generating UI:
 
 | Layer | Figma file | File key | Local variables | Documentation scope |
 | --- | --- | --- | --- | --- |
-| Foundations | [VF Foundations](https://www.figma.com/design/793xF92PNCLbDCNdoLue6P/VF-Foundations?node-id=0-1) | `793xF92PNCLbDCNdoLue6P` | 830 across five collections | Typography, color, spacing, elevation, and data visualization |
-| Shared components | [Vodafone Component Library](https://www.figma.com/design/NzvsYn3jj6MHAEWUqUzHEP/Vodafone-Component-Library?node-id=0-1) | `NzvsYn3jj6MHAEWUqUzHEP` | 0 | Vodafone visual/source inventory; not Design Flow runtime contracts |
-| Product components | [Vodafone Product Library](https://www.figma.com/design/VwqdLFTd04DeiP5Q17iG9G/Vodafone-Product-Library?node-id=0-1) | `VwqdLFTd04DeiP5Q17iG9G` | 0 | Vodafone product-pattern source inventory; not Design Flow runtime APIs |
+| Foundations | [VF Foundations](https://www.figma.com/design/793xF92PNCLbDCNdoLue6P/VF-Foundations?node-id=0-1) | `793xF92PNCLbDCNdoLue6P` | 830 across five collections | Design Flow authority for color and typography; spacing/elevation retained as Vodafone provenance only |
+| Shared components | [Vodafone Component Library](https://www.figma.com/design/NzvsYn3jj6MHAEWUqUzHEP/Vodafone-Component-Library?node-id=0-1) | `NzvsYn3jj6MHAEWUqUzHEP` | 0 | Vodafone source inventory only; does not govern Design Flow non-color presentation or runtime contracts |
+| Product components | [Vodafone Product Library](https://www.figma.com/design/VwqdLFTd04DeiP5Q17iG9G/Vodafone-Product-Library?node-id=0-1) | `VwqdLFTd04DeiP5Q17iG9G` | 0 | Vodafone source inventory only; does not govern Design Flow patterns or runtime APIs |
 
 
 - Figma source: [VF Foundations](https://www.figma.com/design/793xF92PNCLbDCNdoLue6P/VF-Foundations?node-id=0-1)

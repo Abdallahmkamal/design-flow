@@ -1,6 +1,6 @@
 # Astryx reference: Input
 
-**Status:** Ready for the Phase 1 Design Flow Input
+**Status:** Behavior ready; D-099 non-color presentation review required
 **Last source review:** 2026-07-19
 
 ## Official sources
@@ -37,7 +37,7 @@
 
 ### Responsive behavior
 
-- Inputs fill the available form width on small viewports. A later dense layout may constrain width to reflect expected value length without reducing the mobile target.
+- Inputs fill the available form width on small viewports. A later dense layout may constrain width to reflect expected value length without reducing the mobile target. Exact Astryx sizing and spacing must be verified before visual approval.
 
 ### Edge cases
 
@@ -52,10 +52,12 @@
 
 ## Design Flow decisions
 
-- Visuals, size, and radius values come from `docs/design-system.md`.
+- Vodafone supplies color and typography.
+- Verified Astryx guidance supplies the preferred remaining presentation, represented through Design Flow aliases in `docs/design-system.md`.
 - The Phase 1 Input owns one field shell with a required label API, optional description/error, native attributes, and forwarded ref.
 - The public API is Design Flow-owned and does not copy the Astryx component API.
 
 ## Open gaps
 
 - Clear actions, prefixes/suffixes, async validation, multiline input, and compound form layouts are deferred until an approved slice needs them.
+- Official Astryx measurements for field structure, size, padding, gaps, shape, border/elevation geometry, and state presentation must be distilled before the Phase 1 Input receives visual approval.

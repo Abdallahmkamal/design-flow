@@ -4,7 +4,7 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-07-19 — D-097 adds independent Create New Ticket and optional status paths to ticket-mode Log Work
+**Last amended:** 2026-07-19 — D-099 assigns Vodafone color/typography authority and Astryx non-color component-presentation authority
 
 This document is the current product source of truth for Design Flow. It records approved MVP behavior, not every idea discussed while reaching it. Open decisions are listed at the end and must not be invented during implementation.
 
@@ -32,11 +32,12 @@ The portal must answer:
 
 ### UI-system architecture
 
-- Vodafone Foundations are the visual source of truth for brand identity, color, semantic tokens, typography, spacing, and elevation.
+- Vodafone Foundations are authoritative for product color and typography, including semantic color modes and role-based text styles.
 - Design Flow owns its shared component library under `src/ui/`.
-- Astryx is an engineering reference for mature component anatomy, interactions, accessibility, keyboard behavior, states, responsiveness, and implementation recommendations. It is not a runtime dependency or source-code dependency.
-- Distilled Astryx guidance lives under `references/astryx/`; official documentation is summarized into project-specific notes rather than copied.
-- When Vodafone does not yet define a necessary foundation such as radius, motion, or sizing, add a centralized Design Flow semantic value to the design-system contract before a component uses it.
+- Astryx is the preferred reference baseline for non-color, non-typographic component presentation and engineering: anatomy, proportions, density, sizing, internal spacing, shape, border and elevation geometry, motion, interactions, accessibility, keyboard behavior, states, responsiveness, and implementation recommendations.
+- Distilled Astryx guidance lives under `references/astryx/`. Notes link and date official sources, record verified presentation measurements where available, and summarize project application without copying source code, styling files, component APIs, or documentation wholesale.
+- Design Flow translates verified Astryx presentation into centralized semantic aliases documented in the design-system contract. If official guidance does not expose a required value, record the gap and approve an explicit Design Flow fallback before implementation rather than claiming exact Astryx fidelity.
+- Product behavior, mandatory accessibility, Vodafone color, and Vodafone typography may require a documented deviation from Astryx geometry; such a deviation must be explicit and tested.
 - Detailed ownership, precedence, and component Definition of Done are in [ui-architecture.md](ui-architecture.md).
 
 ## 2. Team and access model
@@ -150,7 +151,7 @@ The fixed MVP status set is:
 
 The normal path is `Backlog -> To do -> In Progress -> In Review -> Done`, but authorized users may move backward. Every transition is recorded.
 
-Workflow-status badges use the centralized product tokens in [design-system.md](design-system.md). Badges have a tinted background and readable text with no border. Blocked and Archived use separate indicator tokens and do not become workflow statuses. Components never persist or independently hardcode the resolved colors.
+Workflow-status badges use the centralized color tokens in [design-system.md](design-system.md). Their non-color presentation, including border presence and geometry, follows the verified Astryx Badge reference required before implementation. Blocked and Archived use separate indicator color tokens and do not become workflow statuses. Components never persist or independently hardcode resolved colors or presentation values.
 
 Status reporting groups:
 

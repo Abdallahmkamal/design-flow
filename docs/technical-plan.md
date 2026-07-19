@@ -1,7 +1,7 @@
 # Design Flow technical plan
 
 **Status:** Approved for MVP implementation  
-**Last updated:** 2026-07-19
+**Last updated:** 2026-07-19 — D-099 refines component-presentation authority
 
 This document records the approved implementation architecture and operating model for Design Flow. The approved module sequence and slice-level completion gates are defined in [build-plan.md](build-plan.md).
 
@@ -56,26 +56,27 @@ Never expose Supabase secret/service-role or Auth-admin credentials in browser c
 
 The styling technology implements the locked design-system hierarchy; it does not alter it.
 
-1. `docs/design-system.md` owns Vodafone visual foundations and approved Design Flow token extensions.
+1. `docs/design-system.md` owns Vodafone color/typography and the approved runtime mappings for verified Astryx non-color presentation.
 2. CSS custom properties are the runtime representation of those approved tokens.
 3. CSS Modules scope styles to Design Flow-owned components under `src/ui/`.
-4. Distilled Astryx notes guide engineering behavior only and supply no runtime code or visual values.
+4. Distilled Astryx notes supply the preferred, source-linked non-color presentation and engineering target, but no runtime code, styling files, or component APIs.
 
 Therefore:
 
-- CSS variable names and values must trace to the design-system contract.
+- CSS variable names and values must trace either to Vodafone color/typography or to a documented Design Flow mapping of verified Astryx presentation.
 - CSS Modules must consume semantic variables rather than create parallel token values.
-- Missing radius, motion, sizing, or other foundations must be approved and added to `docs/design-system.md` before use.
+- Missing Astryx spacing, radius, motion, sizing, elevation, or other presentation values must be recorded as gaps; an explicit Design Flow fallback must be approved and added to `docs/design-system.md` before use.
 - Do not use Tailwind, CSS-in-JS, Astryx packages, a generic runtime component library, or copied upstream component code.
 - Prefer native HTML behavior when it can satisfy the approved component contract and accessibility requirements.
+- Treat Astryx fidelity as a Design Flow-owned reimplementation from verified official guidance, never as authorization to copy upstream source or styling.
 
-This explicitly preserves D-074 through D-080 and the ownership rules in `docs/ui-architecture.md`.
+This implements D-099, which supersedes the conflicting visual-authority portions of D-074 through D-076, D-080, and D-096 while preserving the zero-runtime and Design Flow ownership boundaries in D-077 through D-079 and the styling-delivery mechanism in D-087.
 
 ## 6. Report charts
 
 Use Recharts only for the approved bar and line report visualizations.
 
-- Resolve chart colors, typography, spacing, and states through centralized Design Flow chart tokens.
+- Resolve chart colors and typography through Vodafone mappings. Resolve non-color presentation and states through relevant verified Astryx guidance where available, with explicit Design Flow fallbacks for documented gaps.
 - Do not use Recharts defaults as visual authority.
 - Every chart must have an accessible textual summary or data table containing the essential information.
 - Recharts does not provide general UI components and does not alter `src/ui/` ownership.

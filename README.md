@@ -84,8 +84,8 @@ those checks and runs the local pgTAP and Deno harnesses.
 ## Current state and gates
 
 - Core product and data rules are documented.
-- Vodafone Foundations are the visual source of truth for color, semantic tokens, typography, spacing, elevation, and brand identity.
-- Design Flow owns its component library under `src/ui/`; Astryx is used only through distilled engineering notes under `references/astryx/` and is not a runtime dependency.
+- Vodafone Foundations are authoritative for color and typography.
+- Astryx is the preferred reference baseline for the remaining component presentation and interaction. Design Flow reimplements that guidance in its owned component library under `src/ui/`; Astryx is not a runtime dependency or source-code dependency.
 - Dashboard, All Tickets, Work Item, Reports/exports, access/hierarchy, Team and Settings, and minimal in-app Notifications are approved.
 - Cloudflare Pages Free is selected for the static frontend and Supabase Free for authentication, database, and backend services; the preferred free production address is `designflow.pages.dev`, subject to name availability.
 - The complete technical and operating plan is approved in `docs/technical-plan.md`, including the React/Supabase architecture, styling delivery, environments, verification, encrypted backup and restore routine, controlled deployment, monitoring, bootstrap, and rollout.
@@ -100,6 +100,8 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The required `Vodafone VF` family is named first in the runtime token, but the
   checkpoint contains no licensed font files. The system fallback is local-only
   and not final visual approval.
+- D-099 requires the Phase 1 shell, Button, Input, and supporting presentation
+  aliases to receive an Astryx fidelity review before Phase 2 UI implementation.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
