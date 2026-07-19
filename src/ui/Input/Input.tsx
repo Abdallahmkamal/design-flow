@@ -47,20 +47,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {description}
         </p>
       ) : null}
-      <input
-        {...inputProps}
-        ref={ref}
-        className={[styles.input, className].filter(Boolean).join(' ')}
-        id={inputId}
-        required={required}
-        aria-describedby={describedBy || undefined}
-        aria-invalid={error ? true : undefined}
-      />
-      {error ? (
-        <p className={styles.error} id={errorId} role="alert">
-          {error}
-        </p>
-      ) : null}
+      <div className={styles.controlGroup}>
+        <input
+          {...inputProps}
+          ref={ref}
+          className={[styles.input, className].filter(Boolean).join(' ')}
+          id={inputId}
+          required={required}
+          aria-describedby={describedBy || undefined}
+          aria-invalid={error ? true : undefined}
+        />
+        {error ? (
+          <p className={styles.error} id={errorId} role="alert">
+            {error}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 });

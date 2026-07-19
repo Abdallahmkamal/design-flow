@@ -1,7 +1,7 @@
 # Astryx reference: accessibility
 
 **Status:** Phase 1 baseline reviewed; expand with later components
-**Last source review:** 2026-07-19
+**Last source review:** 2026-07-20
 
 ## Official sources
 
@@ -18,6 +18,10 @@
 - The application shell provides one main content destination and a skip path from repeated navigation.
 - Honor the operating system reduced-motion preference and do not let animation block the next interaction.
 - Preserve visible focus and communicate validation/status with text rather than color alone.
+- Button focus uses the verified `2px` visible outline with `3px` offset.
+- Component-specific motion guidance takes precedence over generic timing:
+  Phase 1 Button state transitions stop under reduced motion, while its spinner
+  slows to a `3s` rotation rather than becoming indistinguishable from idle.
 
 ## Design Flow application
 

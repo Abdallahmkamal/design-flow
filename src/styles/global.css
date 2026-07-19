@@ -2,6 +2,7 @@ body {
   color: var(--color-text-primary);
   background: var(--color-surface-bg);
   font: var(--type-body);
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

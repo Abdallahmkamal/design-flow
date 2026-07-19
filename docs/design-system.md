@@ -565,42 +565,67 @@ Use these for padding, margin, gaps, and layout spacing. The semantic name stays
 - Runtime component spacing uses a Design Flow semantic alias with Astryx source traceability; raw literals and undocumented approximations remain prohibited.
 - If an Astryx target cannot be represented by an existing runtime alias, add a documented alias rather than forcing it onto the Vodafone spacing scale.
 
-## 4A. Design Flow shape, control-size, and focus extension
+## 4A. Design Flow presentation aliases
 
-The Phase 1 scaffold introduced the following centralized aliases under D-080 and D-096. D-099 makes their non-color values provisional until the relevant official Astryx presentation is distilled and the Phase 1 components are revalidated.
-
-Astryx shape guidance informed the semantic separation between interactive elements, containers, overlays, and pills, but the current notes do not yet verify every listed measurement. These values describe the existing implementation baseline, not approved final Astryx fidelity.
+The Phase 1 aliases were verified against official Astryx documentation, with
+public default-theme implementation used only to cross-check exposed
+measurements, on 2026-07-20. They are Design Flow-owned runtime names, not
+Astryx imports or copied APIs. Vodafone remains authoritative for color and
+typography.
 
 | Product token | Value | Use |
 | --- | --- | --- |
-| `product/radius/element` | `4px` | Buttons, inputs, selectors, and compact interactive controls |
-| `product/radius/container` | `8px` | Cards, panels, and grouped content |
-| `product/radius/overlay` | `12px` | Dialogs, drawers, and highest temporary surfaces |
-| `product/radius/full` | `999px` | Badges, status dots, and intentionally pill-shaped controls |
-| `product/control/height/sm` | `32px` | Compact controls |
-| `product/control/height/md` | `40px` | Default controls |
-| `product/control/height/lg` | `48px` | Prominent controls and mobile-friendly inputs |
-| `product/control/height/xl` | `64px` | Exceptional high-emphasis controls |
+| `product/radius/inner` | `8px` | Nested content within a rounded parent |
+| `product/radius/element` | `12px` | Buttons, inputs, selectors, and navigation items |
+| `product/radius/container` | `16px` | Cards, panels, and grouped content |
+| `product/radius/overlay` | `16px` | Dialogs and temporary surfaces; mapped to the documented container role |
+| `product/radius/page` | `32px` | Elevated application-shell page surface |
+| `product/radius/full` | `9999px` | Badges, status dots, and intentionally pill-shaped controls |
+| `product/control/height/sm` | `28px` | Compact controls |
+| `product/control/height/md` | `32px` | Default controls |
+| `product/control/height/lg` | `36px` | Large controls |
 | `product/focus/ring-width` | `2px` | Visible keyboard focus outline |
-| `product/focus/ring-offset` | `2px` | Separation between the focused control and outline |
-| `product/motion/spinner-duration` | `700ms` | Continuous progress indication when motion is permitted |
+| `product/focus/ring-offset` | `3px` | Separation between the focused control and outline |
+| `product/border/width` | `1px` | Default control border |
+| `product/control/disabled-opacity` | `0.5` | Disabled presentation |
+| `product/motion/fast` | `175ms` | Frequent state transitions |
+| `product/motion/medium` | `410ms` | Spatial transitions where orientation matters |
+| `product/motion/spinner-duration` | `730ms` | Continuous progress indication |
+| `product/motion/easing/standard` | `cubic-bezier(0.24, 1, 0.4, 1)` | Default state-transition curve |
+| `product/control/press-scale` | `0.98` | Pressed Button feedback |
 
 Guardrails:
 
 - Components consume the semantic alias, never a copied radius, height, or focus value.
-- Interactive controls use `element`; content containers use `container`; overlays use `overlay`; `full` is never a default card or control radius.
-- Prefer `md`; use `lg` when touch density or input prominence requires it. `xl` is exceptional rather than the application default.
+- Interactive controls use `element`; content containers use `container`; the
+  elevated desktop page uses `page`; `full` is never a default card or control
+  radius.
+- Prefer `md`; use `sm` or `lg` only where the component hierarchy calls for it.
 - Focus remains visible in Light and Dark modes and cannot be removed without an accessible replacement.
-- Continuous spinner motion uses the centralized duration and becomes a static progress indicator when reduced motion is requested.
-- Before Phase 2 UI implementation, verify and remap these values against official Astryx guidance where exposed. Record an explicit Design Flow fallback for every unavailable measurement; component APIs and persisted data must not change.
+- Phase 1 Button state transitions stop under reduced motion; its component-specific spinner behavior slows to `3s`, preserving visible progress.
+- Source traceability and component-specific measurements are recorded in
+  `references/astryx/tokens.md`, `button.md`, `input.md`, and `patterns.md`.
 
 ### Phase 1 font-asset gate
 
-The checkpoint identifies `Vodafone VF` as the required family but contains no licensed webfont files. The runtime token names `Vodafone VF` first and uses an explicit system fallback only for local foundation development. This fallback is not final visual approval. Production visual fidelity remains gated on an approved licensed font asset and real-face weight verification; the application must not synthesize or download an unapproved Vodafone face.
+The approved Vodafone VF v4.000 variable WOFF2 asset was supplied and added on 2026-07-20. The runtime loads `Vodafone VF` across its documented `wght` range of 200–900, covering the required Regular, Medium, SemiBold, and Bold roles with real variable-font instances. `font-synthesis` is disabled, and the system stack remains only a network/load-failure fallback rather than the expected rendering.
+
+The asset provenance and SHA-256 checksum are recorded in `src/assets/fonts/README.md`. Do not replace, redistribute, subset, convert, or download another Vodafone face without confirming the applicable brand and font-licensing approval.
 
 ## 5. Depth and elevation
 
 > **D-099 authority note:** Vodafone shadow colors remain relevant color-source facts. The following offset, blur, spread, and elevation-role geometry is retained as Vodafone provenance only; Design Flow runtime elevation geometry follows verified Astryx guidance or an explicit documented fallback.
+
+### Design Flow runtime elevation mapping
+
+| Runtime alias | Astryx geometry | Vodafone semantic color |
+| --- | --- | --- |
+| `--shadow-xs` | `0 1px 1px`, `0 2px 8px` | `sem/shadow/small` |
+| `--shadow-sm` | `0 1px 2px`, `0 2px 12px` | `sem/shadow/medium` |
+| `--shadow-lg` | `0 2px 2px`, `0 8px 24px` | `sem/shadow/large` |
+
+The offsets and blur geometry come from verified Astryx elevation roles. Each
+layer uses the corresponding Vodafone Light/Dark semantic shadow color.
 
 ### Semantic shadow color variables
 

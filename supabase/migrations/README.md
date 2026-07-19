@@ -12,6 +12,8 @@ allow/deny cases in
 operation rules in
 [`docs/operation-contracts.md`](../../docs/operation-contracts.md).
 
-The current machine does not have a Docker-compatible runtime, so Phase 1
-establishes the configuration and test harness without pretending the initial
-schema is verified.
+The current machine has a verified free Colima/Docker-compatible runtime and
+the local Supabase image set. The migration remains absent until the Phase 1
+complete-schema wording is reconciled with the build plan's Phase 2–4 ownership
+of account, ticket, and work-log mutation operations; do not treat runtime
+availability as authorization to cross those phase boundaries.
