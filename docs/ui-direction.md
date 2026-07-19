@@ -2,7 +2,7 @@
 
 **Status:** Approved product UI direction
 
-**Decision:** D-098
+**Decisions:** D-098, D-099
 
 **Last updated:** 2026-07-19 — D-099 refines Vodafone/Astryx visual authority
 
