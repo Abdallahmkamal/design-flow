@@ -5,6 +5,8 @@
 **Applies to:** Browser capabilities, Postgres RLS/RPC authorization, Edge Functions, and permission tests  
 **Companion contracts:** `schema-contract.md` and `operation-contracts.md`
 
+**Last amended:** 2026-07-19 — D-097 maps Log Work launch paths to existing create and transition capabilities
+
 Permissions are evaluated from the authenticated profile's current database state. UI checks improve usability only; they never grant authority.
 
 ## 1. Principal states
@@ -83,6 +85,8 @@ Lead and Manager base positions have whole-team operational authority. Their rep
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Log own ticket work on visible ticket | — | Yes | Yes | Yes | Yes | Yes | Yes |
 | Log own standalone visual work | — | Yes | Yes | Yes | Yes | Yes | Yes |
+| Launch Create New Ticket from ticket Log Work | — | Yes | Yes | Yes | Yes | Yes | Yes |
+| Request optional status change from ticket Log Work | — | Own/related | Any | Any | Any | Any | Any |
 | Log on behalf of another eligible person | — | — | Yes | Yes | Yes | Yes | Yes |
 | Edit/correct batch where actor is `worked_by` | — | Yes | Yes | Yes | Yes | Yes | Yes |
 | Correct any work batch | — | — | Yes | Yes | Yes | Yes | Yes |
@@ -98,6 +102,8 @@ Lead and Manager base positions have whole-team operational authority. Their rep
 Comment moderation means soft withdrawal. No user may rewrite another author's comment body. Restoring a withdrawn comment is not an MVP operation.
 
 `worked_by` must be an active Designer, Lead, or Manager when a submission or attribution correction is made. Viewer is never a work-attribution subject.
+
+The integrated Log Work surface adds no capability. Create New Ticket delegates to the existing Create ticket permission. Optional status change delegates to the existing Change status permission and `can_edit_work_item` predicate. In particular, a Designer may log work on an unrelated visible ticket but cannot request its status change from the same unfinished draft. A contribution that does not exist yet cannot pre-authorize the status control; the status RPC locks and rechecks current authority when it executes.
 
 ### Settings and account administration
 
@@ -145,6 +151,7 @@ Archive state does not grant extra authority. An archived Work Item rejects new 
 - Lead, Manager, or Admin may correct or withdraw any batch.
 - A correction changing context or Work Item must also satisfy visibility and destination validation.
 - Future dates, invalid work types, inactive/Viewer attribution, and more than five active rows are denied independently of role.
+- Create New Ticket and optional status change are client launch paths, not work-log permissions. Their independent create/transition predicates apply before their RPCs run.
 
 ### Comment predicates
 
@@ -257,6 +264,7 @@ Every affected operation test runs against each applicable valid principal. The 
 ### Viewer cases
 
 - V cannot create, edit, assign, transition, block, comment, log work, archive/restore, export, or call Settings operations.
+- V cannot access Log Work, launch Create New Ticket from it, or request an optional status transition.
 - Account creation with Viewer + Admin is rejected.
 - Granting Admin to an existing Viewer is rejected.
 - Changing an Admin profile to Viewer while retaining Admin is rejected.
@@ -268,6 +276,8 @@ Every affected operation test runs against each applicable valid principal. The 
 - D can edit a created, currently assigned, or currently contributed ticket and is denied on an unrelated ticket.
 - D loses contribution-only edit authority after withdrawal of the sole qualifying contribution.
 - D can log own work on any visible ticket and standalone visual work.
+- D can launch Create New Ticket from ticket Log Work, and the created ticket follows the ordinary creation contract.
+- D is denied the integrated optional status change on an unrelated ticket even though D may log work there; created, assigned, or already-contributed tickets use the ordinary Own/related rule.
 - D can create or resolve the one active blocker on any visible ticket.
 - D cannot log for another person, change `worked_by`, correct another person's batch, moderate another person's comment, archive/restore, or export Reports CSV.
 - D can export a visible Work Item PDF.
@@ -287,6 +297,7 @@ Every affected operation test runs against each applicable valid principal. The 
 - No active blocker is created outside an active status, and no transition to Backlog/Paused/Done commits while one is open.
 - No ticket archives outside Backlog/Paused/Done.
 - No operation removes/deactivates the final active Admin.
+- A Log Work client cannot submit a status target through `submit_work_log` or reuse work-log authority to bypass `transition_work_item_status`.
 - Concurrent reassignment, status, blocker, work-log correction, and Admin-removal attempts serialize and produce one valid history.
 - Reusing an idempotency key with the same request returns the same result; changing its payload is denied.
 

@@ -5,6 +5,8 @@
 **Applies to:** Browser writes, Postgres RPCs, Auth-admin Edge Functions, audit/history, notifications, and recalculation  
 **Companion contracts:** `schema-contract.md` and `permission-matrix.md`
 
+**Last amended:** 2026-07-19 — D-097 defines independent Create New Ticket and optional status orchestration from Log Work
+
 This document assigns every MVP mutation to one authorization boundary and fixes the atomic effects that boundary must produce. Function names are public contract names; later implementation may use private helpers but must preserve inputs, authorization, effects, and error behavior.
 
 ## 1. Boundary rules
@@ -25,6 +27,8 @@ Every RPC and Edge mutation receives:
 - `operation_id: uuid`, generated once by the initiating client and reused on retry;
 - expected subject/version fields where lost-update protection is relevant; and
 - only the operation-specific payload.
+
+A client-orchestrated flow assigns a distinct operation ID to every independent mutation. It never reuses one ID across ticket creation, work-log submission, and status transition.
 
 ### Idempotency
 
@@ -118,6 +122,18 @@ Compound functions lock in this order to avoid deadlocks:
 | Work logging | `submit_work_log`, `correct_work_log`, `withdraw_work_log` |
 
 There are no direct browser inserts/updates/deletes for these domains.
+
+### Client-orchestrated Log Work paths
+
+These paths add no public mutation:
+
+| Log Work intent | Existing operation | Boundary consequence |
+|---|---|---|
+| Create New Ticket | `create_work_item` | Independent authorization, initial Backlog history/event, optional assignment notification, and operation result |
+| Submit the unfinished ticket-work draft | `submit_work_log` | Independent work-log validation, audit/event, contribution, and recalculation |
+| Apply an optional status change | `transition_work_item_status` | Independent edit authorization, workflow validation, status history/event, notification, and operation result |
+
+No operation accepts another operation's payload. The client may use the Work Item ID returned by `create_work_item` as the selected ticket in its preserved draft, but that return value grants no additional permission and proves no work-log or status operation occurred.
 
 ## 4. Auth and account Edge contracts
 
@@ -529,6 +545,19 @@ Effects: append restricted withdrawal revision, set withdrawal metadata, write `
 
 ## 10. Work-log contracts
 
+### Ticket-mode orchestration
+
+The unfinished Log Work form is client state, not a database record.
+
+1. Create New Ticket is shown only in ticket mode and only when the caller can create a Work Item.
+2. Before launching normal ticket creation, the client retains all current Log Work draft values. A successful `create_work_item` result resumes the same draft with the returned Work Item ID selected. Creation does not call `submit_work_log` or `transition_work_item_status`.
+3. An optional target status is shown only when the caller independently satisfies `can_edit_work_item` for the selected ticket before submission. The client does not treat permission to log or a prospective contributor relationship as transition authority.
+4. Final submission calls `submit_work_log` first with its own operation ID. A target status is not part of that RPC payload.
+5. After work submission succeeds, the client refreshes authoritative Work Item state and, when the requested target is still different, calls `transition_work_item_status` with a separate operation ID and current expected status/version.
+6. A failed work submission leaves the draft available and prevents the status call. A successful work submission is never rolled back because the later status operation is denied, invalid, stale, or unavailable. The interface reports the two outcomes separately and retries only the failed operation according to its own idempotency rules.
+
+The existing optional blocker action remains an atomic part of `submit_work_log`; it does not make status transition or ticket creation part of that transaction. Standalone visual work exposes neither integrated ticket action.
+
 ### Shared validation
 
 - `worked_by` is an active Designer, Lead, or Manager.
@@ -551,6 +580,8 @@ Input:
 - ordered one-to-five `{work_date, work_type_code, description}` rows;
 - optional ticket blocker action `{reason, expected_resolution_date}` applied once; and
 - operation ID.
+
+`submit_work_log` rejects a ticket-creation payload or target-status field. Those intents belong only to `create_work_item` and `transition_work_item_status`.
 
 Authorization:
 
@@ -695,6 +726,9 @@ Before Phase 1 scaffolding can rely on these contracts, later implementation tes
 - Viewer + Admin, inactive, and password-restricted states are rejected correctly;
 - every compound operation is atomic under forced mid-operation failures;
 - repeated operation IDs produce no duplicate history, notifications, work entries, accounts, or audit;
+- ticket creation, work-log submission, and status transition require distinct operation IDs and cannot accept one another's fields;
+- Create New Ticket resumes the client draft with the returned Work Item selected without creating work-log or status effects;
+- a failed work-log submission prevents the optional status call, while a failed status call after successful logging preserves the committed log and reports partial success without compensation;
 - concurrent status, assignment, blocker, work-log, and final-Admin changes serialize correctly;
 - temporary credentials never appear in database/log fixtures;
 - old/new ticket recalculation after work correction/withdrawal is complete;

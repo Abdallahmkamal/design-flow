@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-19
+**Last updated:** 2026-07-19 — D-097 adds independent Create New Ticket and optional status orchestration to Phase 4
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -15,11 +15,13 @@ This document defines the required implementation order and completion gates for
 - Every interface slice includes responsive, keyboard, loading, empty, error, and unauthorized behavior rather than deferring them to a final polish phase.
 - Reports and exports are built only after their source records and derived formulas are stable and tested.
 - Notifications are built only after the domain events that produce them are stable.
+- A cross-surface launch path may preserve client draft state, but it never collapses independently authorized domain operations into one RPC or transaction.
 - A phase may be split into smaller pull requests, but its exit gate remains unchanged.
 
 ## Phase 0 — Schema and security contract
 
 **Completed:** 2026-07-19
+**Amended:** 2026-07-19 — D-097 clarifies independent Log Work/create/status boundaries without changing the physical schema
 
 Finalize the implementation contracts before scaffolding:
 
@@ -29,6 +31,7 @@ Finalize the implementation contracts before scaffolding:
 - RLS capability matrix for Viewer, Designer, Lead, and Manager, repeated with and without independent Admin privilege for every valid combination, with Viewer + Admin specified and tested as an invalid account state;
 - browser, Postgres RPC, and Edge Function boundaries for every mutation;
 - RPC transaction contracts for compound ticket, blocker, assignment, status, and work-log actions;
+- client orchestration contracts for Log Work paths that launch independent ticket creation or status transition operations;
 - Auth-admin Edge Function contracts and first-Admin bootstrap procedure;
 - derived reporting formulas and the source records that recalculate them; and
 - migration naming, generated-type, seed-data, and test-fixture conventions.
@@ -87,7 +90,7 @@ Implement the identity and administrative foundation:
 
 Implement the core ticket lifecycle:
 
-- ticket creation and editing for the approved creators;
+- ticket creation and editing for the approved creators, with a reusable creation result that later launch contexts can select without submitting another domain operation;
 - required Area/Squad, optional labels, one primary assignee, planned start, due date, and one optional Figma URL;
 - Backlog, To do, In Progress, In Review, Done, and Paused transitions;
 - assignment and status history;
@@ -100,6 +103,7 @@ Implement the core ticket lifecycle:
 ### Exit gate
 
 - Create, read, update, transition, reassign, block/resolve, comment, archive, and subtask flows satisfy their permission allow/deny tests.
+- Ticket creation returns the canonical Work Item identity without creating work-log or non-Backlog status effects.
 - Compound domain actions are atomic and produce the required history exactly once.
 - Only Backlog, Paused, and Done can be archived, by an authorized actor.
 - All Tickets filters/sort/search are URL-backed and responsive, with no inline editing or unsupported bulk/customization behavior.
@@ -113,6 +117,8 @@ Implement actual-work capture and correction:
 - one-to-five explicit date rows with one required work type and optional detail per date;
 - Sunday–Thursday defaults, manual Friday/Saturday selection, past dates, and no future dates;
 - ticket and visual controlled vocabularies, including optional-detail Other;
+- a ticket-mode Create New Ticket path that preserves the unfinished Log Work draft and selects the independently created ticket on return;
+- an optional ticket status change that runs only after successful work-log submission through the independent transition operation and its permissions;
 - audited correction and soft withdrawal without an edit time limit;
 - automatic contributor derivation from valid ticket work;
 - ticket Active work days, last-worked values, and dependent aggregate recalculation; and
@@ -121,6 +127,10 @@ Implement actual-work capture and correction:
 ### Exit gate
 
 - Date validation, weekend override, per-row work types, optional descriptions, and one-to-five limits pass UI and database tests.
+- Create New Ticket preserves every existing draft value, resumes the unfinished form with the returned ticket selected, and remains independently authorized and idempotent.
+- Optional status is absent or denied when the caller lacks the existing transition capability; it cannot inherit authority from permission to log work or a prospective contribution.
+- Work-log and optional-status outcomes are tested independently: a failed log prevents transition, while a failed transition never rolls back a successful log and exposes a precise retry state.
+- Creation, work submission, and status transition retain separate history, audit, notification, validation, and operation IDs with no combined RPC.
 - Correction and withdrawal preserve original/audit context and recalculate every affected contributor, ticket, designer, dashboard, and report source value.
 - Multiple entries or designers on one ticket date count once for ticket Active work days.
 - Standalone visual work remains outside ticket lifecycle/ownership metrics and is available as a separate reporting source.

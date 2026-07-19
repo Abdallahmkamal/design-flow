@@ -5,6 +5,8 @@
 **Applies to:** First Supabase/Postgres migration and all later migrations  
 **Sources:** `product-spec.md`, `technical-plan.md`, `build-plan.md`, module specifications, `data-model.md`, and `decisions.md`
 
+**Last amended:** 2026-07-19 — D-097 confirms that integrated Log Work launch paths require no combined schema record
+
 This document fixes the physical Postgres contract for the MVP before application scaffolding. It refines the conceptual model without adding application scope. Migrations, generated database types, RLS policies, RPCs, fixtures, reports, and exports must agree with it.
 
 ## 1. Resolved contract points
@@ -16,6 +18,7 @@ This document fixes the physical Postgres contract for the MVP before applicatio
 - The product does not define a restricted status-transition graph beyond its invariants. The initial system transition table permits every change between two different MVP statuses. Active-assignee, blocker, archive, and authorization rules still apply.
 - A work-log correction may replace the active one-to-five entry set in a batch. Removed entries are soft-withdrawn, not deleted. Withdrawing a submission withdraws the batch as a whole.
 - Current contributors and report aggregates are derived from valid source rows. Only `work_items.last_worked_on`, `last_activity_at`, and `completed_at` are maintained snapshot caches; all are recalculable.
+- The Log Work Create New Ticket path, work-log submission, and optional status transition are independent operations. They use existing records and separate `operation_requests`; no combined flow, draft, requested-status, or compensation row is persisted.
 
 ## 2. Database-wide conventions
 
@@ -487,6 +490,8 @@ A partial unique index on `work_item_id WHERE resolved_at IS NULL` permits one a
 
 Context columns are mutually consistent. Withdrawal metadata is paired. Indexes: `(work_item_id, withdrawn_at, created_at)`, `(worked_by, withdrawn_at, created_at)`, `(related_area_id, withdrawn_at)`.
 
+`work_log_batches` never stores a requested ticket status, ticket-creation payload, or unfinished UI draft. The selected Work Item is the result of an already completed `create_work_item` operation when the user entered through Create New Ticket.
+
 ### `work_log_entries`
 
 | Column | Type | Rules |
@@ -577,6 +582,8 @@ Every mutating RPC and Edge Function receives a caller-stable UUID idempotency k
 
 The row is written in the same transaction as the mutation. Database-only operations move directly to `completed`. Edge operations may remain `pending_external` while an Auth action is safely retried, then move to `completed` through the owning RPC. A retry with the same ID and hash returns the recorded non-secret result; the same ID with a different hash fails. Results never contain passwords or temporary credentials.
 
+A client flow that creates a Work Item, submits work, and requests a status transition creates up to three `operation_requests`, one for each operation code. An operation ID cannot be shared across those boundaries, and their results do not imply that another operation completed.
+
 ## 9. Derived definitions and sources
 
 A **valid work entry** is a `work_log_entries` row where neither the entry nor its batch is withdrawn.
@@ -643,6 +650,7 @@ No report total, contributor list, workload score, or availability value is a ma
 | Work-log audit | Work-log revision tables and `work_item_events` |
 | Notification/read state | `notifications` |
 | Mutation idempotency | `operation_requests` |
+| Unfinished Log Work draft and return state | Client form state only; not persisted in the MVP |
 
 ## 11. Archive, withdrawal, effective-date, and append-only rules
 
@@ -703,5 +711,6 @@ The first schema slice is not complete until pgTAP tests prove:
 - append-only tables reject update/delete;
 - same-day assignment attribution uses the end-of-team-local-day rule;
 - correction/withdrawal recalculates both old and new affected tickets;
+- work-log submission cannot mutate Work Item status or write status history, status transition cannot write work-log rows, and ticket creation cannot submit work;
 - status, assignment, blocker, comment, and notification events are exactly-once under idempotent retries; and
 - all RLS allow/deny cases in `permission-matrix.md` pass.
