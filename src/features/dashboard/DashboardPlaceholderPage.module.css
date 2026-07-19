@@ -1,0 +1,132 @@
+.page {
+  display: grid;
+  inline-size: min(100%, 75rem);
+  gap: var(--space-2xl);
+  margin-inline: auto;
+}
+
+.introduction {
+  display: grid;
+  max-inline-size: 48rem;
+  gap: var(--space-md);
+}
+
+.introduction h1,
+.introduction p,
+.sectionHeading h2,
+.sectionHeading p,
+.checkCard h3,
+.checkCard p,
+.nextPhase h2,
+.nextPhase p {
+  margin: 0;
+}
+
+.introduction h1 {
+  max-inline-size: 40rem;
+  font: var(--type-display);
+}
+
+.eyebrow {
+  color: var(--color-text-accent);
+  font: var(--type-label);
+}
+
+.summary {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-block-end: var(--space-lg);
+}
+
+.sectionHeading > div {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.status {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  color: var(--color-status-warning-text);
+  background: var(--color-status-warning-background);
+  font: var(--type-caption);
+}
+
+.checkGrid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.checkCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-raised);
+}
+
+.checkCard > div {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.checkCard p {
+  color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+
+.checkMark {
+  display: inline-grid;
+  flex: 0 0 auto;
+  block-size: 1.75rem;
+  inline-size: 1.75rem;
+  border-radius: var(--radius-full);
+  color: var(--color-status-success-text);
+  background: var(--color-status-success-background);
+  font: var(--type-label);
+  place-items: center;
+}
+
+.nextPhase {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border-radius: var(--radius-container);
+  color: var(--color-action-primary-text);
+  background: var(--color-action-neutral-background);
+}
+
+.nextPhase > div {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.nextPhase .eyebrow,
+.nextPhase p,
+.nextPhase a {
+  color: var(--color-action-primary-text);
+}
+
+.nextPhase a {
+  justify-self: start;
+  font: var(--type-link);
+}
+
+@media (min-width: 48rem) {
+  .checkGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .nextPhase {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+}

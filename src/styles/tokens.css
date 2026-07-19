@@ -1,0 +1,152 @@
+:root {
+  color-scheme: light;
+
+  /* Vodafone typography aliases. Licensed Vodafone VF files are not yet
+     available in the repository; local development uses the documented
+     fallback stack without pretending it is the final brand rendering. */
+  --font-family-primary:
+    'Vodafone VF', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --type-display: var(--font-weight-bold) 2rem/2.29375rem
+    var(--font-family-primary);
+  --type-heading-1: var(--font-weight-semibold) 1.5rem/1.725rem
+    var(--font-family-primary);
+  --type-heading-2: var(--font-weight-semibold) 1.25rem/1.4375rem
+    var(--font-family-primary);
+  --type-heading-3: var(--font-weight-semibold) 1.125rem/1.29375rem
+    var(--font-family-primary);
+  --type-body: var(--font-weight-regular) 1rem/1.15rem
+    var(--font-family-primary);
+  --type-body-compact: var(--font-weight-regular) 0.875rem/1.00625rem
+    var(--font-family-primary);
+  --type-label: var(--font-weight-medium) 0.875rem/1.00625rem
+    var(--font-family-primary);
+  --type-caption: var(--font-weight-medium) 0.75rem/0.8625rem
+    var(--font-family-primary);
+  --type-button: var(--font-weight-medium) 0.875rem/1.00625rem
+    var(--font-family-primary);
+  --type-button-compact: var(--font-weight-medium) 0.75rem/0.8625rem
+    var(--font-family-primary);
+  --type-link: var(--font-weight-medium) 0.875rem/1.00625rem
+    var(--font-family-primary);
+
+  /* Vodafone core and responsive spacing. */
+  --space-none: 0;
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 2.5rem;
+
+  /* Design Flow foundation extensions recorded in D-096. */
+  --radius-element: 0.25rem;
+  --radius-container: 0.5rem;
+  --radius-overlay: 0.75rem;
+  --radius-full: 999px;
+  --control-height-sm: 2rem;
+  --control-height-md: 2.5rem;
+  --control-height-lg: 3rem;
+  --control-height-xl: 4rem;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --control-disabled-opacity: 0.5;
+  --motion-spinner-duration: 700ms;
+
+  /* Light-mode semantic aliases from Vodafone Foundations. */
+  --color-action-accent-background: #e60000;
+  --color-action-destructive-background: #fb3748;
+  --color-action-neutral-background: #2a2c2c;
+  --color-action-secondary-background: #f4f6f7;
+  --color-action-border-accent: #ff5c6a;
+  --color-action-border-neutral: #e9ebec;
+  --color-action-primary-text: #ffffff;
+  --color-action-destructive-text: #ffffff;
+  --color-action-neutral-text-inverse: #1c1d1d;
+  --color-action-disabled-background: #f4f6f7;
+  --color-action-hover: #1c1d1d14;
+  --color-action-pressed: #1c1d1d1f;
+  --color-border-default: #dbdedf;
+  --color-border-strong: #a4a8a9;
+  --color-border-subtle: #e9ebec;
+  --color-status-error-background: #ffe3e6;
+  --color-status-error-border: #ff8a94;
+  --color-status-error-text: #5a1117;
+  --color-status-info-background: #d4ebfb;
+  --color-status-info-text: #002e4d;
+  --color-status-success-background: #e3faef;
+  --color-status-success-text: #0b4026;
+  --color-status-warning-background: #fff8dd;
+  --color-status-warning-text: #5a4200;
+  --color-surface-bg: #fdfeff;
+  --color-surface-default: #fafbfb;
+  --color-surface-raised: #f7f8f9;
+  --color-surface-raised-prominent: #f4f6f7;
+  --color-text-accent: #e60000;
+  --color-text-disabled: #a4a8a9;
+  --color-text-error: #9e2530;
+  --color-text-primary: #1c1d1d;
+  --color-text-secondary: #5e6162;
+  --color-text-tertiary: #8b8f90;
+  --color-focus-ring: #e60000;
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 4%), 0 4px 8px -2px rgb(0 0 0 / 8%);
+  --shadow-sm: 0 2px 4px 0 rgb(0 0 0 / 8%), 0 10px 20px 0 rgb(0 0 0 / 8%);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --color-action-secondary-background: #383b3b;
+  --color-action-border-neutral: #ffffff29;
+  --color-action-neutral-text-inverse: #fdfefe;
+  --color-action-disabled-background: #2a2c2c;
+  --color-action-hover: #ffffff14;
+  --color-action-pressed: #ffffff1f;
+  --color-border-default: #444848;
+  --color-border-strong: #747879;
+  --color-border-subtle: #383b3b;
+  --color-status-error-background: #7a1a22;
+  --color-status-error-border: #fb3748;
+  --color-status-error-text: #ffb8be;
+  --color-status-info-background: #a9d1f5;
+  --color-status-info-text: #002e4d;
+  --color-status-success-background: #115635;
+  --color-status-success-text: #b2f0cc;
+  --color-status-warning-background: #7a5a00;
+  --color-status-warning-text: #fff0b3;
+  --color-surface-bg: #121313;
+  --color-surface-default: #1c1d1d;
+  --color-surface-raised: #232424;
+  --color-surface-raised-prominent: #2a2c2c;
+  --color-text-accent: #ff3016;
+  --color-text-disabled: #8b8f90;
+  --color-text-error: #ff8a94;
+  --color-text-primary: #fdfefe;
+  --color-text-secondary: #bec1c2;
+  --color-text-tertiary: #8b8f90;
+  --color-focus-ring: #ff5c6a;
+  --shadow-xs:
+    0 1px 2px 0 rgb(255 255 255 / 4%), 0 4px 8px -2px rgb(255 255 255 / 4%);
+  --shadow-sm:
+    0 2px 4px 0 rgb(255 255 255 / 5%), 0 10px 20px 0 rgb(255 255 255 / 4%);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --space-2xl: 4rem;
+  }
+}

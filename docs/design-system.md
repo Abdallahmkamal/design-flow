@@ -563,6 +563,39 @@ Use these for padding, margin, gaps, and layout spacing. The semantic name stays
 - Do not use negative spacing for ordinary alignment. `core/spacing/neg8` and `neg16` require a documented overlap or optical-compensation reason.
 - Do not introduce 6px, 10px, 14px, or other off-scale values unless the design system explicitly adds them.
 
+## 4A. Design Flow shape, control-size, and focus extension
+
+Vodafone Foundations does not currently expose runtime radius, control-size, or focus-ring variables in this checkpoint. D-080 and D-096 therefore establish the following centralized Design Flow aliases before the first shared components use them.
+
+Astryx shape guidance informed the semantic separation between interactive elements, containers, overlays, and pills; it does not supply these values. The control-height scale maps the documented Vodafone shared Button sizes so later Vodafone foundation tokens can replace the aliases centrally.
+
+| Product token | Value | Use |
+| --- | --- | --- |
+| `product/radius/element` | `4px` | Buttons, inputs, selectors, and compact interactive controls |
+| `product/radius/container` | `8px` | Cards, panels, and grouped content |
+| `product/radius/overlay` | `12px` | Dialogs, drawers, and highest temporary surfaces |
+| `product/radius/full` | `999px` | Badges, status dots, and intentionally pill-shaped controls |
+| `product/control/height/sm` | `32px` | Compact controls |
+| `product/control/height/md` | `40px` | Default controls |
+| `product/control/height/lg` | `48px` | Prominent controls and mobile-friendly inputs |
+| `product/control/height/xl` | `64px` | Exceptional high-emphasis controls |
+| `product/focus/ring-width` | `2px` | Visible keyboard focus outline |
+| `product/focus/ring-offset` | `2px` | Separation between the focused control and outline |
+| `product/motion/spinner-duration` | `700ms` | Continuous progress indication when motion is permitted |
+
+Guardrails:
+
+- Components consume the semantic alias, never a copied radius, height, or focus value.
+- Interactive controls use `element`; content containers use `container`; overlays use `overlay`; `full` is never a default card or control radius.
+- Prefer `md`; use `lg` when touch density or input prominence requires it. `xl` is exceptional rather than the application default.
+- Focus remains visible in Light and Dark modes and cannot be removed without an accessible replacement.
+- Continuous spinner motion uses the centralized duration and becomes a static progress indicator when reduced motion is requested.
+- These values may be remapped centrally when Vodafone publishes adopted foundation tokens; component APIs and persisted data must not change.
+
+### Phase 1 font-asset gate
+
+The checkpoint identifies `Vodafone VF` as the required family but contains no licensed webfont files. The runtime token names `Vodafone VF` first and uses an explicit system fallback only for local foundation development. This fallback is not final visual approval. Production visual fidelity remains gated on an approved licensed font asset and real-face weight verification; the application must not synthesize or download an unapproved Vodafone face.
+
 ## 5. Depth and elevation
 
 ### Semantic shadow color variables

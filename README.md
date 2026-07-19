@@ -1,8 +1,63 @@
 # Design Flow
 
-A from-scratch, lightweight work-management portal for one internal UX/design team.
+A lightweight work-management portal for one internal UX/design team.
 
-This directory contains the **MVP specification v1.0 documentation checkpoint**. Product, technical, and build-planning decisions are approved for local implementation.
+Phase 0 fixed the schema, permission, and operation contracts. The local part of
+Phase 1 is now in progress: the repository contains a strict React/Vite
+foundation, responsive shell, Design Flow tokens and initial UI primitives,
+environment validation, automated checks, and local Supabase/Edge Function test
+harnesses.
+
+No hosted Supabase project, Cloudflare project, staging deployment, production
+service, or real account/data has been created.
+
+## Local setup
+
+Prerequisites:
+
+- Node `24.18.0` and npm `11.16.x` (see `.nvmrc` and `.node-version`)
+- a Docker-compatible runtime for local Supabase
+- Deno `2.8.1` for Edge Function tests (see `.dvmrc`)
+
+Install dependencies and browser support:
+
+```sh
+npm ci
+npx playwright install chromium
+```
+
+Copy `.env.example` to `.env.local`, start Supabase, and replace the example
+publishable key with the local value reported by the CLI:
+
+```sh
+npm run db:start
+npx supabase status -o env
+npm run db:reset
+npm run dev
+```
+
+The application runs at `http://127.0.0.1:5173`. Supabase Studio runs at
+`http://127.0.0.1:54323`.
+
+Committed environment templates are separated by purpose:
+`.env.example` is local, `.env.preview.example` and `.env.staging.example` point
+only to the future synthetic staging project, and `.env.production.example`
+uses a distinct production placeholder. Real values belong in protected local
+files or deployment settings and are ignored by Git.
+
+## Verification
+
+```sh
+npm run verify
+npm run test:e2e
+npm run db:test
+npm run functions:test
+```
+
+`npm run verify` covers formatting, linting, strict types, unit/component tests,
+and a production build. Playwright covers desktop/mobile browser behavior and
+automated accessibility checks. The GitHub Actions foundation workflow repeats
+those checks and runs the local pgTAP and Deno harnesses.
 
 ## Documentation
 
@@ -26,7 +81,7 @@ This directory contains the **MVP specification v1.0 documentation checkpoint**.
 - [Agent instructions](AGENTS.md)
 - [Astryx reference index](references/astryx/README.md)
 
-## Current state
+## Current state and gates
 
 - Core product and data rules are documented.
 - Vodafone Foundations are the visual source of truth for color, semantic tokens, typography, spacing, elevation, and brand identity.
@@ -36,7 +91,19 @@ This directory contains the **MVP specification v1.0 documentation checkpoint**.
 - The complete technical and operating plan is approved in `docs/technical-plan.md`, including the React/Supabase architecture, styling delivery, environments, verification, encrypted backup and restore routine, controlled deployment, monitoring, bootstrap, and rollout.
 - The eight-phase implementation sequence and shared completion gate are approved in `docs/build-plan.md`.
 - Phase 0 is complete: the physical schema, permission/RLS, operation-boundary, transaction, bootstrap, recalculation, migration, seed, fixture, and test contracts are fixed in the three Phase 0 contract documents.
-- No application scaffold, Supabase project, migration, environment setup, backup routine, or deployment pipeline has been created in this clean project yet; the documents specify them for implementation rather than claiming they already exist.
-- No application code has been scaffolded.
+- Phase 1 is not complete. The first database migration is intentionally absent
+  until the complete schema and RLS can ship and pass the gate in
+  `docs/schema-contract.md`; this machine currently lacks the Docker-compatible
+  runtime needed to reset and verify it.
+- Cloud staging and the non-production placeholder deployment remain deferred
+  because this work is explicitly local-only.
+- The required `Vodafone VF` family is named first in the runtime token, but the
+  checkpoint contains no licensed font files. The system fallback is local-only
+  and not final visual approval.
+- The committed seed and browser content are conspicuously synthetic and contain
+  no production data or secrets.
 
-The product name and initial visual identity are approved as **Design Flow**. O-008 and O-009 are closed. The next approved implementation step is Phase 1 project foundation. No application scaffold or cloud service has been created yet.
+The next implementation slice is the complete first migration, RLS policies,
+idempotent synthetic personas/reference data, generated database types, and the
+full pgTAP permission/invariant suite. Phase 2 must not begin until the Phase 1
+exit gate is satisfied.

@@ -1,0 +1,109 @@
+.button {
+  display: inline-flex;
+  min-inline-size: max-content;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding-inline: var(--space-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-element);
+  cursor: pointer;
+  font: var(--type-button);
+  text-align: center;
+  text-decoration: none;
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: var(--control-disabled-opacity);
+}
+
+.primary {
+  color: var(--color-action-primary-text);
+  background: var(--color-action-accent-background);
+}
+
+.secondary {
+  color: var(--color-action-neutral-text-inverse);
+  border-color: var(--color-action-border-neutral);
+  background: var(--color-action-secondary-background);
+}
+
+.ghost {
+  color: var(--color-text-accent);
+  background: transparent;
+}
+
+.destructive {
+  color: var(--color-action-destructive-text);
+  background: var(--color-action-destructive-background);
+}
+
+@media (hover: hover) {
+  .button:not(:disabled):hover {
+    box-shadow: inset 0 0 0 100vmax var(--color-action-hover);
+  }
+}
+
+.button:not(:disabled):active {
+  box-shadow: inset 0 0 0 100vmax var(--color-action-pressed);
+}
+
+.small {
+  min-block-size: var(--control-height-sm);
+  padding-inline: var(--space-md);
+  font: var(--type-button-compact);
+}
+
+.medium {
+  min-block-size: var(--control-height-md);
+}
+
+.large {
+  min-block-size: var(--control-height-lg);
+}
+
+.icon {
+  display: inline-grid;
+  block-size: 1.25rem;
+  inline-size: 1.25rem;
+  place-items: center;
+}
+
+.spinner {
+  block-size: 1rem;
+  inline-size: 1rem;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin var(--motion-spinner-duration) linear infinite;
+}
+
+.srOnly {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

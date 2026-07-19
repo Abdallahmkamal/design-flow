@@ -1,0 +1,36 @@
+body {
+  color: var(--color-text-primary);
+  background: var(--color-surface-bg);
+  font: var(--type-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--color-text-accent);
+  text-underline-offset: 0.18em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-block-start: 0;
+}
+
+h1 {
+  font: var(--type-heading-1);
+}
+
+h2 {
+  font: var(--type-heading-2);
+}
+
+h3 {
+  font: var(--type-heading-3);
+}
+
+::selection {
+  color: var(--color-action-primary-text);
+  background: var(--color-action-accent-background);
+}
