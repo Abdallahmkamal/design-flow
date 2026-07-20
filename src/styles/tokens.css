@@ -65,6 +65,7 @@
   --control-height-sm: 1.75rem;
   --control-height-md: 2rem;
   --control-height-lg: 2.25rem;
+  --table-row-min-height: 2.5rem;
   --shell-bar-height: 3rem;
   --shell-navigation-width: 16.25rem;
   --focus-ring-width: 2px;

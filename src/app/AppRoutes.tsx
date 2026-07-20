@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { DashboardPlaceholderPage } from '../features/dashboard/DashboardPlaceholderPage';
@@ -13,6 +14,23 @@ import { SignInPage } from '../features/auth/SignInPage';
 import { FeaturePlaceholderPage } from '../routes/FeaturePlaceholderPage';
 import { NotFoundPage } from '../routes/NotFoundPage';
 import { AppShell } from '../routes/shell/AppShell';
+
+const TeamPage = lazy(() =>
+  import('../features/team/TeamPage').then((module) => ({
+    default: module.TeamPage,
+  })),
+);
+const SettingsRoute = lazy(() =>
+  import('../features/settings/SettingsPage').then((module) => ({
+    default: module.SettingsRoute,
+  })),
+);
+
+function featureElement(element: ReactNode) {
+  return (
+    <Suspense fallback={<p role="status">Loading page…</p>}>{element}</Suspense>
+  );
+}
 
 export function AppRoutes() {
   return (
@@ -44,15 +62,8 @@ export function AppRoutes() {
               <FeaturePlaceholderPage title="Reports" plannedPhase="Phase 6" />
             }
           />
-          <Route
-            path="team"
-            element={
-              <FeaturePlaceholderPage
-                title="Team"
-                plannedPhase="Phase 2 — separate slice"
-              />
-            }
-          />
+          <Route path="team" element={featureElement(<TeamPage />)} />
+          <Route path="settings" element={featureElement(<SettingsRoute />)} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>

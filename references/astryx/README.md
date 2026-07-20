@@ -27,10 +27,14 @@ Every note must:
 | [tokens.md](tokens.md) | Source-traceable presentation mapping; no Astryx runtime tokens | Phase 1 values ready |
 | [button.md](button.md) | Button anatomy, presentation, states, and interaction | Phase 1 ready |
 | [input.md](input.md) | Text-input anatomy, presentation, states, validation, and interaction | Phase 1 ready |
-| [modal.md](modal.md) | Dialog anatomy, focus management, keyboard, and responsive behavior | Scaffolded; distill before Modal implementation |
-| [table.md](table.md) | Table semantics, interaction, overflow, and responsive behavior | Scaffolded; distill before Table implementation |
+| [modal.md](modal.md) | Dialog anatomy, focus management, keyboard, and responsive behavior | Scaffolded; no Phase 2 Modal implementation |
+| [table.md](table.md) | Table semantics, interaction, overflow, and responsive behavior | Phase 2 ready |
+| [badge.md](badge.md) | Compact read-only metadata | Phase 2 ready |
+| [select.md](select.md) | Bounded single-choice fields | Phase 2 ready |
+| [checkbox.md](checkbox.md) | Independent boolean fields | Phase 2 ready |
 
-Add Select, Checkbox, Radio, Badge, Avatar, Tabs, Drawer, Tooltip, Pagination, and other notes before implementing their corresponding `src/ui/` components.
+Add Radio, Avatar, Tabs, Drawer, Tooltip, Pagination, and other notes before
+implementing their corresponding `src/ui/` components.
 
 ## Required note structure
 

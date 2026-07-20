@@ -1,6 +1,6 @@
 # Shared application shell brief
 
-**Status:** Approved for Phase 2 authentication integration
+**Status:** Approved for Phase 2; authentication integration verified and Slice 2 Settings extension implemented
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -10,7 +10,7 @@ Provide one authenticated, responsive frame with stable product navigation, clea
 ## Primary users and permissions
 
 - Every active Viewer, Designer, Lead, and Manager whose password restriction is cleared.
-- Admin privilege may expose future Settings navigation but does not alter the shell structure or default people scope.
+- Admin privilege exposes Settings navigation and a separate Admin badge but does not alter the shell structure or default people scope.
 - Unauthenticated, inactive, password-restricted, and invalid Viewer + Admin states do not render this shell.
 
 ## Entry points
@@ -36,7 +36,7 @@ Provide one authenticated, responsive frame with stable product navigation, clea
 - Product name: Design Flow.
 - Navigation: Dashboard, Work items, Reports, and Team.
 - Settings navigation is added only with the Settings implementation and only for Admin-privileged users.
-- Current user display name and position are factual context; Admin may be shown as a separate badge in the future.
+- Current user display name and position are factual context; Admin is shown as a separate badge.
 - Synthetic environment disclosure remains visible outside production.
 
 ## Business rules
@@ -118,7 +118,7 @@ None. Theme and navigation are not domain audit events; sign-out remains in Supa
 - Only eligible authenticated users see the shell.
 - Desktop and mobile geometry remains aligned with the ready Astryx note.
 - Navigation, theme, sign-out, skip link, current-page semantics, long display names, and keyboard order are tested.
-- Team and Settings functionality is not introduced by this shell update.
+- Team navigation opens the implemented directory; Settings navigation is present only for eligible Admin users.
 - Local/staging behavior is verified against this brief before the slice is complete.
 
 ## Verification evidence
@@ -132,9 +132,10 @@ None. Theme and navigation are not domain audit events; sign-out remains in Supa
   2026-07-20 for active-user context, navigation, the explicit `Synthetic
   staging environment` disclosure, the `Staging Phase 2 checkpoint`, and
   sign-out back to the closed sign-in route.
-- Team hierarchy and Settings remain visibly deferred; no functionality for
-  either module was introduced by this shell integration.
+- Slice 2 browser automation verifies Team navigation for eligible active
+  users, Settings navigation only for eligible Admin users, the separate Admin
+  badge, and direct-route denial before Settings reads for non-Admin users.
 
 ## Open questions
 
-None for authentication integration. The future Settings navigation waits for the Settings implementation slice.
+None for Phase 2.

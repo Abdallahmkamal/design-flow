@@ -1,0 +1,42 @@
+.field {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+
+.input {
+  flex: 0 0 auto;
+  margin: var(--space-2xs) 0 0;
+  accent-color: var(--color-action-accent-background);
+}
+
+.input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.input:disabled {
+  opacity: var(--control-disabled-opacity);
+}
+
+.description,
+.error {
+  margin: 0;
+  padding-inline-start: calc(1rem + var(--space-sm));
+  font: var(--type-caption);
+}
+
+.description {
+  color: var(--color-text-secondary);
+}
+
+.error {
+  color: var(--color-status-error-text);
+}

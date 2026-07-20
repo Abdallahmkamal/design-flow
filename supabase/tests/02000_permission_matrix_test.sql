@@ -462,8 +462,8 @@ select is(
     (select count(*) from public.profiles),
     (select count(*) from public.valid_work_log_entries)
   ),
-  'f|1|0|1|0',
-  'password-restricted principals receive only their own minimal profile row'
+  'f|0|0|1|0',
+  'password-restricted principals receive only their own minimum profile row, not Team data'
 );
 
 reset role;

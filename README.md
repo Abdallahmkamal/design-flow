@@ -3,12 +3,11 @@
 A lightweight work-management portal for one internal UX/design team.
 
 Phase 0 fixed the schema, permission, and operation contracts, and Phase 1
-delivered the application and database foundation. The current Phase 2 branch
-implements the approved authentication and account-lifecycle slice: closed
-sign-in, session restoration, mandatory password change, inactive-account
-handling, first-Admin bootstrap, protected account provisioning/reset,
-deactivation/reactivation, supporting RPCs, and verified route/RLS gates. Team
-hierarchy and Settings implementation remain separate Phase 2 slices.
+delivered the application and database foundation. Phase 2 Slice 1 implemented
+the approved authentication and account-lifecycle boundary. The current Phase
+2 Slice 2 branch adds the active Team directory, Admin-only member and hierarchy
+administration, Areas/Squads, labels, team timezone, administration audit, and
+their responsive and permission-gated UI.
 
 The Supabase Free staging project contains the Phase 1 foundation plus the
 authentication/account-lifecycle migrations, six Edge Functions, stable
@@ -80,11 +79,13 @@ npm run functions:check
 npm run functions:test
 ```
 
-`npm run verify` covers formatting, linting, strict types, 38 unit/component
-tests, and a production build. Playwright covers 12 desktop/mobile browser
-checks for authentication, guarded shell behavior, geometry, and automated
-accessibility. The backend harness runs 139 pgTAP assertions and 16 Deno tests
-for the account-lifecycle boundary.
+`npm run verify` covers formatting, linting, strict types, 52 unit/component
+tests, and a production build. Playwright schedules 20 desktop/mobile browser
+scenarios for authentication, Team, Settings, guarded shell behavior, geometry,
+and automated accessibility; 18 run in their applicable projects and two are
+intentional device-specific skips. The backend harness runs 194 pgTAP
+assertions and 16 Deno tests for the Phase 2 account, hierarchy, list, setting,
+and audit boundaries.
 
 ## Documentation
 
@@ -123,14 +124,16 @@ for the account-lifecycle boundary.
   data, synthetic principals, generated types, and structural/read-permission
   tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
   vertical slices.
-- The first three migrations and synthetic seed reset cleanly. The current
-  pgTAP suite passes 139 schema, invariant, read-surface, persona-permission, and
-  authentication/account-lifecycle assertions; generated database types match
-  the implemented schema shape.
-- The Supabase Free staging project is healthy and has all current migrations
-  plus six active account-lifecycle Edge Functions. Its acceptance identities
-  and history are conspicuously synthetic, public signup is closed, legacy API
-  keys remain disabled, and the one-time bootstrap secret is absent.
+- The four local migrations and synthetic seed reset cleanly. The current
+  pgTAP suite passes 194 schema, invariant, read-surface, persona-permission,
+  authentication/account-lifecycle, hierarchy, controlled-list, timezone, and
+  audit assertions; generated database types match the implemented schema
+  shape.
+- The Supabase Free staging project is healthy at the existing
+  authentication/account-lifecycle checkpoint and has six active lifecycle
+  Edge Functions. Its acceptance identities and history are conspicuously
+  synthetic, public signup is closed, legacy API keys remain disabled, and the
+  one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
   authentication/account-lifecycle checkpoint at
   <https://design-flow-staging.pages.dev>. It was built with staging
@@ -145,7 +148,9 @@ for the account-lifecycle boundary.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-The authentication/account-lifecycle slice is implemented and verified in
-local, mobile-LAN, and non-production staging environments. The full Phase 2
-exit gate remains open because Team hierarchy and Settings are separate,
-intentionally deferred slices.
+Authentication/account lifecycle is implemented and verified locally,
+mobile-LAN, and in the existing non-production staging checkpoint. Team
+hierarchy and Settings are implemented and fully verified by the local unit,
+browser, database, and Edge Function gates. The hosted staging checkpoint is
+intentionally unchanged until this branch is reviewed and an update is
+explicitly authorized.
