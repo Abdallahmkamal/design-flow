@@ -9,8 +9,9 @@ initial Design Flow UI primitives, environment validation, automated checks,
 the complete physical database/RLS/read foundation, synthetic database
 personas, generated types, and local Supabase/Edge Function test harnesses.
 
-Supabase Free and Cloudflare Pages Free staging projects exist without
-migrations, accounts, data, or a deployment. No production service or real
+The Supabase Free staging project contains the Phase 1 schema and stable
+reference rows, with no portal accounts or work data. The Cloudflare Pages Free
+staging project exists without a deployment. No production service or real
 account/data has been created.
 
 ## Local setup
@@ -109,9 +110,11 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The first migration and synthetic seed reset cleanly. The Phase 1 pgTAP suite
   passes 98 schema, invariant, read-surface, and persona permission tests; the
   generated database types match the implemented schema shape.
-- The Supabase Free staging project is healthy and empty. The Cloudflare Pages
-  Free project `design-flow-staging` exists, but no source-derived artifact has
-  been uploaded and no deployment exists yet.
+- The Supabase Free staging project is healthy and has the Phase 1 migration
+  applied. It contains stable system reference rows only—no Auth users, portal
+  profiles, synthetic personas, or work data. The Cloudflare Pages Free project
+  `design-flow-staging` exists, but no source-derived artifact has been uploaded
+  and no deployment exists yet.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
   across its documented 200–900 weight range, and protected against synthetic
   weights. Asset provenance and checksum are recorded under
