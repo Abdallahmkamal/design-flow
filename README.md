@@ -2,16 +2,17 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phase 0 fixed the schema, permission, and operation contracts. Phase 1 is in
-progress: the repository contains a strict React/Vite foundation, responsive
+Phase 0 fixed the schema, permission, and operation contracts. Phase 1 is
+complete: the repository contains a strict React/Vite foundation, responsive
 shell, Vodafone typography/color and Astryx-aligned non-color presentation,
 initial Design Flow UI primitives, environment validation, automated checks,
 the complete physical database/RLS/read foundation, synthetic database
 personas, generated types, and local Supabase/Edge Function test harnesses.
 
 The Supabase Free staging project contains the Phase 1 schema and stable
-reference rows, with no portal accounts or work data. The Cloudflare Pages Free
-staging project exists without a deployment. No production service or real
+reference rows, with no portal accounts or work data. The non-production
+Cloudflare Pages Free staging deployment is live at
+<https://design-flow-staging.pages.dev>. No production service or real
 account/data has been created.
 
 ## Local setup
@@ -112,9 +113,11 @@ those checks and runs the local pgTAP and Deno harnesses.
   generated database types match the implemented schema shape.
 - The Supabase Free staging project is healthy and has the Phase 1 migration
   applied. It contains stable system reference rows only—no Auth users, portal
-  profiles, synthetic personas, or work data. The Cloudflare Pages Free project
-  `design-flow-staging` exists, but no source-derived artifact has been uploaded
-  and no deployment exists yet.
+  profiles, synthetic personas, or work data.
+- The Cloudflare Pages Free project `design-flow-staging` serves the verified
+  non-production placeholder at <https://design-flow-staging.pages.dev>. It was
+  built with staging credentials only; development source maps were not
+  published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
   across its documented 200–900 weight range, and protected against synthetic
   weights. Asset provenance and checksum are recorded under
@@ -125,6 +128,5 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-The remaining Phase 1 gates are pull-request CI and the approved
-non-production placeholder deployment using staging credentials only. Phase 2
-must not begin until those gates are satisfied.
+The Phase 1 pull-request CI and non-production staging deployment gates are
+satisfied. Phase 2 has not started.
