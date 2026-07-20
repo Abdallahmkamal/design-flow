@@ -1,7 +1,7 @@
 # All Tickets specification
 
-**Version:** 1.1  
-**Decision date:** 2026-07-16  
+**Version:** 1.2
+**Decision date:** 2026-07-20
 **Status:** Approved for MVP planning
 
 All Tickets is the primary searchable and filterable ticket list. It is optimized for scanning ownership, status, planned dates, actual work recency, and attention signals without becoming an editable spreadsheet.
@@ -63,8 +63,11 @@ Do not create a separate Subtasks column. Selecting the contributor count reveal
 - Designer may log work on any visible ticket and becomes a contributor when they are not the primary assignee for the work date.
 - Lead, Manager, and Admin-privileged users may also log on another person's behalf under the approved work-log rules.
 - A Viewer has no Log Work action and cannot hold Admin privilege.
+- When the people scope contains exactly one specifically selected person, provide **View recorded activity**. It opens that person's individual Designers report with the person preserved in the URL. The destination remains period-filtered under the Reports rules.
 
 There is no inline table editing in the MVP. Ticket changes occur on the Work Item page or through a purpose-built flow.
+
+The recorded-activity action does not reinterpret this list. All Tickets remains one row per ticket, **Owned** continues to mean current primary ownership, and **Contributed to** continues to mean derived contributor activity. Historical work credited while the person was primary assignee is complete in the Designers report even when a later reassignment means the ticket no longer matches either All Tickets relationship.
 
 ## 5. Search
 
@@ -142,4 +145,5 @@ Pagination method, page size, responsive breakpoints, exact icon treatment, and 
 - Search, filters, sorting, and view state survive refresh through the URL.
 - Friday/Saturday-aware due-soon and stale definitions match the Dashboard specification.
 - A Viewer never receives a Log Work action and cannot hold Admin privilege.
+- Exactly one specifically selected person exposes a URL-backed route to that person's period-filtered recorded activity without changing the All Tickets relationship result.
 - Empty, filtered-empty, mobile, and permission-sensitive states are implemented.

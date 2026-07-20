@@ -4,7 +4,7 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-07-19 — D-099 assigns Vodafone color/typography authority and Astryx non-color component-presentation authority
+**Last amended:** 2026-07-20 — D-101 adds the single-person recorded ticket activity drill-down
 
 This document is the current product source of truth for Design Flow. It records approved MVP behavior, not every idea discussed while reaching it. Open decisions are listed at the end and must not be invented during implementation.
 
@@ -106,7 +106,7 @@ Viewer is trusted internal, whole-team read-only access:
 2. **All Tickets** — approved searchable/filterable list with position-aware people scope, explicit ownership/contribution relationships, responsive ticket summaries, and direct Figma access. See [all-tickets.md](all-tickets.md).
 3. **Work Item** — approved complete ticket view with glanceable metadata, parent-only subtasks, a five-column actual Work Dates grid, vertical history timeline, comments, and PDF export. See [work-item.md](work-item.md).
 4. **Log Work** — ticket work by default, with an alternative standalone visual-work mode, an optional independently authorized status change, and an independent Create New Ticket path that returns to the unfinished log draft.
-5. **Reports** — approved Tickets, Designers, and Visual Work views with neutral charts, source drill-down, and filtered CSV exports. See [reporting.md](reporting.md) and [reports-ui.md](reports-ui.md).
+5. **Reports** — approved Tickets, Designers, and Visual Work views with neutral charts, a single-person cross-ticket recorded-activity drill-down, source drill-down, and filtered CSV exports. See [reporting.md](reporting.md) and [reports-ui.md](reports-ui.md).
 6. **Team and Settings** — approved shared directory plus Admin-only accounts, positions/Admin privilege, reporting hierarchy, Areas/Squads, labels, team timezone, and administration audit. See [team-settings.md](team-settings.md).
 7. **Notifications** — approved narrow in-app inbox for primary-assignee assignment, status, blocker, and comment events. See [notifications.md](notifications.md).
 

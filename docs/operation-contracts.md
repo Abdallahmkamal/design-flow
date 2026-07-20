@@ -561,6 +561,7 @@ The existing optional blocker action remains an atomic part of `submit_work_log`
 ### Shared validation
 
 - `worked_by` is an active Designer, Lead, or Manager.
+- `logged_by` is captured from the authenticated actor by `submit_work_log`; it is not accepted from client input and never determines work credit.
 - D may submit/correct only self-attributed work; L, M, and Admin may act on behalf.
 - One to five active entry rows.
 - Every date is no later than team-local today. Friday/Saturday remain valid.
@@ -591,7 +592,7 @@ Authorization:
 
 Atomic effects:
 
-- create batch and entries;
+- create the batch with `logged_by = auth.uid()` and the selected/defaulted `worked_by`, then create its entries;
 - for ticket work, write one `work_log_submitted` event that can join to every actual date/type;
 - optionally create one blocker/event/notification, never one per date;
 - recalculate affected ticket `last_worked_on`;
@@ -618,6 +619,7 @@ Input:
 Rules:
 
 - a withdrawn batch cannot be corrected;
+- `logged_by` is immutable; the correction actor is preserved separately as revision `changed_by`;
 - D cannot change `worked_by` away from self;
 - only L, M, or Admin can change attribution to another person;
 - source and destination context validation both apply;
