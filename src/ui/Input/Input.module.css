@@ -1,10 +1,10 @@
 .field {
   display: grid;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
 }
 
 .label {
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   font: var(--type-label);
 }
 
@@ -12,8 +12,7 @@
   color: var(--color-text-error);
 }
 
-.description,
-.error {
+.description {
   margin: 0;
   font: var(--type-caption);
 }
@@ -22,29 +21,38 @@
   color: var(--color-text-secondary);
 }
 
-.error {
-  color: var(--color-text-error);
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
 }
 
 .input {
+  z-index: 1;
   inline-size: 100%;
-  min-block-size: var(--control-height-lg);
-  padding-inline: var(--space-md);
-  border: 1px solid var(--color-border-default);
+  block-size: var(--control-height-md);
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-sm);
+  border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-element);
   color: var(--color-text-primary);
   background: var(--color-surface-bg);
   font: var(--type-body);
+  outline: none;
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-easing-standard),
+    opacity var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
 .input::placeholder {
   color: var(--color-text-tertiary);
 }
 
-.input:focus-visible {
+.input:focus {
   border-color: var(--color-action-border-accent);
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: var(--focus-ring-offset);
+  box-shadow: inset 0 0 0 2px
+    color-mix(in srgb, var(--color-focus-ring) 20%, transparent);
 }
 
 .input[aria-invalid='true'] {
@@ -55,6 +63,32 @@
   cursor: not-allowed;
   color: var(--color-text-disabled);
   background: var(--color-action-disabled-background);
+  opacity: var(--control-disabled-opacity);
+}
+
+.error {
+  padding-block-start: calc(var(--space-2xs) + var(--space-sm));
+  padding-block-end: var(--space-sm);
+  padding-inline: var(--space-sm);
+  margin: calc(-1 * (var(--space-2xs) + var(--space-xs))) 0 0;
+  border-end-start-radius: var(--radius-element);
+  border-end-end-radius: var(--radius-element);
+  color: var(--color-status-error-text);
+  background: var(--color-status-error-background);
+  font: var(--type-caption);
+}
+
+@media (hover: hover) {
+  .input:not(:focus, :disabled):hover {
+    box-shadow: inset 0 0 0 2px
+      color-mix(in srgb, var(--color-border-strong) 30%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition-duration: 0s;
+  }
 }
 
 .srOnly {

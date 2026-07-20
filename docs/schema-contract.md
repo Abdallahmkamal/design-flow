@@ -5,7 +5,7 @@
 **Applies to:** First Supabase/Postgres migration and all later migrations  
 **Sources:** `product-spec.md`, `technical-plan.md`, `build-plan.md`, module specifications, `data-model.md`, and `decisions.md`
 
-**Last amended:** 2026-07-19 — D-097 confirms that integrated Log Work launch paths require no combined schema record
+**Last amended:** 2026-07-20 — D-100 resolves the Phase 1 database boundary
 
 This document fixes the physical Postgres contract for the MVP before application scaffolding. It refines the conceptual model without adding application scope. Migrations, generated database types, RLS policies, RPCs, fixtures, reports, and exports must agree with it.
 
@@ -701,16 +701,38 @@ The minimum reusable persona set is:
 
 Representative domain fixtures include current and historical reporting lines, every status, archived records, active/resolved blockers, reassignment on a work date, backdated Friday/Saturday work, multi-date batches, corrected/withdrawn entries, contributors, incomplete/completed/withdrawn subtasks, edited/withdrawn comments, and every notification type.
 
-## 13. First-migration verification gate
+## 13. First-migration and feature-operation verification gates
 
-The first schema slice is not complete until pgTAP tests prove:
+Under D-100, the Phase 1 first migration creates the complete physical
+table/constraint/index/reference-data foundation, RLS/read surfaces,
+authorization helpers, synthetic principal fixtures, and generated database
+types. It does not expose feature mutations early. The Phase 1 database slice
+is not complete until pgTAP tests prove:
+
+Masked comment and valid-work views are security-barrier, owner-checked views
+with an explicit application-user predicate because browser roles do not
+retain the underlying sensitive base-table grants. Security-invoker views
+remain preferred where the caller safely holds every required base privilege.
 
 - every key, FK, uniqueness, interval, eligibility, active-assignee, archive, blocker, batch-size, context, and future-date invariant;
-- Viewer + Admin rejection and final-active-Admin protection;
+- Viewer + Admin rejection;
 - current snapshots agree with open history periods;
 - append-only tables reject update/delete;
 - same-day assignment attribution uses the end-of-team-local-day rule;
+- every table has RLS enabled and forced before authenticated exposure;
+- column privacy and all applicable read allow/deny cases in
+  `permission-matrix.md` pass for the seven valid principals plus
+  inactive/password-restricted cases; and
+- feature tables have no browser mutation path before their owning RPC exists.
+
+The owning Phase 2–4 feature slice must add the applicable pgTAP tests before
+exposing each mutation. Across those slices, the complete suite must prove:
+
+- final-active-Admin protection;
 - correction/withdrawal recalculates both old and new affected tickets;
-- work-log submission cannot mutate Work Item status or write status history, status transition cannot write work-log rows, and ticket creation cannot submit work;
-- status, assignment, blocker, comment, and notification events are exactly-once under idempotent retries; and
-- all RLS allow/deny cases in `permission-matrix.md` pass.
+- work-log submission cannot mutate Work Item status or write status history,
+  status transition cannot write work-log rows, and ticket creation cannot
+  submit work;
+- status, assignment, blocker, comment, and notification events are exactly
+  once under idempotent retries; and
+- every remaining write/RPC allow/deny case in `permission-matrix.md`.

@@ -23,10 +23,10 @@ Every note must:
 | File | Scope | Status |
 |---|---|---|
 | [accessibility.md](accessibility.md) | Cross-component accessibility and keyboard guidance | Phase 1 baseline reviewed |
-| [patterns.md](patterns.md) | Reusable presentation, interaction, and responsive patterns | Behavior reviewed; D-099 presentation review required |
-| [tokens.md](tokens.md) | Source-traceable presentation mapping; no Astryx runtime tokens | D-099 redistillation required |
-| [button.md](button.md) | Button anatomy, presentation, states, and interaction | Behavior ready; D-099 presentation review required |
-| [input.md](input.md) | Text-input anatomy, presentation, states, validation, and interaction | Behavior ready; D-099 presentation review required |
+| [patterns.md](patterns.md) | Reusable presentation, interaction, and responsive patterns | Phase 1 App Shell ready |
+| [tokens.md](tokens.md) | Source-traceable presentation mapping; no Astryx runtime tokens | Phase 1 values ready |
+| [button.md](button.md) | Button anatomy, presentation, states, and interaction | Phase 1 ready |
+| [input.md](input.md) | Text-input anatomy, presentation, states, validation, and interaction | Phase 1 ready |
 | [modal.md](modal.md) | Dialog anatomy, focus management, keyboard, and responsive behavior | Scaffolded; distill before Modal implementation |
 | [table.md](table.md) | Table semantics, interaction, overflow, and responsive behavior | Scaffolded; distill before Table implementation |
 

@@ -1,14 +1,19 @@
 # Astryx reference: Input
 
-**Status:** Behavior ready; D-099 non-color presentation review required
-**Last source review:** 2026-07-19
+**Status:** Phase 1 behavior and non-color presentation ready
+**Last source review:** 2026-07-20
 
 ## Official sources
 
 - [Astryx Text Input](https://astryx.atmeta.com/components/TextInput)
 - [Astryx Field](https://astryx.atmeta.com/components/Field)
+- [Text Input and Field implementation cross-check](https://github.com/facebook/astryx/tree/main/packages/astryx/src/components)
 
 ## Verified Astryx guidance
+
+The implementation link is used only to cross-check measurements exposed by the
+official guidance. Design Flow does not treat Astryx code or its component API
+as a project source of truth.
 
 ### Purpose and anatomy
 
@@ -21,6 +26,23 @@
 - Support default, hover, focus-visible, disabled, read-only through native behavior, and invalid states.
 - Validation includes a specific text message; a color change alone is not enough.
 - Disabled controls need adjacent explanatory content when the reason is not otherwise clear.
+
+### Presentation
+
+- Small, default, and large input shells are `28px`, `32px`, and `36px` high;
+  Phase 1 uses the default `32px` size.
+- The shell has `4px` block padding, `8px` inline padding, a `1px` strong
+  border, and the `12px` element radius.
+- A field uses a `4px` gap between visible label, description, and control. The
+  label uses the secondary text color.
+- Hover adds a `2px` inner emphasis mixed from the strong-border color. Focus
+  uses the accent border and a `2px` accent-muted inner emphasis.
+- Border, focus, and opacity transitions use the default fast `175ms` duration
+  and standard easing; reduced motion removes them.
+- Disabled inputs use `0.5` opacity.
+- An attached field-status surface overlaps upward by `6px`, starts its content
+  `14px` below its own top edge, has `8px` remaining padding, and retains the
+  `12px` lower-corner radius.
 
 ### Interaction and keyboard behavior
 
@@ -37,7 +59,10 @@
 
 ### Responsive behavior
 
-- Inputs fill the available form width on small viewports. A later dense layout may constrain width to reflect expected value length without reducing the mobile target. Exact Astryx sizing and spacing must be verified before visual approval.
+- Inputs fill the available form width on small viewports. A later dense layout
+  may constrain width to reflect expected value length without reducing the
+  mobile target. Vodafone's `16px` body size also prevents unintended mobile
+  input zoom.
 
 ### Edge cases
 
@@ -56,8 +81,11 @@
 - Verified Astryx guidance supplies the preferred remaining presentation, represented through Design Flow aliases in `docs/design-system.md`.
 - The Phase 1 Input owns one field shell with a required label API, optional description/error, native attributes, and forwarded ref.
 - The public API is Design Flow-owned and does not copy the Astryx component API.
+- The Phase 1 Input maps the verified default-size and state geometry above
+  through Design Flow aliases.
 
 ## Open gaps
 
 - Clear actions, prefixes/suffixes, async validation, multiline input, and compound form layouts are deferred until an approved slice needs them.
-- Official Astryx measurements for field structure, size, padding, gaps, shape, border/elevation geometry, and state presentation must be distilled before the Phase 1 Input receives visual approval.
+- No Phase 1 Input presentation gap remains. Deferred capabilities require
+  component-specific review when their owning slice needs them.
