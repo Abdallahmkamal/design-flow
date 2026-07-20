@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuthentication } from '../../features/auth/authContext';
 import { getPublicEnvironment } from '../../shared/config/env';
 import { useTheme } from '../../shared/theme/themeContext';
+import { Badge } from '../../ui/Badge/Badge';
 import { Button } from '../../ui/Button/Button';
 import { SkipLink } from '../../ui/SkipLink/SkipLink';
 import styles from './AppShell.module.css';
@@ -66,6 +67,7 @@ export function AppShell() {
               {account.positionCode.charAt(0).toUpperCase() +
                 account.positionCode.slice(1)}
             </span>
+            {account.isAdmin ? <Badge tone="info">Admin</Badge> : null}
           </span>
           <Button
             variant="ghost"
@@ -109,6 +111,20 @@ export function AppShell() {
                 </NavLink>
               </li>
             ))}
+            {account.isAdmin && account.positionCode !== 'viewer' ? (
+              <li>
+                <NavLink
+                  className={({ isActive }) =>
+                    [styles.navigationLink, isActive && styles.active]
+                      .filter(Boolean)
+                      .join(' ')
+                  }
+                  to="/settings"
+                >
+                  Settings
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
         </nav>
         <p className={styles.syntheticNotice}>{environmentNotice}</p>

@@ -1,6 +1,6 @@
 # Team directory brief
 
-**Status:** Approved behavior brief; implementation deferred from `feature/auth-account-lifecycle`
+**Status:** Approved for Phase 2 Slice 2 implementation
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -20,7 +20,7 @@ Give every active user a factual directory of active people, organizational posi
 ## Primary and secondary actions
 
 - Search and filter active people when implemented.
-- Open Settings member administration only from a separately authorized Admin control in the future.
+- Open Settings member administration only from a separately authorized Admin control.
 - The directory itself has no account mutation.
 
 ## Information hierarchy
@@ -43,9 +43,10 @@ Give every active user a factual directory of active people, organizational posi
 
 ## Components to reuse, extend, or create
 
-- Expected future reuse: Input for search and Button for authorized navigation.
-- Expected future components: Badge and responsive directory list/table composition.
-- Implementation remains blocked until the relevant Astryx Badge and dense-list/Table notes are source-reviewed and marked ready, with any gaps mapped in `docs/design-system.md`.
+- Reuse Input for search and Button for authorized Settings navigation.
+- Phase 2 components: Badge and responsive DataTable/list composition.
+- The relevant Astryx Badge and dense-list/Table notes are source-reviewed and
+  their presentation mappings are recorded in `docs/design-system.md`.
 
 ## Desktop layout
 
@@ -57,7 +58,8 @@ Give every active user a factual directory of active people, organizational posi
 
 ## Responsive transitions
 
-- The future implementation brief review must lock the list/table-to-stacked-record transition after its Astryx references are ready.
+- At the existing shell mobile breakpoint, the desktop semantic table becomes
+  a structured list of records with the same visible field order.
 
 ## Interaction and keyboard behavior
 
@@ -86,10 +88,10 @@ None for directory reads.
 
 ## Astryx reference patterns
 
-- [Input](../../references/astryx/input.md) — ready for future search.
-- [Button](../../references/astryx/button.md) — ready for future authorized navigation.
-- [Table](../../references/astryx/table.md) — scaffolded and must be distilled before implementation.
-- Badge note — not yet created; required before implementation.
+- [Input](../../references/astryx/input.md) — ready search behavior.
+- [Button](../../references/astryx/button.md) — ready authorized navigation behavior.
+- [Table and dense list](../../references/astryx/table.md) — Phase 2 ready.
+- [Badge](../../references/astryx/badge.md) — Phase 2 ready.
 
 ## Design Flow reference screens or components
 
@@ -100,8 +102,8 @@ None for directory reads.
 
 - Directory fields and privacy match `docs/team-settings.md`.
 - Viewer + Admin is never rendered as a valid state.
-- Desktop/mobile, keyboard, empty, loading, error, no-results, and unauthorized behavior must pass before the future Team slice is complete.
+- Desktop/mobile, keyboard, empty, loading, error, no-results, and unauthorized behavior must pass before the Team slice is complete.
 
 ## Open questions
 
-No product question is open. Presentation implementation waits only on the required local Astryx notes and the future Team slice.
+No product or presentation question is open for Phase 2 Slice 2.

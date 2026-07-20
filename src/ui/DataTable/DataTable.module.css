@@ -1,0 +1,108 @@
+.tableRegion {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+}
+
+.tableRegion:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.table th,
+.table td {
+  min-block-size: var(--table-row-min-height);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.table th {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-raised);
+  font: var(--type-label);
+  text-align: start;
+}
+
+.table td {
+  font: var(--type-body-compact);
+}
+
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.recordList {
+  display: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.record {
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+}
+
+.record dl {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.recordField {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.record dt {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+
+.record dd {
+  min-inline-size: 0;
+  margin: 0;
+  font: var(--type-body-compact);
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  padding: var(--space-xl);
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-container);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 47.999rem) {
+  .tableRegion {
+    display: none;
+  }
+
+  .recordList {
+    display: grid;
+    gap: var(--space-sm);
+  }
+}

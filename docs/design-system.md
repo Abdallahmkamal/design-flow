@@ -593,6 +593,7 @@ typography.
 | `product/motion/spinner-duration` | `730ms` | Continuous progress indication |
 | `product/motion/easing/standard` | `cubic-bezier(0.24, 1, 0.4, 1)` | Default state-transition curve |
 | `product/control/press-scale` | `0.98` | Pressed Button feedback |
+| `product/table/row-min-height` | `40px` | Dense Team and Settings rows; content may expand the row |
 
 Guardrails:
 
@@ -605,6 +606,10 @@ Guardrails:
 - Phase 1 Button state transitions stop under reduced motion; its component-specific spinner behavior slows to `3s`, preserving visible progress.
 - Source traceability and component-specific measurements are recorded in
   `references/astryx/tokens.md`, `button.md`, `input.md`, and `patterns.md`.
+- Phase 2 Select reuses the verified default Input shell mappings. Checkbox
+  preserves native check geometry with the shared focus mapping. Badge uses the
+  existing full radius and spacing aliases. DataTable uses
+  `product/table/row-min-height` plus existing spacing and border aliases.
 
 ### Phase 1 font-asset gate
 

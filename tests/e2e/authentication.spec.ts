@@ -123,6 +123,125 @@ async function configureAuthMocks(
       body: JSON.stringify({ profile_id: userId, status: 'completed' }),
     });
   });
+
+  await page.route('**/rest/v1/team_directory**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: userId,
+          display_name: '[SYNTHETIC] Designer',
+          position_code: 'designer',
+          position_label: 'Designer',
+          is_admin: account.is_admin,
+          current_reports_to_id: '00000000-0000-4000-8000-000000000002',
+          reports_to_display_name: '[SYNTHETIC] Lead',
+        },
+        {
+          id: '00000000-0000-4000-8000-000000000002',
+          display_name: '[SYNTHETIC] Lead',
+          position_code: 'lead',
+          position_label: 'Lead',
+          is_admin: false,
+          current_reports_to_id: '00000000-0000-4000-8000-000000000003',
+          reports_to_display_name: '[SYNTHETIC] Manager',
+        },
+      ]),
+    });
+  });
+
+  await page.route('**/rest/v1/admin_member_directory**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: userId,
+          display_name: '[SYNTHETIC] Manager + Admin',
+          email: 'manager-admin@design-flow.example.invalid',
+          position_code: 'manager',
+          position_label: 'Manager',
+          is_admin: true,
+          is_active: true,
+          must_change_password: false,
+          current_reports_to_id: null,
+          reports_to_display_name: null,
+          last_sign_in_at: '2026-07-20T09:00:00.000Z',
+          created_at: '2026-01-01T09:00:00.000Z',
+          access_administered_at: '2026-07-20T08:00:00.000Z',
+          updated_at: '2026-07-20T08:00:00.000Z',
+        },
+      ]),
+    });
+  });
+
+  await page.route('**/rest/v1/work_area_settings**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: '50000000-0000-4000-8000-000000000001',
+          name: '[SYNTHETIC] Internal Experience',
+          sort_order: 0,
+          is_active: true,
+          current_usage_count: 0,
+          historical_usage_count: 0,
+          created_at: '2026-01-01T09:00:00.000Z',
+          archived_at: null,
+          updated_at: '2026-01-01T09:00:00.000Z',
+        },
+      ]),
+    });
+  });
+
+  await page.route('**/rest/v1/label_settings**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: '60000000-0000-4000-8000-000000000001',
+          name: '[SYNTHETIC] Foundation',
+          sort_order: 0,
+          is_active: true,
+          current_usage_count: 0,
+          historical_usage_count: 0,
+          created_at: '2026-01-01T09:00:00.000Z',
+          archived_at: null,
+          updated_at: '2026-01-01T09:00:00.000Z',
+        },
+      ]),
+    });
+  });
+
+  await page.route('**/rest/v1/team_settings**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        timezone: 'Africa/Cairo',
+        updated_at: '2026-01-01T09:00:00.000Z',
+      }),
+    });
+  });
+
+  await page.route('**/rest/v1/administration_audit_log**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
+
+  await page.route('**/rest/v1/work_items**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
 }
 
 async function signIn(page: Page): Promise<void> {
@@ -279,5 +398,119 @@ test('Vodafone variable font and default authentication control sizing load', as
   await expect(page.getByRole('heading', { name: 'Sign in' })).toHaveCSS(
     'font-family',
     /Vodafone VF/,
+  );
+});
+
+test('Team directory preserves approved fields and responsive semantics', async ({
+  page,
+}, testInfo) => {
+  await configureAuthMocks(page);
+  await signIn(page);
+  await page.getByRole('link', { name: 'Team' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Team' })).toBeVisible();
+  await expect(page.getByLabel('Search team')).toBeVisible();
+  await expect(page.getByLabel('Position')).toBeVisible();
+  await expect(page.getByText(/@design-flow/u)).toHaveCount(0);
+  await expect(page.getByText(/last sign-in/i)).toHaveCount(0);
+
+  if (testInfo.project.name === 'mobile-chromium') {
+    await expect(
+      page.getByRole('list', { name: 'Active Team directory' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('table', { name: 'Active Team directory' }),
+    ).toBeHidden();
+  } else {
+    await expect(
+      page.getByRole('table', { name: 'Active Team directory' }),
+    ).toBeVisible();
+  }
+
+  const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+  expect(accessibilityScanResults.violations).toEqual([]);
+});
+
+test('Admin Settings exposes only approved sections and account-support fields', async ({
+  page,
+}, testInfo) => {
+  await configureAuthMocks(page, {
+    account: {
+      position_code: 'manager',
+      is_admin: true,
+    },
+  });
+  await signIn(page);
+  await page.getByRole('link', { name: 'Settings' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Members and access' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Areas/Squads' }),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Labels' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'General' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Administration audit' }),
+  ).toBeVisible();
+  const accountSupport =
+    testInfo.project.name === 'mobile-chromium'
+      ? page
+          .getByRole('list', { name: 'Member account administration' })
+          .getByText(/Last sign-in:/u)
+      : page
+          .getByRole('table', { name: 'Member account administration' })
+          .getByText(/Last sign-in:/u);
+  await expect(accountSupport).toBeVisible();
+  await expect(page.getByText(/API keys/u)).toHaveCount(0);
+
+  const areas =
+    testInfo.project.name === 'mobile-chromium'
+      ? page.getByRole('list', { name: 'Active Areas/Squads' })
+      : page.getByRole('table', { name: 'Active Areas/Squads' });
+  const renameArea = areas.getByRole('button', { name: 'Rename' });
+  await renameArea.click();
+  await expect(
+    page.getByRole('heading', {
+      name: 'Rename [SYNTHETIC] Internal Experience',
+    }),
+  ).toBeFocused();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(renameArea).toBeFocused();
+
+  const archiveArea = areas.getByRole('button', { name: 'Archive' });
+  await archiveArea.click();
+  await expect(
+    page.getByRole('heading', {
+      name: 'Archive [SYNTHETIC] Internal Experience?',
+    }),
+  ).toBeFocused();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(archiveArea).toBeFocused();
+
+  const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+  expect(accessibilityScanResults.violations).toEqual([]);
+});
+
+test('Manager position without Admin receives no Settings controls', async ({
+  page,
+}) => {
+  await configureAuthMocks(page, {
+    account: {
+      position_code: 'manager',
+      is_admin: false,
+    },
+  });
+  await signIn(page);
+  await page.goto('/settings');
+
+  await expect(
+    page.getByRole('heading', { name: 'Settings unavailable' }),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Settings' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Create member' })).toHaveCount(
+    0,
   );
 });

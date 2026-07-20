@@ -332,4 +332,43 @@ describe('authenticated application routing', () => {
       screen.getByRole('button', { name: 'Switch to light mode' }),
     ).toBeVisible();
   });
+
+  it('shows Settings navigation only for independently Admin-privileged accounts', async () => {
+    const mock = createSupabaseClientMock({
+      initialSession: syntheticSession,
+      accountResponses: [[{ ...activeAccountRow, is_admin: true }]],
+    });
+    getSupabaseClientMock.mockReturnValue(mock.client);
+
+    render(<App />);
+
+    expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
+    expect(screen.getByText('Admin')).toBeInTheDocument();
+  });
+
+  it('denies direct Settings routing to a Manager without Admin privilege', async () => {
+    window.history.pushState({}, '', '/settings');
+    const mock = createSupabaseClientMock({
+      initialSession: syntheticSession,
+      accountResponses: [
+        [
+          {
+            ...activeAccountRow,
+            position_code: 'manager',
+            is_admin: false,
+          },
+        ],
+      ],
+    });
+    getSupabaseClientMock.mockReturnValue(mock.client);
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Settings unavailable' }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('link', { name: 'Settings' }),
+    ).not.toBeInTheDocument();
+  });
 });

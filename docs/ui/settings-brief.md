@@ -1,6 +1,6 @@
 # Settings brief
 
-**Status:** Approved behavior brief; implementation deferred from `feature/auth-account-lifecycle`
+**Status:** Approved for Phase 2 Slice 2 implementation
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -15,13 +15,13 @@ Provide Admin-privileged users with closed portal administration for members/acc
 
 ## Entry points
 
-- Future `/settings` route from an Admin-only shell navigation item.
-- Account creation/reset/deactivate/reactivate server operations implemented by the authentication/account-lifecycle slice are future dependencies of Members and access UI.
+- `/settings` route from an Admin-only shell navigation item.
+- Account creation/reset/deactivate/reactivate server operations implemented by the authentication/account-lifecycle slice are dependencies of Members and access UI.
 
 ## Primary and secondary actions
 
 - Create member, issue temporary reset, deactivate/reactivate member.
-- Change position/Admin/reporting line through `set_member_access` in its future owning slice.
+- Change position/Admin/reporting line through `set_member_access`.
 - Create/rename/reorder/archive/reactivate Areas/Squads and labels.
 - Change team timezone.
 - Read administration audit.
@@ -45,9 +45,13 @@ Exact fields and controlled values follow `docs/team-settings.md`, `docs/schema-
 
 ## Components to reuse, extend, or create
 
-- Expected future reuse: Input and Button.
-- Expected future components: Select, Checkbox, Badge, Tabs, Modal/confirmation, Table/list, and possibly pagination.
-- Implementation is blocked until every required component has a source-linked Astryx note marked ready and its presentation mappings are recorded in `docs/design-system.md`.
+- Reuse Input and Button.
+- Phase 2 components: Select, Checkbox, Badge, and DataTable/list.
+- Settings section navigation uses native route/anchor links rather than a tab
+  widget. Confirmations are in-context panels rather than modal overlays, and
+  the closed-team read models do not introduce pagination.
+- Every implemented shared component has a source-linked Astryx note marked
+  ready and its presentation mappings are recorded in `docs/design-system.md`.
 
 ## Desktop layout
 
@@ -59,12 +63,16 @@ Exact fields and controlled values follow `docs/team-settings.md`, `docs/schema-
 
 ## Responsive transitions
 
-- Exact transitions are finalized only after the relevant Tabs, Modal, Select, and Table/list notes are ready.
+- The section navigation becomes a wrapping horizontal anchor list on narrow
+  viewports; forms, confirmations, and data records remain single-column.
 
 ## Interaction and keyboard behavior
 
 - Native forms where possible.
-- Future modal/confirmation flows must define focus entry, containment, Escape behavior, dismissal, and focus return before implementation.
+- In-context confirmation panels move focus to their heading on entry and
+  return focus to the initiating action on cancel or completion. Because they
+  do not obscure the page, focus containment and Escape dismissal do not
+  apply.
 - Reordering must have a keyboard-accessible alternative to drag interaction.
 
 ## Loading, empty, no-results, error, disabled, and permission states
@@ -92,8 +100,11 @@ Every approved Settings mutation writes the contracted append-only administratio
 ## Astryx reference patterns
 
 - [Input](../../references/astryx/input.md) and [Button](../../references/astryx/button.md) are ready.
-- [Modal](../../references/astryx/modal.md) and [Table](../../references/astryx/table.md) are scaffolded and not implementation-ready.
-- Select, Checkbox, Badge, Tabs, and Pagination notes do not yet exist and are required before their components are implemented.
+- [Table and dense list](../../references/astryx/table.md),
+  [Select](../../references/astryx/select.md),
+  [Checkbox](../../references/astryx/checkbox.md), and
+  [Badge](../../references/astryx/badge.md) are Phase 2 ready.
+- Modal, Tabs, and Pagination are not implemented by this slice.
 
 ## Design Flow reference screens or components
 
@@ -105,8 +116,8 @@ Every approved Settings mutation writes the contracted append-only administratio
 
 - Only Admin-privileged eligible positions access Settings.
 - Every account, hierarchy, controlled-list, timezone, and audit behavior matches its contract and proves allowed/denied server paths.
-- Desktop/mobile, keyboard, state, confirmation, long-content, and staging behavior must pass before the future Settings slice is complete.
+- Desktop/mobile, keyboard, state, confirmation, long-content, and staging behavior must pass before the Settings slice is complete.
 
 ## Open questions
 
-No product question is open. Component-reference readiness and the excluded `set_member_access`/Settings implementation remain future work.
+No product or presentation question is open for Phase 2 Slice 2.
