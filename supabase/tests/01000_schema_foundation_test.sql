@@ -126,8 +126,8 @@ select is(
     where namespace.nspname = 'public'
       and function_definition.prokind = 'f'
   ),
-  0,
-  'no feature mutation RPC is exposed before its owning phase'
+  12,
+  'only the owning Phase 2 authentication/account-lifecycle functions are exposed'
 );
 
 select is(

@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-
+import { getPublicEnvironment } from '../../shared/config/env';
 import styles from './DashboardPlaceholderPage.module.css';
 
 const foundationChecks = [
@@ -18,15 +17,20 @@ const foundationChecks = [
 ] as const;
 
 export function DashboardPlaceholderPage() {
+  const appEnvironment = getPublicEnvironment().VITE_APP_ENV;
+  const environmentName =
+    appEnvironment.charAt(0).toUpperCase() + appEnvironment.slice(1);
+
   return (
     <div className={styles.page}>
       <header className={styles.introduction}>
-        <p className={styles.eyebrow}>Local foundation checkpoint</p>
+        <p className={styles.eyebrow}>{environmentName} Phase 2 checkpoint</p>
         <h1>Design work, with the operating context intact</h1>
         <p className={styles.summary}>
-          This is a visibly synthetic Phase 1 shell. Ticket data,
-          authentication, dashboards, and reports arrive only in their approved
-          build phases.
+          This visibly synthetic shell now enforces closed sign-in,
+          authoritative account state, mandatory password change,
+          inactive-account withholding, and sign-out. Ticket data, dashboards,
+          and reports remain in their approved later phases.
         </p>
       </header>
 
@@ -58,14 +62,13 @@ export function DashboardPlaceholderPage() {
         aria-labelledby="next-phase-heading"
       >
         <div>
-          <p className={styles.eyebrow}>Next approved product slice</p>
-          <h2 id="next-phase-heading">Authentication, Team, and Settings</h2>
+          <p className={styles.eyebrow}>Remaining Phase 2 scope</p>
+          <h2 id="next-phase-heading">Team hierarchy and Settings</h2>
           <p>
-            Phase 2 will connect the protected account lifecycle and hierarchy
-            contracts after this foundation passes its exit gate.
+            Team hierarchy and Settings remain intentionally deferred from this
+            authentication and account-lifecycle branch.
           </p>
         </div>
-        <Link to="/sign-in">Preview the authentication placeholder</Link>
       </section>
     </div>
   );

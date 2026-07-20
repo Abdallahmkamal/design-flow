@@ -6,6 +6,7 @@ package-lock.json
 playwright-report/
 references/
 src/shared/supabase/database.types.ts
+supabase/functions/
 test-results/
 AGENTS.md
 README.md

@@ -2,18 +2,20 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phase 0 fixed the schema, permission, and operation contracts. Phase 1 is
-complete: the repository contains a strict React/Vite foundation, responsive
-shell, Vodafone typography/color and Astryx-aligned non-color presentation,
-initial Design Flow UI primitives, environment validation, automated checks,
-the complete physical database/RLS/read foundation, synthetic database
-personas, generated types, and local Supabase/Edge Function test harnesses.
+Phase 0 fixed the schema, permission, and operation contracts, and Phase 1
+delivered the application and database foundation. The current Phase 2 branch
+implements the approved authentication and account-lifecycle slice: closed
+sign-in, session restoration, mandatory password change, inactive-account
+handling, first-Admin bootstrap, protected account provisioning/reset,
+deactivation/reactivation, supporting RPCs, and verified route/RLS gates. Team
+hierarchy and Settings implementation remain separate Phase 2 slices.
 
-The Supabase Free staging project contains the Phase 1 schema and stable
-reference rows, with no portal accounts or work data. The non-production
-Cloudflare Pages Free staging deployment is live at
-<https://design-flow-staging.pages.dev>. No production service or real
-account/data has been created.
+The Supabase Free staging project contains the Phase 1 foundation plus the
+authentication/account-lifecycle migrations, six Edge Functions, stable
+reference rows, and conspicuously synthetic acceptance records. The
+non-production Cloudflare Pages Free staging deployment is live at
+<https://design-flow-staging.pages.dev>. No production service, credential, or
+real account/data has been created.
 
 ## Local setup
 
@@ -51,6 +53,17 @@ npm run dev
 The application runs at `http://127.0.0.1:5173`. Supabase Studio runs at
 `http://127.0.0.1:54323`.
 
+After `npm run db:reset`, every visibly synthetic local persona can sign in
+with `LocalSynthetic!Pass2026`. Useful state fixtures are:
+
+- `designer@design-flow.example.invalid` — active account;
+- `password-restricted-designer@design-flow.example.invalid` — mandatory password change; and
+- `inactive-designer@design-flow.example.invalid` — inactive-account handling.
+
+These credentials exist only in the committed local seed. Hosted accounts are
+created through the protected Edge Functions documented in
+[`supabase/functions/README.md`](supabase/functions/README.md).
+
 Committed environment templates are separated by purpose:
 `.env.example` is local, `.env.preview.example` and `.env.staging.example` point
 only to the future synthetic staging project, and `.env.production.example`
@@ -63,13 +76,15 @@ files or deployment settings and are ignored by Git.
 npm run verify
 npm run test:e2e
 npm run db:test
+npm run functions:check
 npm run functions:test
 ```
 
-`npm run verify` covers formatting, linting, strict types, unit/component tests,
-and a production build. Playwright covers desktop/mobile browser behavior and
-automated accessibility checks. The GitHub Actions foundation workflow repeats
-those checks and runs the local pgTAP and Deno harnesses.
+`npm run verify` covers formatting, linting, strict types, 38 unit/component
+tests, and a production build. Playwright covers 12 desktop/mobile browser
+checks for authentication, guarded shell behavior, geometry, and automated
+accessibility. The backend harness runs 139 pgTAP assertions and 16 Deno tests
+for the account-lifecycle boundary.
 
 ## Documentation
 
@@ -108,16 +123,18 @@ those checks and runs the local pgTAP and Deno harnesses.
   data, synthetic principals, generated types, and structural/read-permission
   tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
   vertical slices.
-- The first migration and synthetic seed reset cleanly. The Phase 1 pgTAP suite
-  passes 98 schema, invariant, read-surface, and persona permission tests; the
-  generated database types match the implemented schema shape.
-- The Supabase Free staging project is healthy and has the Phase 1 migration
-  applied. It contains stable system reference rows only—no Auth users, portal
-  profiles, synthetic personas, or work data.
+- The first three migrations and synthetic seed reset cleanly. The current
+  pgTAP suite passes 139 schema, invariant, read-surface, persona-permission, and
+  authentication/account-lifecycle assertions; generated database types match
+  the implemented schema shape.
+- The Supabase Free staging project is healthy and has all current migrations
+  plus six active account-lifecycle Edge Functions. Its acceptance identities
+  and history are conspicuously synthetic, public signup is closed, legacy API
+  keys remain disabled, and the one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
-  non-production placeholder at <https://design-flow-staging.pages.dev>. It was
-  built with staging credentials only; development source maps were not
-  published.
+  authentication/account-lifecycle checkpoint at
+  <https://design-flow-staging.pages.dev>. It was built with staging
+  credentials only; development source maps were not published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
   across its documented 200–900 weight range, and protected against synthetic
   weights. Asset provenance and checksum are recorded under
@@ -128,5 +145,7 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-The Phase 1 pull-request CI and non-production staging deployment gates are
-satisfied. Phase 2 has not started.
+The authentication/account-lifecycle slice is implemented and verified in
+local, mobile-LAN, and non-production staging environments. The full Phase 2
+exit gate remains open because Team hierarchy and Settings are separate,
+intentionally deferred slices.

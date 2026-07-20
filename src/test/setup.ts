@@ -3,6 +3,9 @@ import { cleanup } from '@testing-library/react';
 import { afterEach, beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
+  vi.stubEnv('VITE_APP_ENV', 'test');
+  vi.stubEnv('VITE_SUPABASE_URL', 'https://synthetic-test.supabase.co');
+  vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', 'synthetic-publishable-key');
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
     writable: true,

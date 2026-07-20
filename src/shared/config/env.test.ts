@@ -24,6 +24,20 @@ describe('parsePublicEnvironment', () => {
     ).not.toThrow();
   });
 
+  it.each([
+    'http://10.0.0.5:54321',
+    'http://172.16.0.5:54321',
+    'http://172.31.255.5:54321',
+    'http://192.168.1.5:54321',
+  ])('accepts private-LAN Supabase address %s in local mode', (url) => {
+    expect(() =>
+      parsePublicEnvironment({
+        ...validLocalEnvironment,
+        VITE_SUPABASE_URL: url,
+      }),
+    ).not.toThrow();
+  });
+
   it('rejects a server-held secret in browser configuration', () => {
     expect(() =>
       parsePublicEnvironment({
@@ -71,6 +85,19 @@ describe('parsePublicEnvironment', () => {
       parsePublicEnvironment({
         ...validLocalEnvironment,
         VITE_SUPABASE_URL: 'http://127.0.0.1.example.com',
+      }),
+    ).toThrow(/Use HTTPS except for the local Supabase address/i);
+  });
+
+  it.each([
+    'http://172.32.0.5:54321',
+    'http://192.169.1.5:54321',
+    'http://8.8.8.8:54321',
+  ])('rejects public HTTP address %s', (url) => {
+    expect(() =>
+      parsePublicEnvironment({
+        ...validLocalEnvironment,
+        VITE_SUPABASE_URL: url,
       }),
     ).toThrow(/Use HTTPS except for the local Supabase address/i);
   });

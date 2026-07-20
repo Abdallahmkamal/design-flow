@@ -18,7 +18,10 @@ This document assigns every MVP mutation to one authorization boundary and fixes
 | Authenticated Edge Function | Any Supabase Auth administration or other operation requiring a server-held secret |
 | One-time bootstrap Edge Function | First Admin only, protected by deployment-held bootstrap secrets and a database one-time state |
 
-No browser operation receives the service-role key. No UI capability check substitutes for RLS, RPC authorization, or Edge authorization.
+No browser operation receives a Supabase server key. Hosted Edge Functions use
+the injected modern secret-key dictionary; local development may fall back to
+the legacy service-role key. No UI capability check substitutes for RLS, RPC
+authorization, or Edge authorization.
 
 ## 2. Common mutation protocol
 
