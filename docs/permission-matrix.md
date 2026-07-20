@@ -5,7 +5,7 @@
 **Applies to:** Browser capabilities, Postgres RLS/RPC authorization, Edge Functions, and permission tests  
 **Companion contracts:** `schema-contract.md` and `operation-contracts.md`
 
-**Last amended:** 2026-07-19 — D-097 maps Log Work launch paths to existing create and transition capabilities
+**Last amended:** 2026-07-20 — D-100 stages permission verification by owning phase
 
 Permissions are evaluated from the authenticated profile's current database state. UI checks improve usability only; they never grant authority.
 
@@ -189,7 +189,17 @@ RLS is enabled and forced on every application table in the first migration. Tab
 | Notifications | Recipient-only base policy |
 | `operation_requests`, `bootstrap_state` | No browser table privilege |
 
-PostgreSQL RLS is row-based, so column privacy is enforced with revoked base-table privileges and explicit views/functions. Views use `security_invoker = true` where supported; privileged functions pin `search_path`, schema-qualify every object, and authorize the caller before reading.
+PostgreSQL RLS is row-based, so column privacy is enforced with revoked
+base-table privileges and explicit views/functions. Views use
+`security_invoker = true` where the caller safely retains every required
+underlying privilege, such as the Team directory. A masked or filtered view
+that exists specifically to withhold a base column or withdrawn row cannot use
+that mechanism without restoring the very base privilege it must hide. Those
+views use `security_barrier = true`, run with the owning database role, include
+an explicit `is_application_user()` predicate, and remain the only browser
+grant for their underlying sensitive tables. Privileged functions pin
+`search_path`, schema-qualify every object, and authorize the caller before
+reading.
 
 ### Write exposure
 
@@ -303,7 +313,13 @@ Every affected operation test runs against each applicable valid principal. The 
 
 ## 8. Permission completion gate
 
-The permission contract is implemented only when:
+Phase 1 implements and tests the global gates, complete physical-schema RLS,
+column privacy, approved read surfaces, authorization helpers, seven valid
+principal fixtures, inactive/password-restricted variants, Viewer + Admin
+rejection, and the absence of premature browser mutation paths.
+
+The complete permission contract is implemented only when the owning Phase 2–4
+feature slices additionally prove:
 
 - pgTAP proves each allowed and denied database/RPC path;
 - Deno tests prove each Edge Function rechecks Admin in Postgres;

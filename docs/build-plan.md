@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-19 — D-099 adds Astryx presentation-fidelity gates without changing implementation order
+**Last updated:** 2026-07-20 — D-100 resolves the Phase 1 database boundary without changing implementation order
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -64,6 +64,17 @@ Finalize the implementation contracts before scaffolding:
 
 **Amended:** 2026-07-19 — D-099 requires visual revalidation before Phase 2 UI implementation
 
+**Database boundary amended:** 2026-07-20 — D-100
+
+Phase 1 establishes the complete physical database foundation: all contracted
+tables, constraints, indexes, controlled reference rows, RLS/read surfaces,
+authorization helpers, synthetic principal fixtures, generated database types,
+and structural/read-permission tests. Feature mutation RPCs and their
+write-effect, atomicity, idempotency, and feature-specific permission tests are
+implemented with their owning vertical slices in Phases 2–4. This staging does
+not change the approved operation contracts or permit direct browser writes
+that bypass them.
+
 ### UI documentation gate
 
 - Create and approve `docs/ui-direction.md` before continuing feature UI implementation.
@@ -74,7 +85,8 @@ Create the implementation baseline:
 
 - React, strict TypeScript, Vite, React Router, npm, and pinned Node LTS;
 - the approved feature/domain, route, shared-service, and `src/ui/` folder structure;
-- local Supabase configuration and the initial migration/seed/test harness;
+- local Supabase configuration and an initial complete physical-schema,
+  RLS/read-surface, seed, generated-type, and database-test foundation;
 - environment validation with strict separation of local, staging, preview, and production values;
 - ESLint, Prettier, Vitest, React Testing Library, Playwright, pgTAP, Deno tests, accessibility checks, type checking, and production build commands;
 - GitHub Actions pull-request verification and staging deployment baseline;
@@ -85,6 +97,13 @@ Create the implementation baseline:
 ### Exit gate
 
 - A clean clone can install dependencies, start local Supabase, reset/seed the database, run the full baseline test suite, and create a production build using documented commands.
+- The initial migration creates every contracted physical table with its
+  constraints, indexes, RLS, read exposure, authorization helpers, and stable
+  reference values; generated types match a clean reset.
+- Structural invariants and all applicable read allow/deny cases pass for the
+  seven valid principals, inactive/password-restricted states, and the rejected
+  Viewer + Admin state. Mutation-path tests remain required in their owning
+  feature phases before those operations are exposed.
 - Pull-request CI passes and a non-production placeholder deploys using staging credentials only.
 - No secret or production datum exists in committed, local-seed, preview, or staging content.
 - Initial shared components use Vodafone color/typography, verified Astryx-aligned non-color presentation, documented keyboard behavior, tests, and owned Design Flow APIs with zero Astryx runtime dependency.

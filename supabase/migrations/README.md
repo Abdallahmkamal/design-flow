@@ -1,19 +1,19 @@
 # Migration gate
 
 The first Design Flow migration must implement the complete initial schema and
-Row Level Security together. Do not add an extensions-only, tables-only, or
-otherwise partial “first migration.”
+Row Level Security/read exposure together. Do not add an extensions-only,
+unprotected tables-only, or otherwise partial physical-schema migration.
 
 Before that migration is committed, it must be verified from a clean local
-reset against the first-migration gate in
+reset against the Phase 1 portion of the first-migration gate in
 [`docs/schema-contract.md`](../../docs/schema-contract.md), the complete
-allow/deny cases in
+applicable read allow/deny cases in
 [`docs/permission-matrix.md`](../../docs/permission-matrix.md), and the atomic
-operation rules in
+operation boundaries in
 [`docs/operation-contracts.md`](../../docs/operation-contracts.md).
 
-The current machine has a verified free Colima/Docker-compatible runtime and
-the local Supabase image set. The migration remains absent until the Phase 1
-complete-schema wording is reconciled with the build plan's Phase 2–4 ownership
-of account, ticket, and work-log mutation operations; do not treat runtime
-availability as authorization to cross those phase boundaries.
+Under D-100, the first migration includes all contracted physical tables,
+constraints, indexes, stable reference values, RLS/read surfaces, authorization
+helpers, and generated-type inputs. Feature mutation RPCs and their atomic,
+idempotent write tests remain in their owning Phase 2–4 slices. Until an owning
+RPC exists, its feature tables have no browser mutation path.

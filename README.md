@@ -6,7 +6,8 @@ Phase 0 fixed the schema, permission, and operation contracts. Phase 1 is in
 progress: the repository contains a strict React/Vite foundation, responsive
 shell, Vodafone typography/color and Astryx-aligned non-color presentation,
 initial Design Flow UI primitives, environment validation, automated checks,
-and local Supabase/Edge Function test harnesses.
+the complete physical database/RLS/read foundation, synthetic database
+personas, generated types, and local Supabase/Edge Function test harnesses.
 
 Supabase Free and Cloudflare Pages Free staging projects exist without
 migrations, accounts, data, or a deployment. No production service or real
@@ -100,10 +101,14 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The complete technical and operating plan is approved in `docs/technical-plan.md`, including the React/Supabase architecture, styling delivery, environments, verification, encrypted backup and restore routine, controlled deployment, monitoring, bootstrap, and rollout.
 - The eight-phase implementation sequence and shared completion gate are approved in `docs/build-plan.md`.
 - Phase 0 is complete: the physical schema, permission/RLS, operation-boundary, transaction, bootstrap, recalculation, migration, seed, fixture, and test contracts are fixed in the three Phase 0 contract documents.
-- Phase 1 is not complete. The first database migration is intentionally absent
-  while the documented Phase 1 complete-schema requirement is reconciled with
-  the build plan's Phase 2–4 ownership of domain mutation operations. The local
-  Docker-compatible runtime is now available for reset and verification.
+- D-100 resolves the database phase boundary: Phase 1 owns the complete
+  physical schema, RLS/read surfaces, authorization helpers, stable reference
+  data, synthetic principals, generated types, and structural/read-permission
+  tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
+  vertical slices.
+- The first migration and synthetic seed reset cleanly. The Phase 1 pgTAP suite
+  passes 98 schema, invariant, read-surface, and persona permission tests; the
+  generated database types match the implemented schema shape.
 - The Supabase Free staging project is healthy and empty. The Cloudflare Pages
   Free project `design-flow-staging` exists, but no source-derived artifact has
   been uploaded and no deployment exists yet.
@@ -117,8 +122,6 @@ those checks and runs the local pgTAP and Deno harnesses.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-After the migration-boundary clarification, the next implementation slice is
-the first migration, RLS policies, idempotent synthetic personas/reference
-data, generated database types, and the applicable pgTAP
-permission/invariant suite. Phase 2 must not begin until the Phase 1 exit gate
-is satisfied.
+The remaining Phase 1 gates are pull-request CI and the approved
+non-production placeholder deployment using staging credentials only. Phase 2
+must not begin until those gates are satisfied.

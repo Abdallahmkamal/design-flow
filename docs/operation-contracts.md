@@ -5,7 +5,7 @@
 **Applies to:** Browser writes, Postgres RPCs, Auth-admin Edge Functions, audit/history, notifications, and recalculation  
 **Companion contracts:** `schema-contract.md` and `permission-matrix.md`
 
-**Last amended:** 2026-07-19 — D-097 defines independent Create New Ticket and optional status orchestration from Log Work
+**Last amended:** 2026-07-20 — D-100 stages mutation implementation by owning feature phase
 
 This document assigns every MVP mutation to one authorization boundary and fixes the atomic effects that boundary must produce. Function names are public contract names; later implementation may use private helpers but must preserve inputs, authorization, effects, and error behavior.
 
@@ -719,7 +719,15 @@ Report and Dashboard queries use the formulas in `schema-contract.md`. Historica
 
 ## 15. Operation test gate
 
-Before Phase 1 scaffolding can rely on these contracts, later implementation tests must prove:
+D-100 keeps these operation contracts fixed while staging their implementation.
+Phase 1 creates `operation_requests` and every physical dependency, denies
+premature browser mutation access, and tests the shared structural and read
+security foundation. Each public mutation and its tests ship in the Phase 2–4
+vertical slice that owns the feature.
+
+Before an owning feature phase is complete, its implementation tests must
+prove the applicable cases below; by the end of Phase 4 the combined suite must
+prove all of them:
 
 - each public mutation is available only at its assigned boundary;
 - all seven valid principals receive every specified allow/deny outcome;
