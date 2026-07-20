@@ -25,7 +25,8 @@
 }
 
 .heading,
-.form {
+.form,
+.actions {
   display: grid;
   gap: var(--space-md);
 }
@@ -33,7 +34,8 @@
 .heading h1,
 .heading p,
 .heading span,
-.notice {
+.notice,
+.message {
   margin: 0;
 }
 
@@ -48,10 +50,32 @@
   font: var(--type-body-compact);
 }
 
-.notice {
+.notice,
+.message {
   padding: var(--space-md);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-element);
-  color: var(--color-text-secondary);
   background: var(--color-surface-raised);
+  font: var(--type-body-compact);
+}
+
+.message {
+  border-color: var(--color-status-error-border);
+  color: var(--color-status-error-text);
+  background: var(--color-status-error-background);
+}
+
+.form > button,
+.actions > button {
+  inline-size: 100%;
+}
+
+@media (max-width: 30rem) {
+  .page {
+    padding: var(--space-md);
+  }
+
+  .panel {
+    padding: var(--space-lg);
+  }
 }

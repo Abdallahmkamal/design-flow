@@ -45,13 +45,35 @@
 .headerActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: var(--space-sm);
 }
 
-.foundationLabel {
+.sessionError {
+  flex-basis: 100%;
+  color: var(--color-status-error-text);
+  font: var(--type-caption);
+  text-align: end;
+}
+
+.userContext {
   display: none;
+  min-inline-size: 0;
   color: var(--color-text-secondary);
   font: var(--type-caption);
+}
+
+.userContext strong,
+.userContext span {
+  overflow: hidden;
+  max-inline-size: 12rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userContext strong {
+  color: var(--color-text-primary);
 }
 
 .sideNavigation {
@@ -127,8 +149,9 @@
       'navigation main' 1fr / var(--shell-navigation-width) minmax(0, 1fr);
   }
 
-  .foundationLabel {
-    display: inline;
+  .userContext {
+    display: grid;
+    text-align: end;
   }
 
   .sideNavigation {

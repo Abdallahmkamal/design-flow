@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
+import { useAuthentication } from '../../features/auth/authContext';
+import { getPublicEnvironment } from '../../shared/config/env';
 import { useTheme } from '../../shared/theme/themeContext';
 import { Button } from '../../ui/Button/Button';
 import { SkipLink } from '../../ui/SkipLink/SkipLink';
@@ -14,6 +17,33 @@ const navigationItems = [
 
 export function AppShell() {
   const { theme, toggleTheme } = useTheme();
+  const { account, signOut } = useAuthentication();
+  const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const appEnvironment = getPublicEnvironment().VITE_APP_ENV;
+  const environmentNotice =
+    appEnvironment === 'production'
+      ? 'Production environment'
+      : `Synthetic ${appEnvironment} environment`;
+
+  if (!account) {
+    return null;
+  }
+
+  const handleSignOut = async () => {
+    setSignOutError(null);
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+    } catch {
+      setSignOutError(
+        'Design Flow could not sign you out. Keep this page open and try again.',
+      );
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   return (
     <div className={styles.shell}>
@@ -30,7 +60,13 @@ export function AppShell() {
           <span>Design Flow</span>
         </NavLink>
         <div className={styles.headerActions}>
-          <span className={styles.foundationLabel}>Phase 1 foundation</span>
+          <span className={styles.userContext}>
+            <strong>{account.displayName}</strong>
+            <span>
+              {account.positionCode.charAt(0).toUpperCase() +
+                account.positionCode.slice(1)}
+            </span>
+          </span>
           <Button
             variant="ghost"
             size="small"
@@ -39,6 +75,19 @@ export function AppShell() {
           >
             {theme === 'light' ? 'Dark mode' : 'Light mode'}
           </Button>
+          <Button
+            variant="ghost"
+            size="small"
+            isLoading={isSigningOut}
+            onClick={handleSignOut}
+          >
+            Sign out
+          </Button>
+          {signOutError ? (
+            <span className={styles.sessionError} role="alert">
+              {signOutError}
+            </span>
+          ) : null}
         </div>
       </header>
 
@@ -62,7 +111,7 @@ export function AppShell() {
             ))}
           </ul>
         </nav>
-        <p className={styles.syntheticNotice}>Synthetic local environment</p>
+        <p className={styles.syntheticNotice}>{environmentNotice}</p>
       </aside>
 
       <main className={styles.main} id="main-content" tabIndex={-1}>

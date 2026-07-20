@@ -1,65 +1,206 @@
--- Design Flow Phase 1 local/staging seed.
+-- Design Flow local development and test seed.
 --
--- Every person and datum below is visibly synthetic. The auth rows are
--- placeholder principals for foreign keys and RLS tests; they intentionally
--- have no password and cannot sign in. Phase 2 owns login-capable account
--- creation through the approved Auth-admin boundary.
+-- Every person and datum below is visibly synthetic. These local-only Auth
+-- users share one documented synthetic development password so the approved
+-- authentication states can be exercised after a reset. Hosted environments
+-- are provisioned only through the protected account lifecycle functions.
 
 begin;
 
 set constraints all deferred;
 
-insert into auth.users (id, email, raw_user_meta_data)
+insert into auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at
+)
 values
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000001',
+    'authenticated',
+    'authenticated',
     'viewer@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000002',
+    'authenticated',
+    'authenticated',
     'designer@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000003',
+    'authenticated',
+    'authenticated',
     'designer-admin@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000004',
+    'authenticated',
+    'authenticated',
     'lead@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000005',
+    'authenticated',
+    'authenticated',
     'lead-admin@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000006',
+    'authenticated',
+    'authenticated',
     'manager@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000007',
+    'authenticated',
+    'authenticated',
     'manager-admin@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000008',
+    'authenticated',
+    'authenticated',
     'inactive-designer@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   ),
   (
+    '00000000-0000-0000-0000-000000000000',
     '10000000-0000-4000-8000-000000000009',
+    'authenticated',
+    'authenticated',
     'password-restricted-designer@design-flow.example.invalid',
-    '{"synthetic": true}'::jsonb
+    extensions.crypt('LocalSynthetic!Pass2026', extensions.gen_salt('bf')),
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"synthetic": true}'::jsonb,
+    '2026-01-01 09:00:00+00'::timestamptz,
+    '2026-01-01 09:00:00+00'::timestamptz
   )
 on conflict (id) do update
 set
+  instance_id = excluded.instance_id,
+  aud = excluded.aud,
+  role = excluded.role,
   email = excluded.email,
-  raw_user_meta_data = excluded.raw_user_meta_data;
+  encrypted_password = excluded.encrypted_password,
+  email_confirmed_at = excluded.email_confirmed_at,
+  raw_app_meta_data = excluded.raw_app_meta_data,
+  raw_user_meta_data = excluded.raw_user_meta_data,
+  updated_at = excluded.updated_at;
+
+-- GoTrue's password-login query expects these token placeholders to be empty
+-- strings, matching Auth Admin-created users, rather than SQL nulls.
+update auth.users
+set
+  confirmation_token = '',
+  recovery_token = '',
+  email_change_token_new = '',
+  email_change = ''
+where raw_user_meta_data @> '{"synthetic": true}'::jsonb;
+
+insert into auth.identities (
+  provider_id,
+  user_id,
+  identity_data,
+  provider,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+select
+  fixture.id::text,
+  fixture.id,
+  jsonb_build_object(
+    'sub', fixture.id::text,
+    'email', fixture.email,
+    'email_verified', true,
+    'phone_verified', false
+  ),
+  'email',
+  '2026-01-01 09:00:00+00'::timestamptz,
+  '2026-01-01 09:00:00+00'::timestamptz,
+  '2026-01-01 09:00:00+00'::timestamptz
+from (
+  values
+    ('10000000-0000-4000-8000-000000000001'::uuid, 'viewer@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000002'::uuid, 'designer@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000003'::uuid, 'designer-admin@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000004'::uuid, 'lead@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000005'::uuid, 'lead-admin@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000006'::uuid, 'manager@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000007'::uuid, 'manager-admin@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000008'::uuid, 'inactive-designer@design-flow.example.invalid'),
+    ('10000000-0000-4000-8000-000000000009'::uuid, 'password-restricted-designer@design-flow.example.invalid')
+) as fixture(id, email)
+on conflict (provider_id, provider) do update
+set
+  user_id = excluded.user_id,
+  identity_data = excluded.identity_data,
+  updated_at = excluded.updated_at;
 
 insert into public.profiles (
   id,

@@ -248,14 +248,21 @@ Helpers are `STABLE` only when safe for the duration of one statement. Mutation 
 Except for the one-time first-Admin bootstrap, every Edge Function:
 
 1. validates a Supabase bearer token;
-2. loads the caller's current profile from Postgres;
+2. loads only the caller's `id`, `email`, `position_code`, `is_admin`,
+   `is_active`, and `must_change_password` profile projection from Postgres;
 3. rejects inactive/password-restricted callers;
 4. independently requires current Admin privilege;
 5. validates Viewer + Admin is impossible;
 6. uses elevated Auth credentials only for the minimum Auth operation; and
 7. delegates database state/history/audit changes to the owning idempotent RPC.
 
-The service-role key is an Edge secret only. It never enters frontend code, a response, a database audit payload, or logs.
+The hosted Supabase secret key is an Edge secret only and maps to the
+`service_role` database role. That role receives `SELECT` only on the six
+profile columns required by the authorization projection above; it receives no
+unrelated profile-column grant. Hosted functions read the default key from
+`SUPABASE_SECRET_KEYS`, while local development may fall back to the legacy
+`SUPABASE_SERVICE_ROLE_KEY`. Neither key ever enters frontend code, a response,
+a database audit payload, or logs.
 
 ## 7. Required allow/deny cases
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const localSupabaseHostnames = new Set(['127.0.0.1', 'localhost']);
+const loopbackSupabaseHostnames = new Set(['127.0.0.1', 'localhost']);
 
 function parseUrl(value: string): URL | null {
   try {
@@ -10,10 +10,41 @@ function parseUrl(value: string): URL | null {
   }
 }
 
+function isPrivateIpv4Hostname(hostname: string): boolean {
+  const octets = hostname.split('.').map(Number);
+
+  if (
+    octets.length !== 4 ||
+    octets.some(
+      (octet, index) =>
+        !Number.isInteger(octet) ||
+        octet < 0 ||
+        octet > 255 ||
+        String(octet) !== hostname.split('.')[index],
+    )
+  ) {
+    return false;
+  }
+
+  const [first, second] = octets;
+
+  return (
+    first === 10 ||
+    (first === 172 && second !== undefined && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
+function isLocalSupabaseHostname(hostname: string): boolean {
+  return (
+    loopbackSupabaseHostnames.has(hostname) || isPrivateIpv4Hostname(hostname)
+  );
+}
+
 function isLocalSupabaseUrl(value: string): boolean {
   const url = parseUrl(value);
 
-  return url !== null && localSupabaseHostnames.has(url.hostname);
+  return url !== null && isLocalSupabaseHostname(url.hostname);
 }
 
 function hasAllowedProtocol(value: string): boolean {
@@ -22,7 +53,7 @@ function hasAllowedProtocol(value: string): boolean {
   return (
     url !== null &&
     (url.protocol === 'https:' ||
-      (url.protocol === 'http:' && localSupabaseHostnames.has(url.hostname)))
+      (url.protocol === 'http:' && isLocalSupabaseHostname(url.hostname)))
   );
 }
 

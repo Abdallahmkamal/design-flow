@@ -2264,7 +2264,98 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      complete_own_password_change: {
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
+      finalize_first_admin_bootstrap: {
+        Args: {
+          auth_user_id: string
+          display_name: string
+          email: string
+          operation_id: string
+          timezone: string
+        }
+        Returns: Json
+      }
+      finalize_first_admin_credential_recovery: {
+        Args: { operation_id: string }
+        Returns: Json
+      }
+      finalize_member_account_creation: {
+        Args: {
+          actor_profile_id: string
+          auth_user_id: string
+          display_name: string
+          email: string
+          is_admin: boolean
+          operation_id: string
+          position_code: string
+          supervisor_id: string
+        }
+        Returns: Json
+      }
+      finalize_member_deactivation: {
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
+      finalize_member_reactivation: {
+        Args: {
+          actor_profile_id: string
+          is_admin: boolean
+          must_change_password: boolean
+          operation_id: string
+          position_code: string
+          supervisor_id: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
+      finalize_temporary_password_reset: {
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
+      get_edge_operation_result: {
+        Args: {
+          operation_code: string
+          operation_id: string
+          request_payload: Json
+        }
+        Returns: Json
+      }
+      get_own_account_state: {
+        Args: never
+        Returns: {
+          display_name: string
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          must_change_password: boolean
+          position_code: string
+        }[]
+      }
+      prepare_first_admin_credential_recovery: {
+        Args: { email: string; operation_id: string }
+        Returns: Json
+      }
+      prepare_member_deactivation: {
+        Args: {
+          actor_profile_id: string
+          assignment_replacements?: Json
+          operation_id?: string
+          reporting_replacements?: Json
+          target_profile_id: string
+        }
+        Returns: Json
+      }
+      prepare_temporary_password_reset: {
+        Args: {
+          actor_profile_id: string
+          operation_id: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
