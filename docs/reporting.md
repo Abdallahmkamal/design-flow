@@ -1,7 +1,7 @@
 # Reporting definitions
 
-**Version:** 0.5  
-**Checkpoint date:** 2026-07-16  
+**Version:** 0.6
+**Checkpoint date:** 2026-07-20
 **Status:** Core attribution, metrics, UI layouts, and CSV export contracts approved
 
 Reporting is a primary product outcome. Every metric must be explainable, traceable to source records, and exportable without implying that activity frequency equals effort, quality, complexity, or performance.
@@ -190,6 +190,25 @@ The individual drill-down should separate:
 - Designer's contribution dates and types
 - First and last contribution date
 - Current ticket status
+
+### Recorded ticket activity
+
+The one-person view includes a chronological, cross-ticket source table for the selected period. It contains one row per valid ticket work-log entry rather than one row per ticket or ticket-day. Multiple entries on the same ticket/date therefore remain individually visible.
+
+Each row shows:
+
+- Actual work date
+- Ticket
+- Area/Squad
+- Work type
+- Primary-assignee or contributor relationship effective on that work date
+- Optional description
+- Submitted by, while credit remains with the selected `worked_by` person
+- Logged-at timestamp
+- Corrected indicator/time where applicable
+- Open Work Item action
+
+Use corrected current values and exclude withdrawn entries. A changed `worked_by` moves the entry to the newly credited person's activity. `logged_by` remains the original submitter and never receives work credit. Full correction/withdrawal audit reconstruction remains in the Work Item timeline and restricted revision sources rather than this normal activity table.
 
 ### Standalone visual activity
 

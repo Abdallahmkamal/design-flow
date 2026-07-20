@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-20 — D-100 resolves the Phase 1 database boundary without changing implementation order
+**Last updated:** 2026-07-20 — D-101 adds the single-person recorded ticket activity drill-down without changing implementation order
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -235,6 +235,7 @@ Implement the approved reporting layer:
 - Tickets, Designers, and Visual Work report tabs;
 - default period and people scopes, URL-backed filters, refinements, sorting, and drill-down;
 - neutral one-, two-, and multi-designer layouts without ranking or an explicit comparison action;
+- a single-person, period-filtered recorded ticket activity table across all tickets, plus the one-person All Tickets deep link;
 - centralized, token-styled Recharts bar/line visualizations with accessible summaries/tables;
 - ticket summary, ticket activity, designer summary, designer-ticket, and visual-work CSV exports; and
 - filter-aware, human-readable Work Item PDF with comments off by default and withdrawn bodies excluded.
@@ -243,6 +244,7 @@ Implement the approved reporting layer:
 
 - Every card, chart, table, CSV field, and PDF value reconciles to controlled fixtures and documented formulas.
 - Ownership, contribution, active days, ticket-days, and visual work remain distinct and explainable.
+- The single-person recorded activity table reconciles every visible row to valid work-log sources, preserves `worked_by` credit separately from `logged_by` submission, and excludes withdrawn entries.
 - CSV exports contain all matching rows rather than only the visible page and preserve the visible view controls defined by the specification.
 - CSV access is limited to Lead, Manager, or Admin privilege; Work Item PDF access follows its approved capability rule.
 - Charts remain understandable through their accessible text/table alternative and do not imply productivity scoring.

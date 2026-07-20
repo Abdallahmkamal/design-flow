@@ -1,6 +1,6 @@
 begin;
 
-select plan(27);
+select plan(28);
 
 insert into public.operation_requests (
   id,
@@ -38,6 +38,19 @@ values (
   '[SYNTHETIC TEST] Permission fixture',
   '50000000-0000-4000-8000-000000000001',
   '10000000-0000-4000-8000-000000000002'
+);
+
+insert into public.work_items (
+  id,
+  title,
+  area_id,
+  created_by
+)
+values (
+  '70000000-0000-4000-8000-000000000008',
+  '[SYNTHETIC TEST] Second cross-ticket history fixture',
+  '50000000-0000-4000-8000-000000000001',
+  '10000000-0000-4000-8000-000000000004'
 );
 
 insert into public.work_item_events (
@@ -127,6 +140,52 @@ values (
   statement_timestamp()
 );
 
+insert into public.work_log_batches (
+  id,
+  context_code,
+  work_item_id,
+  worked_by,
+  logged_by,
+  create_operation_id
+)
+values
+  (
+    '70000000-0000-4000-8000-000000000009',
+    'ticket',
+    '70000000-0000-4000-8000-000000000002',
+    '10000000-0000-4000-8000-000000000003',
+    '10000000-0000-4000-8000-000000000007',
+    '70000000-0000-4000-8000-000000000001'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000010',
+    'ticket',
+    '70000000-0000-4000-8000-000000000008',
+    '10000000-0000-4000-8000-000000000003',
+    '10000000-0000-4000-8000-000000000007',
+    '70000000-0000-4000-8000-000000000001'
+  );
+
+insert into public.work_log_entries (
+  batch_id,
+  work_date,
+  work_type_code,
+  position
+)
+values
+  (
+    '70000000-0000-4000-8000-000000000009',
+    private.current_team_date(),
+    'ui_visual_design',
+    1
+  ),
+  (
+    '70000000-0000-4000-8000-000000000010',
+    private.current_team_date(),
+    'review_iteration',
+    1
+  );
+
 select set_config(
   'request.jwt.claim.sub',
   '10000000-0000-4000-8000-000000000001',
@@ -137,13 +196,28 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Viewer receives the approved whole-team read surface'
+  't|8|6|2',
+  'Viewer receives valid work history across unrelated tickets'
+);
+
+select is(
+  (
+    select format(
+      '%s|%s|%s',
+      count(distinct work_item_id),
+      min(worked_by::text),
+      min(logged_by::text)
+    )
+    from public.valid_work_log_entries
+  ),
+  '2|10000000-0000-4000-8000-000000000003|10000000-0000-4000-8000-000000000007',
+  'cross-ticket history preserves credited designer separately from submitter'
 );
 select is(
   format(
@@ -168,13 +242,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Designer receives the approved whole-team read surface'
+  't|8|6|2',
+  'Designer receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -199,13 +274,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Designer + Admin receives the approved whole-team read surface'
+  't|8|6|2',
+  'Designer + Admin receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -230,13 +306,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Lead receives the approved whole-team read surface'
+  't|8|6|2',
+  'Lead receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -261,13 +338,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Lead + Admin receives the approved whole-team read surface'
+  't|8|6|2',
+  'Lead + Admin receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -292,13 +370,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Manager receives the approved whole-team read surface'
+  't|8|6|2',
+  'Manager receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -323,13 +402,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s',
+    '%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
-    (select count(*) from public.work_item_statuses)
+    (select count(*) from public.work_item_statuses),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  't|8|6',
-  'Manager + Admin receives the approved whole-team read surface'
+  't|8|6|2',
+  'Manager + Admin receives valid work history across unrelated tickets'
 );
 select is(
   format(
@@ -354,13 +434,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s|%s',
+    '%s|%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
     (select count(*) from public.work_item_statuses),
-    (select count(*) from public.profiles)
+    (select count(*) from public.profiles),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  'f|0|0|0',
+  'f|0|0|0|0',
   'inactive principals receive no normal or own-account application rows'
 );
 
@@ -374,13 +455,14 @@ set local role authenticated;
 
 select is(
   format(
-    '%s|%s|%s|%s',
+    '%s|%s|%s|%s|%s',
     private.is_application_user(),
     (select count(*) from public.team_directory),
     (select count(*) from public.work_item_statuses),
-    (select count(*) from public.profiles)
+    (select count(*) from public.profiles),
+    (select count(*) from public.valid_work_log_entries)
   ),
-  'f|1|0|1',
+  'f|1|0|1|0',
   'password-restricted principals receive only their own minimal profile row'
 );
 

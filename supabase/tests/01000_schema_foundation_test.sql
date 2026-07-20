@@ -1,6 +1,6 @@
 begin;
 
-select plan(32);
+select plan(35);
 
 select has_extension('pgcrypto', 'pgcrypto is installed');
 select has_extension('citext', 'citext is installed');
@@ -78,6 +78,43 @@ select is(
   ),
   5,
   'all approved security-invoker read views exist'
+);
+
+select ok(
+  exists (
+    select 1
+    from pg_catalog.pg_indexes
+    where schemaname = 'public'
+      and tablename = 'work_log_batches'
+      and indexname = 'work_log_batches_person_idx'
+      and position('(worked_by, withdrawn_at, created_at)' in indexdef) > 0
+  ),
+  'cross-ticket work history has the credited-person batch index'
+);
+
+select ok(
+  exists (
+    select 1
+    from pg_catalog.pg_indexes
+    where schemaname = 'public'
+      and tablename = 'work_log_entries'
+      and indexname = 'work_log_entries_reporting_idx'
+      and position('(work_date, work_type_code)' in indexdef) > 0
+  ),
+  'cross-ticket work history has the reporting-date and type index'
+);
+
+select ok(
+  exists (
+    select 1
+    from pg_catalog.pg_indexes
+    where schemaname = 'public'
+      and tablename = 'work_log_entries'
+      and indexname = 'work_log_entries_active_date_idx'
+      and position('(batch_id, work_date)' in indexdef) > 0
+      and position('WHERE (withdrawn_at IS NULL)' in indexdef) > 0
+  ),
+  'valid work history has the active batch-date join index'
 );
 
 select is(

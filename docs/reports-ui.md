@@ -1,7 +1,7 @@
 # Reports UI and export specification
 
-**Version:** 1.1  
-**Decision date:** 2026-07-16  
+**Version:** 1.2
+**Decision date:** 2026-07-20
 **Status:** Approved for MVP planning
 
 Reports turns the approved reporting definitions into three usable views: Tickets, Designers, and Visual Work. Every value must remain traceable to source records and must not imply that recorded activity equals effort, quality, complexity, or performance.
@@ -180,6 +180,25 @@ One- and two-person views use identical scales. Multi-person charts must not def
 - First and last contribution date
 - Current/period-end ticket status
 
+#### Recorded ticket activity
+
+The one-person view includes a period-filtered table across all tickets with one row per valid ticket work-log entry:
+
+- Work date
+- Ticket ID and title
+- Area/Squad
+- Work type
+- Primary or contributor relationship on the work date
+- Optional description
+- Submitted by
+- Logged at
+- Corrected indicator/time where applicable
+- Open Work Item
+
+Credit belongs to the selected `worked_by` person. Show `Submitted by [name]` prominently when `logged_by` differs, without transferring credit to the submitter. Use corrected current values, exclude withdrawn entries, and sort by work date descending with logged-at time and entry ID as stable tie-breakers. The Work Item timeline remains the full ticket-specific audit narrative.
+
+The table uses the shared period, person, and Area/Squad filters and may additionally refine by relationship or ticket work type. It is source drill-down, not a raw-entry productivity chart. On mobile, each row becomes an expandable record retaining the same fields and Open Work Item action.
+
 #### Standalone visual activity
 
 - Date
@@ -188,6 +207,8 @@ One- and two-person views use identical scales. Multi-person charts must not def
 - Optional description
 
 Visual activity stays in a separate section and never increases ticket completion, ownership, contribution, or ticket-day values.
+
+The recorded ticket activity table does not add a sixth CSV schema. The existing designer-ticket detail export remains one row per designer-ticket relationship with its defined activity dates and counts.
 
 ### Designer overview table
 
