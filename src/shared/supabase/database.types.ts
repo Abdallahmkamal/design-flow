@@ -4,3261 +4,3261 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   graphql_public: {
     Tables: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
       graphql: {
         Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       admin_audit_event_types: {
         Row: {
-          code: string;
-        };
+          code: string
+        }
         Insert: {
-          code: string;
-        };
+          code: string
+        }
         Update: {
-          code?: string;
-        };
-        Relationships: [];
-      };
+          code?: string
+        }
+        Relationships: []
+      }
       admin_audit_events: {
         Row: {
-          actor_id: string | null;
-          event_type_code: string;
-          id: string;
-          new_values: Json | null;
-          occurred_at: string;
-          operation_id: string;
-          previous_values: Json | null;
-          subject_id: string | null;
-          subject_type: string;
-        };
+          actor_id: string | null
+          event_type_code: string
+          id: string
+          new_values: Json | null
+          occurred_at: string
+          operation_id: string
+          previous_values: Json | null
+          subject_id: string | null
+          subject_type: string
+        }
         Insert: {
-          actor_id?: string | null;
-          event_type_code: string;
-          id?: string;
-          new_values?: Json | null;
-          occurred_at?: string;
-          operation_id: string;
-          previous_values?: Json | null;
-          subject_id?: string | null;
-          subject_type: string;
-        };
+          actor_id?: string | null
+          event_type_code: string
+          id?: string
+          new_values?: Json | null
+          occurred_at?: string
+          operation_id: string
+          previous_values?: Json | null
+          subject_id?: string | null
+          subject_type: string
+        }
         Update: {
-          actor_id?: string | null;
-          event_type_code?: string;
-          id?: string;
-          new_values?: Json | null;
-          occurred_at?: string;
-          operation_id?: string;
-          previous_values?: Json | null;
-          subject_id?: string | null;
-          subject_type?: string;
-        };
+          actor_id?: string | null
+          event_type_code?: string
+          id?: string
+          new_values?: Json | null
+          occurred_at?: string
+          operation_id?: string
+          previous_values?: Json | null
+          subject_id?: string | null
+          subject_type?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_event_type_code_fkey';
-            columns: ['event_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'admin_audit_event_types';
-            referencedColumns: ['code'];
+            foreignKeyName: "admin_audit_events_event_type_code_fkey"
+            columns: ["event_type_code"]
+            isOneToOne: false
+            referencedRelation: "admin_audit_event_types"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'admin_audit_events_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       blockers: {
         Row: {
-          blocked_at: string;
-          blocked_by: string;
-          create_operation_id: string;
-          expected_resolution_date: string | null;
-          id: string;
-          reason: string;
-          resolution_note: string | null;
-          resolve_operation_id: string | null;
-          resolved_at: string | null;
-          resolved_by: string | null;
-          work_item_id: string;
-        };
+          blocked_at: string
+          blocked_by: string
+          create_operation_id: string
+          expected_resolution_date: string | null
+          id: string
+          reason: string
+          resolution_note: string | null
+          resolve_operation_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          work_item_id: string
+        }
         Insert: {
-          blocked_at?: string;
-          blocked_by: string;
-          create_operation_id: string;
-          expected_resolution_date?: string | null;
-          id?: string;
-          reason: string;
-          resolution_note?: string | null;
-          resolve_operation_id?: string | null;
-          resolved_at?: string | null;
-          resolved_by?: string | null;
-          work_item_id: string;
-        };
+          blocked_at?: string
+          blocked_by: string
+          create_operation_id: string
+          expected_resolution_date?: string | null
+          id?: string
+          reason: string
+          resolution_note?: string | null
+          resolve_operation_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          work_item_id: string
+        }
         Update: {
-          blocked_at?: string;
-          blocked_by?: string;
-          create_operation_id?: string;
-          expected_resolution_date?: string | null;
-          id?: string;
-          reason?: string;
-          resolution_note?: string | null;
-          resolve_operation_id?: string | null;
-          resolved_at?: string | null;
-          resolved_by?: string | null;
-          work_item_id?: string;
-        };
+          blocked_at?: string
+          blocked_by?: string
+          create_operation_id?: string
+          expected_resolution_date?: string | null
+          id?: string
+          reason?: string
+          resolution_note?: string | null
+          resolve_operation_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'blockers_blocked_by_fkey';
-            columns: ['blocked_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_blocked_by_fkey';
-            columns: ['blocked_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_blocked_by_fkey';
-            columns: ['blocked_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_create_operation_id_fkey';
-            columns: ['create_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_create_operation_id_fkey"
+            columns: ["create_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_resolve_operation_id_fkey';
-            columns: ['resolve_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_resolve_operation_id_fkey"
+            columns: ["resolve_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_resolved_by_fkey';
-            columns: ['resolved_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_resolved_by_fkey';
-            columns: ['resolved_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_resolved_by_fkey';
-            columns: ['resolved_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'blockers_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "blockers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       bootstrap_state: {
         Row: {
-          consumed_at: string | null;
-          first_admin_profile_id: string | null;
-          operation_id: string | null;
-          singleton_key: boolean;
-        };
+          consumed_at: string | null
+          first_admin_profile_id: string | null
+          operation_id: string | null
+          singleton_key: boolean
+        }
         Insert: {
-          consumed_at?: string | null;
-          first_admin_profile_id?: string | null;
-          operation_id?: string | null;
-          singleton_key?: boolean;
-        };
+          consumed_at?: string | null
+          first_admin_profile_id?: string | null
+          operation_id?: string | null
+          singleton_key?: boolean
+        }
         Update: {
-          consumed_at?: string | null;
-          first_admin_profile_id?: string | null;
-          operation_id?: string | null;
-          singleton_key?: boolean;
-        };
+          consumed_at?: string | null
+          first_admin_profile_id?: string | null
+          operation_id?: string | null
+          singleton_key?: boolean
+        }
         Relationships: [
           {
-            foreignKeyName: 'bootstrap_state_first_admin_profile_id_fkey';
-            columns: ['first_admin_profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "bootstrap_state_first_admin_profile_id_fkey"
+            columns: ["first_admin_profile_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bootstrap_state_first_admin_profile_id_fkey';
-            columns: ['first_admin_profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "bootstrap_state_first_admin_profile_id_fkey"
+            columns: ["first_admin_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bootstrap_state_first_admin_profile_id_fkey';
-            columns: ['first_admin_profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "bootstrap_state_first_admin_profile_id_fkey"
+            columns: ["first_admin_profile_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bootstrap_state_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "bootstrap_state_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       comment_revisions: {
         Row: {
-          change_kind: string;
-          changed_at: string;
-          changed_by: string;
-          comment_id: string;
-          id: string;
-          new_body: string | null;
-          operation_id: string;
-          previous_body: string;
-          revision_number: number;
-        };
+          change_kind: string
+          changed_at: string
+          changed_by: string
+          comment_id: string
+          id: string
+          new_body: string | null
+          operation_id: string
+          previous_body: string
+          revision_number: number
+        }
         Insert: {
-          change_kind: string;
-          changed_at?: string;
-          changed_by: string;
-          comment_id: string;
-          id?: string;
-          new_body?: string | null;
-          operation_id: string;
-          previous_body: string;
-          revision_number: number;
-        };
+          change_kind: string
+          changed_at?: string
+          changed_by: string
+          comment_id: string
+          id?: string
+          new_body?: string | null
+          operation_id: string
+          previous_body: string
+          revision_number: number
+        }
         Update: {
-          change_kind?: string;
-          changed_at?: string;
-          changed_by?: string;
-          comment_id?: string;
-          id?: string;
-          new_body?: string | null;
-          operation_id?: string;
-          previous_body?: string;
-          revision_number?: number;
-        };
+          change_kind?: string
+          changed_at?: string
+          changed_by?: string
+          comment_id?: string
+          id?: string
+          new_body?: string | null
+          operation_id?: string
+          previous_body?: string
+          revision_number?: number
+        }
         Relationships: [
           {
-            foreignKeyName: 'comment_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comment_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comment_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comment_revisions_comment_id_fkey';
-            columns: ['comment_id'];
-            isOneToOne: false;
-            referencedRelation: 'comments';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comment_revisions_comment_id_fkey';
-            columns: ['comment_id'];
-            isOneToOne: false;
-            referencedRelation: 'visible_comments';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "visible_comments"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comment_revisions_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "comment_revisions_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       comments: {
         Row: {
-          author_id: string;
-          body: string;
-          created_at: string;
-          edited_at: string | null;
-          id: string;
-          withdrawn_at: string | null;
-          withdrawn_by: string | null;
-          work_item_id: string;
-        };
+          author_id: string
+          body: string
+          created_at: string
+          edited_at: string | null
+          id: string
+          withdrawn_at: string | null
+          withdrawn_by: string | null
+          work_item_id: string
+        }
         Insert: {
-          author_id: string;
-          body: string;
-          created_at?: string;
-          edited_at?: string | null;
-          id?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id: string;
-        };
+          author_id: string
+          body: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id: string
+        }
         Update: {
-          author_id?: string;
-          body?: string;
-          created_at?: string;
-          edited_at?: string | null;
-          id?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string;
-        };
+          author_id?: string
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       labels: {
         Row: {
-          archived_at: string | null;
-          archived_by: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          is_active: boolean;
-          name: string;
-          sort_order: number;
-          updated_at: string;
-          updated_by: string;
-        };
+          archived_at: string | null
+          archived_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+          updated_by: string
+        }
         Insert: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          is_active?: boolean;
-          name: string;
-          sort_order: number;
-          updated_at?: string;
-          updated_by: string;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order: number
+          updated_at?: string
+          updated_by: string
+        }
         Update: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          is_active?: boolean;
-          name?: string;
-          sort_order?: number;
-          updated_at?: string;
-          updated_by?: string;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'labels_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'labels_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "labels_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       notification_type_definitions: {
         Row: {
-          code: string;
-        };
+          code: string
+        }
         Insert: {
-          code: string;
-        };
+          code: string
+        }
         Update: {
-          code?: string;
-        };
-        Relationships: [];
-      };
+          code?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
-          actor_id: string;
-          created_at: string;
-          id: string;
-          notification_type_code: string;
-          read_at: string | null;
-          recipient_id: string;
-          source_event_id: string;
-          work_item_id: string;
-        };
+          actor_id: string
+          created_at: string
+          id: string
+          notification_type_code: string
+          read_at: string | null
+          recipient_id: string
+          source_event_id: string
+          work_item_id: string
+        }
         Insert: {
-          actor_id: string;
-          created_at?: string;
-          id?: string;
-          notification_type_code: string;
-          read_at?: string | null;
-          recipient_id: string;
-          source_event_id: string;
-          work_item_id: string;
-        };
+          actor_id: string
+          created_at?: string
+          id?: string
+          notification_type_code: string
+          read_at?: string | null
+          recipient_id: string
+          source_event_id: string
+          work_item_id: string
+        }
         Update: {
-          actor_id?: string;
-          created_at?: string;
-          id?: string;
-          notification_type_code?: string;
-          read_at?: string | null;
-          recipient_id?: string;
-          source_event_id?: string;
-          work_item_id?: string;
-        };
+          actor_id?: string
+          created_at?: string
+          id?: string
+          notification_type_code?: string
+          read_at?: string | null
+          recipient_id?: string
+          source_event_id?: string
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'notifications_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_notification_type_code_fkey';
-            columns: ['notification_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'notification_type_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "notifications_notification_type_code_fkey"
+            columns: ["notification_type_code"]
+            isOneToOne: false
+            referencedRelation: "notification_type_definitions"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'notifications_recipient_id_fkey';
-            columns: ['recipient_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_recipient_id_fkey';
-            columns: ['recipient_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_recipient_id_fkey';
-            columns: ['recipient_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_source_event_id_fkey';
-            columns: ['source_event_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_events';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_source_event_id_fkey"
+            columns: ["source_event_id"]
+            isOneToOne: false
+            referencedRelation: "work_item_events"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       operation_requests: {
         Row: {
-          actor_id: string | null;
-          completed_at: string | null;
-          created_at: string;
-          id: string;
-          operation_code: string;
-          request_hash: string;
-          result: Json | null;
-          state: string;
-          updated_at: string;
-        };
+          actor_id: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          operation_code: string
+          request_hash: string
+          result: Json | null
+          state: string
+          updated_at: string
+        }
         Insert: {
-          actor_id?: string | null;
-          completed_at?: string | null;
-          created_at?: string;
-          id: string;
-          operation_code: string;
-          request_hash: string;
-          result?: Json | null;
-          state: string;
-          updated_at?: string;
-        };
+          actor_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id: string
+          operation_code: string
+          request_hash: string
+          result?: Json | null
+          state: string
+          updated_at?: string
+        }
         Update: {
-          actor_id?: string | null;
-          completed_at?: string | null;
-          created_at?: string;
-          id?: string;
-          operation_code?: string;
-          request_hash?: string;
-          result?: Json | null;
-          state?: string;
-          updated_at?: string;
-        };
+          actor_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          operation_code?: string
+          request_hash?: string
+          result?: Json | null
+          state?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'operation_requests_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "operation_requests_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'operation_requests_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "operation_requests_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'operation_requests_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "operation_requests_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       position_definitions: {
         Row: {
-          admin_eligible: boolean;
-          code: string;
-          display_label: string;
-          is_selectable: boolean;
-          primary_assignment_eligible: boolean;
-          sort_order: number;
-          work_attribution_eligible: boolean;
-        };
+          admin_eligible: boolean
+          code: string
+          display_label: string
+          is_selectable: boolean
+          primary_assignment_eligible: boolean
+          sort_order: number
+          work_attribution_eligible: boolean
+        }
         Insert: {
-          admin_eligible: boolean;
-          code: string;
-          display_label: string;
-          is_selectable?: boolean;
-          primary_assignment_eligible: boolean;
-          sort_order: number;
-          work_attribution_eligible: boolean;
-        };
+          admin_eligible: boolean
+          code: string
+          display_label: string
+          is_selectable?: boolean
+          primary_assignment_eligible: boolean
+          sort_order: number
+          work_attribution_eligible: boolean
+        }
         Update: {
-          admin_eligible?: boolean;
-          code?: string;
-          display_label?: string;
-          is_selectable?: boolean;
-          primary_assignment_eligible?: boolean;
-          sort_order?: number;
-          work_attribution_eligible?: boolean;
-        };
-        Relationships: [];
-      };
+          admin_eligible?: boolean
+          code?: string
+          display_label?: string
+          is_selectable?: boolean
+          primary_assignment_eligible?: boolean
+          sort_order?: number
+          work_attribution_eligible?: boolean
+        }
+        Relationships: []
+      }
       product_policy_versions: {
         Row: {
-          created_at: string;
-          due_soon_working_days: number;
-          effective_from: string;
-          effective_to: string | null;
-          max_work_log_entries: number;
-          stale_after_working_days: number;
-          version: number;
-          week_starts_on: number;
-          working_days: number[];
-        };
+          created_at: string
+          due_soon_working_days: number
+          effective_from: string
+          effective_to: string | null
+          max_work_log_entries: number
+          stale_after_working_days: number
+          version: number
+          week_starts_on: number
+          working_days: number[]
+        }
         Insert: {
-          created_at?: string;
-          due_soon_working_days: number;
-          effective_from: string;
-          effective_to?: string | null;
-          max_work_log_entries: number;
-          stale_after_working_days: number;
-          version: number;
-          week_starts_on: number;
-          working_days: number[];
-        };
+          created_at?: string
+          due_soon_working_days: number
+          effective_from: string
+          effective_to?: string | null
+          max_work_log_entries: number
+          stale_after_working_days: number
+          version: number
+          week_starts_on: number
+          working_days: number[]
+        }
         Update: {
-          created_at?: string;
-          due_soon_working_days?: number;
-          effective_from?: string;
-          effective_to?: string | null;
-          max_work_log_entries?: number;
-          stale_after_working_days?: number;
-          version?: number;
-          week_starts_on?: number;
-          working_days?: number[];
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          due_soon_working_days?: number
+          effective_from?: string
+          effective_to?: string | null
+          max_work_log_entries?: number
+          stale_after_working_days?: number
+          version?: number
+          week_starts_on?: number
+          working_days?: number[]
+        }
+        Relationships: []
+      }
       profile_access_periods: {
         Row: {
-          changed_by: string | null;
-          end_operation_id: string | null;
-          ended_at: string | null;
-          id: string;
-          is_active: boolean;
-          is_admin: boolean;
-          position_code: string;
-          profile_id: string;
-          start_operation_id: string;
-          started_at: string;
-        };
+          changed_by: string | null
+          end_operation_id: string | null
+          ended_at: string | null
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          position_code: string
+          profile_id: string
+          start_operation_id: string
+          started_at: string
+        }
         Insert: {
-          changed_by?: string | null;
-          end_operation_id?: string | null;
-          ended_at?: string | null;
-          id?: string;
-          is_active: boolean;
-          is_admin: boolean;
-          position_code: string;
-          profile_id: string;
-          start_operation_id: string;
-          started_at: string;
-        };
+          changed_by?: string | null
+          end_operation_id?: string | null
+          ended_at?: string | null
+          id?: string
+          is_active: boolean
+          is_admin: boolean
+          position_code: string
+          profile_id: string
+          start_operation_id: string
+          started_at: string
+        }
         Update: {
-          changed_by?: string | null;
-          end_operation_id?: string | null;
-          ended_at?: string | null;
-          id?: string;
-          is_active?: boolean;
-          is_admin?: boolean;
-          position_code?: string;
-          profile_id?: string;
-          start_operation_id?: string;
-          started_at?: string;
-        };
+          changed_by?: string | null
+          end_operation_id?: string | null
+          ended_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          position_code?: string
+          profile_id?: string
+          start_operation_id?: string
+          started_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'profile_access_periods_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_end_operation_id_fkey';
-            columns: ['end_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_end_operation_id_fkey"
+            columns: ["end_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_position_code_fkey';
-            columns: ['position_code'];
-            isOneToOne: false;
-            referencedRelation: 'position_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "profile_access_periods_position_code_fkey"
+            columns: ["position_code"]
+            isOneToOne: false
+            referencedRelation: "position_definitions"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'profile_access_periods_profile_id_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_profile_id_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_profile_id_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_access_periods_start_operation_id_fkey';
-            columns: ['start_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "profile_access_periods_start_operation_id_fkey"
+            columns: ["start_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       profiles: {
         Row: {
-          created_at: string;
-          created_by: string | null;
-          current_reports_to_id: string | null;
-          display_name: string;
-          email: string;
-          id: string;
-          is_active: boolean;
-          is_admin: boolean;
-          must_change_password: boolean;
-          position_code: string;
-          updated_at: string;
-        };
+          created_at: string
+          created_by: string | null
+          current_reports_to_id: string | null
+          display_name: string
+          email: string
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          must_change_password: boolean
+          position_code: string
+          updated_at: string
+        }
         Insert: {
-          created_at?: string;
-          created_by?: string | null;
-          current_reports_to_id?: string | null;
-          display_name: string;
-          email: string;
-          id: string;
-          is_active?: boolean;
-          is_admin?: boolean;
-          must_change_password?: boolean;
-          position_code: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          created_by?: string | null
+          current_reports_to_id?: string | null
+          display_name: string
+          email: string
+          id: string
+          is_active?: boolean
+          is_admin?: boolean
+          must_change_password?: boolean
+          position_code: string
+          updated_at?: string
+        }
         Update: {
-          created_at?: string;
-          created_by?: string | null;
-          current_reports_to_id?: string | null;
-          display_name?: string;
-          email?: string;
-          id?: string;
-          is_active?: boolean;
-          is_admin?: boolean;
-          must_change_password?: boolean;
-          position_code?: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          created_by?: string | null
+          current_reports_to_id?: string | null
+          display_name?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          is_admin?: boolean
+          must_change_password?: boolean
+          position_code?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'profiles_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_position_code_fkey';
-            columns: ['position_code'];
-            isOneToOne: false;
-            referencedRelation: 'position_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "profiles_position_code_fkey"
+            columns: ["position_code"]
+            isOneToOne: false
+            referencedRelation: "position_definitions"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       reporting_line_assignments: {
         Row: {
-          assigned_by: string;
-          created_at: string;
-          end_operation_id: string | null;
-          ended_on: string | null;
-          id: string;
-          person_id: string;
-          start_operation_id: string;
-          started_on: string;
-          supervisor_id: string;
-        };
+          assigned_by: string
+          created_at: string
+          end_operation_id: string | null
+          ended_on: string | null
+          id: string
+          person_id: string
+          start_operation_id: string
+          started_on: string
+          supervisor_id: string
+        }
         Insert: {
-          assigned_by: string;
-          created_at?: string;
-          end_operation_id?: string | null;
-          ended_on?: string | null;
-          id?: string;
-          person_id: string;
-          start_operation_id: string;
-          started_on: string;
-          supervisor_id: string;
-        };
+          assigned_by: string
+          created_at?: string
+          end_operation_id?: string | null
+          ended_on?: string | null
+          id?: string
+          person_id: string
+          start_operation_id: string
+          started_on: string
+          supervisor_id: string
+        }
         Update: {
-          assigned_by?: string;
-          created_at?: string;
-          end_operation_id?: string | null;
-          ended_on?: string | null;
-          id?: string;
-          person_id?: string;
-          start_operation_id?: string;
-          started_on?: string;
-          supervisor_id?: string;
-        };
+          assigned_by?: string
+          created_at?: string
+          end_operation_id?: string | null
+          ended_on?: string | null
+          id?: string
+          person_id?: string
+          start_operation_id?: string
+          started_on?: string
+          supervisor_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'reporting_line_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_end_operation_id_fkey';
-            columns: ['end_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_end_operation_id_fkey"
+            columns: ["end_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_person_id_fkey';
-            columns: ['person_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_person_id_fkey';
-            columns: ['person_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_person_id_fkey';
-            columns: ['person_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_start_operation_id_fkey';
-            columns: ['start_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_start_operation_id_fkey"
+            columns: ["start_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_supervisor_id_fkey';
-            columns: ['supervisor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_supervisor_id_fkey';
-            columns: ['supervisor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'reporting_line_assignments_supervisor_id_fkey';
-            columns: ['supervisor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "reporting_line_assignments_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       subtasks: {
         Row: {
-          active_position: number | null;
-          completed_at: string | null;
-          completed_by: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          is_completed: boolean;
-          position: number;
-          title: string;
-          updated_at: string;
-          withdrawn_at: string | null;
-          withdrawn_by: string | null;
-          work_item_id: string;
-        };
+          active_position: number | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          is_completed: boolean
+          position: number
+          title: string
+          updated_at: string
+          withdrawn_at: string | null
+          withdrawn_by: string | null
+          work_item_id: string
+        }
         Insert: {
-          active_position?: number | null;
-          completed_at?: string | null;
-          completed_by?: string | null;
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          is_completed?: boolean;
-          position: number;
-          title: string;
-          updated_at?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id: string;
-        };
+          active_position?: number | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          is_completed?: boolean
+          position: number
+          title: string
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id: string
+        }
         Update: {
-          active_position?: number | null;
-          completed_at?: string | null;
-          completed_by?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          is_completed?: boolean;
-          position?: number;
-          title?: string;
-          updated_at?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string;
-        };
+          active_position?: number | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_completed?: boolean
+          position?: number
+          title?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'subtasks_completed_by_fkey';
-            columns: ['completed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_completed_by_fkey';
-            columns: ['completed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_completed_by_fkey';
-            columns: ['completed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'subtasks_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "subtasks_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       team_settings: {
         Row: {
-          singleton_key: boolean;
-          timezone: string | null;
-          updated_at: string;
-          updated_by: string | null;
-        };
+          singleton_key: boolean
+          timezone: string | null
+          updated_at: string
+          updated_by: string | null
+        }
         Insert: {
-          singleton_key?: boolean;
-          timezone?: string | null;
-          updated_at?: string;
-          updated_by?: string | null;
-        };
+          singleton_key?: boolean
+          timezone?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
         Update: {
-          singleton_key?: boolean;
-          timezone?: string | null;
-          updated_at?: string;
-          updated_by?: string | null;
-        };
+          singleton_key?: boolean
+          timezone?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'team_settings_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "team_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'team_settings_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "team_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'team_settings_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "team_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_areas: {
         Row: {
-          archived_at: string | null;
-          archived_by: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          is_active: boolean;
-          name: string;
-          sort_order: number;
-          updated_at: string;
-          updated_by: string;
-        };
+          archived_at: string | null
+          archived_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+          updated_by: string
+        }
         Insert: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          is_active?: boolean;
-          name: string;
-          sort_order: number;
-          updated_at?: string;
-          updated_by: string;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order: number
+          updated_at?: string
+          updated_by: string
+        }
         Update: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          is_active?: boolean;
-          name?: string;
-          sort_order?: number;
-          updated_at?: string;
-          updated_by?: string;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_areas_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_areas_updated_by_fkey';
-            columns: ['updated_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_areas_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_item_assignments: {
         Row: {
-          assigned_by: string;
-          assignee_id: string;
-          end_operation_id: string | null;
-          ended_at: string | null;
-          ended_on: string | null;
-          id: string;
-          start_operation_id: string;
-          started_at: string;
-          started_on: string;
-          work_item_id: string;
-        };
+          assigned_by: string
+          assignee_id: string
+          end_operation_id: string | null
+          ended_at: string | null
+          ended_on: string | null
+          id: string
+          start_operation_id: string
+          started_at: string
+          started_on: string
+          work_item_id: string
+        }
         Insert: {
-          assigned_by: string;
-          assignee_id: string;
-          end_operation_id?: string | null;
-          ended_at?: string | null;
-          ended_on?: string | null;
-          id?: string;
-          start_operation_id: string;
-          started_at: string;
-          started_on: string;
-          work_item_id: string;
-        };
+          assigned_by: string
+          assignee_id: string
+          end_operation_id?: string | null
+          ended_at?: string | null
+          ended_on?: string | null
+          id?: string
+          start_operation_id: string
+          started_at: string
+          started_on: string
+          work_item_id: string
+        }
         Update: {
-          assigned_by?: string;
-          assignee_id?: string;
-          end_operation_id?: string | null;
-          ended_at?: string | null;
-          ended_on?: string | null;
-          id?: string;
-          start_operation_id?: string;
-          started_at?: string;
-          started_on?: string;
-          work_item_id?: string;
-        };
+          assigned_by?: string
+          assignee_id?: string
+          end_operation_id?: string | null
+          ended_at?: string | null
+          ended_on?: string | null
+          id?: string
+          start_operation_id?: string
+          started_at?: string
+          started_on?: string
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_item_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_assigned_by_fkey';
-            columns: ['assigned_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_assignee_id_fkey';
-            columns: ['assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_assignee_id_fkey';
-            columns: ['assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_assignee_id_fkey';
-            columns: ['assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_end_operation_id_fkey';
-            columns: ['end_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_end_operation_id_fkey"
+            columns: ["end_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_start_operation_id_fkey';
-            columns: ['start_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_start_operation_id_fkey"
+            columns: ["start_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_assignments_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_item_event_types: {
         Row: {
-          code: string;
-        };
+          code: string
+        }
         Insert: {
-          code: string;
-        };
+          code: string
+        }
         Update: {
-          code?: string;
-        };
-        Relationships: [];
-      };
+          code?: string
+        }
+        Relationships: []
+      }
       work_item_events: {
         Row: {
-          actor_id: string;
-          event_type_code: string;
-          id: string;
-          new_values: Json | null;
-          occurred_at: string;
-          operation_id: string;
-          previous_values: Json | null;
-          subject_id: string | null;
-          subject_type: string;
-          work_item_id: string;
-        };
+          actor_id: string
+          event_type_code: string
+          id: string
+          new_values: Json | null
+          occurred_at: string
+          operation_id: string
+          previous_values: Json | null
+          subject_id: string | null
+          subject_type: string
+          work_item_id: string
+        }
         Insert: {
-          actor_id: string;
-          event_type_code: string;
-          id?: string;
-          new_values?: Json | null;
-          occurred_at?: string;
-          operation_id: string;
-          previous_values?: Json | null;
-          subject_id?: string | null;
-          subject_type: string;
-          work_item_id: string;
-        };
+          actor_id: string
+          event_type_code: string
+          id?: string
+          new_values?: Json | null
+          occurred_at?: string
+          operation_id: string
+          previous_values?: Json | null
+          subject_id?: string | null
+          subject_type: string
+          work_item_id: string
+        }
         Update: {
-          actor_id?: string;
-          event_type_code?: string;
-          id?: string;
-          new_values?: Json | null;
-          occurred_at?: string;
-          operation_id?: string;
-          previous_values?: Json | null;
-          subject_id?: string | null;
-          subject_type?: string;
-          work_item_id?: string;
-        };
+          actor_id?: string
+          event_type_code?: string
+          id?: string
+          new_values?: Json | null
+          occurred_at?: string
+          operation_id?: string
+          previous_values?: Json | null
+          subject_id?: string | null
+          subject_type?: string
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_item_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_events_event_type_code_fkey';
-            columns: ['event_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_event_types';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_item_events_event_type_code_fkey"
+            columns: ["event_type_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_event_types"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'work_item_events_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_events_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_events_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_events_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_item_labels: {
         Row: {
-          applied_at: string;
-          applied_by: string;
-          apply_operation_id: string;
-          id: string;
-          label_id: string;
-          remove_operation_id: string | null;
-          removed_at: string | null;
-          removed_by: string | null;
-          work_item_id: string;
-        };
+          applied_at: string
+          applied_by: string
+          apply_operation_id: string
+          id: string
+          label_id: string
+          remove_operation_id: string | null
+          removed_at: string | null
+          removed_by: string | null
+          work_item_id: string
+        }
         Insert: {
-          applied_at?: string;
-          applied_by: string;
-          apply_operation_id: string;
-          id?: string;
-          label_id: string;
-          remove_operation_id?: string | null;
-          removed_at?: string | null;
-          removed_by?: string | null;
-          work_item_id: string;
-        };
+          applied_at?: string
+          applied_by: string
+          apply_operation_id: string
+          id?: string
+          label_id: string
+          remove_operation_id?: string | null
+          removed_at?: string | null
+          removed_by?: string | null
+          work_item_id: string
+        }
         Update: {
-          applied_at?: string;
-          applied_by?: string;
-          apply_operation_id?: string;
-          id?: string;
-          label_id?: string;
-          remove_operation_id?: string | null;
-          removed_at?: string | null;
-          removed_by?: string | null;
-          work_item_id?: string;
-        };
+          applied_at?: string
+          applied_by?: string
+          apply_operation_id?: string
+          id?: string
+          label_id?: string
+          remove_operation_id?: string | null
+          removed_at?: string | null
+          removed_by?: string | null
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_item_labels_applied_by_fkey';
-            columns: ['applied_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_applied_by_fkey"
+            columns: ["applied_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_applied_by_fkey';
-            columns: ['applied_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_applied_by_fkey"
+            columns: ["applied_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_applied_by_fkey';
-            columns: ['applied_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_applied_by_fkey"
+            columns: ["applied_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_apply_operation_id_fkey';
-            columns: ['apply_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_apply_operation_id_fkey"
+            columns: ["apply_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_label_id_fkey';
-            columns: ['label_id'];
-            isOneToOne: false;
-            referencedRelation: 'label_settings';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "label_settings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_label_id_fkey';
-            columns: ['label_id'];
-            isOneToOne: false;
-            referencedRelation: 'labels';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_remove_operation_id_fkey';
-            columns: ['remove_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_remove_operation_id_fkey"
+            columns: ["remove_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_removed_by_fkey';
-            columns: ['removed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_removed_by_fkey"
+            columns: ["removed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_removed_by_fkey';
-            columns: ['removed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_removed_by_fkey"
+            columns: ["removed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_removed_by_fkey';
-            columns: ['removed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_removed_by_fkey"
+            columns: ["removed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_labels_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_item_status_history: {
         Row: {
-          changed_at: string;
-          changed_by: string;
-          changed_on: string;
-          from_status_code: string | null;
-          id: string;
-          operation_id: string;
-          to_status_code: string;
-          work_item_id: string;
-        };
+          changed_at: string
+          changed_by: string
+          changed_on: string
+          from_status_code: string | null
+          id: string
+          operation_id: string
+          to_status_code: string
+          work_item_id: string
+        }
         Insert: {
-          changed_at?: string;
-          changed_by: string;
-          changed_on: string;
-          from_status_code?: string | null;
-          id?: string;
-          operation_id: string;
-          to_status_code: string;
-          work_item_id: string;
-        };
+          changed_at?: string
+          changed_by: string
+          changed_on: string
+          from_status_code?: string | null
+          id?: string
+          operation_id: string
+          to_status_code: string
+          work_item_id: string
+        }
         Update: {
-          changed_at?: string;
-          changed_by?: string;
-          changed_on?: string;
-          from_status_code?: string | null;
-          id?: string;
-          operation_id?: string;
-          to_status_code?: string;
-          work_item_id?: string;
-        };
+          changed_at?: string
+          changed_by?: string
+          changed_on?: string
+          from_status_code?: string | null
+          id?: string
+          operation_id?: string
+          to_status_code?: string
+          work_item_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_item_status_history_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_status_history_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_status_history_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_status_history_from_status_code_fkey';
-            columns: ['from_status_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_statuses';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_item_status_history_from_status_code_fkey"
+            columns: ["from_status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'work_item_status_history_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_status_history_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_item_status_history_to_status_code_fkey';
-            columns: ['to_status_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_statuses';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_item_status_history_to_status_code_fkey"
+            columns: ["to_status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'work_item_status_history_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_item_status_history_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_item_status_transitions: {
         Row: {
-          from_status_code: string;
-          introduced_in_policy_version: number;
-          is_allowed: boolean;
-          to_status_code: string;
-        };
+          from_status_code: string
+          introduced_in_policy_version: number
+          is_allowed: boolean
+          to_status_code: string
+        }
         Insert: {
-          from_status_code: string;
-          introduced_in_policy_version: number;
-          is_allowed: boolean;
-          to_status_code: string;
-        };
+          from_status_code: string
+          introduced_in_policy_version: number
+          is_allowed: boolean
+          to_status_code: string
+        }
         Update: {
-          from_status_code?: string;
-          introduced_in_policy_version?: number;
-          is_allowed?: boolean;
-          to_status_code?: string;
-        };
+          from_status_code?: string
+          introduced_in_policy_version?: number
+          is_allowed?: boolean
+          to_status_code?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_item_status_transitions_from_status_code_fkey';
-            columns: ['from_status_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_statuses';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_item_status_transitions_from_status_code_fkey"
+            columns: ["from_status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'work_item_status_transitions_to_status_code_fkey';
-            columns: ['to_status_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_statuses';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_item_status_transitions_to_status_code_fkey"
+            columns: ["to_status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       work_item_statuses: {
         Row: {
-          archive_eligible: boolean;
-          code: string;
-          display_label: string;
-          is_selectable: boolean;
-          reporting_bucket: string;
-          requires_primary_assignee: boolean;
-          sort_order: number;
-        };
+          archive_eligible: boolean
+          code: string
+          display_label: string
+          is_selectable: boolean
+          reporting_bucket: string
+          requires_primary_assignee: boolean
+          sort_order: number
+        }
         Insert: {
-          archive_eligible: boolean;
-          code: string;
-          display_label: string;
-          is_selectable?: boolean;
-          reporting_bucket: string;
-          requires_primary_assignee: boolean;
-          sort_order: number;
-        };
+          archive_eligible: boolean
+          code: string
+          display_label: string
+          is_selectable?: boolean
+          reporting_bucket: string
+          requires_primary_assignee: boolean
+          sort_order: number
+        }
         Update: {
-          archive_eligible?: boolean;
-          code?: string;
-          display_label?: string;
-          is_selectable?: boolean;
-          reporting_bucket?: string;
-          requires_primary_assignee?: boolean;
-          sort_order?: number;
-        };
-        Relationships: [];
-      };
+          archive_eligible?: boolean
+          code?: string
+          display_label?: string
+          is_selectable?: boolean
+          reporting_bucket?: string
+          requires_primary_assignee?: boolean
+          sort_order?: number
+        }
+        Relationships: []
+      }
       work_items: {
         Row: {
-          archived_at: string | null;
-          archived_by: string | null;
-          area_id: string;
-          completed_at: string | null;
-          created_at: string;
-          created_by: string;
-          description: string | null;
-          display_id: string | null;
-          due_date: string | null;
-          figma_url: string | null;
-          id: string;
-          last_activity_at: string;
-          last_worked_on: string | null;
-          planned_start_date: string | null;
-          primary_assignee_id: string | null;
-          status_code: string;
-          title: string;
-          updated_at: string;
-          work_item_number: number;
-        };
+          archived_at: string | null
+          archived_by: string | null
+          area_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          display_id: string | null
+          due_date: string | null
+          figma_url: string | null
+          id: string
+          last_activity_at: string
+          last_worked_on: string | null
+          planned_start_date: string | null
+          primary_assignee_id: string | null
+          status_code: string
+          title: string
+          updated_at: string
+          work_item_number: number
+        }
         Insert: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          area_id: string;
-          completed_at?: string | null;
-          created_at?: string;
-          created_by: string;
-          description?: string | null;
-          display_id?: string | null;
-          due_date?: string | null;
-          figma_url?: string | null;
-          id?: string;
-          last_activity_at?: string;
-          last_worked_on?: string | null;
-          planned_start_date?: string | null;
-          primary_assignee_id?: string | null;
-          status_code?: string;
-          title: string;
-          updated_at?: string;
-          work_item_number?: never;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          area_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          display_id?: string | null
+          due_date?: string | null
+          figma_url?: string | null
+          id?: string
+          last_activity_at?: string
+          last_worked_on?: string | null
+          planned_start_date?: string | null
+          primary_assignee_id?: string | null
+          status_code?: string
+          title: string
+          updated_at?: string
+          work_item_number?: never
+        }
         Update: {
-          archived_at?: string | null;
-          archived_by?: string | null;
-          area_id?: string;
-          completed_at?: string | null;
-          created_at?: string;
-          created_by?: string;
-          description?: string | null;
-          display_id?: string | null;
-          due_date?: string | null;
-          figma_url?: string | null;
-          id?: string;
-          last_activity_at?: string;
-          last_worked_on?: string | null;
-          planned_start_date?: string | null;
-          primary_assignee_id?: string | null;
-          status_code?: string;
-          title?: string;
-          updated_at?: string;
-          work_item_number?: never;
-        };
+          archived_at?: string | null
+          archived_by?: string | null
+          area_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          display_id?: string | null
+          due_date?: string | null
+          figma_url?: string | null
+          id?: string
+          last_activity_at?: string
+          last_worked_on?: string | null
+          planned_start_date?: string | null
+          primary_assignee_id?: string | null
+          status_code?: string
+          title?: string
+          updated_at?: string
+          work_item_number?: never
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_items_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_archived_by_fkey';
-            columns: ['archived_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_area_id_fkey';
-            columns: ['area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_area_settings';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "work_area_settings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_area_id_fkey';
-            columns: ['area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_areas';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "work_areas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_primary_assignee_id_fkey';
-            columns: ['primary_assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_primary_assignee_id_fkey"
+            columns: ["primary_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_primary_assignee_id_fkey';
-            columns: ['primary_assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_primary_assignee_id_fkey"
+            columns: ["primary_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_primary_assignee_id_fkey';
-            columns: ['primary_assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_items_primary_assignee_id_fkey"
+            columns: ["primary_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_items_status_code_fkey';
-            columns: ['status_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_item_statuses';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_items_status_code_fkey"
+            columns: ["status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       work_log_batch_revisions: {
         Row: {
-          batch_id: string;
-          change_kind: string;
-          changed_at: string;
-          changed_by: string;
-          id: string;
-          new_values: Json;
-          operation_id: string;
-          previous_values: Json;
-          revision_number: number;
-        };
+          batch_id: string
+          change_kind: string
+          changed_at: string
+          changed_by: string
+          id: string
+          new_values: Json
+          operation_id: string
+          previous_values: Json
+          revision_number: number
+        }
         Insert: {
-          batch_id: string;
-          change_kind: string;
-          changed_at?: string;
-          changed_by: string;
-          id?: string;
-          new_values: Json;
-          operation_id: string;
-          previous_values: Json;
-          revision_number: number;
-        };
+          batch_id: string
+          change_kind: string
+          changed_at?: string
+          changed_by: string
+          id?: string
+          new_values: Json
+          operation_id: string
+          previous_values: Json
+          revision_number: number
+        }
         Update: {
-          batch_id?: string;
-          change_kind?: string;
-          changed_at?: string;
-          changed_by?: string;
-          id?: string;
-          new_values?: Json;
-          operation_id?: string;
-          previous_values?: Json;
-          revision_number?: number;
-        };
+          batch_id?: string
+          change_kind?: string
+          changed_at?: string
+          changed_by?: string
+          id?: string
+          new_values?: Json
+          operation_id?: string
+          previous_values?: Json
+          revision_number?: number
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_batch_revisions_batch_id_fkey';
-            columns: ['batch_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_log_batches';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batch_revisions_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "work_log_batches"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batch_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batch_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batch_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batch_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batch_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batch_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batch_revisions_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batch_revisions_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_log_batches: {
         Row: {
-          context_code: string;
-          create_operation_id: string;
-          created_at: string;
-          edited_at: string | null;
-          id: string;
-          logged_by: string;
-          related_area_id: string | null;
-          withdrawn_at: string | null;
-          withdrawn_by: string | null;
-          work_item_id: string | null;
-          worked_by: string;
-        };
+          context_code: string
+          create_operation_id: string
+          created_at: string
+          edited_at: string | null
+          id: string
+          logged_by: string
+          related_area_id: string | null
+          withdrawn_at: string | null
+          withdrawn_by: string | null
+          work_item_id: string | null
+          worked_by: string
+        }
         Insert: {
-          context_code: string;
-          create_operation_id: string;
-          created_at?: string;
-          edited_at?: string | null;
-          id?: string;
-          logged_by: string;
-          related_area_id?: string | null;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string | null;
-          worked_by: string;
-        };
+          context_code: string
+          create_operation_id: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          logged_by: string
+          related_area_id?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string | null
+          worked_by: string
+        }
         Update: {
-          context_code?: string;
-          create_operation_id?: string;
-          created_at?: string;
-          edited_at?: string | null;
-          id?: string;
-          logged_by?: string;
-          related_area_id?: string | null;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string | null;
-          worked_by?: string;
-        };
+          context_code?: string
+          create_operation_id?: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          logged_by?: string
+          related_area_id?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string | null
+          worked_by?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_batches_create_operation_id_fkey';
-            columns: ['create_operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_create_operation_id_fkey"
+            columns: ["create_operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_related_area_id_fkey';
-            columns: ['related_area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_area_settings';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_related_area_id_fkey"
+            columns: ["related_area_id"]
+            isOneToOne: false
+            referencedRelation: "work_area_settings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_related_area_id_fkey';
-            columns: ['related_area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_areas';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_related_area_id_fkey"
+            columns: ["related_area_id"]
+            isOneToOne: false
+            referencedRelation: "work_areas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_log_entries: {
         Row: {
-          batch_id: string;
-          created_at: string;
-          description: string | null;
-          id: string;
-          position: number;
-          updated_at: string;
-          withdrawn_at: string | null;
-          withdrawn_by: string | null;
-          work_date: string;
-          work_type_code: string;
-        };
+          batch_id: string
+          created_at: string
+          description: string | null
+          id: string
+          position: number
+          updated_at: string
+          withdrawn_at: string | null
+          withdrawn_by: string | null
+          work_date: string
+          work_type_code: string
+        }
         Insert: {
-          batch_id: string;
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          position: number;
-          updated_at?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_date: string;
-          work_type_code: string;
-        };
+          batch_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          position: number
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_date: string
+          work_type_code: string
+        }
         Update: {
-          batch_id?: string;
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          position?: number;
-          updated_at?: string;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_date?: string;
-          work_type_code?: string;
-        };
+          batch_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          position?: number
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_date?: string
+          work_type_code?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_entries_batch_id_fkey';
-            columns: ['batch_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_log_batches';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entries_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "work_log_batches"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entries_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entries_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entries_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_work_type_code_fkey';
-            columns: ['work_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_type_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_log_entries_work_type_code_fkey"
+            columns: ["work_type_code"]
+            isOneToOne: false
+            referencedRelation: "work_type_definitions"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       work_log_entry_revisions: {
         Row: {
-          change_kind: string;
-          changed_at: string;
-          changed_by: string;
-          entry_id: string;
-          id: string;
-          new_values: Json;
-          operation_id: string;
-          previous_values: Json;
-          revision_number: number;
-        };
+          change_kind: string
+          changed_at: string
+          changed_by: string
+          entry_id: string
+          id: string
+          new_values: Json
+          operation_id: string
+          previous_values: Json
+          revision_number: number
+        }
         Insert: {
-          change_kind: string;
-          changed_at?: string;
-          changed_by: string;
-          entry_id: string;
-          id?: string;
-          new_values: Json;
-          operation_id: string;
-          previous_values: Json;
-          revision_number: number;
-        };
+          change_kind: string
+          changed_at?: string
+          changed_by: string
+          entry_id: string
+          id?: string
+          new_values: Json
+          operation_id: string
+          previous_values: Json
+          revision_number: number
+        }
         Update: {
-          change_kind?: string;
-          changed_at?: string;
-          changed_by?: string;
-          entry_id?: string;
-          id?: string;
-          new_values?: Json;
-          operation_id?: string;
-          previous_values?: Json;
-          revision_number?: number;
-        };
+          change_kind?: string
+          changed_at?: string
+          changed_by?: string
+          entry_id?: string
+          id?: string
+          new_values?: Json
+          operation_id?: string
+          previous_values?: Json
+          revision_number?: number
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_entry_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entry_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entry_revisions_changed_by_fkey';
-            columns: ['changed_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entry_revisions_entry_id_fkey';
-            columns: ['entry_id'];
-            isOneToOne: false;
-            referencedRelation: 'valid_work_log_entries';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "valid_work_log_entries"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entry_revisions_entry_id_fkey';
-            columns: ['entry_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_log_entries';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "work_log_entries"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entry_revisions_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entry_revisions_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_type_definitions: {
         Row: {
-          code: string;
-          context_code: string;
-          display_label: string;
-          is_selectable: boolean;
-          sort_order: number;
-        };
+          code: string
+          context_code: string
+          display_label: string
+          is_selectable: boolean
+          sort_order: number
+        }
         Insert: {
-          code: string;
-          context_code: string;
-          display_label: string;
-          is_selectable?: boolean;
-          sort_order: number;
-        };
+          code: string
+          context_code: string
+          display_label: string
+          is_selectable?: boolean
+          sort_order: number
+        }
         Update: {
-          code?: string;
-          context_code?: string;
-          display_label?: string;
-          is_selectable?: boolean;
-          sort_order?: number;
-        };
-        Relationships: [];
-      };
-    };
+          code?: string
+          context_code?: string
+          display_label?: string
+          is_selectable?: boolean
+          sort_order?: number
+        }
+        Relationships: []
+      }
+    }
     Views: {
       admin_member_directory: {
         Row: {
-          access_administered_at: string | null;
-          created_at: string | null;
-          current_reports_to_id: string | null;
-          display_name: string | null;
-          email: string | null;
-          id: string | null;
-          is_active: boolean | null;
-          is_admin: boolean | null;
-          last_sign_in_at: string | null;
-          must_change_password: boolean | null;
-          position_code: string | null;
-          position_label: string | null;
-          reports_to_display_name: string | null;
-          updated_at: string | null;
-        };
+          access_administered_at: string | null
+          created_at: string | null
+          current_reports_to_id: string | null
+          display_name: string | null
+          email: string | null
+          id: string | null
+          is_active: boolean | null
+          is_admin: boolean | null
+          last_sign_in_at: string | null
+          must_change_password: boolean | null
+          position_code: string | null
+          position_label: string | null
+          reports_to_display_name: string | null
+          updated_at: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_position_code_fkey';
-            columns: ['position_code'];
-            isOneToOne: false;
-            referencedRelation: 'position_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "profiles_position_code_fkey"
+            columns: ["position_code"]
+            isOneToOne: false
+            referencedRelation: "position_definitions"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       administration_audit_log: {
         Row: {
-          actor_display_name: string | null;
-          actor_id: string | null;
-          event_type_code: string | null;
-          id: string | null;
-          new_values: Json | null;
-          occurred_at: string | null;
-          operation_id: string | null;
-          previous_values: Json | null;
-          subject_display_name: string | null;
-          subject_id: string | null;
-          subject_type: string | null;
-        };
+          actor_display_name: string | null
+          actor_id: string | null
+          event_type_code: string | null
+          id: string | null
+          new_values: Json | null
+          occurred_at: string | null
+          operation_id: string | null
+          previous_values: Json | null
+          subject_display_name: string | null
+          subject_id: string | null
+          subject_type: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'admin_audit_events_event_type_code_fkey';
-            columns: ['event_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'admin_audit_event_types';
-            referencedColumns: ['code'];
+            foreignKeyName: "admin_audit_events_event_type_code_fkey"
+            columns: ["event_type_code"]
+            isOneToOne: false
+            referencedRelation: "admin_audit_event_types"
+            referencedColumns: ["code"]
           },
           {
-            foreignKeyName: 'admin_audit_events_operation_id_fkey';
-            columns: ['operation_id'];
-            isOneToOne: false;
-            referencedRelation: 'operation_requests';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_audit_events_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "operation_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       current_work_item_contributors: {
         Row: {
-          profile_id: string | null;
-          work_item_id: string | null;
-        };
+          profile_id: string | null
+          work_item_id: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_batches_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['profile_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       label_settings: {
         Row: {
-          archived_at: string | null;
-          created_at: string | null;
-          current_usage_count: number | null;
-          historical_usage_count: number | null;
-          id: string | null;
-          is_active: boolean | null;
-          name: string | null;
-          sort_order: number | null;
-          updated_at: string | null;
-        };
+          archived_at: string | null
+          created_at: string | null
+          current_usage_count: number | null
+          historical_usage_count: number | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
         Insert: {
-          archived_at?: string | null;
-          created_at?: string | null;
-          current_usage_count?: never;
-          historical_usage_count?: never;
-          id?: string | null;
-          is_active?: boolean | null;
-          name?: never;
-          sort_order?: number | null;
-          updated_at?: string | null;
-        };
+          archived_at?: string | null
+          created_at?: string | null
+          current_usage_count?: never
+          historical_usage_count?: never
+          id?: string | null
+          is_active?: boolean | null
+          name?: never
+          sort_order?: number | null
+          updated_at?: string | null
+        }
         Update: {
-          archived_at?: string | null;
-          created_at?: string | null;
-          current_usage_count?: never;
-          historical_usage_count?: never;
-          id?: string | null;
-          is_active?: boolean | null;
-          name?: never;
-          sort_order?: number | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
+          archived_at?: string | null
+          created_at?: string | null
+          current_usage_count?: never
+          historical_usage_count?: never
+          id?: string | null
+          is_active?: boolean | null
+          name?: never
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       team_directory: {
         Row: {
-          current_reports_to_id: string | null;
-          display_name: string | null;
-          id: string | null;
-          is_admin: boolean | null;
-          position_code: string | null;
-          position_label: string | null;
-          reports_to_display_name: string | null;
-        };
+          current_reports_to_id: string | null
+          display_name: string | null
+          id: string | null
+          is_admin: boolean | null
+          position_code: string | null
+          position_label: string | null
+          reports_to_display_name: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_current_reports_to_id_fkey';
-            columns: ['current_reports_to_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "profiles_current_reports_to_id_fkey"
+            columns: ["current_reports_to_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profiles_position_code_fkey';
-            columns: ['position_code'];
-            isOneToOne: false;
-            referencedRelation: 'position_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "profiles_position_code_fkey"
+            columns: ["position_code"]
+            isOneToOne: false
+            referencedRelation: "position_definitions"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       valid_work_log_entries: {
         Row: {
-          batch_id: string | null;
-          context_code: string | null;
-          description: string | null;
-          id: string | null;
-          last_edited_at: string | null;
-          logged_at: string | null;
-          logged_by: string | null;
-          position: number | null;
-          related_area_id: string | null;
-          work_date: string | null;
-          work_item_id: string | null;
-          work_type_code: string | null;
-          worked_by: string | null;
-        };
+          batch_id: string | null
+          context_code: string | null
+          description: string | null
+          id: string | null
+          last_edited_at: string | null
+          logged_at: string | null
+          logged_by: string | null
+          position: number | null
+          related_area_id: string | null
+          work_date: string | null
+          work_item_id: string | null
+          work_type_code: string | null
+          worked_by: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_logged_by_fkey';
-            columns: ['logged_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_logged_by_fkey"
+            columns: ["logged_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_related_area_id_fkey';
-            columns: ['related_area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_area_settings';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_related_area_id_fkey"
+            columns: ["related_area_id"]
+            isOneToOne: false
+            referencedRelation: "work_area_settings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_related_area_id_fkey';
-            columns: ['related_area_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_areas';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_related_area_id_fkey"
+            columns: ["related_area_id"]
+            isOneToOne: false
+            referencedRelation: "work_areas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_batches_worked_by_fkey';
-            columns: ['worked_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_worked_by_fkey"
+            columns: ["worked_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_batch_id_fkey';
-            columns: ['batch_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_log_batches';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_entries_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "work_log_batches"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'work_log_entries_work_type_code_fkey';
-            columns: ['work_type_code'];
-            isOneToOne: false;
-            referencedRelation: 'work_type_definitions';
-            referencedColumns: ['code'];
+            foreignKeyName: "work_log_entries_work_type_code_fkey"
+            columns: ["work_type_code"]
+            isOneToOne: false
+            referencedRelation: "work_type_definitions"
+            referencedColumns: ["code"]
           },
-        ];
-      };
+        ]
+      }
       visible_comments: {
         Row: {
-          author_id: string | null;
-          body: string | null;
-          created_at: string | null;
-          edited_at: string | null;
-          id: string | null;
-          withdrawn_at: string | null;
-          withdrawn_by: string | null;
-          work_item_id: string | null;
-        };
+          author_id: string | null
+          body: string | null
+          created_at: string | null
+          edited_at: string | null
+          id: string | null
+          withdrawn_at: string | null
+          withdrawn_by: string | null
+          work_item_id: string | null
+        }
         Insert: {
-          author_id?: string | null;
-          body?: never;
-          created_at?: string | null;
-          edited_at?: string | null;
-          id?: string | null;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string | null;
-        };
+          author_id?: string | null
+          body?: never
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string | null
+        }
         Update: {
-          author_id?: string | null;
-          body?: never;
-          created_at?: string | null;
-          edited_at?: string | null;
-          id?: string | null;
-          withdrawn_at?: string | null;
-          withdrawn_by?: string | null;
-          work_item_id?: string | null;
-        };
+          author_id?: string | null
+          body?: never
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
+          work_item_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_author_id_fkey';
-            columns: ['author_id'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'admin_member_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "admin_member_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_withdrawn_by_fkey';
-            columns: ['withdrawn_by'];
-            isOneToOne: false;
-            referencedRelation: 'team_directory';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_withdrawn_by_fkey"
+            columns: ["withdrawn_by"]
+            isOneToOne: false
+            referencedRelation: "team_directory"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       work_area_settings: {
         Row: {
-          archived_at: string | null;
-          created_at: string | null;
-          current_usage_count: number | null;
-          historical_usage_count: number | null;
-          id: string | null;
-          is_active: boolean | null;
-          name: string | null;
-          sort_order: number | null;
-          updated_at: string | null;
-        };
+          archived_at: string | null
+          created_at: string | null
+          current_usage_count: number | null
+          historical_usage_count: number | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
         Insert: {
-          archived_at?: string | null;
-          created_at?: string | null;
-          current_usage_count?: never;
-          historical_usage_count?: never;
-          id?: string | null;
-          is_active?: boolean | null;
-          name?: never;
-          sort_order?: number | null;
-          updated_at?: string | null;
-        };
+          archived_at?: string | null
+          created_at?: string | null
+          current_usage_count?: never
+          historical_usage_count?: never
+          id?: string | null
+          is_active?: boolean | null
+          name?: never
+          sort_order?: number | null
+          updated_at?: string | null
+        }
         Update: {
-          archived_at?: string | null;
-          created_at?: string | null;
-          current_usage_count?: never;
-          historical_usage_count?: never;
-          id?: string | null;
-          is_active?: boolean | null;
-          name?: never;
-          sort_order?: number | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
+          archived_at?: string | null
+          created_at?: string | null
+          current_usage_count?: never
+          historical_usage_count?: never
+          id?: string | null
+          is_active?: boolean | null
+          name?: never
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       work_item_active_work_days: {
         Row: {
-          active_work_days: number | null;
-          work_item_id: string | null;
-        };
+          active_work_days: number | null
+          work_item_id: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'work_log_batches_work_item_id_fkey';
-            columns: ['work_item_id'];
-            isOneToOne: false;
-            referencedRelation: 'work_items';
-            referencedColumns: ['id'];
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-    };
+        ]
+      }
+    }
     Functions: {
       add_comment: {
-        Args: { body: string; operation_id?: string; work_item_id: string };
-        Returns: Json;
-      };
+        Args: { body: string; operation_id?: string; work_item_id: string }
+        Returns: Json
+      }
       add_subtask: {
         Args: {
-          expected_last_activity_at: string;
-          insertion_position: number;
-          operation_id?: string;
-          title: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_last_activity_at: string
+          insertion_position: number
+          operation_id?: string
+          title: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       archive_label: {
         Args: {
-          confirmed_usage_count: number;
-          expected_updated_at: string;
-          label_id: string;
-          operation_id?: string;
-        };
-        Returns: Json;
-      };
+          confirmed_usage_count: number
+          expected_updated_at: string
+          label_id: string
+          operation_id?: string
+        }
+        Returns: Json
+      }
       archive_work_area: {
         Args: {
-          confirmed_usage_count: number;
-          expected_updated_at: string;
-          operation_id?: string;
-          work_area_id: string;
-        };
-        Returns: Json;
-      };
+          confirmed_usage_count: number
+          expected_updated_at: string
+          operation_id?: string
+          work_area_id: string
+        }
+        Returns: Json
+      }
       archive_work_item: {
         Args: {
-          expected_updated_at: string;
-          operation_id?: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          operation_id?: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       complete_own_password_change: {
-        Args: { actor_profile_id: string; operation_id: string };
-        Returns: Json;
-      };
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
       create_blocker: {
         Args: {
-          expected_resolution_date: string;
-          expected_status_code: string;
-          operation_id?: string;
-          reason: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_resolution_date: string
+          expected_status_code: string
+          operation_id?: string
+          reason: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       create_label: {
         Args: {
-          label_id: string;
-          name: string;
-          operation_id?: string;
-          requested_sort_order?: number;
-        };
-        Returns: Json;
-      };
+          label_id: string
+          name: string
+          operation_id?: string
+          requested_sort_order?: number
+        }
+        Returns: Json
+      }
       create_work_area: {
         Args: {
-          name: string;
-          operation_id?: string;
-          requested_sort_order?: number;
-          work_area_id: string;
-        };
-        Returns: Json;
-      };
+          name: string
+          operation_id?: string
+          requested_sort_order?: number
+          work_area_id: string
+        }
+        Returns: Json
+      }
       create_work_item: {
         Args: {
-          area_id: string;
-          description: string;
-          due_date?: string;
-          figma_url?: string;
-          label_ids?: string[];
-          operation_id?: string;
-          planned_start_date?: string;
-          primary_assignee_id?: string;
-          title: string;
-        };
-        Returns: Json;
-      };
+          area_id: string
+          description: string
+          due_date?: string
+          figma_url?: string
+          label_ids?: string[]
+          operation_id?: string
+          planned_start_date?: string
+          primary_assignee_id?: string
+          title: string
+        }
+        Returns: Json
+      }
       edit_comment: {
         Args: {
-          body: string;
-          comment_id: string;
-          expected_edited_at: string;
-          operation_id?: string;
-        };
-        Returns: Json;
-      };
+          body: string
+          comment_id: string
+          expected_edited_at: string
+          operation_id?: string
+        }
+        Returns: Json
+      }
       finalize_first_admin_bootstrap: {
         Args: {
-          auth_user_id: string;
-          display_name: string;
-          email: string;
-          operation_id: string;
-          timezone: string;
-        };
-        Returns: Json;
-      };
+          auth_user_id: string
+          display_name: string
+          email: string
+          operation_id: string
+          timezone: string
+        }
+        Returns: Json
+      }
       finalize_first_admin_credential_recovery: {
-        Args: { operation_id: string };
-        Returns: Json;
-      };
+        Args: { operation_id: string }
+        Returns: Json
+      }
       finalize_member_account_creation: {
         Args: {
-          actor_profile_id: string;
-          auth_user_id: string;
-          display_name: string;
-          email: string;
-          is_admin: boolean;
-          operation_id: string;
-          position_code: string;
-          supervisor_id: string;
-        };
-        Returns: Json;
-      };
+          actor_profile_id: string
+          auth_user_id: string
+          display_name: string
+          email: string
+          is_admin: boolean
+          operation_id: string
+          position_code: string
+          supervisor_id: string
+        }
+        Returns: Json
+      }
       finalize_member_deactivation: {
-        Args: { actor_profile_id: string; operation_id: string };
-        Returns: Json;
-      };
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
       finalize_member_reactivation: {
         Args: {
-          actor_profile_id: string;
-          is_admin: boolean;
-          must_change_password: boolean;
-          operation_id: string;
-          position_code: string;
-          supervisor_id: string;
-          target_profile_id: string;
-        };
-        Returns: Json;
-      };
+          actor_profile_id: string
+          is_admin: boolean
+          must_change_password: boolean
+          operation_id: string
+          position_code: string
+          supervisor_id: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
       finalize_temporary_password_reset: {
-        Args: { actor_profile_id: string; operation_id: string };
-        Returns: Json;
-      };
+        Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
       get_edge_operation_result: {
         Args: {
-          operation_code: string;
-          operation_id: string;
-          request_payload: Json;
-        };
-        Returns: Json;
-      };
+          operation_code: string
+          operation_id: string
+          request_payload: Json
+        }
+        Returns: Json
+      }
       get_own_account_state: {
-        Args: never;
+        Args: never
         Returns: {
-          display_name: string;
-          id: string;
-          is_active: boolean;
-          is_admin: boolean;
-          must_change_password: boolean;
-          position_code: string;
-        }[];
-      };
-      get_work_item_detail: { Args: { display_id: string }; Returns: Json };
-      list_work_items: { Args: { filters?: Json }; Returns: Json };
+          display_name: string
+          id: string
+          is_active: boolean
+          is_admin: boolean
+          must_change_password: boolean
+          position_code: string
+        }[]
+      }
+      get_work_item_detail: { Args: { display_id: string }; Returns: Json }
+      list_work_items: { Args: { filters?: Json }; Returns: Json }
       prepare_first_admin_credential_recovery: {
-        Args: { email: string; operation_id: string };
-        Returns: Json;
-      };
+        Args: { email: string; operation_id: string }
+        Returns: Json
+      }
       prepare_member_deactivation: {
         Args: {
-          actor_profile_id: string;
-          assignment_replacements?: Json;
-          operation_id?: string;
-          reporting_replacements?: Json;
-          target_profile_id: string;
-        };
-        Returns: Json;
-      };
+          actor_profile_id: string
+          assignment_replacements?: Json
+          operation_id?: string
+          reporting_replacements?: Json
+          target_profile_id: string
+        }
+        Returns: Json
+      }
       prepare_temporary_password_reset: {
         Args: {
-          actor_profile_id: string;
-          operation_id: string;
-          target_profile_id: string;
-        };
-        Returns: Json;
-      };
+          actor_profile_id: string
+          operation_id: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
       reactivate_label: {
         Args: {
-          expected_updated_at?: string;
-          label_id: string;
-          operation_id?: string;
-          requested_sort_order?: number;
-        };
-        Returns: Json;
-      };
+          expected_updated_at?: string
+          label_id: string
+          operation_id?: string
+          requested_sort_order?: number
+        }
+        Returns: Json
+      }
       reactivate_work_area: {
         Args: {
-          expected_updated_at?: string;
-          operation_id?: string;
-          requested_sort_order?: number;
-          work_area_id: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at?: string
+          operation_id?: string
+          requested_sort_order?: number
+          work_area_id: string
+        }
+        Returns: Json
+      }
       reassign_work_item: {
         Args: {
-          expected_assignee_id: string;
-          expected_updated_at: string;
-          new_assignee_id: string;
-          operation_id?: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_assignee_id: string
+          expected_updated_at: string
+          new_assignee_id: string
+          operation_id?: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       rename_label: {
         Args: {
-          expected_updated_at: string;
-          label_id: string;
-          name: string;
-          operation_id?: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          label_id: string
+          name: string
+          operation_id?: string
+        }
+        Returns: Json
+      }
       rename_subtask: {
         Args: {
-          expected_updated_at: string;
-          operation_id?: string;
-          subtask_id: string;
-          title: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          operation_id?: string
+          subtask_id: string
+          title: string
+        }
+        Returns: Json
+      }
       rename_work_area: {
         Args: {
-          expected_updated_at: string;
-          name: string;
-          operation_id?: string;
-          work_area_id: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          name: string
+          operation_id?: string
+          work_area_id: string
+        }
+        Returns: Json
+      }
       reorder_labels: {
-        Args: { operation_id?: string; ordered_ids: string[] };
-        Returns: Json;
-      };
+        Args: { operation_id?: string; ordered_ids: string[] }
+        Returns: Json
+      }
       reorder_subtasks: {
         Args: {
-          expected_last_activity_at: string;
-          operation_id?: string;
-          ordered_ids: string[];
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_last_activity_at: string
+          operation_id?: string
+          ordered_ids: string[]
+          work_item_id: string
+        }
+        Returns: Json
+      }
       reorder_work_areas: {
-        Args: { operation_id?: string; ordered_ids: string[] };
-        Returns: Json;
-      };
+        Args: { operation_id?: string; ordered_ids: string[] }
+        Returns: Json
+      }
       resolve_blocker: {
         Args: {
-          blocker_id: string;
-          expected_unresolved: boolean;
-          operation_id?: string;
-          resolution_note: string;
-        };
-        Returns: Json;
-      };
+          blocker_id: string
+          expected_unresolved: boolean
+          operation_id?: string
+          resolution_note: string
+        }
+        Returns: Json
+      }
       restore_work_item: {
         Args: {
-          expected_updated_at: string;
-          operation_id?: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          operation_id?: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       set_member_access: {
         Args: {
-          assignment_replacements?: Json;
-          desired_is_admin: boolean;
-          desired_position_code: string;
-          desired_supervisor_id: string;
-          expected_updated_at: string;
-          operation_id?: string;
-          target_profile_id: string;
-        };
-        Returns: Json;
-      };
+          assignment_replacements?: Json
+          desired_is_admin: boolean
+          desired_position_code: string
+          desired_supervisor_id: string
+          expected_updated_at: string
+          operation_id?: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
       set_subtask_completion: {
         Args: {
-          completed: boolean;
-          expected_completed: boolean;
-          operation_id?: string;
-          subtask_id: string;
-        };
-        Returns: Json;
-      };
+          completed: boolean
+          expected_completed: boolean
+          operation_id?: string
+          subtask_id: string
+        }
+        Returns: Json
+      }
       set_team_timezone: {
         Args: {
-          expected_updated_at: string;
-          operation_id?: string;
-          timezone_name: string;
-        };
-        Returns: Json;
-      };
+          expected_updated_at: string
+          operation_id?: string
+          timezone_name: string
+        }
+        Returns: Json
+      }
       transition_work_item_status: {
         Args: {
-          acknowledge_incomplete_subtasks?: boolean;
-          expected_status_code: string;
-          expected_updated_at: string;
-          operation_id?: string;
-          target_status_code: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          acknowledge_incomplete_subtasks?: boolean
+          expected_status_code: string
+          expected_updated_at: string
+          operation_id?: string
+          target_status_code: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       update_work_item: {
         Args: {
-          area_id: string;
-          description: string;
-          due_date: string;
-          expected_updated_at: string;
-          figma_url: string;
-          label_ids: string[];
-          operation_id?: string;
-          planned_start_date: string;
-          title: string;
-          work_item_id: string;
-        };
-        Returns: Json;
-      };
+          area_id: string
+          description: string
+          due_date: string
+          expected_updated_at: string
+          figma_url: string
+          label_ids: string[]
+          operation_id?: string
+          planned_start_date: string
+          title: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       withdraw_comment: {
         Args: {
-          comment_id: string;
-          expected_edited_at: string;
-          operation_id?: string;
-        };
-        Returns: Json;
-      };
+          comment_id: string
+          expected_edited_at: string
+          operation_id?: string
+        }
+        Returns: Json
+      }
       withdraw_subtask: {
         Args: {
-          expected_updated_at: string;
-          operation_id?: string;
-          subtask_id: string;
-        };
-        Returns: Json;
-      };
-    };
+          expected_updated_at: string
+          operation_id?: string
+          subtask_id: string
+        }
+        Returns: Json
+      }
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-  keyof Database,
-  'public'
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never) = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never) = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   graphql_public: {
@@ -3267,4 +3267,4 @@ export const Constants = {
   public: {
     Enums: {},
   },
-} as const;
+} as const
