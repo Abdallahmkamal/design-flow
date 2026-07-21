@@ -1,6 +1,6 @@
 # Team directory brief
 
-**Status:** Approved for Phase 2 Slice 2 implementation
+**Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -103,6 +103,21 @@ None for directory reads.
 - Directory fields and privacy match `docs/team-settings.md`.
 - Viewer + Admin is never rendered as a valid state.
 - Desktop/mobile, keyboard, empty, loading, error, no-results, and unauthorized behavior must pass before the Team slice is complete.
+
+## Verification evidence
+
+- The complete synthetic Phase 2 staging acceptance matrix passed on
+  2026-07-21. Viewer, Designer, Lead, and Manager personas saw only active
+  people and the approved display name, position, separate Admin badge, and
+  `Reports to` fields; email, authentication, support, and performance data
+  remained absent.
+- Adding or removing Admin privilege from eligible positions did not change
+  position, reporting line, or default people scope. Viewer + Admin remained
+  invalid, and inactive, password-restricted, and unauthorized principals did
+  not receive directory data.
+- Desktop and mobile directory layouts, keyboard order, loading, empty,
+  no-results, retry/error, long-content, and unauthorized states passed the
+  approved brief. Only conspicuously synthetic staging records were used.
 
 ## Open questions
 

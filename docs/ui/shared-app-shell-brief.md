@@ -1,6 +1,6 @@
 # Shared application shell brief
 
-**Status:** Approved for Phase 2; authentication integration verified and Slice 2 Settings extension implemented
+**Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -135,6 +135,15 @@ None. Theme and navigation are not domain audit events; sign-out remains in Supa
 - Slice 2 browser automation verifies Team navigation for eligible active
   users, Settings navigation only for eligible Admin users, the separate Admin
   badge, and direct-route denial before Settings reads for non-Admin users.
+- The complete synthetic Phase 2 staging acceptance matrix passed on
+  2026-07-21. Manual desktop and mobile checks covered Authentication, Team,
+  Settings, responsive navigation, current-user position and independent Admin
+  context, theme, sign-out, keyboard navigation, and loading, error, empty, and
+  unauthorized route behavior.
+- Eligible non-Admin users retained Team navigation without Settings access;
+  Settings appeared only for eligible Admin users. Restricted, inactive,
+  unauthenticated, and invalid Viewer + Admin states remained outside the
+  authenticated shell.
 
 ## Open questions
 
