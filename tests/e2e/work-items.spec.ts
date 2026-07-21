@@ -126,7 +126,11 @@ function detail(viewer = false) {
 
 async function mocks(
   page: Page,
-  options: { viewer?: boolean; conflict?: boolean } = {},
+  options: {
+    viewer?: boolean;
+    conflict?: boolean;
+    mutationBodies?: { url: string; body: unknown }[];
+  } = {},
 ) {
   const user = {
     id: userId,
@@ -309,12 +313,17 @@ async function mocks(
         contentType: 'application/json',
         body: JSON.stringify({ code: 'P0001', message: 'DF_CONFLICT' }),
       });
-    } else
+    } else {
+      options.mutationBodies?.push({
+        url,
+        body: route.request().postDataJSON(),
+      });
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ status: 'updated' }),
       });
+    }
   });
 }
 
@@ -378,12 +387,24 @@ test('ticket creation remains Backlog, preserves the full-page form, and navigat
 test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({
   page,
 }) => {
-  await mocks(page);
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { mutationBodies });
   await signIn(page);
   await page.goto(`/work-items/${displayId}`);
   await expect(
     page.getByRole('heading', { name: listRow.title }),
   ).toBeVisible();
+  await page
+    .getByRole('checkbox', {
+      name: '[SYNTHETIC] Keyboard verification',
+      exact: true,
+    })
+    .click();
+  await expect(page.getByRole('status')).toContainText('Subtask completed.');
+  expect(
+    mutationBodies.find(({ url }) => url.includes('set_subtask_completion'))
+      ?.body,
+  ).toMatchObject({ completed: true, expected_completed: false });
   await page.getByLabel('Status').selectOption('in_progress');
   await page.getByRole('button', { name: 'Update status' }).click();
   await expect(page.getByRole('status')).toContainText('Status updated.');
@@ -394,9 +415,11 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   await page.getByLabel('New subtask').fill('[SYNTHETIC] Added subtask');
   await page.getByRole('button', { name: 'Add subtask' }).click();
   await expect(page.getByRole('status')).toContainText('Subtask added.');
+  await expect(page.getByLabel('New subtask')).toHaveValue('');
   await page.getByLabel('Add comment').fill('[SYNTHETIC] Browser comment');
   await page.getByRole('button', { name: 'Add comment' }).click();
   await expect(page.getByRole('status')).toContainText('Comment added.');
+  await expect(page.getByLabel('Add comment')).toHaveValue('');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 

@@ -108,17 +108,12 @@ function SubtaskRow({
       <Checkbox
         label={subtask.title}
         checked={subtask.isCompleted}
-        onChange={(event) =>
-          run(
-            event.target.checked ? 'Subtask completed.' : 'Subtask reopened.',
-            () =>
-              setSubtaskCompletion(
-                subtask.id,
-                event.target.checked,
-                subtask.isCompleted,
-              ),
-          )
-        }
+        onChange={(event) => {
+          const completed = event.currentTarget.checked;
+          run(completed ? 'Subtask completed.' : 'Subtask reopened.', () =>
+            setSubtaskCompletion(subtask.id, completed, subtask.isCompleted),
+          );
+        }}
       />
       <form
         className={styles.inlineForm}
@@ -552,9 +547,13 @@ export function WorkItemPage() {
                 className={styles.inlineForm}
                 onSubmit={(event) => {
                   event.preventDefault();
+                  const formElement = event.currentTarget;
                   const form = new FormData(event.currentTarget);
                   const title = formString(form, 'title');
-                  run('Subtask added.', () => addSubtask(workItem, title));
+                  run('Subtask added.', async () => {
+                    await addSubtask(workItem, title);
+                    formElement.reset();
+                  });
                 }}
               >
                 <Input label="New subtask" name="title" required />
@@ -600,10 +599,13 @@ export function WorkItemPage() {
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
+                  const formElement = event.currentTarget;
                   const form = new FormData(event.currentTarget);
-                  run('Comment added.', () =>
-                    addComment(workItem, formString(form, 'body')),
-                  );
+                  const body = formString(form, 'body');
+                  run('Comment added.', async () => {
+                    await addComment(workItem, body);
+                    formElement.reset();
+                  });
                 }}
               >
                 <Textarea label="Add comment" name="body" required />

@@ -59,4 +59,33 @@ describe('WorkItemForm', () => {
     );
     expect(submit.mock.calls[0]?.[0]).not.toHaveProperty('status');
   });
+
+  it('keeps Area editable and omits Assignee when reassignment is owned by the detail controls', () => {
+    render(
+      <WorkItemForm
+        options={options}
+        initialValues={{
+          title: 'Synthetic ticket',
+          description: '',
+          areaId: 'area',
+          assigneeId: 'person',
+          plannedStartDate: '',
+          dueDate: '',
+          figmaUrl: '',
+          labelIds: [],
+        }}
+        submitLabel="Save changes"
+        isSubmitting={false}
+        showCreationStatus={false}
+        includeAssignee={false}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText('Area / Squad *')).toHaveValue('area');
+    expect(
+      screen.queryByLabelText('Assignee (optional)'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Backlog')).not.toBeInTheDocument();
+  });
 });
