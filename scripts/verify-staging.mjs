@@ -145,16 +145,21 @@ export async function verifyStaging({
   );
   checks.push('Supabase Auth health');
 
-  const { text: profileResponse } = await responseText(
-    fetcher,
+  const profileResponse = await fetcher(
     new URL('/rest/v1/profiles?select=id&limit=1', supabaseUrl),
     { headers },
-    'Anonymous profile boundary',
   );
-  const profiles = JSON.parse(profileResponse);
 
-  if (!Array.isArray(profiles) || profiles.length !== 0) {
-    throw new Error('Anonymous staging access exposed profile records.');
+  if (profileResponse.ok) {
+    const profiles = JSON.parse(await profileResponse.text());
+
+    if (!Array.isArray(profiles) || profiles.length !== 0) {
+      throw new Error('Anonymous staging access exposed profile records.');
+    }
+  } else if (![401, 403].includes(profileResponse.status)) {
+    throw new Error(
+      `Anonymous profile boundary returned HTTP ${profileResponse.status}.`,
+    );
   }
 
   checks.push('anonymous profile denial');

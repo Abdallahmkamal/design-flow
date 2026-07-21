@@ -65,6 +65,60 @@ describe('staging smoke verification', () => {
     expect(fetcher).toHaveBeenCalledTimes(6);
   });
 
+  it.each([401, 403])(
+    'accepts HTTP %s as an anonymous profile denial',
+    async (status) => {
+      const fetcher = vi
+        .fn()
+        .mockResolvedValueOnce(
+          response(
+            '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+          ),
+        )
+        .mockResolvedValueOnce(
+          response('import("./SettingsPage-phase-two.js")'),
+        )
+        .mockResolvedValueOnce(
+          response('Members and access Areas/Squads Administration audit'),
+        )
+        .mockResolvedValueOnce(response('ok'))
+        .mockResolvedValueOnce(response('', { status }))
+        .mockResolvedValueOnce(
+          response('{"ok":true}', {
+            headers: {
+              'access-control-allow-origin':
+                'https://design-flow-staging.pages.dev',
+            },
+          }),
+        );
+
+      await expect(
+        verifyStaging({ environment, fetcher }),
+      ).resolves.toBeUndefined();
+      expect(fetcher).toHaveBeenCalledTimes(6);
+    },
+  );
+
+  it('rejects unexpected anonymous profile response failures', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+        ),
+      )
+      .mockResolvedValueOnce(response('import("./SettingsPage-phase-two.js")'))
+      .mockResolvedValueOnce(
+        response('Members and access Areas/Squads Administration audit'),
+      )
+      .mockResolvedValueOnce(response('ok'))
+      .mockResolvedValueOnce(response('', { status: 500 }));
+
+    await expect(verifyStaging({ environment, fetcher })).rejects.toThrow(
+      'Anonymous profile boundary returned HTTP 500.',
+    );
+  });
+
   it('fails when the live bundle is not the Phase 2 checkpoint', async () => {
     const fetcher = vi
       .fn()
