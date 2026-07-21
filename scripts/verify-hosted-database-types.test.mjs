@@ -6,6 +6,7 @@ import {
 } from './verify-hosted-database-types.mjs';
 
 const localTypes = 'export type Database = {\n  public: {}\n}\n';
+const localGeneratorTypes = 'export type Database = {\n  public: {}\n}\n\n';
 const hostedTypes =
   'export type Database = {\n' +
   '  // Allows to automatically instantiate createClient with right options\n' +
@@ -21,6 +22,12 @@ describe('hosted database type verification', () => {
     expect(typeSchemaProjection(hostedTypes)).toBe(localTypes);
     expect(() =>
       verifyHostedDatabaseTypes(localTypes, hostedTypes),
+    ).not.toThrow();
+  });
+
+  it('ignores generator-only terminal whitespace', () => {
+    expect(() =>
+      verifyHostedDatabaseTypes(localTypes, localGeneratorTypes),
     ).not.toThrow();
   });
 

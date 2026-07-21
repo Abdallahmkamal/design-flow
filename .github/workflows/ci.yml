@@ -70,10 +70,10 @@ jobs:
           npm run db:start
           npm run db:reset
 
-      - name: Verify generated database types
+      - name: Verify generated database type schema
         run: |
           npx supabase gen types typescript --local > /tmp/database.types.ts
-          diff -u src/shared/supabase/database.types.ts /tmp/database.types.ts
+          node scripts/verify-hosted-database-types.mjs src/shared/supabase/database.types.ts /tmp/database.types.ts
 
       - name: Run pgTAP harness
         run: npm run db:test
