@@ -100,38 +100,38 @@ export function WorkItemForm({
         onChange={(event) => update('description', event.target.value)}
       />
       <div className={styles.formGrid}>
+        <Select
+          label="Area / Squad"
+          required
+          value={values.areaId}
+          {...(errors.areaId ? { error: errors.areaId } : {})}
+          onChange={(event) => update('areaId', event.target.value)}
+        >
+          <option value="">Choose an Area / Squad</option>
+          {options.areas
+            .filter((option) =>
+              option.isActive === true ? true : option.id === values.areaId,
+            )
+            .map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+        </Select>
         {includeAssignee ? (
           <Select
-            label="Area / Squad"
-            required
-            value={values.areaId}
-            {...(errors.areaId ? { error: errors.areaId } : {})}
-            onChange={(event) => update('areaId', event.target.value)}
+            label="Assignee (optional)"
+            value={values.assigneeId}
+            onChange={(event) => update('assigneeId', event.target.value)}
           >
-            <option value="">Choose an Area / Squad</option>
-            {options.areas
-              .filter((option) =>
-                option.isActive === true ? true : option.id === values.areaId,
-              )
-              .map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
+            <option value="">Unassigned</option>
+            {options.people.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
           </Select>
         ) : null}
-        <Select
-          label="Assignee (optional)"
-          value={values.assigneeId}
-          onChange={(event) => update('assigneeId', event.target.value)}
-        >
-          <option value="">Unassigned</option>
-          {options.people.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
         <Input
           label="Planned start"
           type="date"
