@@ -1,0 +1,442 @@
+.page,
+.detailPage,
+.narrowPage {
+  display: grid;
+  gap: var(--space-xl);
+  inline-size: 100%;
+}
+.narrowPage {
+  max-inline-size: 52rem;
+  margin-inline: auto;
+}
+.pageHeader,
+.detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+.pageHeader h1,
+.detailHeader h1 {
+  margin: var(--space-xs) 0;
+  font: var(--type-display);
+  overflow-wrap: anywhere;
+}
+.pageHeader p,
+.detailHeader p {
+  max-inline-size: 46rem;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.eyebrow {
+  color: var(--color-text-accent) !important;
+  font: var(--type-label);
+}
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  min-block-size: var(--control-height-md);
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--space-md);
+  border-radius: var(--radius-element);
+  font: var(--type-button);
+  text-decoration: none;
+}
+.primaryLink {
+  color: var(--color-action-primary-text);
+  background: var(--color-action-accent-background);
+}
+.secondaryLink {
+  border: var(--border-width) solid var(--color-border-default);
+  color: var(--color-text-primary);
+  background: var(--color-action-secondary-background);
+}
+.primaryLink:focus-visible,
+.secondaryLink:focus-visible,
+.iconLink:focus-visible,
+.viewTabs button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.viewTabs {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-2xs);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+.viewTabs button {
+  min-block-size: var(--control-height-lg);
+  padding-inline: var(--space-lg);
+  border: 0;
+  border-block-end: 2px solid transparent;
+  color: var(--color-text-secondary);
+  background: transparent;
+  font: var(--type-label);
+  cursor: pointer;
+}
+.viewTabs button[aria-current='page'] {
+  border-block-end-color: var(--color-action-accent-background);
+  color: var(--color-text-primary);
+}
+.searchBar {
+  display: grid;
+  align-items: end;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.filters {
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+}
+.filters summary,
+.actionPanel summary {
+  padding: var(--space-lg);
+  font: var(--type-label);
+  cursor: pointer;
+}
+.filterGrid {
+  display: grid;
+  gap: var(--space-lg);
+  padding: 0 var(--space-lg) var(--space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+.checkboxGroup {
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+  min-inline-size: 0;
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+.checkboxGroup legend {
+  padding-inline: var(--space-xs);
+  font: var(--type-label);
+}
+.resultCount {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+.ticketCell {
+  display: grid;
+  min-inline-size: 14rem;
+  gap: var(--space-xs);
+}
+.ticketCell a,
+.ticketCard a {
+  color: var(--color-text-accent);
+  font: var(--type-link);
+}
+.ticketCell strong {
+  max-inline-size: 28rem;
+  overflow-wrap: anywhere;
+}
+.indicators,
+.chipList,
+.inlineActions,
+.headerActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.iconLink {
+  display: inline-grid;
+  min-block-size: 2rem;
+  min-inline-size: 2rem;
+  border-radius: var(--radius-element);
+  color: var(--color-text-accent);
+  background: var(--color-action-secondary-background);
+  text-decoration: none;
+  place-items: center;
+}
+.simpleList {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ticketCard {
+  display: grid;
+  gap: var(--space-md);
+}
+.ticketCard h2 {
+  margin: var(--space-xs) 0 0;
+  font: var(--type-heading-3);
+  overflow-wrap: anywhere;
+}
+.ticketCard dl,
+.blockerPanel dl {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ticketCard dl div,
+.blockerPanel dl div {
+  display: grid;
+  gap: var(--space-xs);
+}
+.ticketCard dt,
+.blockerPanel dt,
+.detailsList dt {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+.ticketCard dd,
+.blockerPanel dd,
+.detailsList dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.state {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-container);
+}
+.state p {
+  margin: 0;
+}
+.workItemForm {
+  display: grid;
+  gap: var(--space-xl);
+}
+.formGrid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fixedStatus {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-raised);
+}
+.fixedStatus span,
+.fixedStatus small {
+  color: var(--color-text-secondary);
+}
+.successPanel,
+.errorPanel,
+.confirmPanel,
+.blockerPanel,
+.actionPanel {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-container);
+}
+.successPanel {
+  color: var(--color-status-success-text);
+  background: var(--color-status-success-background);
+}
+.errorPanel {
+  color: var(--color-status-error-text);
+  background: var(--color-status-error-background);
+}
+.confirmPanel {
+  border: var(--border-width) solid var(--color-status-error-border);
+  background: var(--color-surface-default);
+}
+.blockerPanel {
+  border: var(--border-width) solid var(--color-status-error-border);
+  background: var(--color-status-error-background);
+}
+.actionPanel {
+  border: var(--border-width) solid var(--color-border-subtle);
+  background: var(--color-surface-default);
+}
+.successPanel:focus,
+.detailHeader h1:focus {
+  outline: none;
+}
+.successPanel:focus-visible,
+.detailHeader h1:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.detailHeader {
+  padding-block-end: var(--space-xl);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+.detailHeader > div:first-child {
+  min-inline-size: 0;
+}
+.ticketIdentity {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-block-start: var(--space-md);
+  color: var(--color-text-accent);
+  font: var(--type-label);
+}
+.detailGrid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-xl);
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+}
+.detailMain,
+.detailAside {
+  display: grid;
+  gap: var(--space-xl);
+  min-inline-size: 0;
+}
+.detailAside {
+  position: sticky;
+  inset-block-start: calc(var(--shell-bar-height) + var(--space-lg));
+}
+.section {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+}
+.section h2,
+.confirmPanel h2,
+.blockerPanel h2 {
+  margin: 0;
+  font: var(--type-heading-2);
+}
+.section p,
+.confirmPanel p,
+.blockerPanel p {
+  margin: 0;
+}
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.description {
+  max-inline-size: 70ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.subtaskList,
+.commentList,
+.timeline {
+  display: grid;
+  gap: var(--space-md);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.subtask {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+.inlineForm {
+  display: grid;
+  align-items: end;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.comment {
+  display: grid;
+  gap: var(--space-sm);
+  padding-block: var(--space-md);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+.comment:last-child {
+  border-block-end: 0;
+}
+.comment header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+.comment p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.withdrawn,
+.muted {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+.timeline li {
+  position: relative;
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: auto 1fr;
+}
+.timeline li > span {
+  block-size: 0.75rem;
+  inline-size: 0.75rem;
+  margin-block-start: var(--space-xs);
+  border-radius: var(--radius-full);
+  background: var(--color-action-accent-background);
+}
+.timeline p {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+.detailsList {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+}
+.detailsList div {
+  display: grid;
+  gap: var(--space-xs);
+}
+.detailAside form,
+.blockerPanel form,
+.actionPanel form,
+.section > form {
+  display: grid;
+  gap: var(--space-md);
+}
+
+@media (max-width: 47.999rem) {
+  .pageHeader,
+  .detailHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .headerActions {
+    justify-content: flex-start;
+  }
+  .formGrid,
+  .detailGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .detailAside {
+    position: static;
+  }
+  .detailGrid {
+    display: flex;
+    flex-direction: column;
+  }
+  .detailMain,
+  .detailAside {
+    inline-size: 100%;
+  }
+  .searchBar,
+  .inlineForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ticketCard dl,
+  .blockerPanel dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

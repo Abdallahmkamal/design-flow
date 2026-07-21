@@ -533,4 +533,213 @@ set
   updated_by = excluded.updated_by,
   updated_at = excluded.updated_at;
 
+-- Phase 3 work-item fixtures are opt-in so the established pgTAP suites retain
+-- their empty-work-item precondition. Load supabase/fixtures/phase3_work_items.sql
+-- after a reset for browser and manual acceptance work.
+do $phase3_fixtures$
+begin
+if current_setting('design_flow.phase3_fixtures', true) = 'on' then
+
+-- Titles and bodies deliberately retain the [SYNTHETIC] marker so local
+-- screenshots cannot be mistaken for real data.
+insert into public.operation_requests (
+  id, operation_code, actor_id, request_hash, state, result,
+  created_at, updated_at, completed_at
+)
+select
+  fixture.id,
+  fixture.operation_code,
+  fixture.actor_id,
+  encode(extensions.digest(fixture.id::text, 'sha256'), 'hex'),
+  'completed',
+  jsonb_build_object('synthetic', true),
+  fixture.occurred_at,
+  fixture.occurred_at,
+  fixture.occurred_at
+from (
+  values
+    ('30000000-0000-4000-8000-000000000101'::uuid, 'seed_work_item_backlog', '10000000-0000-4000-8000-000000000002'::uuid, '2026-07-14 08:00:00+00'::timestamptz),
+    ('30000000-0000-4000-8000-000000000102'::uuid, 'seed_work_item_blocked', '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-15 09:00:00+00'::timestamptz),
+    ('30000000-0000-4000-8000-000000000103'::uuid, 'seed_work_item_progress', '10000000-0000-4000-8000-000000000003'::uuid, '2026-07-16 10:00:00+00'::timestamptz),
+    ('30000000-0000-4000-8000-000000000104'::uuid, 'seed_work_item_done', '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-10 11:00:00+00'::timestamptz),
+    ('30000000-0000-4000-8000-000000000105'::uuid, 'seed_work_item_archived', '10000000-0000-4000-8000-000000000006'::uuid, '2026-07-08 12:00:00+00'::timestamptz),
+    ('30000000-0000-4000-8000-000000000106'::uuid, 'seed_work_item_long_content', '10000000-0000-4000-8000-000000000007'::uuid, '2026-07-17 13:00:00+00'::timestamptz)
+) fixture(id, operation_code, actor_id, occurred_at);
+
+insert into public.work_items (
+  id, title, description, area_id, status_code, primary_assignee_id,
+  planned_start_date, due_date, figma_url, created_by, created_at,
+  updated_at, last_activity_at, completed_at, archived_by, archived_at
+)
+values
+  (
+    '70000000-0000-4000-8000-000000000001',
+    '[SYNTHETIC] Prepare empty-state content',
+    '[SYNTHETIC] Draft concise guidance for the local development fixture.',
+    '50000000-0000-4000-8000-000000000001', 'backlog', null,
+    '2026-07-22', '2026-07-28', 'https://www.figma.com/design/synthetic-empty-state',
+    '10000000-0000-4000-8000-000000000002', '2026-07-14 08:00:00+00',
+    '2026-07-14 08:00:00+00', '2026-07-14 08:00:00+00', null, null, null
+  ),
+  (
+    '70000000-0000-4000-8000-000000000002',
+    '[SYNTHETIC] Validate responsive ticket cards',
+    '[SYNTHETIC] Exercise the active-blocker and mobile-card states.',
+    '50000000-0000-4000-8000-000000000001', 'todo',
+    '10000000-0000-4000-8000-000000000002',
+    '2026-07-15', '2026-07-23', 'https://www.figma.com/design/synthetic-ticket-cards',
+    '10000000-0000-4000-8000-000000000004', '2026-07-15 09:00:00+00',
+    '2026-07-15 09:00:00+00', '2026-07-18 09:30:00+00', null, null, null
+  ),
+  (
+    '70000000-0000-4000-8000-000000000003',
+    '[SYNTHETIC] Review lifecycle controls',
+    '[SYNTHETIC] Confirm expected-version conflicts and permission-aware actions.',
+    '50000000-0000-4000-8000-000000000001', 'in_progress',
+    '10000000-0000-4000-8000-000000000003',
+    '2026-07-16', '2026-07-25', null,
+    '10000000-0000-4000-8000-000000000003', '2026-07-16 10:00:00+00',
+    '2026-07-16 10:00:00+00', '2026-07-20 10:15:00+00', null, null, null
+  ),
+  (
+    '70000000-0000-4000-8000-000000000004',
+    '[SYNTHETIC] Complete accessibility review',
+    '[SYNTHETIC] Completed local fixture for Done and All list views.',
+    '50000000-0000-4000-8000-000000000001', 'done',
+    '10000000-0000-4000-8000-000000000002',
+    '2026-07-07', '2026-07-14', null,
+    '10000000-0000-4000-8000-000000000004', '2026-07-10 11:00:00+00',
+    '2026-07-18 11:00:00+00', '2026-07-18 11:00:00+00',
+    '2026-07-18 11:00:00+00', null, null
+  ),
+  (
+    '70000000-0000-4000-8000-000000000005',
+    '[SYNTHETIC] Retired navigation exploration',
+    '[SYNTHETIC] Archived local fixture. All write controls must be absent.',
+    '50000000-0000-4000-8000-000000000001', 'paused', null,
+    null, null, null,
+    '10000000-0000-4000-8000-000000000006', '2026-07-08 12:00:00+00',
+    '2026-07-19 12:00:00+00', '2026-07-19 12:00:00+00', null,
+    '10000000-0000-4000-8000-000000000006', '2026-07-19 12:00:00+00'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000006',
+    '[SYNTHETIC] A deliberately long ticket title that verifies wrapping without truncating the meaning or obscuring the stable ticket identifier on narrow screens',
+    '[SYNTHETIC] This deliberately long description verifies that the Work Item page preserves readable line length, ordered mobile flow, and unbroken access to actions while content expands naturally.',
+    '50000000-0000-4000-8000-000000000001', 'backlog', null,
+    null, '2026-08-15', null,
+    '10000000-0000-4000-8000-000000000007', '2026-07-17 13:00:00+00',
+    '2026-07-17 13:00:00+00', '2026-07-17 13:00:00+00', null, null, null
+  );
+
+insert into public.work_item_assignments (
+  id, work_item_id, assignee_id, started_at, started_on,
+  assigned_by, start_operation_id
+)
+values
+  ('71000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', '2026-07-15 09:00:00+00', '2026-07-15', '10000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000102'),
+  ('71000000-0000-4000-8000-000000000003', '70000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000003', '2026-07-16 10:00:00+00', '2026-07-16', '10000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000103'),
+  ('71000000-0000-4000-8000-000000000004', '70000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000002', '2026-07-10 11:00:00+00', '2026-07-10', '10000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000104');
+
+insert into public.work_item_status_history (
+  id, work_item_id, from_status_code, to_status_code,
+  changed_by, changed_at, changed_on, operation_id
+)
+select
+  ('72000000-0000-4000-8000-' || lpad(fixture.ordinal::text, 12, '0'))::uuid,
+  fixture.work_item_id,
+  null,
+  fixture.status_code,
+  fixture.actor_id,
+  fixture.changed_at,
+  fixture.changed_at::date,
+  ('30000000-0000-4000-8000-' || lpad((100 + fixture.ordinal)::text, 12, '0'))::uuid
+from (
+  values
+    (1, '70000000-0000-4000-8000-000000000001'::uuid, 'backlog', '10000000-0000-4000-8000-000000000002'::uuid, '2026-07-14 08:00:00+00'::timestamptz),
+    (2, '70000000-0000-4000-8000-000000000002'::uuid, 'todo', '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-15 09:00:00+00'::timestamptz),
+    (3, '70000000-0000-4000-8000-000000000003'::uuid, 'in_progress', '10000000-0000-4000-8000-000000000003'::uuid, '2026-07-16 10:00:00+00'::timestamptz),
+    (4, '70000000-0000-4000-8000-000000000004'::uuid, 'done', '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-10 11:00:00+00'::timestamptz),
+    (5, '70000000-0000-4000-8000-000000000005'::uuid, 'paused', '10000000-0000-4000-8000-000000000006'::uuid, '2026-07-08 12:00:00+00'::timestamptz),
+    (6, '70000000-0000-4000-8000-000000000006'::uuid, 'backlog', '10000000-0000-4000-8000-000000000007'::uuid, '2026-07-17 13:00:00+00'::timestamptz)
+) fixture(ordinal, work_item_id, status_code, actor_id, changed_at);
+
+insert into public.work_item_labels (
+  id, work_item_id, label_id, applied_by, applied_at, apply_operation_id
+)
+select
+  ('73000000-0000-4000-8000-' || lpad(fixture.ordinal::text, 12, '0'))::uuid,
+  fixture.work_item_id,
+  '60000000-0000-4000-8000-000000000001',
+  fixture.actor_id,
+  fixture.applied_at,
+  ('30000000-0000-4000-8000-' || lpad((100 + fixture.ordinal)::text, 12, '0'))::uuid
+from (
+  values
+    (1, '70000000-0000-4000-8000-000000000001'::uuid, '10000000-0000-4000-8000-000000000002'::uuid, '2026-07-14 08:00:00+00'::timestamptz),
+    (2, '70000000-0000-4000-8000-000000000002'::uuid, '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-15 09:00:00+00'::timestamptz),
+    (3, '70000000-0000-4000-8000-000000000003'::uuid, '10000000-0000-4000-8000-000000000003'::uuid, '2026-07-16 10:00:00+00'::timestamptz),
+    (4, '70000000-0000-4000-8000-000000000004'::uuid, '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-10 11:00:00+00'::timestamptz)
+) fixture(ordinal, work_item_id, actor_id, applied_at);
+
+insert into public.subtasks (
+  id, work_item_id, title, position, is_completed, created_by,
+  created_at, completed_by, completed_at, updated_at
+)
+values
+  ('74000000-0000-4000-8000-000000000001', '70000000-0000-4000-8000-000000000002', '[SYNTHETIC] Check 320px card flow', 1, true, '10000000-0000-4000-8000-000000000002', '2026-07-16 09:00:00+00', '10000000-0000-4000-8000-000000000002', '2026-07-17 09:00:00+00', '2026-07-17 09:00:00+00'),
+  ('74000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000002', '[SYNTHETIC] Verify keyboard actions', 2, false, '10000000-0000-4000-8000-000000000002', '2026-07-16 09:05:00+00', null, null, '2026-07-16 09:05:00+00'),
+  ('74000000-0000-4000-8000-000000000003', '70000000-0000-4000-8000-000000000003', '[SYNTHETIC] Exercise stale version', 1, false, '10000000-0000-4000-8000-000000000003', '2026-07-18 10:00:00+00', null, null, '2026-07-18 10:00:00+00');
+
+insert into public.blockers (
+  id, work_item_id, reason, blocked_by, blocked_at,
+  expected_resolution_date, create_operation_id
+)
+values (
+  '75000000-0000-4000-8000-000000000001',
+  '70000000-0000-4000-8000-000000000002',
+  '[SYNTHETIC] Awaiting an accessibility review fixture response.',
+  '10000000-0000-4000-8000-000000000002',
+  '2026-07-18 09:30:00+00',
+  '2026-07-24',
+  '30000000-0000-4000-8000-000000000102'
+);
+
+insert into public.comments (
+  id, work_item_id, author_id, body, created_at, edited_at,
+  withdrawn_by, withdrawn_at
+)
+values
+  ('76000000-0000-4000-8000-000000000001', '70000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', '[SYNTHETIC] Mobile verification is ready for review.', '2026-07-17 10:00:00+00', null, null, null),
+  ('76000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000004', '[SYNTHETIC] This body is masked by the visible-comments view.', '2026-07-18 10:00:00+00', null, '10000000-0000-4000-8000-000000000004', '2026-07-18 11:00:00+00');
+
+insert into public.work_item_events (
+  id, work_item_id, event_type_code, actor_id, subject_type,
+  subject_id, previous_values, new_values, operation_id, occurred_at
+)
+select
+  ('77000000-0000-4000-8000-' || lpad(fixture.ordinal::text, 12, '0'))::uuid,
+  fixture.work_item_id,
+  'created',
+  fixture.actor_id,
+  'work_item',
+  fixture.work_item_id,
+  null,
+  jsonb_build_object('synthetic', true),
+  ('30000000-0000-4000-8000-' || lpad((100 + fixture.ordinal)::text, 12, '0'))::uuid,
+  fixture.occurred_at
+from (
+  values
+    (1, '70000000-0000-4000-8000-000000000001'::uuid, '10000000-0000-4000-8000-000000000002'::uuid, '2026-07-14 08:00:00+00'::timestamptz),
+    (2, '70000000-0000-4000-8000-000000000002'::uuid, '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-15 09:00:00+00'::timestamptz),
+    (3, '70000000-0000-4000-8000-000000000003'::uuid, '10000000-0000-4000-8000-000000000003'::uuid, '2026-07-16 10:00:00+00'::timestamptz),
+    (4, '70000000-0000-4000-8000-000000000004'::uuid, '10000000-0000-4000-8000-000000000004'::uuid, '2026-07-10 11:00:00+00'::timestamptz),
+    (5, '70000000-0000-4000-8000-000000000005'::uuid, '10000000-0000-4000-8000-000000000006'::uuid, '2026-07-08 12:00:00+00'::timestamptz),
+    (6, '70000000-0000-4000-8000-000000000006'::uuid, '10000000-0000-4000-8000-000000000007'::uuid, '2026-07-17 13:00:00+00'::timestamptz)
+) fixture(ordinal, work_item_id, actor_id, occurred_at);
+
+end if;
+end
+$phase3_fixtures$;
+
 commit;

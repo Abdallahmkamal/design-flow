@@ -611,6 +611,32 @@ Guardrails:
   existing full radius and spacing aliases. DataTable uses
   `product/table/row-min-height` plus existing spacing and border aliases.
 
+### Phase 3 readiness mappings
+
+The following mappings were distilled on 2026-07-21 and approved with the Phase
+3 component map and screen briefs on the same date. They are part of the runtime
+contract for Phase 3 components.
+
+| Phase 3 need | Verified mapping | Runtime representation after approval |
+| --- | --- | --- |
+| Textarea shell | Input geometry: `1px` border, `12px` radius, `4px` block and `8px` inline padding | Existing `--border-width`, `--radius-element`, `--space-xs`, and `--space-sm` |
+| Textarea starting height | Three native text rows; height is row-controlled rather than a fixed component height | Native `rows=3`; no new size token |
+| Tooltip surface | `4px` block and `8px` inline padding, `4px` trigger gap, `16px` radius, `300px` maximum inline size | Existing `--space-xs`, `--space-sm`, and `--radius-container`; new `--tooltip-max-inline-size: 18.75rem` |
+| Popover surface | `12px` padding, `4px` trigger gap, `16px` radius, low elevation | Existing `--space-md`, `--space-xs`, `--radius-container`, and `--shadow-xs` |
+| Pagination | `32px` default controls, `4px` control gaps, `16px` region gap | Existing `--control-height-md`, `--space-xs`, and `--space-lg` |
+| Responsive ticket results | Official guidance leaves the breakpoint product-owned | Existing Design Flow shell breakpoint `48rem` / `768px` |
+
+Official Astryx guidance does not specify a viewport-edge clearance for a
+product popover or tooltip. The proposed centralized Design Flow fallback is
+`--overlay-viewport-inset: 1rem`. Layered surfaces must stay within that inset
+when space permits and must remain completely operable when zoom or an unusually
+narrow viewport makes the inset impossible. This fallback is Design Flow-owned;
+it must not be described as an Astryx measurement.
+
+Phase 3 does not add Modal, Drawer, Tabs, Avatar, Radio, or Work Dates mappings.
+Those components remain deferred until their owning approved phase completes
+the same reference and readiness process.
+
 ### Phase 1 font-asset gate
 
 The approved Vodafone VF v4.000 variable WOFF2 asset was supplied and added on 2026-07-20. The runtime loads `Vodafone VF` across its documented `wght` range of 200–900, covering the required Regular, Medium, SemiBold, and Bold roles with real variable-font instances. `font-synthesis` is disabled, and the system stack remains only a network/load-failure fallback rather than the expected rendering.

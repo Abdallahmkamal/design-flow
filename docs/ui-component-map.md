@@ -1,0 +1,204 @@
+# Phase 3 UI component map
+
+**Status:** Approved for Phase 3 implementation on 2026-07-21
+
+**Scope:** Phase 3 Work-item Foundation only
+
+**Prepared:** 2026-07-21
+
+## Authority and boundaries
+
+This map applies the approved behavior in `build-plan.md`, `all-tickets.md`,
+`work-item.md`, `permission-matrix.md`, `operation-contracts.md`, and the Phase
+3 screen briefs. Vodafone owns color and typography. The ready Astryx notes
+under `references/astryx/` own the preferred remaining component presentation
+and behavior.
+
+All components are implemented and owned by Design Flow. Astryx packages,
+source, styles, and public APIs are not imported, wrapped, or copied.
+
+## Shared components reused unchanged
+
+| Component | Phase 3 use | Constraints |
+| --- | --- | --- |
+| `Button` | Submit/cancel, filter actions, lifecycle actions, confirmations, subtask movement | Visible labels remain required; no generic icon-only Button mode |
+| `Input` | Title, search, dates through native `type="date"`, and Figma URL | Visible label by default; server/client errors remain associated with the field |
+| `Select` | Single-choice status, assignee, view, relationship, attention filters, and sort controls | Bounded choices only; multi-select filters do not overload Select |
+| `Checkbox` | Status, Area/Squad, label, and people multi-select groups; incomplete-subtask acknowledgement | Use labelled `fieldset` groups where several values share a question |
+| `Badge` | Workflow status, Blocked, Archived, stale/due attention, labels, and subtask progress | Workflow colors use the six approved `product/status/*` aliases; Blocked and Archived stay separate |
+| `SkipLink` | Existing shell bypass link on every Phase 3 route | No Phase 3 change |
+
+## Shared component extension
+
+### `DataTable`
+
+Phase 3 extends the existing component without changing its semantic desktop
+table baseline.
+
+Proposed public additions:
+
+- optional `renderMobileCard(row)` for feature-owned structured card content;
+- optional `onRowActivate(row)` for pointer activation from otherwise
+  noninteractive row/card space; and
+- optional `rowActivationLabel(row)` used only for visible pointer affordance
+  and test naming, never to turn `tr` or `li` into a button.
+
+Rules:
+
+- Ticket ID/title remain native router links and the only keyboard navigation
+  path for the record.
+- Pointer activation ignores events originating from links, buttons, form
+  controls, or popover content.
+- Desktop keeps `table`/caption/header/body/cell semantics. Mobile remains a
+  semantic list and uses the purpose-built ticket hierarchy supplied by the
+  feature.
+- The desktop and mobile branches expose only the visible branch below/above
+  the existing `48rem` shell breakpoint.
+- Sorting and pagination stay controlled by the feature and server read model;
+  DataTable does not sort, filter, paginate, select, or mutate rows.
+- Existing generic mobile definition-list rendering remains the default for
+  Team and Settings, preserving Phase 2 callers.
+
+Reference: `references/astryx/table.md`.
+
+## New shared components
+
+### `Textarea`
+
+Purpose: native multi-line plain-text entry for Work Item descriptions, blocker
+notes/reasons, and comments.
+
+Proposed public API:
+
+- required `label`;
+- optional `description`, `error`, and `hideLabel`;
+- native textarea attributes including `rows`, `required`, and `readOnly`;
+- forwarded native textarea ref; and
+- default `rows={3}` with vertical resize.
+
+It reuses Input field anatomy and state mappings. Phase 3 adds no autosize,
+rich-text, mentions, Markdown preview, or character counter.
+
+Reference: `references/astryx/textarea.md`.
+
+### `Tooltip`
+
+Purpose: concise noninteractive hover/focus help, initially for the independent
+Figma icon link.
+
+Proposed public API:
+
+- one focusable `children` trigger;
+- required concise string `content`;
+- optional logical placement, defaulting above; and
+- optional controlled visibility only for tests and composed components.
+
+The trigger supplies its own accessible name. Tooltip supplies description,
+`200ms` hover delay, Escape dismissal, hoverable surface behavior, and
+viewport-safe placement. Interactive tooltip children are rejected.
+
+Reference: `references/astryx/tooltip.md`.
+
+### `Popover`
+
+Purpose: small focus-managed supplementary content, initially the contributor
+name list.
+
+Proposed public API:
+
+- required native-button trigger;
+- required dialog `label` and content;
+- optional logical placement/alignment;
+- optional controlled `open` and `onOpenChange`; and
+- an exposed close callback for the component's visible close action.
+
+It owns expanded/control ARIA, focus entry/trap/return, Escape and light
+dismiss, collision-safe positioning, and visible close. It is not a Menu,
+Tooltip, Modal, or Drawer.
+
+Reference: `references/astryx/popover.md`.
+
+### `Pagination`
+
+Purpose: numbered navigation for a known, server-paginated result count.
+
+Proposed public API:
+
+- required one-based `page`, positive `pageSize`, and nonnegative `totalCount`;
+- required `onPageChange(page)`;
+- optional landmark `label`, loading, and disabled state; and
+- no page-size selection in Phase 3.
+
+It renders visible Previous/Next actions, first/last boundaries, one sibling
+around the current page, inert ellipses, `aria-current`, and a polite page
+announcement. It is omitted for zero or one page.
+
+Reference: `references/astryx/pagination.md`.
+
+## Feature-owned compositions
+
+| Owner | Composition | Shared dependencies |
+| --- | --- | --- |
+| `features/work-items/components/FigmaLink` | Native external anchor, icon, destination-specific accessible name, new-tab announcement, Tooltip | Tooltip |
+| `features/work-items/components/WorkItemStatusBadge` | Six workflow mappings plus separate Blocked/Archived attention | Badge |
+| `features/work-items/components/WorkItemForm` | Create/edit field layout and error summary; returns a reusable creation result | Input, Textarea, Select, Checkbox, Button |
+| `features/work-items/components/TicketFilters` | URL-backed search, view, people/relationship, multi-select groups, attention filters, sort, clear-all | Input, Select, Checkbox, Button |
+| `features/work-items/components/TicketResults` | Desktop ticket table and mobile ticket cards over one read model | DataTable, Badge, Popover, Tooltip, Pagination |
+| `features/work-items/components/ContributorPopover` | Labelled contributor list with explicit close | Popover |
+| `features/work-items/components/BlockerPanel` | Prominent current blocker plus create/resolve in-context forms | Textarea, Input, Button |
+| `features/work-items/components/SubtaskList` | Checklist, add/rename, complete/reopen, withdraw, keyboard move-up/down | Checkbox, Input, Button |
+| `features/work-items/components/LifecycleTimeline` | Chronological Phase 3 events only | Badge where a status label is useful |
+| `features/work-items/components/CommentThread` | Chronological visible comments, edited/withdrawn markers, author/moderator actions | Textarea, Button |
+
+Feature components map RPC/read payloads through the feature API/domain layer;
+they never call Supabase directly from shared UI components.
+
+## Route ownership
+
+| Route | Thin route responsibility | Feature surface |
+| --- | --- | --- |
+| `/work-items` | Parse URL, invoke list query, set document title | All Tickets page |
+| `/work-items/new` | Route guard and safe return target | Ticket creation page |
+| `/work-items/:displayId` | Validate display ID, load authoritative detail | Work Item page |
+| `/work-items/:displayId/edit` | Validate display ID, route guard, load edit snapshot | Edit Work Item page using WorkItemForm |
+
+## State and permission ownership
+
+- Read RPC capability flags drive action presentation; the browser never
+  derives permission from position text alone.
+- Viewer sees read-only surfaces and no mutating controls. A directly entered
+  create/edit route shows a permission state before any mutation call.
+- Inactive and password-restricted principals are handled by the existing auth
+  boundary. Rejected Viewer+Admin is never treated as a valid UI combination.
+- Loading, empty, no-results, error, unauthorized, conflict, archived, and
+  long-content states are owned by each feature screen brief.
+- Mutation forms retain their draft on validation, network, and conflict
+  failures. Success always refreshes the authoritative read model.
+
+## Explicitly deferred
+
+- Modal, Drawer, Tabs, Avatar, Radio, and Work Dates shared components.
+- Log Work, work-log correction/withdrawal, the Work Dates grid, and the final
+  integrated work-history timeline (Phase 4/5).
+- Notification inbox (Phase 5), recorded-activity deep link, Work Item PDF, and
+  report exports (Phase 6).
+- Inline ticket editing, bulk actions, saved views, customizable columns,
+  attachments, generic links, rich text, and drag-and-drop reordering.
+
+Phase 3 uses full-page create/edit routes and accessible in-context confirmation
+panels. No deferred component is represented by a nonfunctional control.
+
+## Readiness acceptance
+
+- Every shared addition has a Design Flow-owned API, ready Astryx note,
+  Vodafone color/type mapping, keyboard contract, and responsive contract.
+- All three briefs reference only the components above.
+- No Phase 4+ interaction is needed to complete a Phase 3 journey.
+- Approval of this map approves the pending Phase 3 mappings in
+  `docs/design-system.md`; implementation still must verify each mapping with
+  component and browser tests.
+
+## Open questions
+
+None. Any material change to component ownership, new shared primitives, or a
+deferred capability requires a new readiness decision before implementation.

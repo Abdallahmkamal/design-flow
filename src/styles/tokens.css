@@ -78,6 +78,8 @@
   --motion-spinner-reduced-duration: 3s;
   --motion-easing-standard: cubic-bezier(0.24, 1, 0.4, 1);
   --control-press-scale: 0.98;
+  --tooltip-max-inline-size: 18.75rem;
+  --overlay-viewport-inset: 1rem;
 
   /* Light-mode semantic aliases from Vodafone Foundations. */
   --color-action-accent-background: #e60000;
@@ -108,6 +110,22 @@
   --color-status-success-text: #0b4026;
   --color-status-warning-background: #fff8dd;
   --color-status-warning-text: #5a4200;
+  --color-workflow-backlog-background: #f7f8f9;
+  --color-workflow-backlog-text: #2a2c2c;
+  --color-workflow-todo-background: #eaf5fd;
+  --color-workflow-todo-text: #00446f;
+  --color-workflow-in-progress-background: #e2f6ff;
+  --color-workflow-in-progress-text: #00616f;
+  --color-workflow-in-review-background: #ebdaef;
+  --color-workflow-in-review-text: #5e2750;
+  --color-workflow-done-background: #e3faef;
+  --color-workflow-done-text: #0b4026;
+  --color-workflow-paused-background: #fff8dd;
+  --color-workflow-paused-text: #5a4200;
+  --color-indicator-blocked-background: #ffe3e6;
+  --color-indicator-blocked-text: #5a1117;
+  --color-indicator-archived-background: #f4f6f7;
+  --color-indicator-archived-text: #5e6162;
   --color-surface-bg: #fdfefe;
   --color-surface-default: #fafbfb;
   --color-surface-raised: #f7f8f9;
@@ -146,6 +164,22 @@
   --color-status-success-text: #b2f0cc;
   --color-status-warning-background: #7a5a00;
   --color-status-warning-text: #fff0b3;
+  --color-workflow-backlog-background: #2a2c2c;
+  --color-workflow-backlog-text: #bec1c2;
+  --color-workflow-todo-background: #002e4d;
+  --color-workflow-todo-text: #a9d1f5;
+  --color-workflow-in-progress-background: #00343d;
+  --color-workflow-in-progress-text: #90e4f0;
+  --color-workflow-in-review-background: #321326;
+  --color-workflow-in-review-text: #d8c0cf;
+  --color-workflow-done-background: #115635;
+  --color-workflow-done-text: #b2f0cc;
+  --color-workflow-paused-background: #7a5a00;
+  --color-workflow-paused-text: #fff0b3;
+  --color-indicator-blocked-background: #7a1a22;
+  --color-indicator-blocked-text: #ffb8be;
+  --color-indicator-archived-background: #383b3b;
+  --color-indicator-archived-text: #bec1c2;
   --color-surface-bg: #121313;
   --color-surface-default: #1c1d1d;
   --color-surface-raised: #232424;

@@ -2,7 +2,20 @@ import type { HTMLAttributes, PropsWithChildren } from 'react';
 
 import styles from './Badge.module.css';
 
-export type BadgeTone = 'neutral' | 'info' | 'success' | 'warning' | 'error';
+export type BadgeTone =
+  | 'neutral'
+  | 'info'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'backlog'
+  | 'todo'
+  | 'in_progress'
+  | 'in_review'
+  | 'paused'
+  | 'done'
+  | 'blocked'
+  | 'archived';
 
 export interface BadgeProps extends PropsWithChildren<
   HTMLAttributes<HTMLSpanElement>

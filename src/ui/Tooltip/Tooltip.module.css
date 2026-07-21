@@ -1,0 +1,22 @@
+.anchor {
+  position: relative;
+  display: inline-flex;
+}
+.tooltip {
+  position: absolute;
+  z-index: 20;
+  inset-block-end: calc(100% + var(--space-xs));
+  inset-inline-start: 50%;
+  max-inline-size: min(
+    var(--tooltip-max-inline-size),
+    calc(100vw - 2 * var(--overlay-viewport-inset))
+  );
+  inline-size: max-content;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-overlay);
+  color: var(--color-action-primary-text);
+  background: var(--color-action-neutral-background);
+  font: var(--type-body-compact);
+  transform: translateX(-50%);
+  overflow-wrap: anywhere;
+}

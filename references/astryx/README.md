@@ -32,9 +32,13 @@ Every note must:
 | [badge.md](badge.md) | Compact read-only metadata | Phase 2 ready |
 | [select.md](select.md) | Bounded single-choice fields | Phase 2 ready |
 | [checkbox.md](checkbox.md) | Independent boolean fields | Phase 2 ready |
+| [textarea.md](textarea.md) | Multi-line input anatomy, validation, resizing, and field behavior | Phase 3 approved |
+| [tooltip.md](tooltip.md) | Concise hover/focus help and icon-only navigation links | Phase 3 approved |
+| [popover.md](popover.md) | Focus-managed anchored supplementary content | Phase 3 approved |
+| [pagination.md](pagination.md) | Numbered result navigation and page-change behavior | Phase 3 approved |
 
-Add Radio, Avatar, Tabs, Drawer, Tooltip, Pagination, and other notes before
-implementing their corresponding `src/ui/` components.
+Add Radio, Avatar, Tabs, Drawer, and other notes before implementing their
+corresponding `src/ui/` components. Modal remains scaffolded rather than ready.
 
 ## Required note structure
 

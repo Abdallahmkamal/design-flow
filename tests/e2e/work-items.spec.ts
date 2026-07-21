@@ -1,0 +1,426 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test, type Page } from '@playwright/test';
+
+const userId = '00000000-0000-4000-8000-000000000001';
+const itemId = '70000000-0000-4000-8000-000000000001';
+const displayId = 'DF-000001';
+
+function base64Url(value: Record<string, unknown>) {
+  return btoa(JSON.stringify(value))
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replace(/=+$/u, '');
+}
+function jwt() {
+  const now = Math.floor(Date.now() / 1000);
+  return [
+    base64Url({ alg: 'HS256', typ: 'JWT' }),
+    base64Url({
+      aud: 'authenticated',
+      exp: now + 3600,
+      role: 'authenticated',
+      sub: userId,
+    }),
+    'synthetic',
+  ].join('.');
+}
+
+const listRow = {
+  id: itemId,
+  displayId,
+  title: '[SYNTHETIC] Responsive ticket foundation',
+  area: {
+    id: '50000000-0000-4000-8000-000000000001',
+    name: '[SYNTHETIC] Internal Experience',
+  },
+  status: { code: 'todo', label: 'To Do' },
+  assignee: { id: userId, displayName: '[SYNTHETIC] Designer' },
+  contributors: [
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      displayName: '[SYNTHETIC] Lead',
+    },
+  ],
+  labels: [
+    {
+      id: '60000000-0000-4000-8000-000000000001',
+      name: '[SYNTHETIC] Foundation',
+    },
+  ],
+  plannedStartDate: '2026-07-21',
+  dueDate: '2026-07-25',
+  lastWorkedOn: null,
+  activeWorkDays: 0,
+  completedSubtasks: 0,
+  totalSubtasks: 1,
+  figmaUrl: 'https://www.figma.com/design/synthetic-phase-3',
+  isBlocked: false,
+  isStale: false,
+  isArchived: false,
+  createdAt: '2026-07-21T08:00:00Z',
+  updatedAt: '2026-07-21T08:00:00Z',
+};
+
+function detail(viewer = false) {
+  return {
+    ...listRow,
+    description: '[SYNTHETIC] Detail content for browser acceptance.',
+    area: { ...listRow.area, isActive: true },
+    labels: [{ ...listRow.labels[0], isActive: true }],
+    createdBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
+    firstWorkedOn: null,
+    lastActivityAt: '2026-07-21T08:00:00Z',
+    completedAt: null,
+    archivedAt: null,
+    subtasks: [
+      {
+        id: '74000000-0000-4000-8000-000000000001',
+        title: '[SYNTHETIC] Keyboard verification',
+        position: 1,
+        isCompleted: false,
+        createdBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
+        createdAt: '2026-07-21T08:00:00Z',
+        completedBy: null,
+        completedAt: null,
+        updatedAt: '2026-07-21T08:00:00Z',
+      },
+    ],
+    activeBlocker: null,
+    blockerHistory: [],
+    events: [
+      {
+        id: '77000000-0000-4000-8000-000000000001',
+        type: 'created',
+        actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+        subjectType: 'work_item',
+        subjectId: itemId,
+        occurredAt: '2026-07-21T08:00:00Z',
+      },
+    ],
+    comments: [
+      {
+        id: '76000000-0000-4000-8000-000000000001',
+        body: '[SYNTHETIC] Initial comment',
+        author: { id: userId, displayName: '[SYNTHETIC] Designer' },
+        createdAt: '2026-07-21T09:00:00Z',
+        editedAt: null,
+        withdrawnAt: null,
+        withdrawnBy: null,
+        canEdit: !viewer,
+        canWithdraw: !viewer,
+      },
+    ],
+    capabilities: {
+      canEdit: !viewer,
+      canReassign: !viewer,
+      canTransition: !viewer,
+      canCreateBlocker: !viewer,
+      canResolveBlocker: false,
+      canEditSubtasks: !viewer,
+      canComment: !viewer,
+      canArchive: false,
+      canRestore: false,
+    },
+  };
+}
+
+async function mocks(
+  page: Page,
+  options: { viewer?: boolean; conflict?: boolean } = {},
+) {
+  const user = {
+    id: userId,
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: 'synthetic@design-flow.example.invalid',
+    app_metadata: {},
+    user_metadata: { synthetic: true },
+    identities: [],
+    created_at: '2026-07-21T00:00:00Z',
+    updated_at: '2026-07-21T00:00:00Z',
+    is_anonymous: false,
+  };
+  await page.route('**/auth/v1/token**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        access_token: jwt(),
+        token_type: 'bearer',
+        expires_in: 3600,
+        refresh_token: 'synthetic-refresh',
+        user,
+      }),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/get_own_account_state', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: userId,
+          display_name: options.viewer
+            ? '[SYNTHETIC] Viewer'
+            : '[SYNTHETIC] Designer',
+          position_code: options.viewer ? 'viewer' : 'designer',
+          is_admin: false,
+          is_active: true,
+          must_change_password: false,
+        },
+      ]),
+    }),
+  );
+  await page.route('**/rest/v1/work_areas**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        { id: listRow.area.id, name: listRow.area.name, is_active: true },
+      ]),
+    }),
+  );
+  await page.route('**/rest/v1/labels**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: listRow.labels[0]!.id,
+          name: listRow.labels[0]!.name,
+          is_active: true,
+        },
+      ]),
+    }),
+  );
+  await page.route('**/rest/v1/team_directory**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: userId,
+          display_name: '[SYNTHETIC] Designer',
+          position_code: 'designer',
+        },
+        {
+          id: '00000000-0000-4000-8000-000000000002',
+          display_name: '[SYNTHETIC] Lead',
+          position_code: 'lead',
+        },
+      ]),
+    }),
+  );
+  await page.route('**/rest/v1/work_item_statuses**', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        { code: 'backlog', display_label: 'Backlog' },
+        { code: 'todo', display_label: 'To Do' },
+        { code: 'in_progress', display_label: 'In Progress' },
+        { code: 'in_review', display_label: 'In Review' },
+        { code: 'paused', display_label: 'Paused' },
+        { code: 'done', display_label: 'Done' },
+      ]),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/list_work_items', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        rows: [listRow],
+        totalCount: 1,
+        page: 1,
+        pageSize: 25,
+      }),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/get_work_item_detail', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(detail(Boolean(options.viewer))),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/create_work_item', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: itemId,
+        display_id: displayId,
+        status_code: 'backlog',
+        updated_at: '2026-07-21T08:00:00Z',
+      }),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/**', async (route) => {
+    const url = route.request().url();
+    if (url.includes('get_own_account_state'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: userId,
+            display_name: options.viewer
+              ? '[SYNTHETIC] Viewer'
+              : '[SYNTHETIC] Designer',
+            position_code: options.viewer ? 'viewer' : 'designer',
+            is_admin: false,
+            is_active: true,
+            must_change_password: false,
+          },
+        ]),
+      });
+    else if (url.includes('list_work_items'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          rows: [listRow],
+          totalCount: 1,
+          page: 1,
+          pageSize: 25,
+        }),
+      });
+    else if (url.includes('get_work_item_detail'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(detail(Boolean(options.viewer))),
+      });
+    else if (url.includes('create_work_item'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: itemId,
+          display_id: displayId,
+          status_code: 'backlog',
+          updated_at: '2026-07-21T08:00:00Z',
+        }),
+      });
+    else if (options.conflict && url.includes('transition_work_item_status')) {
+      await route.fulfill({
+        status: 409,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 'P0001', message: 'DF_CONFLICT' }),
+      });
+    } else
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'updated' }),
+      });
+  });
+}
+
+async function signIn(page: Page) {
+  await page.goto('/');
+  await page
+    .getByLabel(/Work email/)
+    .fill('synthetic@design-flow.example.invalid');
+  await page.getByLabel(/^Password/).fill('Synthetic!Pass2026');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+}
+
+test('All Tickets supports URL filters, direct Figma access, responsive results, and axe', async ({
+  page,
+}, testInfo) => {
+  await mocks(page);
+  await signIn(page);
+  await page.getByRole('link', { name: 'Work items' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'All Tickets' }),
+  ).toBeVisible();
+  await page.getByLabel('Search tickets').fill('responsive');
+  await page.getByRole('button', { name: 'Search' }).click();
+  await expect(page).toHaveURL(/q=responsive/u);
+  const results =
+    testInfo.project.name === 'mobile-chromium'
+      ? page.getByRole('list', { name: 'All Tickets results' })
+      : page.getByRole('table', { name: 'All Tickets results' });
+  await expect(results).toBeVisible();
+  const figmaLink = page
+    .getByRole('link', {
+      name: `Open ${displayId} in Figma (opens in a new tab)`,
+    })
+    .first();
+  await expect(figmaLink).toHaveAttribute('href', /figma\.com/u);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('ticket creation remains Backlog, preserves the full-page form, and navigates by display ID', async ({
+  page,
+}) => {
+  await mocks(page);
+  await signIn(page);
+  await page.goto('/work-items/new');
+  await expect(
+    page.getByText('Creation cannot submit work or start another status.'),
+  ).toBeVisible();
+  await page.getByLabel('Title *').fill('[SYNTHETIC] Created in browser');
+  await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
+  await page
+    .getByLabel('Figma URL (optional)')
+    .fill('https://www.figma.com/design/synthetic-created');
+  await page.getByLabel('[SYNTHETIC] Foundation').check();
+  await page.getByRole('button', { name: 'Create ticket' }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+  await expect(page.getByRole('status')).toContainText(
+    `${displayId} created in Backlog.`,
+  );
+});
+
+test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({
+  page,
+}) => {
+  await mocks(page);
+  await signIn(page);
+  await page.goto(`/work-items/${displayId}`);
+  await expect(
+    page.getByRole('heading', { name: listRow.title }),
+  ).toBeVisible();
+  await page.getByLabel('Status').selectOption('in_progress');
+  await page.getByRole('button', { name: 'Update status' }).click();
+  await expect(page.getByRole('status')).toContainText('Status updated.');
+  await page.locator('summary').filter({ hasText: 'Add blocker' }).click();
+  await page.getByLabel('Blocker reason').fill('[SYNTHETIC] Browser blocker');
+  await page.getByRole('button', { name: 'Add blocker' }).click();
+  await expect(page.getByRole('status')).toContainText('Blocker added.');
+  await page.getByLabel('New subtask').fill('[SYNTHETIC] Added subtask');
+  await page.getByRole('button', { name: 'Add subtask' }).click();
+  await expect(page.getByRole('status')).toContainText('Subtask added.');
+  await page.getByLabel('Add comment').fill('[SYNTHETIC] Browser comment');
+  await page.getByRole('button', { name: 'Add comment' }).click();
+  await expect(page.getByRole('status')).toContainText('Comment added.');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('conflicts preserve chosen input and Viewer detail remains read-only', async ({
+  page,
+}) => {
+  await mocks(page, { conflict: true });
+  await signIn(page);
+  await page.goto(`/work-items/${displayId}`);
+  await page.getByLabel('Status').selectOption('in_progress');
+  await page.getByRole('button', { name: 'Update status' }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    'Someone changed this ticket first',
+  );
+  await expect(page.getByLabel('Status')).toHaveValue('in_progress');
+  await page.context().clearCookies();
+  await page.unrouteAll({ behavior: 'wait' });
+  await mocks(page, { viewer: true });
+  await page.goto(`/work-items/${displayId}`);
+  await expect(page.getByText('Read-only access.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Update status' })).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole('button', { name: 'Add comment' })).toHaveCount(
+    0,
+  );
+});
