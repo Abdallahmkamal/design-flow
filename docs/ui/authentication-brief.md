@@ -1,6 +1,6 @@
 # Authentication flow brief
 
-**Status:** Approved for the `feature/auth-account-lifecycle` implementation slice
+**Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 **Implementation scope:** Sign-in, session restoration, mandatory password change, inactive/unavailable account handling, and sign-out
 
@@ -166,6 +166,15 @@ No unavailable Astryx measurement is required by this slice. The authentication 
   routing, factual staging disclosure, and sign-out. Only conspicuously
   synthetic staging identities and records were used; disposable credentials
   were rotated after verification.
+- The complete synthetic Phase 2 staging acceptance matrix passed on
+  2026-07-21. Manual checks reconfirmed that public registration is absent,
+  mandatory password change cannot be bypassed, Viewer + Admin is rejected,
+  inactive and unauthorized sessions remain outside the application shell,
+  and allowed and denied lifecycle actions match the permission matrix.
+- An operator-authorized staging-only first-Admin credential recovery completed
+  through the audited temporary-reset operation. The mandatory password change
+  was completed and the operation finalized with one password-reset audit
+  event; no usable credential was committed, audited, or retained in logs.
 
 ## Open questions
 

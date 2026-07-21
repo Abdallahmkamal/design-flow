@@ -1,6 +1,6 @@
 # Settings brief
 
-**Status:** Approved for Phase 2 Slice 2 implementation
+**Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
 ## Purpose
@@ -117,6 +117,23 @@ Every approved Settings mutation writes the contracted append-only administratio
 - Only Admin-privileged eligible positions access Settings.
 - Every account, hierarchy, controlled-list, timezone, and audit behavior matches its contract and proves allowed/denied server paths.
 - Desktop/mobile, keyboard, state, confirmation, long-content, and staging behavior must pass before the Settings slice is complete.
+
+## Verification evidence
+
+- The complete synthetic Phase 2 staging acceptance matrix passed on
+  2026-07-21 for eligible Admin and non-Admin Viewer, Designer, Lead, and
+  Manager personas. Settings reads, navigation, and controls remained limited
+  to Admin-privileged Designer, Lead, and Manager accounts; Manager position
+  alone did not grant access and Viewer + Admin remained rejected.
+- Allowed and denied member create, temporary reset, deactivate/reactivate,
+  access, reporting-line, Area/Squad, label, timezone, and audit paths matched
+  the permission matrix and operation contracts. History and append-only audit
+  records were preserved, and temporary credentials were displayed only in
+  their approved one-time response path.
+- Desktop and mobile section navigation, keyboard-accessible forms and
+  confirmations, loading, empty, no-results, stale/error, long-content, and
+  unauthorized states passed the approved brief. Supabase and Cloudflare logs
+  showed no unexpected secret, personal-data, or production-data exposure.
 
 ## Open questions
 

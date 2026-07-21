@@ -3,11 +3,11 @@
 A lightweight work-management portal for one internal UX/design team.
 
 Phase 0 fixed the schema, permission, and operation contracts, and Phase 1
-delivered the application and database foundation. Phase 2 Slice 1 implemented
-the approved authentication and account-lifecycle boundary. The current Phase
-2 Slice 2 branch adds the active Team directory, Admin-only member and hierarchy
-administration, Areas/Squads, labels, team timezone, administration audit, and
-their responsive and permission-gated UI.
+delivered the application and database foundation. Phase 2 is complete: the
+approved authentication and account-lifecycle boundary, active Team directory,
+Admin-only member and hierarchy administration, Areas/Squads, labels, team
+timezone, administration audit, and their responsive and permission-gated UI
+passed the complete synthetic staging acceptance matrix on 2026-07-21.
 
 The Supabase Free staging project contains the Phase 1 foundation plus the
 authentication/account-lifecycle migrations, six Edge Functions, stable
@@ -80,7 +80,7 @@ npm run functions:test
 npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 56 unit/component
+`npm run verify` covers formatting, linting, strict types, 62 unit/component
 tests, and a production build. Playwright schedules 20 desktop/mobile browser
 scenarios for authentication, Team, Settings, guarded shell behavior, geometry,
 and automated accessibility; 18 run in their applicable projects and two are
@@ -131,13 +131,12 @@ and audit boundaries.
   authentication/account-lifecycle, hierarchy, controlled-list, timezone, and
   audit assertions; generated database types match the implemented schema
   shape.
-- The Supabase Free staging project is healthy at the existing
-  authentication/account-lifecycle checkpoint and has six active lifecycle
-  Edge Functions. Its acceptance identities and history are conspicuously
-  synthetic, public signup is closed, legacy API keys remain disabled, and the
-  one-time bootstrap secret is absent.
+- The Supabase Free staging project is healthy at the complete Phase 2
+  checkpoint and has six active lifecycle Edge Functions. Its acceptance
+  identities and history are conspicuously synthetic, public signup is closed,
+  legacy API keys remain disabled, and the one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
-  authentication/account-lifecycle checkpoint at
+  complete Phase 2 checkpoint at
   <https://design-flow-staging.pages.dev>. It was built with staging
   credentials only; development source maps were not published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
@@ -150,9 +149,7 @@ and audit boundaries.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-Authentication/account lifecycle is implemented and verified locally,
-mobile-LAN, and in the existing non-production staging checkpoint. Team
-hierarchy and Settings are implemented and fully verified by the local unit,
-browser, database, and Edge Function gates. The hosted staging checkpoint is
-intentionally unchanged until this branch is reviewed and an update is
-explicitly authorized.
+Phase 2 is implemented and verified by the local unit, browser, database, and
+Edge Function gates, plus the complete manual non-production staging matrix on
+2026-07-21. Authentication, Team, Settings, and the shared shell meet the Phase
+2 exit gate. No Phase 3 implementation has started.
