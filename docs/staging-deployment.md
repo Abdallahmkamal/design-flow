@@ -53,8 +53,9 @@ After verification passes, the staging job:
 2. links only the configured staging project;
 3. previews pending forward migrations;
 4. applies pending migrations without resetting or seeding the hosted project;
-5. verifies migration history and compares hosted generated types with the
-   committed types;
+5. verifies migration history and compares the hosted generated type schema
+   with the committed local-migration types, excluding generator-specific
+   client metadata;
 6. deploys all account-lifecycle Edge Functions;
 7. builds with `VITE_APP_ENV=staging` and rejects public source maps;
 8. directly uploads `dist/` to the existing `design-flow-staging` Cloudflare
