@@ -126,8 +126,8 @@ select is(
     where namespace.nspname = 'public'
       and function_definition.prokind = 'f'
   ),
-  24,
-  'only the owning Phase 2 authentication, Team, and Settings functions are exposed'
+  42,
+  'only the owning Phase 2 and Phase 3 application functions are exposed'
 );
 
 select is(

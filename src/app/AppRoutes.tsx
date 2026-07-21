@@ -25,6 +25,26 @@ const SettingsRoute = lazy(() =>
     default: module.SettingsRoute,
   })),
 );
+const AllTicketsPage = lazy(() =>
+  import('../features/work-items/AllTicketsPage').then((module) => ({
+    default: module.AllTicketsPage,
+  })),
+);
+const WorkItemCreatePage = lazy(() =>
+  import('../features/work-items/WorkItemCreatePage').then((module) => ({
+    default: module.WorkItemCreatePage,
+  })),
+);
+const WorkItemPage = lazy(() =>
+  import('../features/work-items/WorkItemPage').then((module) => ({
+    default: module.WorkItemPage,
+  })),
+);
+const WorkItemEditPage = lazy(() =>
+  import('../features/work-items/WorkItemEditPage').then((module) => ({
+    default: module.WorkItemEditPage,
+  })),
+);
 
 function featureElement(element: ReactNode) {
   return (
@@ -49,12 +69,19 @@ export function AppRoutes() {
           <Route index element={<DashboardPlaceholderPage />} />
           <Route
             path="work-items"
-            element={
-              <FeaturePlaceholderPage
-                title="Work items"
-                plannedPhase="Phase 3"
-              />
-            }
+            element={featureElement(<AllTicketsPage />)}
+          />
+          <Route
+            path="work-items/new"
+            element={featureElement(<WorkItemCreatePage />)}
+          />
+          <Route
+            path="work-items/:displayId"
+            element={featureElement(<WorkItemPage />)}
+          />
+          <Route
+            path="work-items/:displayId/edit"
+            element={featureElement(<WorkItemEditPage />)}
           />
           <Route
             path="reports"

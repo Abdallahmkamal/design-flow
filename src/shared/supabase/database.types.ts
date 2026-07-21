@@ -2788,6 +2788,20 @@ export type Database = {
       }
     }
     Functions: {
+      add_comment: {
+        Args: { body: string; operation_id?: string; work_item_id: string }
+        Returns: Json
+      }
+      add_subtask: {
+        Args: {
+          expected_last_activity_at: string
+          insertion_position: number
+          operation_id?: string
+          title: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       archive_label: {
         Args: {
           confirmed_usage_count: number
@@ -2806,8 +2820,26 @@ export type Database = {
         }
         Returns: Json
       }
+      archive_work_item: {
+        Args: {
+          expected_updated_at: string
+          operation_id?: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       complete_own_password_change: {
         Args: { actor_profile_id: string; operation_id: string }
+        Returns: Json
+      }
+      create_blocker: {
+        Args: {
+          expected_resolution_date: string
+          expected_status_code: string
+          operation_id?: string
+          reason: string
+          work_item_id: string
+        }
         Returns: Json
       }
       create_label: {
@@ -2825,6 +2857,29 @@ export type Database = {
           operation_id?: string
           requested_sort_order?: number
           work_area_id: string
+        }
+        Returns: Json
+      }
+      create_work_item: {
+        Args: {
+          area_id: string
+          description: string
+          due_date?: string
+          figma_url?: string
+          label_ids?: string[]
+          operation_id?: string
+          planned_start_date?: string
+          primary_assignee_id?: string
+          title: string
+        }
+        Returns: Json
+      }
+      edit_comment: {
+        Args: {
+          body: string
+          comment_id: string
+          expected_edited_at: string
+          operation_id?: string
         }
         Returns: Json
       }
@@ -2894,6 +2949,8 @@ export type Database = {
           position_code: string
         }[]
       }
+      get_work_item_detail: { Args: { display_id: string }; Returns: Json }
+      list_work_items: { Args: { filters?: Json }; Returns: Json }
       prepare_first_admin_credential_recovery: {
         Args: { email: string; operation_id: string }
         Returns: Json
@@ -2934,12 +2991,31 @@ export type Database = {
         }
         Returns: Json
       }
+      reassign_work_item: {
+        Args: {
+          expected_assignee_id: string
+          expected_updated_at: string
+          new_assignee_id: string
+          operation_id?: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
       rename_label: {
         Args: {
           expected_updated_at: string
           label_id: string
           name: string
           operation_id?: string
+        }
+        Returns: Json
+      }
+      rename_subtask: {
+        Args: {
+          expected_updated_at: string
+          operation_id?: string
+          subtask_id: string
+          title: string
         }
         Returns: Json
       }
@@ -2956,8 +3032,34 @@ export type Database = {
         Args: { operation_id?: string; ordered_ids: string[] }
         Returns: Json
       }
+      reorder_subtasks: {
+        Args: {
+          expected_last_activity_at: string
+          operation_id?: string
+          ordered_ids: string[]
+          work_item_id: string
+        }
+        Returns: Json
+      }
       reorder_work_areas: {
         Args: { operation_id?: string; ordered_ids: string[] }
+        Returns: Json
+      }
+      resolve_blocker: {
+        Args: {
+          blocker_id: string
+          expected_unresolved: boolean
+          operation_id?: string
+          resolution_note: string
+        }
+        Returns: Json
+      }
+      restore_work_item: {
+        Args: {
+          expected_updated_at: string
+          operation_id?: string
+          work_item_id: string
+        }
         Returns: Json
       }
       set_member_access: {
@@ -2972,11 +3074,62 @@ export type Database = {
         }
         Returns: Json
       }
+      set_subtask_completion: {
+        Args: {
+          completed: boolean
+          expected_completed: boolean
+          operation_id?: string
+          subtask_id: string
+        }
+        Returns: Json
+      }
       set_team_timezone: {
         Args: {
           expected_updated_at: string
           operation_id?: string
           timezone_name: string
+        }
+        Returns: Json
+      }
+      transition_work_item_status: {
+        Args: {
+          acknowledge_incomplete_subtasks?: boolean
+          expected_status_code: string
+          expected_updated_at: string
+          operation_id?: string
+          target_status_code: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
+      update_work_item: {
+        Args: {
+          area_id: string
+          description: string
+          due_date: string
+          expected_updated_at: string
+          figma_url: string
+          label_ids: string[]
+          operation_id?: string
+          planned_start_date: string
+          title: string
+          work_item_id: string
+        }
+        Returns: Json
+      }
+      withdraw_comment: {
+        Args: {
+          comment_id: string
+          expected_edited_at: string
+          operation_id?: string
+        }
+        Returns: Json
+      }
+      withdraw_subtask: {
+        Args: {
+          expected_updated_at: string
+          operation_id?: string
+          subtask_id: string
         }
         Returns: Json
       }

@@ -1,0 +1,62 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+
+import { WorkItemForm } from './WorkItemForm';
+
+const options = {
+  areas: [{ id: 'area', label: 'Synthetic Area', isActive: true }],
+  labels: [{ id: 'label', label: 'Synthetic Label', isActive: true }],
+  people: [{ id: 'person', label: 'Synthetic Designer' }],
+  statuses: [{ code: 'backlog', label: 'Backlog' }],
+};
+
+describe('WorkItemForm', () => {
+  it('keeps values after client validation and fixes creation status to Backlog', async () => {
+    const user = userEvent.setup();
+    const submit = vi.fn();
+    render(
+      <WorkItemForm
+        options={options}
+        submitLabel="Create ticket"
+        isSubmitting={false}
+        onSubmit={submit}
+      />,
+    );
+    await user.type(screen.getByLabelText('Title *'), 'Preserved title');
+    await user.click(screen.getByRole('button', { name: 'Create ticket' }));
+    expect(screen.getByLabelText('Title *')).toHaveValue('Preserved title');
+    expect(screen.getByText('Choose an Area or Squad.')).toBeVisible();
+    expect(screen.getByText('Backlog')).toBeVisible();
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  it('submits one Figma URL and the selected label without a status field', async () => {
+    const user = userEvent.setup();
+    const submit = vi.fn();
+    render(
+      <WorkItemForm
+        options={options}
+        submitLabel="Create ticket"
+        isSubmitting={false}
+        onSubmit={submit}
+      />,
+    );
+    await user.type(screen.getByLabelText('Title *'), 'Synthetic ticket');
+    await user.selectOptions(screen.getByLabelText('Area / Squad *'), 'area');
+    await user.type(
+      screen.getByLabelText('Figma URL (optional)'),
+      'https://www.figma.com/design/synthetic',
+    );
+    await user.click(screen.getByLabelText('Synthetic Label'));
+    await user.click(screen.getByRole('button', { name: 'Create ticket' }));
+    expect(submit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        areaId: 'area',
+        figmaUrl: 'https://www.figma.com/design/synthetic',
+        labelIds: ['label'],
+      }),
+    );
+    expect(submit.mock.calls[0]?.[0]).not.toHaveProperty('status');
+  });
+});

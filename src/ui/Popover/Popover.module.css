@@ -1,0 +1,30 @@
+.root {
+  position: relative;
+  display: inline-flex;
+}
+.panel {
+  position: absolute;
+  z-index: 15;
+  inset-block-start: calc(100% + var(--space-xs));
+  min-inline-size: 15rem;
+  max-inline-size: min(24rem, calc(100vw - 2 * var(--overlay-viewport-inset)));
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-overlay);
+  color: var(--color-text-primary);
+  background: var(--color-surface-bg);
+  box-shadow: var(--shadow-xs);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-block-end: var(--space-sm);
+}
+.start {
+  inset-inline-start: 0;
+}
+.end {
+  inset-inline-end: 0;
+}

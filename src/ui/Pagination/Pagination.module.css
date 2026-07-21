@@ -1,0 +1,26 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-block-start: var(--space-lg);
+  font: var(--type-body-compact);
+}
+.pagination p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+@media (max-width: 35rem) {
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .actions {
+    justify-content: space-between;
+  }
+}

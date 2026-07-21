@@ -30,3 +30,36 @@
   color: var(--color-status-error-text);
   background: var(--color-status-error-background);
 }
+
+.backlog {
+  color: var(--color-workflow-backlog-text);
+  background: var(--color-workflow-backlog-background);
+}
+.todo {
+  color: var(--color-workflow-todo-text);
+  background: var(--color-workflow-todo-background);
+}
+.in_progress {
+  color: var(--color-workflow-in-progress-text);
+  background: var(--color-workflow-in-progress-background);
+}
+.in_review {
+  color: var(--color-workflow-in-review-text);
+  background: var(--color-workflow-in-review-background);
+}
+.done {
+  color: var(--color-workflow-done-text);
+  background: var(--color-workflow-done-background);
+}
+.paused {
+  color: var(--color-workflow-paused-text);
+  background: var(--color-workflow-paused-background);
+}
+.blocked {
+  color: var(--color-indicator-blocked-text);
+  background: var(--color-indicator-blocked-background);
+}
+.archived {
+  color: var(--color-indicator-archived-text);
+  background: var(--color-indicator-archived-background);
+}
