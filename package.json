@@ -28,7 +28,8 @@
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --local > src/shared/supabase/database.types.ts",
     "functions:check": "deno fmt --config supabase/functions/deno.json --check supabase/functions && deno lint --config supabase/functions/deno.json supabase/functions && deno check --config supabase/functions/deno.json supabase/functions/**/*.ts",
-    "functions:test": "deno test --config supabase/functions/deno.json supabase/functions"
+    "functions:test": "deno test --config supabase/functions/deno.json supabase/functions",
+    "staging:smoke": "node scripts/verify-staging.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.7",

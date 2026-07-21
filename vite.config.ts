@@ -12,11 +12,13 @@ export default defineConfig({
     port: 4173,
   },
   build: {
-    sourcemap: true,
+    sourcemap:
+      process.env.VITE_APP_ENV !== 'staging' &&
+      process.env.VITE_APP_ENV !== 'production',
   },
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.mjs'],
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     coverage: {

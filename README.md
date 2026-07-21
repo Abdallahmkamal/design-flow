@@ -77,9 +77,10 @@ npm run test:e2e
 npm run db:test
 npm run functions:check
 npm run functions:test
+npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 52 unit/component
+`npm run verify` covers formatting, linting, strict types, 56 unit/component
 tests, and a production build. Playwright schedules 20 desktop/mobile browser
 scenarios for authentication, Team, Settings, guarded shell behavior, geometry,
 and automated accessibility; 18 run in their applicable projects and two are
@@ -93,6 +94,7 @@ and audit boundaries.
 - [Design-system contract](docs/design-system.md)
 - [UI architecture](docs/ui-architecture.md)
 - [Technical plan](docs/technical-plan.md)
+- [Staging delivery and verification](docs/staging-deployment.md)
 - [MVP build plan](docs/build-plan.md)
 - [Physical schema contract](docs/schema-contract.md)
 - [Permission and RLS matrix](docs/permission-matrix.md)
