@@ -1,6 +1,6 @@
 # All Tickets brief
 
-**Status:** Approved for Phase 3 implementation on 2026-07-21
+**Status:** Phase 3 complete — staging acceptance verified on 2026-07-22
 
 **Route:** `/work-items`
 
@@ -251,6 +251,15 @@ measurements.
 - Loading, empty, no-results, error, unauthorized, long-content, and pagination
   states pass desktop/mobile component, Playwright, and axe coverage.
 - Viewer is read-only. No Phase 4/5/6 control is rendered.
+
+## Verification evidence
+
+- The complete synthetic Phase 3 staging acceptance matrix passed on
+  2026-07-22. Desktop/mobile checks covered Current/Done/Archived/All views,
+  URL-backed search/filter/sort, no-results, direct Figma access, contributor
+  presentation, pagination, and structured mobile cards.
+- Viewer staging checks confirmed the whole-team readable list without a Create
+  ticket action or any deferred lifecycle/work-log control.
 
 ## Open questions
 

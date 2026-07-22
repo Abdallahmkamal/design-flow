@@ -1,6 +1,6 @@
 # Work Item brief
 
-**Status:** Approved for Phase 3 implementation on 2026-07-21
+**Status:** Phase 3 complete — staging acceptance verified on 2026-07-22
 
 **Routes:** `/work-items/:displayId`, `/work-items/:displayId/edit`
 
@@ -302,6 +302,19 @@ flows deliberately avoid the unready Modal reference.
   empty sections, load/mutation failure, and focus restoration.
 - No withdrawn body, restricted revision, Phase 4 control, Phase 5 inbox, or
   Phase 6 export is exposed.
+
+## Verification evidence
+
+- The complete synthetic Phase 3 staging acceptance matrix passed on
+  2026-07-22. Desktop/mobile checks covered edit, assignment/status lifecycle,
+  blocker resolve, keyboard subtask ordering, completion/reopen, comment
+  add/edit/withdraw, conflict-preserving forms, archive/restore, and the
+  authoritative lifecycle timeline.
+- The post-deployment corrective pass verified Area/Squad ownership on edit,
+  persistent subtask completion/reopen, and success-only clearing of subtask
+  and comment inputs. Temporary synthetic verification records were withdrawn.
+- Viewer staging checks confirmed readable safe history/comments and a complete
+  absence of edit, lifecycle, blocker, subtask, archive, and comment mutations.
 
 ## Open questions
 

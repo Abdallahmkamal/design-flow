@@ -1,6 +1,6 @@
 # Ticket creation brief
 
-**Status:** Approved for Phase 3 implementation on 2026-07-21
+**Status:** Phase 3 complete — staging acceptance verified on 2026-07-22
 
 **Route:** `/work-items/new`
 
@@ -210,6 +210,15 @@ mappings and fallback are in `design-system.md`.
 - Desktop/mobile keyboard and axe tests cover required/optional fields, errors,
   loading, configuration-blocked, permission, and success navigation.
 - The later reusable result contract is present without any Phase 4 UI.
+
+## Verification evidence
+
+- The complete synthetic Phase 3 staging acceptance matrix passed on
+  2026-07-22. Desktop/mobile checks confirmed Backlog-only creation, validation
+  draft preservation, display-ID navigation, independent Figma access, and no
+  work-log or non-Backlog side effect.
+- Direct Viewer navigation to `/work-items/new` displayed the approved
+  permission state before any mutation form or request was available.
 
 ## Open questions
 
