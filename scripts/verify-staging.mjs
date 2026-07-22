@@ -1,8 +1,4 @@
-const phaseTwoMarkers = [
-  'Members and access',
-  'Areas/Squads',
-  'Administration audit',
-];
+const phaseFourMarkers = ['Log work', 'Work Dates', 'Correct work log'];
 
 function requiredEnvironment(name, source = process.env) {
   const value = source[name]?.trim();
@@ -125,17 +121,17 @@ export async function verifyStaging({
     }),
   );
   const deployedJavaScript = [bundle, ...linkedBundles].join('\n');
-  const missingMarker = phaseTwoMarkers.find(
+  const missingMarker = phaseFourMarkers.find(
     (marker) => !deployedJavaScript.includes(marker),
   );
 
   if (missingMarker) {
     throw new Error(
-      `The live bundle is missing the Phase 2 marker: ${missingMarker}`,
+      `The live bundle is missing the Phase 4 marker: ${missingMarker}`,
     );
   }
 
-  checks.push('Phase 2 frontend bundle');
+  checks.push('Phase 4 frontend bundle');
 
   await responseText(
     fetcher,
