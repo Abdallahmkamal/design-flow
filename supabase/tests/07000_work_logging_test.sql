@@ -1,6 +1,6 @@
 begin;
 
-select plan(24);
+select plan(27);
 
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);
@@ -39,6 +39,11 @@ select is(
   1, 'submission creates one timeline event for the batch'
 );
 
+select is(
+  (select count(*)::integer from jsonb_array_elements(public.get_work_item_detail((select display_id from public.work_items where id = current_setting('design_flow.phase4_item')::uuid))->'events') event where event->>'type' = 'work_log_submitted'),
+  1, 'Work Item detail exposes the work-log submission event'
+);
+
 select lives_ok(
   $$ select public.submit_work_log(
     'ticket', current_setting('design_flow.phase4_item')::uuid, null, null,
@@ -71,6 +76,10 @@ select lives_ok(
 );
 select is((select last_worked_on from public.work_items where id = current_setting('design_flow.phase4_item')::uuid), null::date, 'withdrawal recalculates last-worked date');
 select is((select count(*)::integer from public.valid_work_log_entries where work_item_id = current_setting('design_flow.phase4_item')::uuid), 0, 'withdrawal excludes work from normal reporting view');
+select is(
+  (select count(*)::integer from jsonb_array_elements(public.get_work_item_detail((select display_id from public.work_items where id = current_setting('design_flow.phase4_item')::uuid))->'events') event where event->>'type' = 'work_log_withdrawn'),
+  1, 'Work Item detail exposes the work-log withdrawal event'
+);
 
 reset role;
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001', true);
@@ -97,7 +106,7 @@ select is((select count(*)::integer from public.work_log_batches where context_c
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);
 set local role authenticated;
 select lives_ok(
-  $$ select public.submit_work_log('standalone_visual', null, null, null, '[{"work_date":"2026-07-20","work_type_code":"image_editing","description":"[SYNTHETIC TEST] initial"}]'::jsonb, null, '90000000-0000-4000-8000-000000000407') $$,
+  $$ select public.submit_work_log('ticket', current_setting('design_flow.phase4_item')::uuid, null, null, '[{"work_date":"2026-07-20","work_type_code":"ui_visual_design","description":"[SYNTHETIC TEST] initial"}]'::jsonb, null, '90000000-0000-4000-8000-000000000407') $$,
   'Designer can create a batch that is later corrected'
 );
 reset role;
@@ -106,11 +115,17 @@ select set_config('design_flow.phase4_correction_version', (select created_at::t
 select set_config('design_flow.phase4_correction_entry', (select id::text from public.work_log_entries where batch_id = current_setting('design_flow.phase4_correction_batch')::uuid), true);
 set local role authenticated;
 select lives_ok(
-  $$ select public.correct_work_log(current_setting('design_flow.phase4_correction_batch')::uuid, current_setting('design_flow.phase4_correction_version')::timestamptz, 'standalone_visual', null, null, '10000000-0000-4000-8000-000000000002', jsonb_build_array(jsonb_build_object('id', current_setting('design_flow.phase4_correction_entry'), 'work_date', '2026-07-19', 'work_type_code', 'image_editing', 'description', '[SYNTHETIC TEST] corrected')), '90000000-0000-4000-8000-000000000408') $$,
+  $$ select public.correct_work_log(current_setting('design_flow.phase4_correction_batch')::uuid, current_setting('design_flow.phase4_correction_version')::timestamptz, 'ticket', current_setting('design_flow.phase4_item')::uuid, null, '10000000-0000-4000-8000-000000000002', jsonb_build_array(jsonb_build_object('id', current_setting('design_flow.phase4_correction_entry'), 'work_date', '2026-07-19', 'work_type_code', 'ui_visual_design', 'description', '[SYNTHETIC TEST] corrected')), '90000000-0000-4000-8000-000000000408') $$,
   'Designer can correct own-attributed batch with an audited revision'
 );
 reset role;
 select is((select count(*)::integer from public.work_log_entry_revisions where entry_id = current_setting('design_flow.phase4_correction_entry')::uuid), 1, 'correction records one entry revision');
+set local role authenticated;
+select is(
+  (select count(*)::integer from jsonb_array_elements(public.get_work_item_detail((select display_id from public.work_items where id = current_setting('design_flow.phase4_item')::uuid))->'events') event where event->>'type' = 'work_log_corrected'),
+  1, 'Work Item detail exposes the work-log correction event'
+);
+reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000003', true);
 set local role authenticated;
