@@ -1,0 +1,18 @@
+.avatar {
+  display: inline-grid;
+  inline-size: var(--control-height-sm);
+  block-size: var(--control-height-sm);
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-action-secondary-background);
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

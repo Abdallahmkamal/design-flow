@@ -160,6 +160,35 @@
   margin: 0;
   list-style: none;
 }
+.workDates {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.workDates li {
+  display: grid;
+  gap: var(--space-xs);
+  min-inline-size: 0;
+  padding: var(--space-sm);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+  font: var(--type-body-compact);
+  overflow-wrap: anywhere;
+}
+.avatarGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+@media (max-width: 47.99rem) {
+  .workDates {
+    grid-template-columns: repeat(2, minmax(9rem, 1fr));
+    overflow-x: auto;
+  }
+}
 .ticketCard {
   display: grid;
   gap: var(--space-md);

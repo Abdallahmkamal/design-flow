@@ -230,9 +230,14 @@ export function AllTicketsPage() {
           </p>
         </div>
         {account?.positionCode !== 'viewer' ? (
-          <Link className={styles.primaryLink} to="/work-items/new">
-            Create ticket
-          </Link>
+          <div className={styles.headerActions}>
+            <Link className={styles.secondaryLink} to="/work-logs/new">
+              Log work
+            </Link>
+            <Link className={styles.primaryLink} to="/work-items/new">
+              Create ticket
+            </Link>
+          </div>
         ) : null}
       </header>
       <nav className={styles.viewTabs} aria-label="Ticket views">
