@@ -217,7 +217,7 @@ deferred capability requires a new readiness decision before implementation.
 
 # Phase 4 UI component map — Work Logging
 
-**Status:** Approved for Phase 4 implementation — 2026-07-22
+**Status:** Phase 4 complete — staging acceptance verified on 2026-07-22
 **Scope:** Phase 4 Work Logging only
 **Prepared:** 2026-07-22
 
@@ -291,3 +291,21 @@ permission, long-content, keyboard, desktop/mobile, and Light/Dark behavior.
 Deferred: notifications, recorded-activity deep links, Work Item PDF, report
 exports, dashboard/report pages, generic attachment controls, and all Phase
 5/6 controls. No deferred item receives a disabled or placeholder control.
+
+## Verification evidence
+
+- Synthetic staging acceptance on 2026-07-22 verified the owned Log Work form,
+  ticket picker, actual-date rows, Work Dates presentation, correction form,
+  and submitted/corrected/withdrawn timeline events against this map.
+- Ticket withdrawal removed valid Work Dates and contributor/aggregate values
+  without changing planned dates. Standalone Visual Work remained outside the
+  ticket lifecycle and ownership surfaces.
+- Automated desktop/mobile and axe checks passed without an Astryx runtime
+  package, later-phase control, or direct browser write path. The Colima-backed
+  role/RLS suite confirmed every valid position/Admin overlay and all required
+  denial states.
+
+## Open questions
+
+None. Any material change to component ownership, shared primitives, or a
+deferred capability requires a new readiness decision before implementation.
