@@ -44,10 +44,8 @@ describe('staging smoke verification', () => {
           '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
         ),
       )
-      .mockResolvedValueOnce(response('import("./SettingsPage-phase-two.js")'))
-      .mockResolvedValueOnce(
-        response('Members and access Areas/Squads Administration audit'),
-      )
+      .mockResolvedValueOnce(response('import("./WorkLogPage-phase-four.js")'))
+      .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('[]'))
       .mockResolvedValueOnce(
@@ -76,11 +74,9 @@ describe('staging smoke verification', () => {
           ),
         )
         .mockResolvedValueOnce(
-          response('import("./SettingsPage-phase-two.js")'),
+          response('import("./WorkLogPage-phase-four.js")'),
         )
-        .mockResolvedValueOnce(
-          response('Members and access Areas/Squads Administration audit'),
-        )
+        .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
         .mockResolvedValueOnce(response('ok'))
         .mockResolvedValueOnce(response('', { status }))
         .mockResolvedValueOnce(
@@ -107,10 +103,8 @@ describe('staging smoke verification', () => {
           '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
         ),
       )
-      .mockResolvedValueOnce(response('import("./SettingsPage-phase-two.js")'))
-      .mockResolvedValueOnce(
-        response('Members and access Areas/Squads Administration audit'),
-      )
+      .mockResolvedValueOnce(response('import("./WorkLogPage-phase-four.js")'))
+      .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('', { status: 500 }));
 
@@ -119,7 +113,7 @@ describe('staging smoke verification', () => {
     );
   });
 
-  it('fails when the live bundle is not the Phase 2 checkpoint', async () => {
+  it('fails when the live bundle is not the Phase 4 checkpoint', async () => {
     const fetcher = vi
       .fn()
       .mockResolvedValueOnce(
@@ -130,7 +124,7 @@ describe('staging smoke verification', () => {
       .mockResolvedValueOnce(response('authentication only'));
 
     await expect(verifyStaging({ environment, fetcher })).rejects.toThrow(
-      'The live bundle is missing the Phase 2 marker: Members and access',
+      'The live bundle is missing the Phase 4 marker: Log work',
     );
   });
 });
