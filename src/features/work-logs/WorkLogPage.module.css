@@ -1,0 +1,58 @@
+.page,
+.form,
+.rows,
+.row {
+  display: grid;
+  gap: var(--space-lg);
+}
+.page {
+  max-inline-size: 52rem;
+  margin-inline: auto;
+}
+.page h1 {
+  margin: 0;
+  font: var(--type-display);
+}
+.page p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.form,
+.rows {
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+}
+.row {
+  padding-block-end: var(--space-lg);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.ticketPicker,
+.ticketResults {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ticketResults {
+  max-block-size: 17rem;
+  overflow: auto;
+  align-content: start;
+}
+@media (min-width: 48rem) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .row > button {
+    align-self: end;
+  }
+  .row > div:last-of-type {
+    grid-column: span 2;
+  }
+}

@@ -1,4 +1,5 @@
 export { Badge, type BadgeProps } from './Badge/Badge';
+export { Avatar } from './Avatar/Avatar';
 export { Button, type ButtonProps } from './Button/Button';
 export { Checkbox, type CheckboxProps } from './Checkbox/Checkbox';
 export {

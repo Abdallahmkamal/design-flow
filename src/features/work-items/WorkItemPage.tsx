@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { Badge, type BadgeTone } from '../../ui/Badge/Badge';
+import { Avatar } from '../../ui/Avatar/Avatar';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { Input } from '../../ui/Input/Input';
@@ -15,6 +16,7 @@ import {
   createBlocker,
   editComment,
   getWorkItemDetail,
+  getWorkDates,
   getWorkItemOptions,
   reassignWorkItem,
   renameSubtask,
@@ -70,6 +72,9 @@ const eventLabels: Record<string, string> = {
   subtask_withdrawn: 'Subtask withdrawn',
   archived: 'Ticket archived',
   restored: 'Ticket restored',
+  work_log_submitted: 'Work logged',
+  work_log_corrected: 'Work log corrected',
+  work_log_withdrawn: 'Work log withdrawn',
 };
 
 function actionError(error: Error | null) {
@@ -275,6 +280,11 @@ export function WorkItemPage() {
     queryKey: ['work-item', displayId],
     queryFn: () => getWorkItemDetail(displayId),
   });
+  const workDates = useQuery({
+    queryKey: ['work-dates', item.data?.id],
+    queryFn: () => getWorkDates(item.data!.id),
+    enabled: Boolean(item.data?.id),
+  });
   const options = useQuery({
     queryKey: ['work-item-options'],
     queryFn: getWorkItemOptions,
@@ -383,6 +393,14 @@ export function WorkItemPage() {
           <p>{workItem.area.name}</p>
         </div>
         <div className={styles.headerActions}>
+          {workItem.capabilities.canComment ? (
+            <Link
+              className={styles.secondaryLink}
+              to={`/work-logs/new?workItemId=${workItem.id}`}
+            >
+              Log work
+            </Link>
+          ) : null}
           {workItem.capabilities.canEdit ? (
             <Link
               className={styles.secondaryLink}
@@ -562,6 +580,32 @@ export function WorkItemPage() {
             ) : null}
           </section>
           <section className={styles.section}>
+            <h2>Work Dates</h2>
+            {workDates.data?.length ? (
+              <ol className={styles.workDates}>
+                {workDates.data.map((workDate) => (
+                  <li key={workDate.date}>
+                    <strong>{date(workDate.date)}</strong>
+                    <div className={styles.avatarGroup}>
+                      {workDate.people.slice(0, 2).map((person) => (
+                        <Avatar key={person.id} name={person.displayName} />
+                      ))}
+                      <span>
+                        {workDate.people.length} designer
+                        {workDate.people.length === 1 ? '' : 's'}
+                      </span>
+                    </div>
+                    <span>
+                      {workDate.workTypes.join(', ').replaceAll('_', ' ')}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>No work logged.</p>
+            )}
+          </section>
+          <section className={styles.section}>
             <h2>Lifecycle timeline</h2>
             {workItem.events.length ? (
               <ol className={styles.timeline}>
@@ -576,6 +620,13 @@ export function WorkItemPage() {
                           {date(event.occurredAt)}
                         </time>
                       </p>
+                      {event.subjectType === 'work_log_batch' &&
+                      event.subjectId &&
+                      event.type !== 'work_log_withdrawn' ? (
+                        <Link to={`/work-logs/${event.subjectId}/edit`}>
+                          Correct work log
+                        </Link>
+                      ) : null}
                     </div>
                   </li>
                 ))}

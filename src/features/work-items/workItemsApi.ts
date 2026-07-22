@@ -207,6 +207,68 @@ export async function getWorkItemOptions(): Promise<WorkItemOptions> {
   };
 }
 
+export interface WorkDateSummary {
+  date: string;
+  people: { id: string; displayName: string }[];
+  workTypes: string[];
+}
+
+export async function getWorkDates(
+  workItemId: string,
+): Promise<WorkDateSummary[]> {
+  const client = getSupabaseClient();
+  const { data, error } = await client
+    .from('valid_work_log_entries')
+    .select('work_date,work_type_code,worked_by')
+    .eq('work_item_id', workItemId)
+    .order('work_date');
+  if (error) throwApiError(error);
+  const validEntries = (data ?? []).filter(
+    (
+      entry,
+    ): entry is typeof entry & {
+      work_date: string;
+      work_type_code: string;
+      worked_by: string;
+    } => Boolean(entry.work_date && entry.work_type_code && entry.worked_by),
+  );
+  const ids = [...new Set(validEntries.map((entry) => entry.worked_by))];
+  const people = ids.length
+    ? await client
+        .from('team_directory')
+        .select('id,display_name')
+        .in('id', ids)
+    : { data: [], error: null };
+  if (people.error) throwApiError(people.error);
+  const names = new Map<string, string>(
+    (people.data ?? [])
+      .filter(
+        (
+          person,
+        ): person is typeof person & { id: string; display_name: string } =>
+          Boolean(person.id && person.display_name),
+      )
+      .map((person) => [person.id, person.display_name]),
+  );
+  const byDate = new Map<string, WorkDateSummary>();
+  for (const entry of validEntries) {
+    const summary = byDate.get(entry.work_date) ?? {
+      date: entry.work_date,
+      people: [],
+      workTypes: [],
+    };
+    if (!summary.people.some((person) => person.id === entry.worked_by))
+      summary.people.push({
+        id: entry.worked_by,
+        displayName: names.get(entry.worked_by) ?? 'Team member',
+      });
+    if (!summary.workTypes.includes(entry.work_type_code))
+      summary.workTypes.push(entry.work_type_code);
+    byDate.set(entry.work_date, summary);
+  }
+  return [...byDate.values()];
+}
+
 export async function createWorkItem(values: WorkItemFormValues) {
   const { data, error } = await getSupabaseClient().rpc('create_work_item', {
     title: values.title,

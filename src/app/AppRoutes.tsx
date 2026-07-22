@@ -45,6 +45,16 @@ const WorkItemEditPage = lazy(() =>
     default: module.WorkItemEditPage,
   })),
 );
+const WorkLogPage = lazy(() =>
+  import('../features/work-logs/WorkLogPage').then((module) => ({
+    default: module.WorkLogPage,
+  })),
+);
+const WorkLogEditPage = lazy(() =>
+  import('../features/work-logs/WorkLogEditPage').then((module) => ({
+    default: module.WorkLogEditPage,
+  })),
+);
 
 function featureElement(element: ReactNode) {
   return (
@@ -82,6 +92,14 @@ export function AppRoutes() {
           <Route
             path="work-items/:displayId/edit"
             element={featureElement(<WorkItemEditPage />)}
+          />
+          <Route
+            path="work-logs/new"
+            element={featureElement(<WorkLogPage />)}
+          />
+          <Route
+            path="work-logs/:batchId/edit"
+            element={featureElement(<WorkLogEditPage />)}
           />
           <Route
             path="reports"

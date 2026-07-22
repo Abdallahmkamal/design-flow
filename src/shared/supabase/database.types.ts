@@ -2832,6 +2832,19 @@ export type Database = {
         Args: { actor_profile_id: string; operation_id: string }
         Returns: Json
       }
+      correct_work_log: {
+        Args: {
+          batch_id: string
+          context_code: string
+          entries: Json
+          expected_version: string
+          operation_id?: string
+          related_area_id: string
+          work_item_id: string
+          worked_by: string
+        }
+        Returns: Json
+      }
       create_blocker: {
         Args: {
           expected_resolution_date: string
@@ -2950,6 +2963,7 @@ export type Database = {
         }[]
       }
       get_work_item_detail: { Args: { display_id: string }; Returns: Json }
+      get_work_log_batch: { Args: { target_batch_id: string }; Returns: Json }
       list_work_items: { Args: { filters?: Json }; Returns: Json }
       prepare_first_admin_credential_recovery: {
         Args: { email: string; operation_id: string }
@@ -3091,6 +3105,18 @@ export type Database = {
         }
         Returns: Json
       }
+      submit_work_log: {
+        Args: {
+          blocker?: Json
+          context_code: string
+          entries: Json
+          operation_id?: string
+          related_area_id: string
+          work_item_id: string
+          worked_by: string
+        }
+        Returns: Json
+      }
       transition_work_item_status: {
         Args: {
           acknowledge_incomplete_subtasks?: boolean
@@ -3130,6 +3156,14 @@ export type Database = {
           expected_updated_at: string
           operation_id?: string
           subtask_id: string
+        }
+        Returns: Json
+      }
+      withdraw_work_log: {
+        Args: {
+          batch_id: string
+          expected_version: string
+          operation_id?: string
         }
         Returns: Json
       }

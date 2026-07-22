@@ -25,10 +25,17 @@ export function WorkItemCreatePage() {
   });
   const create = useMutation({
     mutationFn: createWorkItem,
-    onSuccess: (result) =>
-      navigate(`/work-items/${result.display_id}`, {
+    onSuccess: (result) => {
+      if (sessionStorage.getItem('design-flow:log-work-draft')) {
+        void navigate(`/work-logs/new?workItemId=${result.id}`, {
+          state: { confirmation: `${result.display_id} created in Backlog.` },
+        });
+        return;
+      }
+      void navigate(`/work-items/${result.display_id}`, {
         state: { confirmation: `${result.display_id} created in Backlog.` },
-      }),
+      });
+    },
   });
 
   if (account?.positionCode === 'viewer')

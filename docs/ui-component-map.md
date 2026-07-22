@@ -212,3 +212,82 @@ panels. No deferred component is represented by a nonfunctional control.
 
 None. Any material change to component ownership, new shared primitives, or a
 deferred capability requires a new readiness decision before implementation.
+
+---
+
+# Phase 4 UI component map — Work Logging
+
+**Status:** Approved for Phase 4 implementation — 2026-07-22
+**Scope:** Phase 4 Work Logging only
+**Prepared:** 2026-07-22
+
+## Authority and boundaries
+
+This addition applies `docs/ui/log-work-brief.md` to the approved Phase 4
+contracts. Vodafone owns color/typography; ready Astryx notes own the remaining
+component baseline. Every component remains Design Flow-owned; no Astryx
+package, source, style, or API is introduced.
+
+## Shared components reused unchanged
+
+| Component | Phase 4 use | Constraint |
+| --- | --- | --- |
+| `Button` | Submit, add/remove date, Apply to all, launch, retry, correction/withdraw confirmation | One visible primary submit; destructive withdrawal retains explicit confirmation |
+| `Input` | Native date, ticket search, optional short detail | Native date preserves platform keyboard/mobile behavior; future-date validation is server authoritative |
+| `Textarea` | Optional long detail and blocker reason | Native multiline editing and labelled validation |
+| `Select` | Work type, on-behalf `worked_by`, optional independently authorized status, Area/Squad | Only bounded choices; it does not implement ticket search |
+| `Checkbox` | Optional blocker selection/confirmation where a boolean is required | No context-mode toggle or mutually exclusive use |
+| `Badge` | Ticket status and compact work-type metadata | Status remains distinct from blocker state |
+| `Tooltip` | Concise helper text only | No required information or form interaction in a tooltip |
+
+## New shared component: `Avatar`
+
+Purpose: compact, noninteractive person marker in Work Dates summaries.
+
+Proposed public API: required accessible `name`; optional approved `imageUrl`;
+optional `size` limited to `small` for Phase 4; and decorative mode only beside
+the same visible person name. It does not expose presence, status, upload,
+click, group, or menu behavior.
+
+Reference: `references/astryx/avatar.md`. The source confirms initial/image
+fallback and group-overflow purpose. The proposed `28px`/full-radius/no-overlap
+fallback is explicitly pending approval and must be added centrally to
+`docs/design-system.md` before implementation.
+
+## Feature-owned compositions
+
+| Owner | Composition | Shared dependencies |
+| --- | --- | --- |
+| `features/work-logs/LogWorkForm` | Ticket-default/Visual-Work-secondary form, draft retention, operation-outcome presentation | Button, Input, Textarea, Select, Checkbox, Badge |
+| `features/work-logs/TicketPicker` | Labelled search plus explicit ticket-result buttons and selected summary | Input, Badge, Button |
+| `features/work-logs/WorkDateRows` | One-to-five actual-date rows, per-row type/detail, add/remove/apply controls | Input, Select, Textarea, Button |
+| `features/work-items/WorkDatesGrid` | Actual-date index linking to timeline, initials/count and type summary | Avatar, Badge |
+| `features/work-items/WorkLogTimelineEvent` | Valid work, correction, and withdrawal event content | Badge, Button |
+
+No generic Typeahead, Calendar, AvatarGroup, Modal, Drawer, Radio, Tab, or
+reporting component is added. TicketPicker is a bounded feature composition;
+it is not a reusable ARIA-combobox surface.
+
+## Route and state ownership
+
+| Route | Thin responsibility | Feature surface |
+| --- | --- | --- |
+| `/work-logs/new` | Read optional preselected ticket/return marker; route guard | Log Work form |
+| `/work-logs/:batchId/edit` | Validate batch ID, load authoritative editable batch, route guard | Work-log correction form |
+| `/work-items/:displayId` | Continue thin detail composition | Work Dates grid and work-log timeline events |
+
+The feature/domain layer owns operation IDs, API payload shaping, authoritative
+refresh, query invalidation, and preserved drafts. Shared components never call
+Supabase. Capability flags own control visibility; the client never infers
+authority from position labels.
+
+## Readiness acceptance and deferrals
+
+On approval, add the Avatar fallback mapping to `docs/design-system.md`, mark
+`references/astryx/avatar.md` ready, and implement only the listed Phase 4
+surfaces. Verify loading, empty/no-result, error, conflict, disabled,
+permission, long-content, keyboard, desktop/mobile, and Light/Dark behavior.
+
+Deferred: notifications, recorded-activity deep links, Work Item PDF, report
+exports, dashboard/report pages, generic attachment controls, and all Phase
+5/6 controls. No deferred item receives a disabled or placeholder control.

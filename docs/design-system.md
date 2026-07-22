@@ -637,6 +637,17 @@ Phase 3 does not add Modal, Drawer, Tabs, Avatar, Radio, or Work Dates mappings.
 Those components remain deferred until their owning approved phase completes
 the same reference and readiness process.
 
+### Phase 4 approved Avatar fallback
+
+Official Astryx Avatar guidance establishes the image/initials fallback and
+group-overflow purpose but does not expose stable numeric size, overlap, padding,
+or motion values. The approved Design Flow fallback for Phase 4's noninteractive
+Work Dates identity marker is `28px` via `product/control/height/sm`, circular
+via `product/radius/full`, and uses `space/sm` (`8px`) between non-overlapping
+markers. Vodafone `sem/surface/static/secondary` and semantic text/icon roles
+remain authoritative for color and typography. This is a Design Flow fallback,
+not an Astryx measurement.
+
 ### Phase 1 font-asset gate
 
 The approved Vodafone VF v4.000 variable WOFF2 asset was supplied and added on 2026-07-20. The runtime loads `Vodafone VF` across its documented `wght` range of 200–900, covering the required Regular, Medium, SemiBold, and Bold roles with real variable-font instances. `font-synthesis` is disabled, and the system stack remains only a network/load-failure fallback rather than the expected rendering.
