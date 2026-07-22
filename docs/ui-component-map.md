@@ -1,6 +1,6 @@
 # Phase 3 UI component map
 
-**Status:** Approved for Phase 3 implementation on 2026-07-21
+**Status:** Phase 3 complete — staging acceptance verified on 2026-07-22
 
 **Scope:** Phase 3 Work-item Foundation only
 
@@ -197,6 +197,16 @@ panels. No deferred component is represented by a nonfunctional control.
 - Approval of this map approves the pending Phase 3 mappings in
   `docs/design-system.md`; implementation still must verify each mapping with
   component and browser tests.
+
+## Verification evidence
+
+- The complete synthetic Phase 3 staging acceptance matrix passed on
+  2026-07-22 against this map and the three approved Work-item briefs.
+- Desktop and mobile checks confirmed the owned table/card, Textarea, Tooltip,
+  Popover, Pagination, form, and lifecycle-control mappings without importing
+  an Astryx runtime package or exposing a deferred control.
+- Viewer staging checks confirmed read-only list/detail presentation, direct
+  creation denial, and absence of mutating controls.
 
 ## Open questions
 
