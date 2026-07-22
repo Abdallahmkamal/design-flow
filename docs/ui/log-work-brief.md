@@ -1,6 +1,6 @@
 # Log Work flow
 
-**Status:** Approved for Phase 4 implementation — 2026-07-22
+**Status:** Phase 4 complete — staging acceptance verified on 2026-07-22
 **Scope:** Phase 4 Work Logging only
 **Prepared:** 2026-07-22
 
@@ -149,9 +149,27 @@ history, audit, idempotency, and recalculation effects. The UI never sends
   separately from logging.
 - Work Dates/timeline show actual dates, contributor attribution, corrections,
   and withdrawal metadata without exposing withdrawn content or Phase 5/6 UI.
-- Staging verification will compare the implemented flow against this brief.
+- Staging verification compares the implemented flow against this brief.
+
+## Verification evidence
+
+- Synthetic staging acceptance on 2026-07-22 verified ticket submission,
+  correction, and withdrawal through the authenticated Manager + Admin UI. The
+  lifecycle timeline exposed all three audited events in order.
+- Work Dates, contributor membership, first/last worked dates, and Active work
+  days appeared after submission and returned to their withdrawn state after
+  withdrawal. Planned start and due dates remained unchanged throughout.
+- Standalone Visual Work submitted through its separate visual vocabulary and
+  remained outside the ticket lifecycle, ownership, Work Dates, and aggregate
+  paths.
+- The Colima-backed reset and pgTAP/RLS suite passed 286 assertions, including
+  all valid positions/Admin overlays plus Viewer, inactive,
+  password-restricted, rejected Viewer+Admin, direct-write denial,
+  idempotency, conflict, correction, withdrawal, and timeline visibility.
+- Formatting, lint, strict typecheck, generated types, 74 unit/component tests,
+  production build, 26 Playwright/axe checks, and 16 Edge Function tests passed.
+  GitHub verification and the final staging deployment also passed.
 
 ## Open questions
 
-None after approval. Approval authorizes the full-page route presentation and
-the documented Avatar fallback; it does not authorize implementation yet.
+None. Material changes require a new readiness decision before implementation.
