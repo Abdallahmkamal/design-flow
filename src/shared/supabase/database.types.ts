@@ -2896,6 +2896,10 @@ export type Database = {
         }
         Returns: Json
       }
+      export_report_rows: {
+        Args: { filters?: Json; report_type: string }
+        Returns: Json
+      }
       finalize_first_admin_bootstrap: {
         Args: {
           auth_user_id: string
@@ -2959,6 +2963,7 @@ export type Database = {
         }
         Returns: Json
       }
+      get_export_capabilities: { Args: never; Returns: Json }
       get_notification_inbox: {
         Args: { requested_page?: number }
         Returns: Json
@@ -2975,7 +2980,12 @@ export type Database = {
           position_code: string
         }[]
       }
+      get_reports: { Args: { filters?: Json }; Returns: Json }
       get_work_item_detail: { Args: { display_id: string }; Returns: Json }
+      get_work_item_export: {
+        Args: { display_id: string; include_comments?: boolean }
+        Returns: Json
+      }
       get_work_item_history: {
         Args: { target_work_item_id: string }
         Returns: Json

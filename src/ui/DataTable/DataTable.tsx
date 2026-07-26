@@ -19,7 +19,6 @@ export interface DataTableProps<Row> {
   emptyContent?: ReactNode;
   renderMobileCard?: (row: Row) => ReactNode;
   onRowActivate?: (row: Row) => void;
-  getRowAriaLabel?: (row: Row) => string;
 }
 
 export function DataTable<Row>({
@@ -27,7 +26,6 @@ export function DataTable<Row>({
   columns,
   emptyContent,
   getRowKey,
-  getRowAriaLabel,
   onRowActivate,
   renderMobileCard,
   rows,
@@ -80,8 +78,6 @@ export function DataTable<Row>({
               <tr
                 key={getRowKey(row)}
                 className={onRowActivate ? styles.interactiveRow : undefined}
-                tabIndex={onRowActivate ? 0 : undefined}
-                aria-label={getRowAriaLabel?.(row)}
                 onClick={(event) => {
                   if (
                     onRowActivate &&
@@ -90,15 +86,6 @@ export function DataTable<Row>({
                     )
                   )
                     onRowActivate(row);
-                }}
-                onKeyDown={(event) => {
-                  if (
-                    onRowActivate &&
-                    (event.key === 'Enter' || event.key === ' ')
-                  ) {
-                    event.preventDefault();
-                    onRowActivate(row);
-                  }
                 }}
               >
                 {columns.map((column) => (

@@ -137,6 +137,10 @@
   --color-text-secondary: #5e6162;
   --color-text-tertiary: #8b8f90;
   --color-focus-ring: #e60000;
+  --chart-series-1: #e60000;
+  --chart-series-2: #00697c;
+  --chart-series-3: #5e2750;
+  --chart-grid: #dbdedf;
   --shadow-xs: 0 1px 1px #00000014, 0 2px 8px #00000014;
   --shadow-sm: 0 1px 2px #00000029, 0 2px 12px #00000029;
   --shadow-lg: 0 2px 2px #00000029, 0 8px 24px #00000029;
@@ -191,6 +195,10 @@
   --color-text-secondary: #bec1c2;
   --color-text-tertiary: #8b8f90;
   --color-focus-ring: #ff5c6a;
+  --chart-series-1: #ff5c6a;
+  --chart-series-2: #90e4f0;
+  --chart-series-3: #d8c0cf;
+  --chart-grid: #444848;
   --shadow-xs: 0 1px 1px #ffffff0a, 0 2px 8px #ffffff0a;
   --shadow-sm: 0 1px 2px #ffffff14, 0 2px 12px #ffffff14;
   --shadow-lg: 0 2px 2px #ffffff1f, 0 8px 24px #ffffff1f;

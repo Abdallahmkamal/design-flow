@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { Badge, type BadgeTone } from '../../ui/Badge/Badge';
+import { WorkItemExportPanel } from '../reports/WorkItemExportPanel';
 import { Avatar } from '../../ui/Avatar/Avatar';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
@@ -481,6 +482,7 @@ export function WorkItemPage() {
           <p>{workItem.area.name}</p>
         </div>
         <div className={styles.headerActions}>
+          <WorkItemExportPanel displayId={workItem.displayId} />
           {workItem.capabilities.canComment ? (
             <Link
               className={styles.secondaryLink}

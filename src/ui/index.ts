@@ -14,3 +14,4 @@ export { Textarea, type TextareaProps } from './Textarea/Textarea';
 export { Tooltip, type TooltipProps } from './Tooltip/Tooltip';
 export { Popover, type PopoverProps } from './Popover/Popover';
 export { Pagination, type PaginationProps } from './Pagination/Pagination';
+export { TabList, type TabListItem } from './TabList/TabList';

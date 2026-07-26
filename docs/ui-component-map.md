@@ -418,7 +418,8 @@ No excluded feature receives a placeholder or disabled control.
 
 ## Verification evidence
 
-- GitHub workflow #46 deployed merge commit `678c5df`; all frontend/browser,
+- Merged PRs #18/#19 at `cd9cdff` and GitHub workflow #48 delivered the final
+  Phase 5 checkpoint; all frontend/browser,
   local Supabase/Deno, hosted migration/type, Edge Function, build, Pages, and
   live smoke jobs passed.
 - Authenticated staging checks reconciled Manager and Lead people scopes,
@@ -432,3 +433,134 @@ No excluded feature receives a placeholder or disabled control.
 
 None. Approval includes the full-page inbox navigation and fixed 25-item inbox
 page. Any material change requires a new readiness decision.
+
+---
+
+# Phase 6 UI component map — Reports and Exports
+
+**Status:** Phase 6 implemented and locally verified — staging pending
+
+**Scope:** Reports views, Reports CSV, and Work Item PDF only
+
+**Prepared:** 2026-07-26
+
+## Authority and readiness boundary
+
+This addition applies `docs/ui/reports-brief.md` and
+`docs/ui/export-brief.md` to the approved reporting, Reports UI, Work Item,
+permission, operation, and data contracts. Vodafone owns color/typography;
+ready Astryx notes own available non-color presentation. Recharts is the single
+approved report renderer, not a component authority. All runtime components
+remain Design Flow-owned.
+
+## Shared components reused unchanged
+
+| Component | Phase 6 use | Constraint and ready reference |
+| --- | --- | --- |
+| `Button` | Drill-down, clear/retry, CSV download, PDF actions | Visible labels and native keyboard behavior; `references/astryx/button.md` |
+| `Input` | Custom period dates | Native date inputs and labelled validation; `references/astryx/input.md` |
+| `Select` | Presets, scope, Area/Squad, sort, export type | Bounded single choice only; `references/astryx/select.md` |
+| `Checkbox` | People/multi-value filters and Include comments | Labelled groups; comments default false; `references/astryx/checkbox.md` |
+| `Badge` | Status/relationship/attention metadata | Text remains sufficient without color; `references/astryx/badge.md` |
+| `Avatar` | Neutral person identity | Noninteractive identity only; `references/astryx/avatar.md` |
+| `DataTable` | Detail, source, chart-alternative, and overview data | Native links/buttons are keyboard paths; pointer row activation only; `references/astryx/table.md` |
+| `Pagination` | Visible report/source pages | Export never inherits page limits; `references/astryx/pagination.md` |
+
+## New shared component: `TabList`
+
+Purpose: switch among the three related, URL-backed report views.
+
+Proposed public API: required accessible `label`; three or more `items` with
+stable value/label; controlled `value` and `onValueChange`; required panel ID
+mapping; optional adjacent action slot; no badges, icons, overflow menu, dynamic
+add/remove, or closable tabs in Phase 6.
+
+It owns selected/tab/panel relationships, one tab stop, Left/Right plus Home/End
+movement, URL-state activation supplied by the feature, visible focus, and
+wrapped three-item mobile presentation. Reference:
+`references/astryx/tab-list.md`.
+
+## Feature-owned compositions
+
+| Owner | Composition | Shared dependencies |
+| --- | --- | --- |
+| `features/reports/ReportFilters` | URL-backed period/scope/group/people/Area and tab refinements | Input, Select, Checkbox, Button |
+| `features/reports/ReportMetricCards` | Period and labelled snapshot values with source actions | Button, Badge |
+| `features/reports/ReportChartFrame` | Token-styled Recharts bar/line plus summary/table and filter refinement | Button; no `src/ui` Recharts dependency |
+| `features/reports/TicketReport` | Cards, four charts, ticket detail/source table | DataTable, Pagination, Badge |
+| `features/reports/DesignerReport` | One/two/multi neutral layout, overview and separated detail sections | DataTable, Pagination, Avatar, Badge |
+| `features/reports/RecordedTicketActivity` | One-person valid-entry source table with immutable submitter attribution | DataTable, Pagination, Badge |
+| `features/reports/VisualWorkReport` | Standalone-only cards, charts, and entry table | DataTable, Pagination, Avatar |
+| `features/reports/ReportExportControl` | Current-tab export type and one CSV download | Select, Button |
+| `features/work-items/WorkItemExportPanel` | Include-comments choice and PDF generation status | Checkbox, Button |
+
+Chart presentation follows `references/astryx/reporting-patterns.md`; no
+Astryx chart-component fidelity is claimed. Chart color roles consume the
+existing Vodafone data-visualization palette through centralized Design Flow
+aliases and preserve non-color labels/patterns.
+
+## Route, source, and security ownership
+
+| Route | Thin responsibility | Feature surface |
+| --- | --- | --- |
+| `/reports` | Parse/normalize URL state and set title | Current Reports tab, filters, source disclosure, authorized CSV |
+| `/work-items/:displayId` | Continue authoritative detail composition | Authorized in-page Work Item PDF panel |
+
+- Read RPCs own historical snapshots, people/group expansion, report formulas,
+  stable sorting, pagination, and source reconciliation. React does not rebuild
+  those rules.
+- Dedicated authorized export functions use the same normalized filters without
+  visible-page limits. Only the designer-summary export projection may expose
+  work email.
+- Work Item export reads a sanitized fixed projection and never exposes raw
+  revisions or withdrawn bodies. No browser base-table grant, direct domain
+  write, service key, or Figma fetch is introduced.
+- The All Tickets single-person action deep-links to the Designers tab and
+  preserves that person in URL state without reinterpreting All Tickets.
+
+## State, responsive, and accessibility ownership
+
+The two briefs own loading, empty/no-results, error, permission, generating,
+success, long-content, mobile, Light/Dark, keyboard, and axe behavior. Desktop
+uses semantic tables and bounded charts; below `48rem`, wide rows become
+structured records with the same values/actions. Charts always have semantic
+equivalents and labelled non-chart filter paths.
+
+## Explicitly excluded
+
+Reports PDF, saved reports, custom columns, bulk actions, ranking, productivity
+or effort scores, availability/capacity, hours/points, generic chart/UI library
+components, raw-entry productivity charts, Phase 7 controls, placeholder
+routes, and unapproved export schemas.
+
+## Efficiency and token use
+
+- Use `rg` and read only relevant document/code sections.
+- Reuse Phase 3–5 fixtures, formulas, scopes, calendar helpers, RPCs, and UI.
+- Batch independent read-only inspections and targeted tests.
+- Run targeted tests while building and the full suite only at completed
+  vertical-slice boundaries and final handoff.
+- Avoid repository dumps, repeated full-suite runs, duplicate screenshots, and
+  re-reading unchanged documents.
+- Keep evidence compact: changed files, exact test counts, reconciled fixtures,
+  and unresolved gates.
+- Do not use subagents unless explicitly requested.
+
+## Implementation evidence
+
+Approval covered the two briefs, this component ownership, the `TabList` API,
+the documented Astryx chart gap, and the narrow pointer-only `DataTable`
+correction. Implementation followed migration/RPC/types → API/domain → UI →
+test slices. Local verification passes 93 unit/component tests, 394 pgTAP/RLS
+assertions, 26 applicable Playwright/axe scenarios with two device-specific
+skips, 16 Edge Function tests, formatting, lint, strict types, generated types,
+and a production build. The synthetic Work Item PDF passed three-page render
+and extraction review. Hosted staging acceptance is not claimed.
+The guarded Phase 6 validation fixture additionally passed a clean local load
+at nine Areas, fourteen tickets, twenty batches, and fifty entries while
+remaining opt-in and outside normal pgTAP seed preconditions.
+
+## Open questions
+
+None. Any material component, export, formula, permission, or responsive change
+requires a new readiness decision before implementation.
