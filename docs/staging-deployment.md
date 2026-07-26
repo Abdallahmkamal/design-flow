@@ -132,9 +132,10 @@ follow-up removed the discovered Reports placeholder before Phase 5 closure.
 
 ## Phase 6 staging acceptance
 
-Phase 6 is locally verified but has not been published. After separate
-authorization to push, open/merge a PR, and deploy, use authenticated Chrome and
-only conspicuously synthetic staging records to verify:
+Phase 6 was published through merged PR #20 at `a879af4`. Workflow #50 passed
+the complete staging gate in 4m21s and deployed the build to Cloudflare Pages.
+Authenticated Chrome and only conspicuously synthetic staging records were used
+for acceptance:
 
 1. Confirm the staging database contains only the nine reserved synthetic
    validation personas and no real/personal data.
@@ -163,6 +164,27 @@ only conspicuously synthetic staging records to verify:
 - desktop/mobile keyboard and axe checks remain clean, with no production data,
   secrets, source maps, placeholder UI, or Phase 7 controls.
 
-Record workflow/check identifiers, exact hosted fixture reconciliation, CSV
-row counts, PDF values, and any unresolved gate here only after that authorized
-staging pass. Current gate: **pending publishing authorization**.
+The production-guarded fixture passed two exact loads with anchor 2026-07-27:
+nine reserved personas, nine Areas, fourteen tickets, twenty work-log batches,
+fifty entries, all six statuses, zero non-synthetic profiles, and zero rejected
+Viewer + Admin states. The original First Admin Auth identity and password were
+preserved as the synthetic Manager + Admin; all other legacy staging identities
+were removed before the reserved personas were provisioned. The approved
+inactive and password-restricted states remain distinct.
+
+The hosted all-people Reports view reconciled to 13 ticket source rows, seven
+designer rows, and six clearly labelled standalone Visual Work rows. Its five
+unpaginated export projections returned 13 ticket-summary, 44 ticket-activity,
+seven designer-summary, fourteen designer-ticket, and six Visual Work rows.
+DF-000007 PDF generation succeeded with comments off and opt-in; its sanitized
+payload reconciled to sixteen actual work dates, one history event, zero
+default comments, two opt-in comments, and no embedded raw comments, events, or
+capabilities.
+
+Staging acceptance exposed one pre-existing lifecycle defect: three account and
+hierarchy RPCs used a PL/pgSQL variable named `current_date`, which PostgreSQL
+could resolve as the database-session date instead of the authoritative team
+date. Migration `20260727010000_fix_team_date_variable_collision.sql` renames
+that local variable without changing signatures or grants; six regression
+assertions raise the pgTAP/RLS total from 394 to 400. This closure migration
+must pass the normal main staging gate before Phase 6 is finally closed.

@@ -438,7 +438,7 @@ page. Any material change requires a new readiness decision.
 
 # Phase 6 UI component map — Reports and Exports
 
-**Status:** Phase 6 implemented and locally verified — staging pending
+**Status:** Phase 6 implemented and staging-reconciled
 
 **Scope:** Reports views, Reports CSV, and Work Item PDF only
 
@@ -551,14 +551,20 @@ routes, and unapproved export schemas.
 Approval covered the two briefs, this component ownership, the `TabList` API,
 the documented Astryx chart gap, and the narrow pointer-only `DataTable`
 correction. Implementation followed migration/RPC/types → API/domain → UI →
-test slices. Local verification passes 93 unit/component tests, 394 pgTAP/RLS
+test slices. Local verification passes 93 unit/component tests, 400 pgTAP/RLS
 assertions, 26 applicable Playwright/axe scenarios with two device-specific
 skips, 16 Edge Function tests, formatting, lint, strict types, generated types,
 and a production build. The synthetic Work Item PDF passed three-page render
-and extraction review. Hosted staging acceptance is not claimed.
+and extraction review. Merged PR #20 (`a879af4`) passed workflow #50 and its
+complete staging deployment gate. Authenticated hosted checks covered all three
+tabs, exact chart tables, controlled-source drill-down, all-row export
+projections, and the Work Item PDF control.
 The guarded Phase 6 validation fixture additionally passed a clean local load
 at nine Areas, fourteen tickets, twenty batches, and fifty entries while
 remaining opt-in and outside normal pgTAP seed preconditions.
+The identical staging fixture reconciled to nine reserved personas, zero
+non-synthetic profiles, all six statuses, 13 ticket-source rows, seven
+designer-source rows, and six visibly separate standalone Visual Work rows.
 
 ## Open questions
 

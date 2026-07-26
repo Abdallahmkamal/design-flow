@@ -2,7 +2,7 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phases 0–5 are complete and Phase 6 is implemented and verified locally. Design Flow now includes the contracted database and
+Phases 0–5 are complete and Phase 6 is implemented and staging-reconciled. Design Flow now includes the contracted database and
 permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
 idempotent work logging for ticket and standalone Visual Work. Phase 5 adds the
@@ -11,12 +11,14 @@ Item History, and the recipient-isolated in-app notification inbox. Phase 6 adds
 explainable Tickets/Designers/Visual Work reports, authorized CSV exports, and
 sanitized Work Item PDF export.
 
-The Supabase Free staging project contains the complete Phase 5 checkpoint,
-six account-lifecycle Edge Functions, stable reference rows, and conspicuously
-synthetic acceptance records, including one clearly labelled standalone Visual
-Work record. The non-production Cloudflare Pages Free staging deployment is live at
+The Supabase Free staging project contains the complete Phase 6 checkpoint,
+six account-lifecycle Edge Functions, nine reserved synthetic personas, and the
+guarded lightweight acceptance dataset, including clearly labelled standalone
+Visual Work. The original First Admin Auth identity and credentials are
+preserved as the synthetic Manager + Admin; other legacy staging accounts were
+removed. The non-production Cloudflare Pages Free staging deployment is live at
 <https://design-flow-staging.pages.dev>. No production service, credential, or
-real account/data has been created.
+production data is involved.
 
 ## Local setup
 
@@ -104,7 +106,7 @@ tests, and a production build. Playwright schedules 28 desktop/mobile browser
 scenarios across authentication, Team, Settings, Dashboard, Notifications,
 All Tickets, Work Item History, responsive behavior, and automated
 accessibility; 26 run in their applicable projects and two are intentional
-device-specific skips. The backend harness runs 394 pgTAP assertions and 16
+device-specific skips. The backend harness runs 400 pgTAP assertions and 16
 Deno tests, including every valid position and Admin overlay, Dashboard source
 reconciliation, notification isolation/idempotency, and direct-write denial.
 
@@ -147,16 +149,16 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
   data, synthetic principals, generated types, and structural/read-permission
   tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
   vertical slices.
-- The thirteen local migrations and synthetic seed reset cleanly through Phase 6.
-  The current pgTAP suite passes 394 schema, invariant, read-surface,
+- The fourteen local migrations and synthetic seed reset cleanly through Phase 6.
+  The current pgTAP suite passes 400 schema, invariant, read-surface,
   persona-permission, ticket, work-log, Dashboard, notification, report, and export assertions;
   generated database types match the implemented schema shape.
-- The Supabase Free staging project is healthy at the complete Phase 5
+- The Supabase Free staging project is healthy at the complete Phase 6
   checkpoint and has six active lifecycle Edge Functions. Its acceptance
   identities and history are conspicuously synthetic, public signup is closed,
   legacy API keys remain disabled, and the one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
-  complete Phase 5 checkpoint at
+  complete Phase 6 implementation at
   <https://design-flow-staging.pages.dev>. It was built with staging
   credentials only; development source maps were not published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
@@ -170,9 +172,11 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
   no production data or secrets.
 
 Phase 6 passes the local formatting, lint, strict-type, 93 unit/component,
-production-build, 26 applicable Playwright/axe, 394 pgTAP/RLS, generated-type,
-16 Edge Function, CSV, and synthetic three-page PDF gates. The last published
-environment remains the complete Phase 5 checkpoint from merged PRs #18/#19 at
-`cd9cdff`, with workflow #48 passing its full staging gate. Phase 6 has not been
-pushed, opened as a PR, merged, deployed, or reconciled in staging; those steps
-remain pending explicit authorization.
+production-build, 26 applicable Playwright/axe, 400 pgTAP/RLS, generated-type,
+16 Edge Function, CSV, and synthetic three-page PDF gates. PR #20 merged at
+`a879af4`; workflow #50 passed its full staging gate in 4m21s. The guarded
+staging fixture reconciles to nine personas, nine Areas, fourteen tickets,
+twenty batches, fifty entries, and no non-synthetic profiles. Hosted all-row CSV
+projections returned 13/44/7/14/6 rows, and DF-000007 PDF reconciliation passed
+with comments off by default and opt-in. The final closure gate is the normal
+main deployment of the team-date collision regression migration.
