@@ -10,7 +10,6 @@ import {
 } from '../features/auth/AuthenticationRoutes';
 import { ChangePasswordPage } from '../features/auth/ChangePasswordPage';
 import { SignInPage } from '../features/auth/SignInPage';
-import { FeaturePlaceholderPage } from '../routes/FeaturePlaceholderPage';
 import { NotFoundPage } from '../routes/NotFoundPage';
 import { AppShell } from '../routes/shell/AppShell';
 
@@ -113,12 +112,6 @@ export function AppRoutes() {
           <Route
             path="work-logs/:batchId/edit"
             element={featureElement(<WorkLogEditPage />)}
-          />
-          <Route
-            path="reports"
-            element={
-              <FeaturePlaceholderPage title="Reports" plannedPhase="Phase 6" />
-            }
           />
           <Route path="team" element={featureElement(<TeamPage />)} />
           <Route path="settings" element={featureElement(<SettingsRoute />)} />

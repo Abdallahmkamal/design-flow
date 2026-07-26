@@ -1,6 +1,6 @@
 # Dashboard brief
 
-**Status:** Approved for Phase 5 implementation — 2026-07-26
+**Status:** Phase 5 complete — staging acceptance verified on 2026-07-26
 
 **Route:** `/`
 
@@ -115,3 +115,18 @@ synthetic data.
 ## Open questions
 
 None. Material changes require a new readiness decision.
+
+## Staging acceptance evidence
+
+- The Manager + Admin identity retained its Manager-group default (3 people),
+  while the Lead-group alternate resolved 2 people and All people resolved 4.
+- Cards, attention rows, management signals, and workload rows reconciled to
+  their visible source records; active and due-soon each resolved DF-000003.
+- Workload stated `Planned until Jul 28, 2026`, used actual work dates, and made
+  no availability, capacity, sign-in-recency, ranking, or productivity claim.
+- Ticket activity and Standalone Visual Work remained visibly separate. The
+  labelled historical standalone fixture was not misrepresented as ticket or
+  production activity when it fell outside the current reporting week.
+- Automated fixtures cover every valid position/Admin overlay, missing-due-date
+  disclosures, stale Sunday–Thursday boundaries, all source reconciliation,
+  responsive/axe states, and global denial states.

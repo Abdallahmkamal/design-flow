@@ -314,7 +314,7 @@ deferred capability requires a new readiness decision before implementation.
 
 # Phase 5 UI component map — Operational Experience
 
-**Status:** Approved for Phase 5 implementation — 2026-07-26
+**Status:** Phase 5 complete — staging acceptance verified on 2026-07-26
 
 **Scope:** Dashboard, Notifications, and final Work Item History only
 
@@ -415,6 +415,18 @@ No excluded feature receives a placeholder or disabled control.
 - Staging checks must retain labelled synthetic data, keep standalone activity
   separate, and verify Dashboard, Notifications, and History against the
   approved briefs without Phase 6 UI.
+
+## Verification evidence
+
+- GitHub workflow #46 deployed merge commit `678c5df`; all frontend/browser,
+  local Supabase/Deno, hosted migration/type, Edge Function, build, Pages, and
+  live smoke jobs passed.
+- Authenticated staging checks reconciled Manager and Lead people scopes,
+  Dashboard sources and due-date wording, notification empty state, and
+  DF-000003 actual-date history against the three approved briefs.
+- The Phase 5 exit-gate follow-up removes the exposed Phase 6 Reports placeholder
+  and upgrades the smoke check to Phase 5 markers with bounded Pages-propagation
+  retry coverage.
 
 ## Open questions
 

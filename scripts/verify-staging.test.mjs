@@ -44,8 +44,10 @@ describe('staging smoke verification', () => {
           '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
         ),
       )
-      .mockResolvedValueOnce(response('import("./WorkLogPage-phase-four.js")'))
-      .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
+      .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
+      .mockResolvedValueOnce(
+        response('Operational overview Personal inbox Activity history'),
+      )
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('[]'))
       .mockResolvedValueOnce(
@@ -73,10 +75,10 @@ describe('staging smoke verification', () => {
             '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
           ),
         )
+        .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
         .mockResolvedValueOnce(
-          response('import("./WorkLogPage-phase-four.js")'),
+          response('Operational overview Personal inbox Activity history'),
         )
-        .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
         .mockResolvedValueOnce(response('ok'))
         .mockResolvedValueOnce(response('', { status }))
         .mockResolvedValueOnce(
@@ -103,8 +105,10 @@ describe('staging smoke verification', () => {
           '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
         ),
       )
-      .mockResolvedValueOnce(response('import("./WorkLogPage-phase-four.js")'))
-      .mockResolvedValueOnce(response('Log work Work Dates Correct work log'))
+      .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
+      .mockResolvedValueOnce(
+        response('Operational overview Personal inbox Activity history'),
+      )
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('', { status: 500 }));
 
@@ -113,7 +117,43 @@ describe('staging smoke verification', () => {
     );
   });
 
-  it('fails when the live bundle is not the Phase 4 checkpoint', async () => {
+  it('retries while the canonical Pages URL still serves the prior bundle', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/old.js"></script>',
+        ),
+      )
+      .mockResolvedValueOnce(response('authentication only'))
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+        ),
+      )
+      .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
+      .mockResolvedValueOnce(
+        response('Operational overview Personal inbox Activity history'),
+      )
+      .mockResolvedValueOnce(response('ok'))
+      .mockResolvedValueOnce(response('[]'))
+      .mockResolvedValueOnce(
+        response('{"ok":true}', {
+          headers: {
+            'access-control-allow-origin':
+              'https://design-flow-staging.pages.dev',
+          },
+        }),
+      );
+    const waiter = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      verifyStaging({ environment, fetcher, retryDelayMs: 0, waiter }),
+    ).resolves.toBeUndefined();
+    expect(waiter).toHaveBeenCalledOnce();
+  });
+
+  it('fails when the live bundle is not the Phase 5 checkpoint', async () => {
     const fetcher = vi
       .fn()
       .mockResolvedValueOnce(
@@ -123,8 +163,10 @@ describe('staging smoke verification', () => {
       )
       .mockResolvedValueOnce(response('authentication only'));
 
-    await expect(verifyStaging({ environment, fetcher })).rejects.toThrow(
-      'The live bundle is missing the Phase 4 marker: Log work',
+    await expect(
+      verifyStaging({ environment, fetcher, frontendAttempts: 1 }),
+    ).rejects.toThrow(
+      'The live bundle is missing the Phase 5 marker: Operational overview',
     );
   });
 });

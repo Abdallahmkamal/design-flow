@@ -1,6 +1,6 @@
 # Work Item History brief
 
-**Status:** Approved for Phase 5 implementation — 2026-07-26
+**Status:** Phase 5 complete — staging acceptance verified on 2026-07-26
 
 **Route:** `/work-items/:displayId`
 
@@ -106,3 +106,15 @@ history.
 ## Open questions
 
 None. Material changes require a new readiness decision.
+
+## Staging acceptance evidence
+
+- DF-000003 exposed distinct actual Work Dates for Jul 21 and Jul 22, with deep
+  links into the matching work-log timeline events.
+- Timeline entries retained later submission timestamps and actor attribution;
+  the details rail separately showed planned start, due date, first/last worked
+  dates, last system activity, and 2 active work days.
+- Synthetic correction links remained permission-gated, withdrawn content was
+  absent, and standalone Visual Work remained outside ticket history.
+- Automated coverage verifies correction/withdrawal recalculation, Viewer and
+  all capability overlays, mobile/keyboard/axe behavior, and denial states.

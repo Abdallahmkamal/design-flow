@@ -340,8 +340,13 @@ test('authenticated shell is navigable and has no detectable accessibility viola
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-  await page.getByRole('link', { name: 'Reports' }).click();
-  await expect(page.getByRole('heading', { name: 'Reports' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Reports' })).toHaveCount(0);
+  await page.goto('/reports');
+  await expect(
+    page.getByRole('heading', {
+      name: 'This Design Flow view does not exist',
+    }),
+  ).toBeVisible();
   await expect(page).toHaveURL('/reports');
 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

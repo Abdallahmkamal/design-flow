@@ -167,5 +167,5 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: 4.81.0
 
-      - name: Verify the live Phase 2 staging checkpoint
+      - name: Verify the live Phase 5 staging checkpoint
         run: npm run staging:smoke

@@ -1,4 +1,11 @@
-const phaseFourMarkers = ['Log work', 'Work Dates', 'Correct work log'];
+const phaseFiveMarkers = [
+  'Operational overview',
+  'Personal inbox',
+  'Activity history',
+];
+
+const wait = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function requiredEnvironment(name, source = process.env) {
   const value = source[name]?.trim();
@@ -52,27 +59,7 @@ async function responseText(fetcher, url, init, label) {
   return { response, text: await response.text() };
 }
 
-export async function verifyStaging({
-  environment = process.env,
-  fetcher = fetch,
-} = {}) {
-  const appUrl = assertHttpsUrl(
-    'STAGING_APP_URL',
-    requiredEnvironment('STAGING_APP_URL', environment),
-  );
-  const supabaseUrl = assertHttpsUrl(
-    'VITE_SUPABASE_URL',
-    requiredEnvironment('VITE_SUPABASE_URL', environment),
-  );
-  const publishableKey = requiredEnvironment(
-    'VITE_SUPABASE_PUBLISHABLE_KEY',
-    environment,
-  );
-  const headers = {
-    apikey: publishableKey,
-  };
-  const checks = [];
-
+async function deployedFrontendJavaScript(fetcher, appUrl) {
   const { text: html } = await responseText(
     fetcher,
     appUrl,
@@ -120,18 +107,59 @@ export async function verifyStaging({
       ).text;
     }),
   );
-  const deployedJavaScript = [bundle, ...linkedBundles].join('\n');
-  const missingMarker = phaseFourMarkers.find(
-    (marker) => !deployedJavaScript.includes(marker),
+
+  return [bundle, ...linkedBundles].join('\n');
+}
+
+export async function verifyStaging({
+  environment = process.env,
+  fetcher = fetch,
+  frontendAttempts = 6,
+  retryDelayMs = 10_000,
+  waiter = wait,
+} = {}) {
+  const appUrl = assertHttpsUrl(
+    'STAGING_APP_URL',
+    requiredEnvironment('STAGING_APP_URL', environment),
   );
+  const supabaseUrl = assertHttpsUrl(
+    'VITE_SUPABASE_URL',
+    requiredEnvironment('VITE_SUPABASE_URL', environment),
+  );
+  const publishableKey = requiredEnvironment(
+    'VITE_SUPABASE_PUBLISHABLE_KEY',
+    environment,
+  );
+  const headers = {
+    apikey: publishableKey,
+  };
+  const checks = [];
+
+  let missingMarker;
+
+  for (let attempt = 1; attempt <= frontendAttempts; attempt += 1) {
+    const deployedJavaScript = await deployedFrontendJavaScript(
+      fetcher,
+      appUrl,
+    );
+    missingMarker = phaseFiveMarkers.find(
+      (marker) => !deployedJavaScript.includes(marker),
+    );
+
+    if (!missingMarker || attempt === frontendAttempts) {
+      break;
+    }
+
+    await waiter(retryDelayMs);
+  }
 
   if (missingMarker) {
     throw new Error(
-      `The live bundle is missing the Phase 4 marker: ${missingMarker}`,
+      `The live bundle is missing the Phase 5 marker: ${missingMarker}`,
     );
   }
 
-  checks.push('Phase 4 frontend bundle');
+  checks.push('Phase 5 frontend bundle');
 
   await responseText(
     fetcher,

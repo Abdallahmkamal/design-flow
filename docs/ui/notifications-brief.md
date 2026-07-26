@@ -1,6 +1,6 @@
 # Notifications brief
 
-**Status:** Approved for Phase 5 implementation — 2026-07-26
+**Status:** Phase 5 complete — staging acceptance verified on 2026-07-26
 
 **Route:** `/notifications`
 
@@ -111,3 +111,15 @@ checks; and staging verification with labelled synthetic records only.
 
 None. Approval includes the fixed 25-item inbox page size. Material changes
 require a new readiness decision.
+
+## Staging acceptance evidence
+
+- The authenticated Manager + Admin shell exposed the personal notification
+  link and the inbox rendered its accurate zero-unread, empty state without
+  leaking another recipient's events.
+- Automated browser/database coverage verifies newest-first 25-item pagination,
+  unread count, mark-one/all, safe Work Item links, every approved producer,
+  self-event exclusion, recipient isolation, and retry idempotency.
+- Notification rows store no comment body or blocker reason, do not grant Work
+  Item access, and exclude work-log, email, push, reminder, mention, preference,
+  and group-subscription behavior.

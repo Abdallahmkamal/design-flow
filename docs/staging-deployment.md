@@ -99,3 +99,32 @@ synthetic staging identities and records. Results are recorded in the
 Authentication, Team, Settings, and shared application shell briefs. Supabase
 and Cloudflare logs showed no unexpected secret, personal-data, or
 production-data exposure.
+
+## Phase 5 staging acceptance
+
+The Phase 5 checkpoint extends the automated smoke check with stable Dashboard,
+Notifications, and final Work Item History bundle markers. The check retries a
+bounded number of times because the canonical Cloudflare Pages URL can briefly
+serve the preceding bundle after a successful direct upload.
+
+Use only labelled synthetic staging records and verify that:
+
+- position defaults and deliberate Lead/Manager/All people scopes reconcile to
+  the visible source people and Work Items without Admin changing the default;
+- stale and recent-work facts use actual work dates and the configured
+  Sunday–Thursday calendar, never authentication recency;
+- Planned until discloses due-date coverage without availability or capacity
+  language;
+- standalone Visual Work stays distinct from ticket lifecycle activity;
+- the notification inbox is recipient-only, safely summarized, linked only to
+  already-readable Work Items, and supports its approved read/paging behavior;
+- final Work Dates and history preserve planned, actual, and system timestamps;
+  and
+- Phase 6 Reports/export routes, controls, and placeholders are absent.
+
+**Completed 2026-07-26:** GitHub workflow #46 deployed Phase 5 and passed all
+frontend/browser, local Supabase/Deno, hosted schema/type, Edge Function, build,
+Pages, and live smoke jobs. Authenticated staging acceptance reconciled the
+Manager default plus Lead and All alternates, Dashboard source rows, the empty
+personal notification inbox, and DF-000003 actual-date history. The exit-gate
+follow-up removed the discovered Reports placeholder before Phase 5 closure.
