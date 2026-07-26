@@ -2,17 +2,18 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phase 0 fixed the schema, permission, and operation contracts, and Phase 1
-delivered the application and database foundation. Phase 2 is complete: the
-approved authentication and account-lifecycle boundary, active Team directory,
-Admin-only member and hierarchy administration, Areas/Squads, labels, team
-timezone, administration audit, and their responsive and permission-gated UI
-passed the complete synthetic staging acceptance matrix on 2026-07-21.
+Phases 0–4 are complete. Design Flow now includes the contracted database and
+permission foundation, authentication and account lifecycle, Team and Settings,
+ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
+idempotent work logging for ticket and standalone Visual Work. Phase 5
+Operational Experience is implemented and locally verified on its publication
+branch; Dashboard, Notifications, and final Work Item History staging acceptance
+is the remaining phase gate.
 
-The Supabase Free staging project contains the Phase 1 foundation plus the
-authentication/account-lifecycle migrations, six Edge Functions, stable
-reference rows, and conspicuously synthetic acceptance records. The
-non-production Cloudflare Pages Free staging deployment is live at
+The Supabase Free staging project contains the complete Phase 4 checkpoint,
+six account-lifecycle Edge Functions, stable reference rows, and conspicuously
+synthetic acceptance records, including one clearly labelled standalone Visual
+Work record. The non-production Cloudflare Pages Free staging deployment is live at
 <https://design-flow-staging.pages.dev>. No production service, credential, or
 real account/data has been created.
 
@@ -80,13 +81,14 @@ npm run functions:test
 npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 62 unit/component
-tests, and a production build. Playwright schedules 20 desktop/mobile browser
-scenarios for authentication, Team, Settings, guarded shell behavior, geometry,
-and automated accessibility; 18 run in their applicable projects and two are
-intentional device-specific skips. The backend harness runs 194 pgTAP
-assertions and 16 Deno tests for the Phase 2 account, hierarchy, list, setting,
-and audit boundaries.
+`npm run verify` covers formatting, linting, strict types, 79 unit/component
+tests, and a production build. Playwright schedules 28 desktop/mobile browser
+scenarios across authentication, Team, Settings, Dashboard, Notifications,
+All Tickets, Work Item History, responsive behavior, and automated
+accessibility; 26 run in their applicable projects and two are intentional
+device-specific skips. The backend harness runs 346 pgTAP assertions and 16
+Deno tests, including every valid position and Admin overlay, Dashboard source
+reconciliation, notification isolation/idempotency, and direct-write denial.
 
 ## Documentation
 
@@ -126,17 +128,16 @@ and audit boundaries.
   data, synthetic principals, generated types, and structural/read-permission
   tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
   vertical slices.
-- The four local migrations and synthetic seed reset cleanly. The current
-  pgTAP suite passes 194 schema, invariant, read-surface, persona-permission,
-  authentication/account-lifecycle, hierarchy, controlled-list, timezone, and
-  audit assertions; generated database types match the implemented schema
-  shape.
-- The Supabase Free staging project is healthy at the complete Phase 2
+- The eleven local migrations and synthetic seed reset cleanly through Phase 5.
+  The current pgTAP suite passes 346 schema, invariant, read-surface,
+  persona-permission, ticket, work-log, Dashboard, and notification assertions;
+  generated database types match the implemented schema shape.
+- The Supabase Free staging project is healthy at the complete Phase 4
   checkpoint and has six active lifecycle Edge Functions. Its acceptance
   identities and history are conspicuously synthetic, public signup is closed,
   legacy API keys remain disabled, and the one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
-  complete Phase 2 checkpoint at
+  complete Phase 4 checkpoint at
   <https://design-flow-staging.pages.dev>. It was built with staging
   credentials only; development source maps were not published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
@@ -149,7 +150,8 @@ and audit boundaries.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-Phase 2 is implemented and verified by the local unit, browser, database, and
-Edge Function gates, plus the complete manual non-production staging matrix on
-2026-07-21. Authentication, Team, Settings, and the shared shell meet the Phase
-2 exit gate. No Phase 3 implementation has started.
+Phase 5 implementation is complete and passes the local unit, browser,
+database, generated-type, production-build, accessibility, and Edge Function
+gates. Its approved Dashboard, Notifications, and History briefs are recorded
+under `docs/ui/`. Publication, automated staging delivery, and the synthetic
+staging acceptance matrix remain before Phase 5 can be marked complete.

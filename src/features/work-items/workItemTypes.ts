@@ -73,6 +73,44 @@ export interface WorkItemEvent {
   occurredAt: string;
 }
 
+export interface WorkItemHistoryEntry {
+  id: string;
+  workDate: string;
+  workTypeCode: string;
+  workTypeLabel: string;
+  description: string | null;
+  relationship: 'primary' | 'contributor';
+}
+
+export interface WorkItemHistoryEvent extends WorkItemEvent {
+  changedFields: string[];
+  statusFrom: string | null;
+  statusTo: string | null;
+  assigneeFrom: string | null;
+  assigneeTo: string | null;
+  labelsBefore: string[];
+  labelsAfter: string[];
+  workLog: {
+    workedBy: PersonRef;
+    loggedBy: PersonRef;
+    submittedAt: string;
+    editedAt: string | null;
+    withdrawnAt: string | null;
+    entries: WorkItemHistoryEntry[];
+  } | null;
+}
+
+export interface WorkDateSummary {
+  date: string;
+  people: PersonRef[];
+  workTypes: string[];
+}
+
+export interface WorkItemHistory {
+  workDates: WorkDateSummary[];
+  events: WorkItemHistoryEvent[];
+}
+
 export interface WorkItemComment {
   id: string;
   body: string | null;

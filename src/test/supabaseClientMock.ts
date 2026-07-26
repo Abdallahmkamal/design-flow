@@ -50,7 +50,46 @@ interface SupabaseClientMockOptions {
   signInError?: 'invalid' | 'network';
   signOutError?: boolean;
   functionErrors?: unknown[];
+  rpcResponses?: Record<string, unknown>;
 }
+
+export const emptyDashboardResponse = {
+  asOfDate: '2026-07-26',
+  activityStartDate: '2026-07-20',
+  activityEndDate: '2026-07-26',
+  defaultScopeKey: 'me',
+  selectedScopeKey: 'me',
+  selectedPeople: [
+    { id: syntheticUserId, displayName: activeAccountRow.display_name },
+  ],
+  scopeOptions: [{ key: 'me', label: 'Me' }],
+  peopleOptions: [
+    { id: syntheticUserId, displayName: activeAccountRow.display_name },
+  ],
+  areaOptions: [],
+  cards: {
+    active: 0,
+    activeBreakdown: { todo: 0, inProgress: 0, inReview: 0 },
+    blocked: 0,
+    overdue: 0,
+    dueSoon: 0,
+    stale: 0,
+    unassignedBacklog: 0,
+  },
+  cardSources: {
+    active: [],
+    blocked: [],
+    overdue: [],
+    dueSoon: [],
+    stale: [],
+    unassignedBacklog: [],
+  },
+  needsAttention: [],
+  workload: [],
+  recentTicketWork: [],
+  recentVisualWork: [],
+  managementSignals: null,
+};
 
 export function createSupabaseClientMock(
   options: SupabaseClientMockOptions = {},
@@ -91,7 +130,32 @@ export function createSupabaseClientMock(
   const onAuthStateChange = vi.fn(() => ({
     data: { subscription: { unsubscribe: vi.fn() } },
   }));
-  const rpc = vi.fn(() => {
+  const rpc = vi.fn((name: string) => {
+    if (name === 'get_dashboard') {
+      return Promise.resolve({
+        data: options.rpcResponses?.[name] ?? emptyDashboardResponse,
+        error: null,
+      });
+    }
+    if (name === 'get_notification_unread_count') {
+      return Promise.resolve({
+        data: options.rpcResponses?.[name] ?? 0,
+        error: null,
+      });
+    }
+    if (name === 'get_notification_inbox') {
+      return Promise.resolve({
+        data: options.rpcResponses?.[name] ?? {
+          rows: [],
+          unreadCount: 0,
+          totalCount: 0,
+          page: 1,
+          pageSize: 25,
+        },
+        error: null,
+      });
+    }
+
     const responseIndex = accountResponseIndex;
     const response =
       accountResponses[Math.min(responseIndex, accountResponses.length - 1)] ??

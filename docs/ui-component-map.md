@@ -309,3 +309,114 @@ exports, dashboard/report pages, generic attachment controls, and all Phase
 
 None. Any material change to component ownership, shared primitives, or a
 deferred capability requires a new readiness decision before implementation.
+
+---
+
+# Phase 5 UI component map — Operational Experience
+
+**Status:** Approved for Phase 5 implementation — 2026-07-26
+
+**Scope:** Dashboard, Notifications, and final Work Item History only
+
+**Prepared:** 2026-07-26
+
+## Authority and readiness boundary
+
+This addition applies `docs/ui/dashboard-brief.md`,
+`docs/ui/notifications-brief.md`, and `docs/ui/history-brief.md` to the approved
+Phase 5 contracts. Vodafone owns color/typography; the ready source-linked
+Astryx notes named below own the remaining component baseline. All runtime code
+remains Design Flow-owned and no Astryx dependency, source, style, or API is
+introduced.
+
+## Shared components reused unchanged
+
+| Component | Phase 5 use | Constraint and ready reference |
+| --- | --- | --- |
+| `Button` | Quick actions, mark-one/all read, scoped retry/disclosure | Visible action labels remain required; `references/astryx/button.md` |
+| `Select` | People-scope preset and Area/Squad controls | Bounded single-choice values only; `references/astryx/select.md` |
+| `Checkbox` | Specific-people scope selection | Labelled group, never an overloaded Select; `references/astryx/checkbox.md` |
+| `Badge` | Workflow/attention reasons and textual unread count | Color-independent labels; `references/astryx/badge.md` |
+| `Avatar` | Workload and Work Dates identity summaries | Noninteractive approved fallback only; `references/astryx/avatar.md` |
+| `DataTable` | Desktop workload-by-person comparison | Structured mobile records, no output ranking; `references/astryx/table.md` |
+| `Pagination` | Notification pages and only genuinely paged source lists | Existing numbered behavior; inbox fixes page size at 25; `references/astryx/pagination.md` |
+
+The approved shell, accessibility, and responsive behavior continue to use
+`references/astryx/patterns.md` and `references/astryx/accessibility.md`.
+
+No shared component is added or extended. Dashboard summary cards are native
+feature-owned links. The header notification control is a native link with a
+decorative bell, visible label, and Badge, so it does not create an icon-only
+Button mode. The durable paginated inbox does not use Popover, Drawer, Menu, or
+Modal.
+
+## Feature-owned compositions
+
+| Owner | Composition | Shared dependencies |
+| --- | --- | --- |
+| `features/dashboard/PeopleScopeControl` | Position default plus deliberate group/all/specific-person alternatives | Select, Checkbox, Button |
+| `features/dashboard/DashboardSummaryCards` | Six linked, source-reconciled ticket totals | Badge |
+| `features/dashboard/ManagementSignals` | Recorded/no-recent/no-active/review-waiting source summaries | Avatar, Badge |
+| `features/dashboard/NeedsAttentionList` | Deduplicated tickets with every applicable reason and All Tickets drill-down | Badge, Pagination when needed |
+| `features/dashboard/WorkloadByPerson` | Alphabetical desktop comparison and structured mobile records, including Planned until disclosure | DataTable, Avatar, Badge |
+| `features/dashboard/RecentRecordedWork` | Actual-date ticket activity plus separate standalone Visual Work | Avatar, Badge, Pagination when needed |
+| `features/notifications/NotificationHeaderLink` | Bell, visible label, recipient unread count, inbox navigation | Badge |
+| `features/notifications/NotificationList` | Newest-first 25-item recipient page and mark-all state | Button, Pagination |
+| `features/notifications/NotificationItem` | Safe event summary, unread state, mark-one, native Work Item link | Button, Badge |
+| `features/work-items/WorkDatesGrid` | Final five-column actual-date index and deep-link target | Avatar, Badge |
+| `features/work-items/LifecycleTimeline` | Complete sanitized system/work narrative | Badge |
+| `features/work-items/WorkLogTimelineEvent` | Independently addressable actual dates plus submission/correction/withdrawal metadata | Badge, Button |
+
+Feature components receive authoritative API/domain payloads. They do not infer
+permissions, people defaults, working-day rules, derived counts, or notification
+recipients in the browser. Shared components never call Supabase.
+
+## Route, state, and source ownership
+
+| Route | Thin route responsibility | Feature surface |
+| --- | --- | --- |
+| `/` | Parse shared URL filters and set title | Dashboard |
+| `/notifications` | Parse one-based page and set title | Recipient inbox |
+| `/work-items` | Continue existing URL-backed source drill-down | All Tickets |
+| `/work-items/:displayId` | Resolve optional actual-date fragment and load authoritative detail | Final Work Dates and timeline |
+
+- Database read models own position defaults, alternate-scope expansion,
+  working-day/stale formulas, due-date coverage, source counts, and management
+  signals. Admin changes capability, never the underlying default.
+- Notification source mutations remain atomic/idempotent RPC effects. Only
+  recipient-filtered `read_at` updates are direct browser writes.
+- Loading, empty/no-results, error, permission, disabled, long-content,
+  responsive, keyboard, and Light/Dark behavior is owned by each approved brief.
+- Dashboard sources expose only normal team-readable records. Notifications
+  expose only recipient rows and never grant Work Item access.
+
+## Explicitly deferred or excluded
+
+- Phase 6 Reports views, charts, CSV/PDF controls, exports, saved reports, and
+  report-period drill-down.
+- Availability/capacity claims, output ranking, productivity scores, sign-in
+  recency signals, and manual availability.
+- Notification email/push/reminders/digests/mentions/preferences/subscriptions,
+  group-wide or work-log events, delete controls, and copied comment/blocker text.
+- Calendar, generic Card/Timeline, icon-only Button, Menu, Drawer, Modal, Tabs,
+  virtualized list, and generic notification-center primitives.
+
+No excluded feature receives a placeholder or disabled control.
+
+## Readiness acceptance
+
+- The three briefs and this map were explicitly approved on 2026-07-26 before
+  Phase 5 migration, API/domain, UI, or test implementation began.
+- Existing shared components and notes cover all proposed needs; there is no
+  unapproved presentation fallback or new shared API.
+- Tests must reconcile every Dashboard value/source for V, D, D+A, L, L+A, M,
+  and M+A; repeat global denial states; prove direct-write denial and recipient
+  isolation; and prove source-event retry idempotency.
+- Staging checks must retain labelled synthetic data, keep standalone activity
+  separate, and verify Dashboard, Notifications, and History against the
+  approved briefs without Phase 6 UI.
+
+## Open questions
+
+None. Approval includes the full-page inbox navigation and fixed 25-item inbox
+page. Any material change requires a new readiness decision.

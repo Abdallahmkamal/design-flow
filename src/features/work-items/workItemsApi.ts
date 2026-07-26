@@ -7,6 +7,7 @@ import { toRpcFilters, type WorkItemFilters } from './workItemFilters';
 import type {
   WorkItemDetail,
   WorkItemFormValues,
+  WorkItemHistory,
   WorkItemListResult,
   WorkItemOptions,
 } from './workItemTypes';
@@ -134,6 +135,52 @@ const detailSchema = z.object({
   }),
 });
 
+const historySchema = z.object({
+  workDates: z.array(
+    z.object({
+      date: z.string(),
+      people: z.array(personSchema),
+      workTypes: z.array(z.string()),
+    }),
+  ),
+  events: z.array(
+    z.object({
+      id: z.string().uuid(),
+      type: z.string(),
+      actor: personSchema,
+      subjectType: z.string(),
+      subjectId: z.string().uuid().nullable(),
+      occurredAt: z.string(),
+      changedFields: z.array(z.string()),
+      statusFrom: z.string().nullable(),
+      statusTo: z.string().nullable(),
+      assigneeFrom: z.string().nullable(),
+      assigneeTo: z.string().nullable(),
+      labelsBefore: z.array(z.string()),
+      labelsAfter: z.array(z.string()),
+      workLog: z
+        .object({
+          workedBy: personSchema,
+          loggedBy: personSchema,
+          submittedAt: z.string(),
+          editedAt: z.string().nullable(),
+          withdrawnAt: z.string().nullable(),
+          entries: z.array(
+            z.object({
+              id: z.string().uuid(),
+              workDate: z.string(),
+              workTypeCode: z.string(),
+              workTypeLabel: z.string(),
+              description: z.string().nullable(),
+              relationship: z.enum(['primary', 'contributor']),
+            }),
+          ),
+        })
+        .nullable(),
+    }),
+  ),
+});
+
 export class WorkItemApiError extends Error {
   constructor(
     message: string,
@@ -168,6 +215,17 @@ export async function getWorkItemDetail(
   );
   if (error) throwApiError(error);
   return data === null ? null : (detailSchema.parse(data) as WorkItemDetail);
+}
+
+export async function getWorkItemHistory(
+  workItemId: string,
+): Promise<WorkItemHistory> {
+  const { data, error } = await getSupabaseClient().rpc(
+    'get_work_item_history',
+    { target_work_item_id: workItemId },
+  );
+  if (error) throwApiError(error);
+  return historySchema.parse(data);
 }
 
 export async function getWorkItemOptions(): Promise<WorkItemOptions> {
@@ -205,68 +263,6 @@ export async function getWorkItemOptions(): Promise<WorkItemOptions> {
       label: row.display_label,
     })),
   };
-}
-
-export interface WorkDateSummary {
-  date: string;
-  people: { id: string; displayName: string }[];
-  workTypes: string[];
-}
-
-export async function getWorkDates(
-  workItemId: string,
-): Promise<WorkDateSummary[]> {
-  const client = getSupabaseClient();
-  const { data, error } = await client
-    .from('valid_work_log_entries')
-    .select('work_date,work_type_code,worked_by')
-    .eq('work_item_id', workItemId)
-    .order('work_date');
-  if (error) throwApiError(error);
-  const validEntries = (data ?? []).filter(
-    (
-      entry,
-    ): entry is typeof entry & {
-      work_date: string;
-      work_type_code: string;
-      worked_by: string;
-    } => Boolean(entry.work_date && entry.work_type_code && entry.worked_by),
-  );
-  const ids = [...new Set(validEntries.map((entry) => entry.worked_by))];
-  const people = ids.length
-    ? await client
-        .from('team_directory')
-        .select('id,display_name')
-        .in('id', ids)
-    : { data: [], error: null };
-  if (people.error) throwApiError(people.error);
-  const names = new Map<string, string>(
-    (people.data ?? [])
-      .filter(
-        (
-          person,
-        ): person is typeof person & { id: string; display_name: string } =>
-          Boolean(person.id && person.display_name),
-      )
-      .map((person) => [person.id, person.display_name]),
-  );
-  const byDate = new Map<string, WorkDateSummary>();
-  for (const entry of validEntries) {
-    const summary = byDate.get(entry.work_date) ?? {
-      date: entry.work_date,
-      people: [],
-      workTypes: [],
-    };
-    if (!summary.people.some((person) => person.id === entry.worked_by))
-      summary.people.push({
-        id: entry.worked_by,
-        displayName: names.get(entry.worked_by) ?? 'Team member',
-      });
-    if (!summary.workTypes.includes(entry.work_type_code))
-      summary.workTypes.push(entry.work_type_code);
-    byDate.set(entry.work_date, summary);
-  }
-  return [...byDate.values()];
 }
 
 export async function createWorkItem(values: WorkItemFormValues) {

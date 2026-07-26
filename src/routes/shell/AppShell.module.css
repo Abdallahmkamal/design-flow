@@ -49,6 +49,21 @@
   flex-wrap: wrap;
   gap: var(--space-sm);
 }
+.notificationLink {
+  display: inline-flex;
+  min-block-size: var(--control-height-sm);
+  align-items: center;
+  gap: var(--space-xs);
+  padding-inline: var(--space-sm);
+  border-radius: var(--radius-element);
+  color: var(--color-text-primary);
+  font: var(--type-button);
+  text-decoration: none;
+}
+.notificationLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
 
 .sessionError {
   flex-basis: 100%;

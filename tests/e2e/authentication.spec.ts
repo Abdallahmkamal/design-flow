@@ -115,6 +115,71 @@ async function configureAuthMocks(
     });
   });
 
+  await page.route(
+    '**/rest/v1/rpc/get_notification_unread_count',
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(0),
+      });
+    },
+  );
+
+  await page.route('**/rest/v1/rpc/get_notification_inbox', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        rows: [],
+        unreadCount: 0,
+        totalCount: 0,
+        page: 1,
+        pageSize: 25,
+      }),
+    });
+  });
+
+  await page.route('**/rest/v1/rpc/get_dashboard', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        asOfDate: '2026-07-26',
+        activityStartDate: '2026-07-20',
+        activityEndDate: '2026-07-26',
+        defaultScopeKey: 'me',
+        selectedScopeKey: 'me',
+        selectedPeople: [{ id: userId, displayName: account.display_name }],
+        scopeOptions: [{ key: 'me', label: 'Me' }],
+        peopleOptions: [{ id: userId, displayName: account.display_name }],
+        areaOptions: [],
+        cards: {
+          active: 0,
+          activeBreakdown: { todo: 0, inProgress: 0, inReview: 0 },
+          blocked: 0,
+          overdue: 0,
+          dueSoon: 0,
+          stale: 0,
+          unassignedBacklog: 0,
+        },
+        cardSources: {
+          active: [],
+          blocked: [],
+          overdue: [],
+          dueSoon: [],
+          stale: [],
+          unassignedBacklog: [],
+        },
+        needsAttention: [],
+        workload: [],
+        recentTicketWork: [],
+        recentVisualWork: [],
+        managementSignals: null,
+      }),
+    });
+  });
+
   await page.route('**/functions/v1/change_own_password', async (route) => {
     passwordChanged = true;
     await route.fulfill({
@@ -260,15 +325,26 @@ test('authenticated shell is navigable and has no detectable accessibility viola
 
   await expect(
     page.getByRole('heading', {
-      name: 'Design work, with the operating context intact',
+      name: 'Dashboard',
+      exact: true,
     }),
   ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.getByRole('link', { name: 'Notifications' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Notifications', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'No notifications yet' }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
   await page.getByRole('link', { name: 'Reports' }).click();
   await expect(page.getByRole('heading', { name: 'Reports' })).toBeVisible();
   await expect(page).toHaveURL('/reports');
 
-  const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-  expect(accessibilityScanResults.violations).toEqual([]);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('mandatory password change cannot be bypassed and releases the shell after completion', async ({
@@ -294,7 +370,8 @@ test('mandatory password change cannot be bypassed and releases the shell after 
 
   await expect(
     page.getByRole('heading', {
-      name: 'Design work, with the operating context intact',
+      name: 'Dashboard',
+      exact: true,
     }),
   ).toBeVisible();
   await expect(page.getByRole('navigation')).toBeVisible();
