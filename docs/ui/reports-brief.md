@@ -1,6 +1,6 @@
 # Reports brief
 
-**Status:** Approved and implemented locally — staging verification pending
+**Status:** Approved, implemented, and staging-reconciled
 
 **Route:** `/reports`
 
@@ -121,14 +121,19 @@ None. Material changes require a new readiness decision.
 
 ## Verified progress
 
-Implemented on `codex/phase-6-reports-and-exports`: the three report views,
+Implemented through merged PR #20 (`a879af4`): the three report views,
 Sunday–Saturday presets, URL-backed scopes/refinements, historical snapshot
 labels, source tables, Recharts views with exact semantic table alternatives,
 mobile records, and capability-gated all-row CSV. Local evidence on 2026-07-26:
-93 unit/component tests, 394 pgTAP/RLS assertions, 26 applicable Playwright/axe
+93 unit/component tests, 400 pgTAP/RLS assertions, 26 applicable Playwright/axe
 scenarios with two device-specific skips, 16 Edge Function tests, strict
-typecheck, lint, formatting, generated types, and production build. Hosted
-staging reconciliation is intentionally pending publishing authorization.
+typecheck, lint, formatting, generated types, and production build. Workflow
+#50 passed the complete staging gate and deployed the merged Phase 6 build.
 The opt-in Phase 6 fixture also passed a clean local load with nine Areas,
 fourteen tickets, twenty batches, fifty entries, all six statuses, and its
-internal count checks. It remains separate from the automatic test seed.
+internal count checks. The same guarded fixture passed two staging loads for
+idempotency and reconciled to nine personas, nine Areas, fourteen tickets,
+twenty batches, fifty entries, all six statuses, and zero non-synthetic
+profiles. Hosted all-people source totals were 13 Tickets, seven Designers,
+and six standalone Visual Work entries. It remains separate from the automatic
+test seed.

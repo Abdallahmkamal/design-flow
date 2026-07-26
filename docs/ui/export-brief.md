@@ -1,6 +1,6 @@
 # Reports and Work Item Export brief
 
-**Status:** Approved and implemented locally — staging verification pending
+**Status:** Approved, implemented, and staging-reconciled
 
 **Surfaces:** `/reports`, `/work-items/:displayId`
 
@@ -126,10 +126,16 @@ projection, keeps comments opt-in, lazy-loads its renderer, and never fetches
 Figma. A labelled synthetic three-page fixture passed text extraction and
 rendered-page inspection for wrapping, continuation, links, planned/actual/date
 separation, history, comments, and page context; the temporary fixture was
-removed. The complete local counts are 93 unit/component tests, 394 pgTAP/RLS
+removed. The complete local counts are 93 unit/component tests, 400 pgTAP/RLS
 assertions, 26 applicable Playwright/axe scenarios with two device-specific
-skips, and 16 Edge Function tests. Staging export verification remains pending
-explicit publishing authorization.
+skips, and 16 Edge Function tests. Workflow #50 deployed merged PR #20
+(`a879af4`) through the complete staging gate.
 The guarded lightweight acceptance fixture loaded locally with fifty matching
 work-log entries plus two sanitized PDF comments; exact CSV/PDF reconciliation
-against that fixture remains an authorized staging acceptance step.
+against that fixture passed under the preserved synthetic Manager + Admin:
+ticket summary 13 rows, ticket activity 44, designer summary seven,
+designer-ticket detail fourteen, and standalone Visual Work six. Hosted PDF
+generation passed with comments off by default and opt-in; DF-000007 reconciled
+to sixteen actual work dates, one history event, zero default comments, two
+opt-in comments, and no raw events/comments/capabilities in the sanitized Work
+Item projection.

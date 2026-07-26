@@ -1,6 +1,6 @@
 begin;
 
-select plan(37);
+select plan(43);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -530,6 +530,60 @@ select ok(
     'EXECUTE'
   ),
   'the browser role cannot execute protected bootstrap recovery'
+);
+
+select ok(
+  position(
+    'current_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.set_member_access(uuid,text,boolean,uuid,timestamptz,jsonb,uuid)'::regprocedure
+    )
+  ) = 0,
+  'member access changes do not shadow the PostgreSQL current_date special value'
+);
+
+select ok(
+  position(
+    'team_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.set_member_access(uuid,text,boolean,uuid,timestamptz,jsonb,uuid)'::regprocedure
+    )
+  ) > 0,
+  'member access changes retain the authoritative team-local date helper'
+);
+
+select ok(
+  position(
+    'current_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.prepare_member_deactivation(uuid,uuid,jsonb,jsonb,uuid)'::regprocedure
+    )
+  ) = 0,
+  'member deactivation does not shadow the PostgreSQL current_date special value'
+);
+
+select ok(
+  position(
+    'team_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.prepare_member_deactivation(uuid,uuid,jsonb,jsonb,uuid)'::regprocedure
+    )
+  ) > 0,
+  'member deactivation retains the authoritative team-local date helper'
+);
+
+select ok(
+  position(
+    'current_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.finalize_member_reactivation(uuid,uuid,text,boolean,uuid,boolean,uuid)'::regprocedure
+    )
+  ) = 0,
+  'member reactivation does not shadow the PostgreSQL current_date special value'
+);
+
+select ok(
+  position(
+    'team_date date := private.current_team_date();' in pg_get_functiondef(
+    'public.finalize_member_reactivation(uuid,uuid,text,boolean,uuid,boolean,uuid)'::regprocedure
+    )
+  ) > 0,
+  'member reactivation retains the authoritative team-local date helper'
 );
 
 select * from finish();
