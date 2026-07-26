@@ -14,7 +14,6 @@ import styles from './AppShell.module.css';
 const navigationItems = [
   { label: 'Dashboard', to: '/' },
   { label: 'Work items', to: '/work-items' },
-  { label: 'Reports', to: '/reports' },
   { label: 'Team', to: '/team' },
 ] as const;
 
