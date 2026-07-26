@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { parseWorkItemFilters } from './workItemFilters';
-import { listWorkItems } from './workItemsApi';
+import { getWorkItemHistory, listWorkItems } from './workItemsApi';
 
 const rpc = vi.hoisted(() =>
   vi.fn<
     (
       name: string,
-      args: { filters: Record<string, unknown> },
+      args: Record<string, unknown>,
     ) => Promise<{ data: unknown; error: null }>
   >(),
 );
@@ -65,5 +65,81 @@ describe('work-item API mapping', () => {
       page: 1,
     });
     expect(result.rows[0]?.displayId).toBe('DF-000001');
+  });
+
+  it('maps sanitized actual-date and system-history records separately', async () => {
+    rpc.mockResolvedValueOnce({
+      data: {
+        workDates: [
+          {
+            date: '2026-07-20',
+            people: [
+              {
+                id: '00000000-0000-4000-8000-000000000003',
+                displayName: 'Synthetic Designer',
+              },
+            ],
+            workTypes: ['ui_visual_design'],
+          },
+        ],
+        events: [
+          {
+            id: '00000000-0000-4000-8000-000000000004',
+            type: 'work_log_submitted',
+            actor: {
+              id: '00000000-0000-4000-8000-000000000003',
+              displayName: 'Synthetic Designer',
+            },
+            subjectType: 'work_log_batch',
+            subjectId: '00000000-0000-4000-8000-000000000005',
+            occurredAt: '2026-07-22T10:00:00Z',
+            changedFields: [],
+            statusFrom: null,
+            statusTo: null,
+            assigneeFrom: null,
+            assigneeTo: null,
+            labelsBefore: [],
+            labelsAfter: [],
+            workLog: {
+              workedBy: {
+                id: '00000000-0000-4000-8000-000000000003',
+                displayName: 'Synthetic Designer',
+              },
+              loggedBy: {
+                id: '00000000-0000-4000-8000-000000000003',
+                displayName: 'Synthetic Designer',
+              },
+              submittedAt: '2026-07-22T10:00:00Z',
+              editedAt: null,
+              withdrawnAt: null,
+              entries: [
+                {
+                  id: '00000000-0000-4000-8000-000000000006',
+                  workDate: '2026-07-20',
+                  workTypeCode: 'ui_visual_design',
+                  workTypeLabel: 'UI/Visual design',
+                  description: '[SYNTHETIC TEST] Backfilled work',
+                  relationship: 'contributor',
+                },
+              ],
+            },
+          },
+        ],
+      },
+      error: null,
+    });
+
+    const result = await getWorkItemHistory(
+      '00000000-0000-4000-8000-000000000001',
+    );
+
+    expect(rpc).toHaveBeenCalledWith('get_work_item_history', {
+      target_work_item_id: '00000000-0000-4000-8000-000000000001',
+    });
+    expect(result.workDates[0]?.date).toBe('2026-07-20');
+    expect(result.events[0]?.occurredAt).toBe('2026-07-22T10:00:00Z');
+    expect(result.events[0]?.workLog?.entries[0]?.relationship).toBe(
+      'contributor',
+    );
   });
 });

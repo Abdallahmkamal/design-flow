@@ -1,7 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { useAuthentication } from '../../features/auth/authContext';
+import { getNotificationUnreadCount } from '../../features/notifications/notificationsApi';
 import { getPublicEnvironment } from '../../shared/config/env';
 import { useTheme } from '../../shared/theme/themeContext';
 import { Badge } from '../../ui/Badge/Badge';
@@ -22,6 +24,10 @@ export function AppShell() {
   const [signOutError, setSignOutError] = useState<string | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const appEnvironment = getPublicEnvironment().VITE_APP_ENV;
+  const unread = useQuery({
+    queryKey: ['notification-unread-count'],
+    queryFn: getNotificationUnreadCount,
+  });
   const environmentNotice =
     appEnvironment === 'production'
       ? 'Production environment'
@@ -61,6 +67,16 @@ export function AppShell() {
           <span>Design Flow</span>
         </NavLink>
         <div className={styles.headerActions}>
+          <NavLink
+            className={styles.notificationLink ?? ''}
+            to="/notifications"
+          >
+            <span aria-hidden="true">🔔</span>
+            <span>Notifications</span>
+            {unread.data ? (
+              <Badge tone="info">{unread.data} unread</Badge>
+            ) : null}
+          </NavLink>
           <span className={styles.userContext}>
             <strong>{account.displayName}</strong>
             <span>

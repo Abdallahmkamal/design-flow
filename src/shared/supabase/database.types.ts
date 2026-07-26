@@ -2943,6 +2943,14 @@ export type Database = {
         Args: { actor_profile_id: string; operation_id: string }
         Returns: Json
       }
+      get_dashboard: {
+        Args: {
+          requested_area_id?: string
+          requested_people_ids?: string[]
+          requested_scope_key?: string
+        }
+        Returns: Json
+      }
       get_edge_operation_result: {
         Args: {
           operation_code: string
@@ -2951,6 +2959,11 @@ export type Database = {
         }
         Returns: Json
       }
+      get_notification_inbox: {
+        Args: { requested_page?: number }
+        Returns: Json
+      }
+      get_notification_unread_count: { Args: never; Returns: number }
       get_own_account_state: {
         Args: never
         Returns: {
@@ -2963,6 +2976,10 @@ export type Database = {
         }[]
       }
       get_work_item_detail: { Args: { display_id: string }; Returns: Json }
+      get_work_item_history: {
+        Args: { target_work_item_id: string }
+        Returns: Json
+      }
       get_work_log_batch: { Args: { target_batch_id: string }; Returns: Json }
       list_work_items: { Args: { filters?: Json }; Returns: Json }
       prepare_first_admin_credential_recovery: {

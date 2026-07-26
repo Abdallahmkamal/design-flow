@@ -248,6 +248,71 @@ async function mocks(
       body: JSON.stringify(detail(Boolean(options.viewer))),
     }),
   );
+  await page.route('**/rest/v1/rpc/get_work_item_history', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        workDates: [
+          {
+            date: '2026-07-20',
+            people: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+            workTypes: ['ui_visual_design'],
+          },
+        ],
+        events: [
+          {
+            id: '77000000-0000-4000-8000-000000000002',
+            type: 'work_log_submitted',
+            actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+            subjectType: 'work_log_batch',
+            subjectId: '78000000-0000-4000-8000-000000000001',
+            occurredAt: '2026-07-22T10:00:00Z',
+            changedFields: [],
+            statusFrom: null,
+            statusTo: null,
+            assigneeFrom: null,
+            assigneeTo: null,
+            labelsBefore: [],
+            labelsAfter: [],
+            workLog: {
+              workedBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
+              loggedBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
+              submittedAt: '2026-07-22T10:00:00Z',
+              editedAt: null,
+              withdrawnAt: null,
+              entries: [
+                {
+                  id: '79000000-0000-4000-8000-000000000001',
+                  workDate: '2026-07-20',
+                  workTypeCode: 'ui_visual_design',
+                  workTypeLabel: 'UI/Visual design',
+                  description: '[SYNTHETIC] Backfilled work',
+                  relationship: 'primary',
+                },
+              ],
+            },
+          },
+          {
+            id: '77000000-0000-4000-8000-000000000001',
+            type: 'created',
+            actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+            subjectType: 'work_item',
+            subjectId: itemId,
+            occurredAt: '2026-07-21T08:00:00Z',
+            changedFields: [],
+            statusFrom: null,
+            statusTo: null,
+            assigneeFrom: null,
+            assigneeTo: null,
+            labelsBefore: [],
+            labelsAfter: [],
+            workLog: null,
+          },
+        ],
+      }),
+    }),
+  );
   await page.route('**/rest/v1/rpc/create_work_item', (route) =>
     route.fulfill({
       status: 200,
@@ -296,6 +361,7 @@ async function mocks(
         contentType: 'application/json',
         body: JSON.stringify(detail(Boolean(options.viewer))),
       });
+    else if (url.includes('get_work_item_history')) await route.fallback();
     else if (url.includes('create_work_item'))
       await route.fulfill({
         status: 200,
@@ -379,9 +445,9 @@ test('ticket creation remains Backlog, preserves the full-page form, and navigat
   await page.getByLabel('[SYNTHETIC] Foundation').check();
   await page.getByRole('button', { name: 'Create ticket' }).click();
   await expect(page).toHaveURL(`/work-items/${displayId}`);
-  await expect(page.getByRole('status')).toContainText(
-    `${displayId} created in Backlog.`,
-  );
+  await expect(
+    page.getByText(`${displayId} created in Backlog.`, { exact: true }),
+  ).toBeVisible();
 });
 
 test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({
@@ -394,31 +460,39 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   await expect(
     page.getByRole('heading', { name: listRow.title }),
   ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Work Dates' })).toBeVisible();
+  await expect(page.getByText('Jul 20, 2026').first()).toBeVisible();
+  await expect(page.getByText('Work logged')).toBeVisible();
+  await expect(page.getByText('[SYNTHETIC] Backfilled work')).toBeVisible();
   await page
     .getByRole('checkbox', {
       name: '[SYNTHETIC] Keyboard verification',
       exact: true,
     })
     .click();
-  await expect(page.getByRole('status')).toContainText('Subtask completed.');
+  await expect(
+    page.getByText('Subtask completed.', { exact: true }),
+  ).toBeVisible();
   expect(
     mutationBodies.find(({ url }) => url.includes('set_subtask_completion'))
       ?.body,
   ).toMatchObject({ completed: true, expected_completed: false });
   await page.getByLabel('Status').selectOption('in_progress');
   await page.getByRole('button', { name: 'Update status' }).click();
-  await expect(page.getByRole('status')).toContainText('Status updated.');
+  await expect(
+    page.getByText('Status updated.', { exact: true }),
+  ).toBeVisible();
   await page.locator('summary').filter({ hasText: 'Add blocker' }).click();
   await page.getByLabel('Blocker reason').fill('[SYNTHETIC] Browser blocker');
   await page.getByRole('button', { name: 'Add blocker' }).click();
-  await expect(page.getByRole('status')).toContainText('Blocker added.');
+  await expect(page.getByText('Blocker added.', { exact: true })).toBeVisible();
   await page.getByLabel('New subtask').fill('[SYNTHETIC] Added subtask');
   await page.getByRole('button', { name: 'Add subtask' }).click();
-  await expect(page.getByRole('status')).toContainText('Subtask added.');
+  await expect(page.getByText('Subtask added.', { exact: true })).toBeVisible();
   await expect(page.getByLabel('New subtask')).toHaveValue('');
   await page.getByLabel('Add comment').fill('[SYNTHETIC] Browser comment');
   await page.getByRole('button', { name: 'Add comment' }).click();
-  await expect(page.getByRole('status')).toContainText('Comment added.');
+  await expect(page.getByText('Comment added.', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Add comment')).toHaveValue('');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

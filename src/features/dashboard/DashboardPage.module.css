@@ -1,0 +1,190 @@
+.page {
+  display: grid;
+  gap: var(--space-xl);
+  inline-size: 100%;
+}
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+.header h1 {
+  margin: var(--space-xs) 0;
+  font: var(--type-display);
+}
+.header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.eyebrow {
+  color: var(--color-text-accent) !important;
+  font: var(--type-label);
+}
+.actions,
+.badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  min-block-size: var(--control-height-md);
+  align-items: center;
+  padding-inline: var(--space-md);
+  border-radius: var(--radius-element);
+  font: var(--type-button);
+  text-decoration: none;
+}
+.primaryLink {
+  color: var(--color-action-primary-text);
+  background: var(--color-action-accent-background);
+}
+.secondaryLink {
+  border: var(--border-width) solid var(--color-border-default);
+  color: var(--color-text-primary);
+  background: var(--color-action-secondary-background);
+}
+.primaryLink:focus-visible,
+.secondaryLink:focus-visible,
+.summaryCard:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.filters,
+.section {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+}
+.filters h2,
+.section h2,
+.section h3 {
+  margin: 0;
+}
+.filterGrid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.peoplePicker {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+.peoplePicker legend {
+  padding-inline: var(--space-xs);
+  font: var(--type-label);
+}
+.scopeSummary {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+.cardGrid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.summaryCard {
+  display: grid;
+  gap: var(--space-xs);
+  min-block-size: 7rem;
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-container);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  text-decoration: none;
+}
+.summaryCard strong {
+  font: var(--type-heading-1);
+}
+.summaryCard small {
+  color: var(--color-text-secondary);
+}
+.sourceList,
+.attentionList,
+.workList {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.sourceList a,
+.attentionList a,
+.workList a {
+  color: var(--color-text-accent);
+  font: var(--type-link);
+}
+.signalGrid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.signalGrid article {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+.signalGrid strong {
+  font: var(--type-heading-2);
+}
+.signalGrid small,
+.section > div > p,
+.standaloneNote {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.attentionList li {
+  display: grid;
+  gap: var(--space-sm);
+  padding-block: var(--space-md);
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+.attentionList li > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.workList li {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+.state {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-container);
+}
+@media (max-width: 47.999rem) {
+  .header {
+    flex-direction: column;
+  }
+  .filterGrid,
+  .cardGrid,
+  .signalGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .filters,
+  .section {
+    padding: var(--space-lg);
+  }
+}

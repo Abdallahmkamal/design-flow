@@ -31,12 +31,12 @@ describe('authenticated application routing', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Design work, with the operating context intact',
+        name: 'Dashboard',
       }),
     ).toBeVisible();
     expect(screen.getByText('Synthetic Designer')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeVisible();
-    expect(screen.getByText('Test Phase 2 checkpoint')).toBeVisible();
+    expect(screen.getByText('Operational overview')).toBeVisible();
     expect(screen.getByText('Synthetic test environment')).toBeInTheDocument();
   });
 
@@ -156,7 +156,7 @@ describe('authenticated application routing', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Design work, with the operating context intact',
+        name: 'Dashboard',
       }),
     ).toBeVisible();
     const invocation = mock.invoke.mock.calls[0] as unknown as [
@@ -212,7 +212,7 @@ describe('authenticated application routing', () => {
     ).toBeVisible();
     await user.click(submit);
     await screen.findByRole('heading', {
-      name: 'Design work, with the operating context intact',
+      name: 'Dashboard',
     });
 
     const first = mock.invoke.mock.calls[0] as unknown as [
@@ -273,7 +273,7 @@ describe('authenticated application routing', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Design work, with the operating context intact',
+        name: 'Dashboard',
       }),
     ).toBeVisible();
   });

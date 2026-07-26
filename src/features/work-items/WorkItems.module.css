@@ -178,6 +178,10 @@
   font: var(--type-body-compact);
   overflow-wrap: anywhere;
 }
+.workDates a {
+  color: var(--color-text-accent);
+  font: var(--type-link);
+}
 .avatarGroup {
   display: flex;
   align-items: center;
@@ -418,6 +422,36 @@
 .timeline p {
   color: var(--color-text-secondary);
   font: var(--type-caption);
+}
+.timelineDetails {
+  display: grid;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-sm);
+}
+.workEntryList {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.workEntryList li {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+  scroll-margin-block-start: calc(var(--shell-bar-height) + var(--space-lg));
+}
+.workEntryList li:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.workEntryList li > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
 }
 .detailsList {
   display: grid;

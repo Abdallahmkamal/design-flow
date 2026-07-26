@@ -16,7 +16,7 @@ import {
   createBlocker,
   editComment,
   getWorkItemDetail,
-  getWorkDates,
+  getWorkItemHistory,
   getWorkItemOptions,
   reassignWorkItem,
   renameSubtask,
@@ -32,6 +32,7 @@ import {
 import type {
   WorkItemComment,
   WorkItemDetail,
+  WorkItemHistoryEvent,
   WorkItemSubtask,
 } from './workItemTypes';
 import styles from './WorkItems.module.css';
@@ -51,6 +52,13 @@ const date = (value: string | null) =>
         timeZone: 'UTC',
       }).format(new Date(value.length === 10 ? `${value}T00:00:00Z` : value))
     : '—';
+const dateTime = (value: string) =>
+  new Intl.DateTimeFormat('en', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value));
+const humanize = (value: string) =>
+  value.replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase());
 const formString = (form: FormData, name: string) => {
   const value = form.get(name);
   return typeof value === 'string' ? value : '';
@@ -262,6 +270,70 @@ function CommentRow({
   );
 }
 
+function EventDetails({ event }: { event: WorkItemHistoryEvent }) {
+  if (event.workLog) {
+    return (
+      <div className={styles.timelineDetails}>
+        <p>
+          Work by <strong>{event.workLog.workedBy.displayName}</strong>
+          {event.workLog.loggedBy.id !== event.workLog.workedBy.id
+            ? ` · logged by ${event.workLog.loggedBy.displayName}`
+            : ''}
+        </p>
+        {event.workLog.entries.length ? (
+          <ol className={styles.workEntryList}>
+            {event.workLog.entries.map((entry) => (
+              <li
+                key={entry.id}
+                data-actual-date={entry.workDate}
+                tabIndex={-1}
+              >
+                <div>
+                  <strong>{date(entry.workDate)}</strong>
+                  <Badge tone="neutral">{humanize(entry.relationship)}</Badge>
+                </div>
+                <p>{entry.workTypeLabel}</p>
+                {entry.description ? <p>{entry.description}</p> : null}
+              </li>
+            ))}
+          </ol>
+        ) : event.type === 'work_log_withdrawn' ? (
+          <p className={styles.withdrawn}>Recorded work withdrawn.</p>
+        ) : event.type === 'work_log_corrected' ? (
+          <p className={styles.muted}>
+            The corrected current dates are shown on the latest event for this
+            work log.
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+  if (event.statusFrom || event.statusTo)
+    return (
+      <p>
+        {event.statusFrom ? humanize(event.statusFrom) : 'No status'} →{' '}
+        {event.statusTo ? humanize(event.statusTo) : 'No status'}
+      </p>
+    );
+  if (event.type === 'assignment_changed')
+    return (
+      <p>
+        {event.assigneeFrom ?? 'Unassigned'} →{' '}
+        {event.assigneeTo ?? 'Unassigned'}
+      </p>
+    );
+  if (event.changedFields.length)
+    return <p>Changed: {event.changedFields.join(', ')}</p>;
+  if (event.type === 'labels_changed')
+    return (
+      <p>
+        {event.labelsBefore.join(', ') || 'No labels'} →{' '}
+        {event.labelsAfter.join(', ') || 'No labels'}
+      </p>
+    );
+  return null;
+}
+
 export function WorkItemPage() {
   const { displayId = '' } = useParams();
   const location = useLocation();
@@ -280,9 +352,9 @@ export function WorkItemPage() {
     queryKey: ['work-item', displayId],
     queryFn: () => getWorkItemDetail(displayId),
   });
-  const workDates = useQuery({
-    queryKey: ['work-dates', item.data?.id],
-    queryFn: () => getWorkDates(item.data!.id),
+  const history = useQuery({
+    queryKey: ['work-item-history', item.data?.id],
+    queryFn: () => getWorkItemHistory(item.data!.id),
     enabled: Boolean(item.data?.id),
   });
   const options = useQuery({
@@ -304,6 +376,9 @@ export function WorkItemPage() {
       await queryClient.invalidateQueries({
         queryKey: ['work-item', displayId],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ['work-item-history', item.data?.id],
+      });
       await queryClient.invalidateQueries({ queryKey: ['work-items'] });
       setError('');
       setConfirmation(label);
@@ -318,6 +393,19 @@ export function WorkItemPage() {
     if (confirmation) confirmationRef.current?.focus();
     else headingRef.current?.focus();
   }, [confirmation]);
+
+  useEffect(() => {
+    if (!history.data || !location.hash.startsWith('#actual-date-')) return;
+    const targetDate = decodeURIComponent(
+      location.hash.replace('#actual-date-', ''),
+    );
+    requestAnimationFrame(() => {
+      const target = document.querySelector<HTMLElement>(
+        `[data-actual-date="${CSS.escape(targetDate)}"]`,
+      );
+      target?.focus();
+    });
+  }, [history.data, location.hash]);
 
   if (item.isPending)
     return (
@@ -581,11 +669,25 @@ export function WorkItemPage() {
           </section>
           <section className={styles.section}>
             <h2>Work Dates</h2>
-            {workDates.data?.length ? (
+            {history.isPending ? (
+              <p role="status">Loading actual work dates…</p>
+            ) : history.isError ? (
+              <div role="alert">
+                <p>Design Flow could not load actual work history.</p>
+                <Button
+                  variant="secondary"
+                  onClick={() => void history.refetch()}
+                >
+                  Retry history
+                </Button>
+              </div>
+            ) : history.data?.workDates.length ? (
               <ol className={styles.workDates}>
-                {workDates.data.map((workDate) => (
+                {history.data.workDates.map((workDate) => (
                   <li key={workDate.date}>
-                    <strong>{date(workDate.date)}</strong>
+                    <a href={`#actual-date-${workDate.date}`}>
+                      <strong>{date(workDate.date)}</strong>
+                    </a>
                     <div className={styles.avatarGroup}>
                       {workDate.people.slice(0, 2).map((person) => (
                         <Avatar key={person.id} name={person.displayName} />
@@ -602,14 +704,21 @@ export function WorkItemPage() {
                 ))}
               </ol>
             ) : (
-              <p>No work logged.</p>
+              <p>
+                No actual work has been recorded. Planned dates do not replace
+                actual work dates.
+              </p>
             )}
           </section>
           <section className={styles.section}>
-            <h2>Lifecycle timeline</h2>
-            {workItem.events.length ? (
+            <h2>Activity history</h2>
+            {history.isPending ? (
+              <p role="status">Loading activity history…</p>
+            ) : history.isError ? (
+              <p role="alert">Activity history is temporarily unavailable.</p>
+            ) : history.data?.events.length ? (
               <ol className={styles.timeline}>
-                {workItem.events.map((event) => (
+                {history.data.events.map((event) => (
                   <li key={event.id}>
                     <span aria-hidden="true" />
                     <div>
@@ -617,9 +726,10 @@ export function WorkItemPage() {
                       <p>
                         {event.actor.displayName} ·{' '}
                         <time dateTime={event.occurredAt}>
-                          {date(event.occurredAt)}
+                          {dateTime(event.occurredAt)}
                         </time>
                       </p>
+                      <EventDetails event={event} />
                       {event.subjectType === 'work_log_batch' &&
                       event.subjectId &&
                       event.type !== 'work_log_withdrawn' ? (
@@ -632,7 +742,7 @@ export function WorkItemPage() {
                 ))}
               </ol>
             ) : (
-              <p>No Phase 3 lifecycle events are available.</p>
+              <p>No activity history is available.</p>
             )}
           </section>
           <section className={styles.section}>
@@ -775,6 +885,10 @@ export function WorkItemPage() {
               <div>
                 <dt>Last worked on</dt>
                 <dd>{date(workItem.lastWorkedOn)}</dd>
+              </div>
+              <div>
+                <dt>Last activity</dt>
+                <dd>{dateTime(workItem.lastActivityAt)}</dd>
               </div>
               <div>
                 <dt>Active work days</dt>

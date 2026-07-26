@@ -1,7 +1,6 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { DashboardPlaceholderPage } from '../features/dashboard/DashboardPlaceholderPage';
 import { AccountInactivePage } from '../features/auth/AccountInactivePage';
 import {
   InactiveAccountRoute,
@@ -18,6 +17,16 @@ import { AppShell } from '../routes/shell/AppShell';
 const TeamPage = lazy(() =>
   import('../features/team/TeamPage').then((module) => ({
     default: module.TeamPage,
+  })),
+);
+const DashboardPage = lazy(() =>
+  import('../features/dashboard/DashboardPage').then((module) => ({
+    default: module.DashboardPage,
+  })),
+);
+const NotificationsPage = lazy(() =>
+  import('../features/notifications/NotificationsPage').then((module) => ({
+    default: module.NotificationsPage,
   })),
 );
 const SettingsRoute = lazy(() =>
@@ -76,7 +85,11 @@ export function AppRoutes() {
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
-          <Route index element={<DashboardPlaceholderPage />} />
+          <Route index element={featureElement(<DashboardPage />)} />
+          <Route
+            path="notifications"
+            element={featureElement(<NotificationsPage />)}
+          />
           <Route
             path="work-items"
             element={featureElement(<AllTicketsPage />)}
