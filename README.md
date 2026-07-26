@@ -2,12 +2,14 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phases 0–5 are complete. Design Flow now includes the contracted database and
+Phases 0–5 are complete and Phase 6 is implemented and verified locally. Design Flow now includes the contracted database and
 permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
 idempotent work logging for ticket and standalone Visual Work. Phase 5 adds the
 source-reconciled Dashboard, position-based people scopes, final actual-date Work
-Item History, and the recipient-isolated in-app notification inbox.
+Item History, and the recipient-isolated in-app notification inbox. Phase 6 adds
+explainable Tickets/Designers/Visual Work reports, authorized CSV exports, and
+sanitized Work Item PDF export.
 
 The Supabase Free staging project contains the complete Phase 5 checkpoint,
 six account-lifecycle Edge Functions, stable reference rows, and conspicuously
@@ -63,6 +65,23 @@ These credentials exist only in the committed local seed. Hosted accounts are
 created through the protected Edge Functions documented in
 [`supabase/functions/README.md`](supabase/functions/README.md).
 
+For Phase 6 Dashboard/Reports/export acceptance, load the opt-in lightweight
+dataset after a reset with an explicit non-production environment and anchor
+date. It reuses the nine personas and adds nine Areas, fourteen tickets, twenty
+work-log batches, and fifty work-log entries:
+
+```sh
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres \
+  --set=validation_environment=local \
+  --set=validation_anchor_date=2026-07-26 \
+  --file supabase/fixtures/phase6_validation.sql
+```
+
+The script is not an automatic seed and refuses production or any database
+containing a non-synthetic profile. See
+[`docs/testing/demo-dataset.md`](docs/testing/demo-dataset.md) for scenario
+coverage and the separately deferred post-MVP generator.
+
 Committed environment templates are separated by purpose:
 `.env.example` is local, `.env.preview.example` and `.env.staging.example` point
 only to the future synthetic staging project, and `.env.production.example`
@@ -80,12 +99,12 @@ npm run functions:test
 npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 80 unit/component
+`npm run verify` covers formatting, linting, strict types, 93 unit/component
 tests, and a production build. Playwright schedules 28 desktop/mobile browser
 scenarios across authentication, Team, Settings, Dashboard, Notifications,
 All Tickets, Work Item History, responsive behavior, and automated
 accessibility; 26 run in their applicable projects and two are intentional
-device-specific skips. The backend harness runs 346 pgTAP assertions and 16
+device-specific skips. The backend harness runs 394 pgTAP assertions and 16
 Deno tests, including every valid position and Admin overlay, Dashboard source
 reconciliation, notification isolation/idempotency, and direct-write denial.
 
@@ -97,6 +116,7 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
 - [Technical plan](docs/technical-plan.md)
 - [Staging delivery and verification](docs/staging-deployment.md)
 - [MVP build plan](docs/build-plan.md)
+- [Demo and validation datasets](docs/testing/demo-dataset.md)
 - [Physical schema contract](docs/schema-contract.md)
 - [Permission and RLS matrix](docs/permission-matrix.md)
 - [Operation contracts](docs/operation-contracts.md)
@@ -127,9 +147,9 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
   data, synthetic principals, generated types, and structural/read-permission
   tests; feature mutation RPCs and write-path tests remain with their Phase 2–4
   vertical slices.
-- The twelve local migrations and synthetic seed reset cleanly through Phase 5.
-  The current pgTAP suite passes 346 schema, invariant, read-surface,
-  persona-permission, ticket, work-log, Dashboard, and notification assertions;
+- The thirteen local migrations and synthetic seed reset cleanly through Phase 6.
+  The current pgTAP suite passes 394 schema, invariant, read-surface,
+  persona-permission, ticket, work-log, Dashboard, notification, report, and export assertions;
   generated database types match the implemented schema shape.
 - The Supabase Free staging project is healthy at the complete Phase 5
   checkpoint and has six active lifecycle Edge Functions. Its acceptance
@@ -149,9 +169,10 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
 - The committed seed and browser content are conspicuously synthetic and contain
   no production data or secrets.
 
-Phase 5 passes the local unit, browser, database, generated-type,
-production-build, accessibility, and Edge Function gates. GitHub workflow #46
-deployed merge commit `678c5df` and passed after canonical Pages propagation;
-the synthetic staging acceptance matrix verified Dashboard, Notifications, and
-History on 2026-07-26. Phase 6 Reports/export routes and controls remain absent
-until their own approved readiness and implementation gate.
+Phase 6 passes the local formatting, lint, strict-type, 93 unit/component,
+production-build, 26 applicable Playwright/axe, 394 pgTAP/RLS, generated-type,
+16 Edge Function, CSV, and synthetic three-page PDF gates. The last published
+environment remains the complete Phase 5 checkpoint from merged PRs #18/#19 at
+`cd9cdff`, with workflow #48 passing its full staging gate. Phase 6 has not been
+pushed, opened as a PR, merged, deployed, or reconciled in staging; those steps
+remain pending explicit authorization.

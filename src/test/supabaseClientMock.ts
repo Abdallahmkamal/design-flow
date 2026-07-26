@@ -155,6 +155,15 @@ export function createSupabaseClientMock(
         error: null,
       });
     }
+    if (name === 'get_export_capabilities') {
+      return Promise.resolve({
+        data: options.rpcResponses?.[name] ?? {
+          canExportReports: false,
+          canExportWorkItem: false,
+        },
+        error: null,
+      });
+    }
 
     const responseIndex = accountResponseIndex;
     const response =

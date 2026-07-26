@@ -23,6 +23,11 @@ const DashboardPage = lazy(() =>
     default: module.DashboardPage,
   })),
 );
+const ReportsPage = lazy(() =>
+  import('../features/reports/ReportsPage').then((module) => ({
+    default: module.ReportsPage,
+  })),
+);
 const NotificationsPage = lazy(() =>
   import('../features/notifications/NotificationsPage').then((module) => ({
     default: module.NotificationsPage,
@@ -85,6 +90,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route index element={featureElement(<DashboardPage />)} />
+          <Route path="reports" element={featureElement(<ReportsPage />)} />
           <Route
             path="notifications"
             element={featureElement(<NotificationsPage />)}

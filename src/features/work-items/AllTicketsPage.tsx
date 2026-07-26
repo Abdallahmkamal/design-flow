@@ -3,6 +3,10 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuthentication } from '../auth/authContext';
+import {
+  defaultReportFilters,
+  writeReportFilters,
+} from '../reports/reportFilters';
 import { Badge, type BadgeTone } from '../../ui/Badge/Badge';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
@@ -240,6 +244,19 @@ export function AllTicketsPage() {
           </div>
         ) : null}
       </header>
+      {filters.peopleIds.length === 1 ? (
+        <Link
+          className={styles.secondaryLink}
+          to={`/reports${writeReportFilters({
+            ...defaultReportFilters(),
+            tab: 'designers',
+            scopeKey: 'people',
+            peopleIds: filters.peopleIds,
+          })}`}
+        >
+          View selected person report
+        </Link>
+      ) : null}
       <nav className={styles.viewTabs} aria-label="Ticket views">
         {views.map((view) => (
           <button
@@ -399,7 +416,6 @@ export function AllTicketsPage() {
             rows={list.data.rows}
             getRowKey={(row) => row.id}
             onRowActivate={(row) => navigate(`/work-items/${row.displayId}`)}
-            getRowAriaLabel={(row) => `Open ${row.displayId}: ${row.title}`}
             renderMobileCard={(row) => (
               <article className={styles.ticketCard}>
                 <div>

@@ -90,7 +90,7 @@ describe('Phase 3 shared components', () => {
     expect(onPageChange).toHaveBeenCalledWith(2);
   });
 
-  it('supports sortable headers, keyboard row activation, and custom mobile cards', async () => {
+  it('supports sortable headers, pointer row activation, and custom mobile cards', async () => {
     const user = userEvent.setup();
     const sort = vi.fn();
     const activate = vi.fn();
@@ -109,19 +109,18 @@ describe('Phase 3 shared components', () => {
         rows={[{ id: 'one', title: 'Synthetic ticket' }]}
         getRowKey={(row) => row.id}
         onRowActivate={activate}
-        getRowAriaLabel={(row) => `Open ${row.title}`}
         renderMobileCard={(row) => <article>{row.title} mobile</article>}
       />,
     );
     await user.click(screen.getByRole('button', { name: /Title/ }));
     expect(sort).toHaveBeenCalledOnce();
-    const row = screen.getByRole('row', { name: 'Open Synthetic ticket' });
-    row.focus();
-    await user.keyboard('{Enter}');
+    const row = screen.getAllByRole('row')[1]!;
+    await user.click(row);
     expect(activate).toHaveBeenCalledWith({
       id: 'one',
       title: 'Synthetic ticket',
     });
+    expect(row).not.toHaveAttribute('tabindex');
     expect(screen.getByText('Synthetic ticket mobile')).toBeInTheDocument();
   });
 });

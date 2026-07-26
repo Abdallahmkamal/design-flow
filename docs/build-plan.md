@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-20 — D-101 adds the single-person recorded ticket activity drill-down without changing implementation order
+**Last updated:** 2026-07-26 — D-102 records approved post-MVP v1.1 planning without changing MVP implementation order
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -292,3 +292,60 @@ A slice is complete only when:
 ## Sequence change rule
 
 A later phase may begin early only for a small enabling task that does not invent or expose unfinished product behavior. Any material reordering must update this document and D-095, explain the dependency change, and preserve every affected exit gate.
+
+# Post-MVP Product Enhancements (v1.1 Planning)
+
+These D-102 initiatives are intentionally deferred until after MVP completion.
+They are planning decisions only and do not alter the Phase 0–7 contracts,
+current schema, authentication, permissions, or Phase 6 implementation.
+
+## Authentication Improvements
+
+- Move from email-as-username presentation to username-based login while
+  remaining compatible with the authentication provider.
+- Reduce the password minimum from twelve characters to eight and remove
+  unnecessary complexity requirements.
+- Review onboarding and password-reset usability as one coherent flow.
+
+## User Profile Improvements
+
+- Allow editable display names while preserving immutable internal identifiers.
+- Keep an audit trail for every display-name change.
+- Support self-service editing and an administrator correction capability with
+  clear attribution.
+
+## Official Demo Data Generator
+
+- Generate deterministic, conspicuously synthetic data directly from code.
+- Provide a repeatable seed command for realistic UX organizations, Dashboard,
+  Reports, exports, screenshots, and demo environments.
+- Support local and staging only, with a production safety guard.
+- Follow the planned scale and behavior in `docs/testing/demo-dataset.md`.
+
+## UI Modernization
+
+Run a complete Figma-first redesign after MVP covering the application shell,
+navigation, Dashboard, ticket list, ticket details, Log Work, Reports,
+responsive layouts, accessibility review, and design-system refinement. The
+redesign must start from the proven product behavior rather than silently
+changing workflows while restyling them.
+
+## Ticket Experience Improvements
+
+- Add an inline ticket drawer or side panel for faster list-to-detail
+  navigation and reduced context switching.
+- Preserve the dedicated Work Item page where full-page context remains useful.
+
+## General UX Improvements
+
+Reserve a v1.1 discovery track for pilot findings, including onboarding,
+settings, workflow refinements, empty states, and accessibility polish. Each
+accepted change still requires its own behavior, permission, accessibility, and
+verification contract before implementation.
+
+## Rationale
+
+These initiatives affect authentication, navigation, UI architecture, testing,
+and user workflows across multiple surfaces. Deferring them until after MVP
+reduces implementation churn, allows the architecture to stabilize, and lets
+the redesign build on a proven functional foundation.

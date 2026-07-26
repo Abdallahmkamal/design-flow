@@ -36,8 +36,10 @@ Every note must:
 | [tooltip.md](tooltip.md) | Concise hover/focus help and icon-only navigation links | Phase 3 approved |
 | [popover.md](popover.md) | Focus-managed anchored supplementary content | Phase 3 approved |
 | [pagination.md](pagination.md) | Numbered result navigation and page-change behavior | Phase 3 approved |
+| [tab-list.md](tab-list.md) | Route-backed related-view navigation | Phase 6 ready |
+| [reporting-patterns.md](reporting-patterns.md) | Reporting layout, chart alternatives, and documented chart gap | Phase 6 ready |
 
-Add Radio, Avatar, Tabs, Drawer, and other notes before implementing their
+Add Radio, Drawer, and other notes before implementing their
 corresponding `src/ui/` components. Modal remains scaffolded rather than ready.
 
 ## Required note structure

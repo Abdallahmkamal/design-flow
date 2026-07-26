@@ -180,6 +180,53 @@ async function configureAuthMocks(
     });
   });
 
+  await page.route('**/rest/v1/rpc/get_reports', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        tab: 'tickets',
+        periodStart: '2026-07-01',
+        periodEnd: '2026-07-26',
+        snapshotAt: '2026-07-26',
+        defaultScopeKey: 'me',
+        selectedScopeKey: 'me',
+        selectedPeople: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+        scopeOptions: [{ key: 'me', label: 'Me' }],
+        peopleOptions: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+        areaOptions: [],
+        canExport: false,
+        cards: {},
+        charts: {},
+        rows: [],
+        totalCount: 0,
+        page: 1,
+        pageSize: 25,
+      }),
+    });
+  });
+  await page.route('**/rest/v1/work_item_statuses**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: '[]',
+    });
+  });
+  await page.route('**/rest/v1/labels**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: '[]',
+    });
+  });
+  await page.route('**/rest/v1/work_type_definitions**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: '[]',
+    });
+  });
+
   await page.route('**/functions/v1/change_own_password', async (route) => {
     passwordChanged = true;
     await route.fulfill({
@@ -340,13 +387,11 @@ test('authenticated shell is navigable and has no detectable accessibility viola
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-  await expect(page.getByRole('link', { name: 'Reports' })).toHaveCount(0);
-  await page.goto('/reports');
+  await page.getByRole('link', { name: 'Reports' }).click();
   await expect(
-    page.getByRole('heading', {
-      name: 'This Design Flow view does not exist',
-    }),
+    page.getByRole('heading', { name: 'Reports', exact: true }),
   ).toBeVisible();
+  await expect(page.getByText('0 matching records.')).toBeVisible();
   await expect(page).toHaveURL('/reports');
 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

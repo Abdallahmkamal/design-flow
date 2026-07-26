@@ -1,0 +1,30 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--color-border-default);
+}
+.tab {
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-sm) var(--space-lg);
+  border: 0;
+  border-block-end: 3px solid transparent;
+  color: var(--color-text-secondary);
+  background: transparent;
+  font: var(--type-button);
+  cursor: pointer;
+}
+.tab[aria-selected='true'] {
+  border-block-end-color: var(--color-action-accent-background);
+  color: var(--color-text-primary);
+}
+.tab:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+@media (hover: hover) {
+  .tab:hover {
+    background: var(--color-action-secondary-background);
+  }
+}
