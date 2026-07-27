@@ -124,7 +124,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
-            pages deploy release/dist --project-name=$PAGES_PROJECT
+            pages deploy release/dist --project-name=${{ env.PAGES_PROJECT }}
             --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: 4.81.0
