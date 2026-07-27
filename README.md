@@ -2,7 +2,8 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phases 0–5 are complete and Phase 6 is implemented and staging-reconciled. Design Flow now includes the contracted database and
+Phases 0–6 are complete and Phase 7 production hardening is local-only pending
+external authorization. Design Flow now includes the contracted database and
 permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
 idempotent work logging for ticket and standalone Visual Work. Phase 5 adds the
@@ -98,11 +99,13 @@ npm run test:e2e
 npm run db:test
 npm run functions:check
 npm run functions:test
+npm run security:scan
 npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 93 unit/component
-tests, and a production build. Playwright schedules 28 desktop/mobile browser
+`npm run verify` covers formatting, linting, strict types, 115
+unit/component/automation tests, and a production build. Playwright schedules
+28 desktop/mobile browser
 scenarios across authentication, Team, Settings, Dashboard, Notifications,
 All Tickets, Work Item History, responsive behavior, and automated
 accessibility; 26 run in their applicable projects and two are intentional
@@ -117,6 +120,15 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
 - [UI architecture](docs/ui-architecture.md)
 - [Technical plan](docs/technical-plan.md)
 - [Staging delivery and verification](docs/staging-deployment.md)
+- [Production deployment runbook](docs/runbooks/deployment.md)
+- [Backup and restore runbook](docs/runbooks/backup-restore.md)
+- [Incident runbook](docs/runbooks/incident.md)
+- [Quota runbook](docs/runbooks/quota.md)
+- [Pause/resume runbook](docs/runbooks/pause-resume.md)
+- [Recovery runbook](docs/runbooks/recovery.md)
+- [Production bootstrap runbook](docs/runbooks/bootstrap.md)
+- [Phase 7 production review](docs/phase-7-production-review.md)
+- [Phase 7 rollout record](docs/phase-7-rollout-record.md)
 - [MVP build plan](docs/build-plan.md)
 - [Demo and validation datasets](docs/testing/demo-dataset.md)
 - [Physical schema contract](docs/schema-contract.md)
@@ -178,5 +190,11 @@ production-build, 26 applicable Playwright/axe, 400 pgTAP/RLS, generated-type,
 staging fixture reconciles to nine personas, nine Areas, fourteen tickets,
 twenty batches, fifty entries, and no non-synthetic profiles. Hosted all-row CSV
 projections returned 13/44/7/14/6 rows, and DF-000007 PDF reconciliation passed
-with comments off by default and opt-in. The final closure gate is the normal
-main deployment of the team-date collision regression migration.
+with comments off by default and opt-in. PR #21 merged the team-date collision
+regression at `18233b9`; workflow #52 passed the complete staging closure gate
+in 3m56s.
+
+Phase 7 now has local privacy-scrubbed monitoring, encrypted/checksummed backup
+and restore tooling, ordered delivery failure stops, security headers, recovery
+workflows, and operating runbooks. No Phase 7 staging change, production
+infrastructure, bootstrap, pilot, or release has been authorized or performed.

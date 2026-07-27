@@ -7,8 +7,8 @@
 **Backend:** Supabase project `design-flow-staging`
 
 This runbook implements the staging portion of D-092 and
-`docs/technical-plan.md`. It does not authorize production delivery or any Phase
-3 behavior.
+`docs/technical-plan.md`. It does not authorize production delivery or any
+external Phase 7 action.
 
 ## Delivery owner and trigger
 
@@ -29,6 +29,7 @@ Create a GitHub environment named `staging` with these environment variables:
 | `STAGING_SUPABASE_PROJECT_ID` | Project reference for `design-flow-staging` |
 | `STAGING_SUPABASE_URL` | HTTPS Data API/Auth base URL |
 | `STAGING_SUPABASE_PUBLISHABLE_KEY` | Browser-safe publishable key |
+| `STAGING_SENTRY_DSN` | Optional browser-safe Sentry DSN; only after separate monitoring-provider authorization |
 | `CLOUDFLARE_ACCOUNT_ID` | Account containing `design-flow-staging` Pages |
 
 Add these encrypted environment secrets:
@@ -57,11 +58,15 @@ After verification passes, the staging job:
    with the committed local-migration types, excluding generator-specific
    client metadata;
 6. deploys all account-lifecycle Edge Functions;
-7. builds with `VITE_APP_ENV=staging` and rejects public source maps;
-8. directly uploads `dist/` to the existing `design-flow-staging` Cloudflare
+7. runs Auth health, anonymous RLS denial, and Function-origin smoke checks
+   before frontend delivery;
+8. builds with `VITE_APP_ENV=staging`, embeds the exact environment marker,
+   copies the security-header policy, and rejects public source maps;
+9. directly uploads `dist/` to the existing `design-flow-staging` Cloudflare
    Pages project on its `main` production branch; and
-9. verifies the canonical Pages bundle, Supabase Auth health, anonymous profile
-   denial, and the Edge Function origin allowlist.
+10. verifies the canonical Pages bundle markers, environment marker, security
+    headers, Supabase Auth health, anonymous profile denial, and the Edge
+    Function origin allowlist.
 
 A migration, type, Function, build, Pages, or smoke-check failure prevents later
 steps from being reported as a successful checkpoint. Database rollback uses a
@@ -186,5 +191,22 @@ hierarchy RPCs used a PL/pgSQL variable named `current_date`, which PostgreSQL
 could resolve as the database-session date instead of the authoritative team
 date. Migration `20260727010000_fix_team_date_variable_collision.sql` renames
 that local variable without changing signatures or grants; six regression
-assertions raise the pgTAP/RLS total from 394 to 400. This closure migration
-must pass the normal main staging gate before Phase 6 is finally closed.
+assertions raise the pgTAP/RLS total from 394 to 400. PR #21 merged the closure
+at `18233b9`; workflow #52 passed the complete staging gate in 3m56s. Phase 6 is
+closed.
+
+## Phase 7 delivery status
+
+The local Phase 7 implementation adds ordered stage gates, pre-frontend backend
+smoke, an exact environment marker, security-header checks, private monitoring
+configuration, encrypted backup/recovery workflows, and manual production and
+known-good redeploy workflows. Local contracts prove later stages are blocked
+when migrations have not completed.
+
+No Phase 7 change has been pushed, merged, deployed, or verified against
+staging. Altering staging, configuring Sentry/R2/GitHub environments, running a
+failed hosted migration demonstration, or executing the known-good staging
+redeploy requires explicit authorization for that exact action. When
+authorized, preserve the original `[SYNTHETIC] Manager + Admin` Auth identity
+and credentials and the reserved nine-persona fixture; do not reset or replace
+it.

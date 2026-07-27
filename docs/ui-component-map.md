@@ -570,3 +570,84 @@ designer-source rows, and six visibly separate standalone Visual Work rows.
 
 None. Any material component, export, formula, permission, or responsive change
 requires a new readiness decision before implementation.
+
+# Phase 7 UI component map — Production Hardening
+
+**Status:** Local Phase 7 component review complete 2026-07-27; external actions
+remain separately gated
+
+**Scope:** Cross-product review and monitoring presentation only; operational
+workflows and runbooks have no product UI
+
+**Prepared:** 2026-07-27 from clean `main` at `18233b9`
+
+## Authority and readiness boundary
+
+`docs/ui/phase-7-cross-product-readiness-brief.md` owns the final UI review.
+Existing product specifications, briefs, Vodafone color/typography, and ready
+Astryx notes remain authoritative. Phase 7 adds no product feature, deployment
+control, quota dashboard, monitoring console, or post-MVP v1.1 behavior.
+
+## Component ownership
+
+All current `src/ui/` components are reused through their documented APIs. No
+new shared component is proposed. Operational monitoring, backups, deployment,
+recovery, bootstrap, and rollout remain repository automation/runbook concerns,
+not Settings or application UI.
+
+If the cross-product review finds a component defect, the smallest owning
+component is corrected with its existing reference, API documentation, and
+regression tests. A missing Astryx value or materially changed API requires an
+explicit component-map update and approval before implementation.
+
+## Route, state, responsive, and accessibility ownership
+
+Every shipped route retains its current feature owner. The review inventories
+loading, empty, no-results, error, permission, disabled, success,
+partial-success, generating, long-content, Light/Dark, desktop/mobile,
+keyboard, focus, accessible-name, and axe behavior. Route composition stays
+thin; RLS and server authorization remain authoritative.
+
+Sentry has no user-facing surface. Instrumentation may observe unexpected
+application failures only after sensitive data is scrubbed and must not enable
+session replay, user identity collection, form capture, or a product-visible
+control.
+
+## Explicitly excluded
+
+New product screens/components, deployment or backup controls, quota metrics in
+Settings, analytics, session replay, new notifications, real data,
+availability/capacity claims, productivity/ranking, scope changes, Astryx
+runtime code, and all documented post-MVP v1.1 items.
+
+## Efficiency and token use
+
+- Use `rg` and read only relevant document/code sections.
+- Reuse existing CI, staging, Supabase, Cloudflare, test, fixture, security,
+  backup, and runbook patterns.
+- Batch independent read-only inspections and targeted tests.
+- Test each slice narrowly, then run the full suite only at completed slice
+  boundaries and final handoff.
+- Use workflow evidence already produced by #50 and #52 instead of repeating
+  equivalent checks without cause.
+- Avoid repository dumps, repeated full-suite runs, duplicate screenshots,
+  repeated browser snapshots, and re-reading unchanged documents.
+- Keep evidence compact: changed files, exact test counts, workflow/run IDs,
+  restore checksums, reconciled fixtures, and unresolved gates.
+- Do not use subagents unless explicitly requested.
+
+## Approval gate
+
+This map and the two Phase 7 readiness briefs were approved for local
+implementation on 2026-07-27. Staging and every external or production action
+remain separately gated.
+
+## Local implementation evidence
+
+No shared component or public API was added. The only material component-level
+finding was constrained-browser-storage failure in `ThemeProvider`; its
+persistence is now fail-soft and regression-tested. Monitoring stays invisible
+and reports only allowlisted generic failure data. The cross-product review and
+completed local Playwright/axe gate found no remaining release-blocking UI
+issue. Staging responsive/accessibility/privacy evidence is still pending exact
+authorization.

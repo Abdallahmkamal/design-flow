@@ -108,7 +108,10 @@ jobs:
       VITE_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY:
         ${{ vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-      STAGING_APP_URL: https://design-flow-staging.pages.dev
+      VITE_SENTRY_DSN: ${{ vars.STAGING_SENTRY_DSN }}
+      DEPLOYMENT_APP_URL: https://design-flow-staging.pages.dev
+      EXPECTED_APP_ENV: staging
+      DELIVERY_STATE_PATH: ${{ runner.temp }}/design-flow-delivery-state.json
 
     steps:
       - name: Check out repository
@@ -132,7 +135,9 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
       - name: Preview pending staging migrations
-        run: supabase db push --dry-run
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" migrations
+          supabase db push --dry-run
 
       - name: Apply staging migrations
         run: supabase db push
@@ -142,12 +147,24 @@ jobs:
           supabase migration list
           supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > /tmp/database.types.ts
           node scripts/verify-hosted-database-types.mjs src/shared/supabase/database.types.ts /tmp/database.types.ts
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" migrations
 
       - name: Deploy account-lifecycle Edge Functions
-        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID"
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" functions
+          supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID"
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" functions
+
+      - name: Verify staging backend before frontend delivery
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" pre_frontend_smoke
+          npm run deployment:backend-smoke
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" pre_frontend_smoke
 
       - name: Build the staging frontend
-        run: npm run build
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" frontend
+          npm run build
 
       - name: Reject public source maps
         run: |
@@ -167,5 +184,13 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: 4.81.0
 
-      - name: Verify the live Phase 5 staging checkpoint
-        run: npm run staging:smoke
+      - name: Complete staging frontend delivery stage
+        run: >-
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH"
+          frontend
+
+      - name: Verify the live complete staging checkpoint
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" live_smoke
+          npm run staging:smoke
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" live_smoke

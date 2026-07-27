@@ -1,0 +1,149 @@
+name: Design Flow production delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_release_sha:
+        description: Exact main commit SHA to deploy
+        required: true
+        type: string
+      confirmation:
+        description: Type DEPLOY_PRODUCTION
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-flow-production
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    name: Confirm exact production release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require main and exact confirmation
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          CONFIRM_RELEASE_SHA: ${{ inputs.confirm_release_sha }}
+        run: |
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$CONFIRMATION" = "DEPLOY_PRODUCTION"
+          test "$CONFIRM_RELEASE_SHA" = "$GITHUB_SHA"
+
+  backup:
+    name: Verified pre-migration backup
+    needs: authorize
+    uses: ./.github/workflows/backup.yml
+    with:
+      environment: production
+      label: pre_migration_${{ github.run_id }}
+    secrets: inherit
+
+  deliver:
+    name: Ordered production delivery
+    needs: backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_APP_URL }}
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ vars.PRODUCTION_SUPABASE_PROJECT_ID }}
+      VITE_APP_ENV: production
+      VITE_SUPABASE_URL: ${{ vars.PRODUCTION_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY:
+        ${{ vars.PRODUCTION_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
+      DEPLOYMENT_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+      EXPECTED_APP_ENV: production
+      DELIVERY_STATE_PATH: ${{ runner.temp }}/design-flow-delivery-state.json
+
+    steps:
+      - name: Check out exact release
+        uses: actions/checkout@v6
+
+      - name: Use pinned Node and npm
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install pinned dependencies
+        run: npm ci
+
+      - name: Use pinned Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.109.1
+
+      - name: Link only the production database
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Preview pending production migrations
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" migrations
+          supabase db push --dry-run
+
+      - name: Apply forward production migrations
+        run: supabase db push
+
+      - name: Verify migration history and generated schema
+        run: |
+          supabase migration list
+          supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > "$RUNNER_TEMP/database.types.ts"
+          node scripts/verify-hosted-database-types.mjs src/shared/supabase/database.types.ts "$RUNNER_TEMP/database.types.ts"
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" migrations
+
+      - name: Deploy Edge Functions
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" functions
+          supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID"
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" functions
+
+      - name: Verify Auth, RLS, and Function origin before frontend
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" pre_frontend_smoke
+          npm run deployment:backend-smoke
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" pre_frontend_smoke
+
+      - name: Build production frontend
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" frontend
+          npm run build
+
+      - name: Reject public source maps
+        run: |
+          if find dist -type f -name '*.map' -print -quit | grep -q .; then
+            echo "Production build contains source maps."
+            exit 1
+          fi
+
+      - name: Deploy Cloudflare Pages production
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy dist --project-name=${{ vars.PRODUCTION_PAGES_PROJECT
+            }} --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: 4.81.0
+
+      - name: Complete frontend delivery stage
+        run: >-
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH"
+          frontend
+
+      - name: Verify live production and record success
+        run: |
+          node scripts/delivery/stage-gate.mjs assert "$DELIVERY_STATE_PATH" live_smoke
+          npm run deployment:smoke
+          node scripts/delivery/stage-gate.mjs complete "$DELIVERY_STATE_PATH" live_smoke
+          echo "Production release $GITHUB_SHA passed every ordered stage." >> "$GITHUB_STEP_SUMMARY"
