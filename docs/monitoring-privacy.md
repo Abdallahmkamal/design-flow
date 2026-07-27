@@ -1,7 +1,7 @@
 # Monitoring privacy and verification
 
-**Status:** Local implementation complete; Sentry service configuration and
-staging verification not authorized
+**Status:** Local implementation complete; staging provider configuration
+authorized but blocked by no authenticated Sentry session or DSN
 
 ## Runtime boundary
 
@@ -58,8 +58,8 @@ created.
 
 ## External gates
 
-After explicit authorization, configure only the public browser DSN in the
-protected staging environment, trigger one generic synthetic failure with no
-user-entered data, and inspect the resulting event in authenticated Chrome.
+When an authenticated Sentry session is available, configure only the public
+browser DSN in the protected staging environment, trigger one generic synthetic
+failure with no user-entered data, and inspect the resulting event in Chrome.
 Confirm the allowlisted payload and absence of replay before considering
 production configuration. Production monitoring remains separately gated.

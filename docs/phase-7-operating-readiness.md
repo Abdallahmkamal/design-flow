@@ -1,7 +1,7 @@
 # Phase 7 operating readiness brief
 
-**Status:** Approved 2026-07-27 for local Phase 7 implementation; no external
-action authorized
+**Status:** Approved local and staging implementation verified 2026-07-27;
+provider and time-based gates open; production not authorized
 
 **Prepared:** 2026-07-27 from clean `main` at `18233b9`
 
@@ -101,9 +101,9 @@ reset, deactivation, or removal of the preserved staging First Admin identity.
 | Action | Current state |
 | --- | --- |
 | Local Phase 7 implementation | Approved 2026-07-27 |
-| Alter staging or staging fixtures | Not authorized |
-| Configure Sentry, R2, Cloudflare, Supabase, GitHub environments/secrets, or alerts | Not authorized |
-| Push, PR, merge, or deployment | Not authorized |
+| Alter staging or staging fixtures | Authorized for Phase 7 verification; completed without fixture replacement |
+| Configure staging Sentry/R2/GitHub protected values and alerts | Authorized; blocked by signed-out/missing provider configuration |
+| Push, PR, merge, or staging deployment | Authorized for Phase 7; completed through `de23dcd` and workflow #65 |
 | Production infrastructure or bootstrap | Not authorized |
 | Pilot or full-team release | Not authorized |
 
@@ -114,6 +114,7 @@ production build, 26 applicable Playwright/axe checks with two intended device
 skips, all fourteen migrations from zero on Colima, 400 pgTAP/RLS assertions,
 generated types, 16 Edge Function tests, and a 308-file repository secret scan
 pass. The encrypted restore rehearsal and its exact checksum/counts are recorded
-in the backup/restore runbook. Hosted staging, provider configuration,
-known-good redeploy, production bootstrap, pilot, release, and stabilization
-remain unperformed gates.
+in the backup/restore runbook. The complete configured staging gate, hosted
+failure stop/recovery, and known-good redeploy passed. Sentry/R2 provider
+configuration, one working week of staging acceptance, production bootstrap,
+pilot, release, and stabilization remain unperformed gates.

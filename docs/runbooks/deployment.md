@@ -2,8 +2,8 @@
 
 **Owner:** Admin/technical maintainer
 
-**Status:** Local workflow and failure-stop contracts verified; no Phase 7
-staging or production workflow has been authorized or run
+**Status:** Local contracts, configured staging delivery, hosted failure stop,
+recovery, and known-good redeploy verified; production not authorized
 
 ## Release boundary
 
@@ -91,6 +91,8 @@ corruption under the recovery runbook.
 Record environment, exact SHA, workflow/run ID and duration, backup object and
 checksum, ordered-stage results, migration list, pre/post smoke results,
 known-good SHA if used, incident link, and final disposition. Never record
-credentials, private payloads, or signed URLs. Phase 7 local tests proved stage
-blocking, but an actual staging known-good redeploy and failed hosted migration
-remain pending explicit authorization; they are not claimed as completed.
+credentials, private payloads, or signed URLs. Staging run `30257511622` proves
+known-good Functions/frontend redeploy without database mutation. Workflow #64
+(`30258329567`) proves a hosted migration exception stops every later stage;
+workflow #65 (`30258611718`) proves the failed transaction left no migration
+residue and the complete staging gate recovered.

@@ -2,8 +2,9 @@
 
 A lightweight work-management portal for one internal UX/design team.
 
-Phases 0–6 are complete and Phase 7 production hardening is local-only pending
-external authorization. Design Flow now includes the contracted database and
+Phases 0–6 are complete and the implemented Phase 7 production hardening has
+passed its local and configured staging gates; provider configuration and
+time-based rollout gates remain open. Design Flow now includes the contracted database and
 permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
 idempotent work logging for ticket and standalone Visual Work. Phase 5 adds the
@@ -12,7 +13,7 @@ Item History, and the recipient-isolated in-app notification inbox. Phase 6 adds
 explainable Tickets/Designers/Visual Work reports, authorized CSV exports, and
 sanitized Work Item PDF export.
 
-The Supabase Free staging project contains the complete Phase 6 checkpoint,
+The Supabase Free staging project contains the verified Phase 7 checkpoint,
 six account-lifecycle Edge Functions, nine reserved synthetic personas, and the
 guarded lightweight acceptance dataset, including clearly labelled standalone
 Visual Work. The original First Admin Auth identity and credentials are
@@ -165,12 +166,12 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
   The current pgTAP suite passes 400 schema, invariant, read-surface,
   persona-permission, ticket, work-log, Dashboard, notification, report, and export assertions;
   generated database types match the implemented schema shape.
-- The Supabase Free staging project is healthy at the complete Phase 6
+- The Supabase Free staging project is healthy at the verified Phase 7
   checkpoint and has six active lifecycle Edge Functions. Its acceptance
   identities and history are conspicuously synthetic, public signup is closed,
   legacy API keys remain disabled, and the one-time bootstrap secret is absent.
 - The Cloudflare Pages Free project `design-flow-staging` serves the verified
-  complete Phase 6 implementation at
+  verified Phase 7 implementation at
   <https://design-flow-staging.pages.dev>. It was built with staging
   credentials only; development source maps were not published.
 - The approved Vodafone VF v4.000 variable WOFF2 is stored locally, loaded
@@ -194,7 +195,11 @@ with comments off by default and opt-in. PR #21 merged the team-date collision
 regression at `18233b9`; workflow #52 passed the complete staging closure gate
 in 3m56s.
 
-Phase 7 now has local privacy-scrubbed monitoring, encrypted/checksummed backup
-and restore tooling, ordered delivery failure stops, security headers, recovery
-workflows, and operating runbooks. No Phase 7 staging change, production
-infrastructure, bootstrap, pilot, or release has been authorized or performed.
+Phase 7 now has privacy-scrubbed monitoring, encrypted/checksummed backup and
+restore tooling, ordered delivery failure stops, security headers, recovery
+workflows, and operating runbooks. Workflow #65 passed the complete configured
+staging gate after the hosted failed-migration and recovery demonstration; the
+known-good no-database-mutation redeploy passed in workflow run `30257511622`.
+Sentry/R2 provider configuration and the one-working-week staging acceptance
+remain open. No production infrastructure, bootstrap, pilot, or release was
+performed.
