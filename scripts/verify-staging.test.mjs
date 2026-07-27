@@ -8,14 +8,30 @@ import {
 
 const environment = {
   STAGING_APP_URL: 'https://design-flow-staging.pages.dev',
+  EXPECTED_APP_ENV: 'staging',
   VITE_SUPABASE_URL: 'https://synthetic-staging.supabase.co',
   VITE_SUPABASE_PUBLISHABLE_KEY: 'synthetic-publishable-key',
 };
 
 function response(body, init = {}) {
-  return new Response(body, {
+  const deploymentBody = body.includes('<title>Design Flow</title>')
+    ? body.replace(
+        '<title>Design Flow</title>',
+        '<meta name="design-flow-environment" content="staging"><title>Design Flow</title>',
+      )
+    : body;
+  const securityHeaders = {
+    'content-security-policy':
+      "default-src 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'",
+    'permissions-policy': 'camera=(), microphone=()',
+    'referrer-policy': 'no-referrer',
+    'x-content-type-options': 'nosniff',
+  };
+
+  return new Response(deploymentBody, {
     status: 200,
     ...init,
+    headers: { ...securityHeaders, ...init.headers },
   });
 }
 
@@ -46,7 +62,14 @@ describe('staging smoke verification', () => {
       )
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
-        response('Operational overview Personal inbox Activity history'),
+        response(
+          'Operational overview Personal inbox Activity history Standalone Visual Work',
+        ),
+      )
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+        ),
       )
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('[]'))
@@ -62,7 +85,7 @@ describe('staging smoke verification', () => {
     await expect(
       verifyStaging({ environment, fetcher }),
     ).resolves.toBeUndefined();
-    expect(fetcher).toHaveBeenCalledTimes(6);
+    expect(fetcher).toHaveBeenCalledTimes(7);
   });
 
   it.each([401, 403])(
@@ -77,7 +100,14 @@ describe('staging smoke verification', () => {
         )
         .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
         .mockResolvedValueOnce(
-          response('Operational overview Personal inbox Activity history'),
+          response(
+            'Operational overview Personal inbox Activity history Standalone Visual Work',
+          ),
+        )
+        .mockResolvedValueOnce(
+          response(
+            '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+          ),
         )
         .mockResolvedValueOnce(response('ok'))
         .mockResolvedValueOnce(response('', { status }))
@@ -93,7 +123,7 @@ describe('staging smoke verification', () => {
       await expect(
         verifyStaging({ environment, fetcher }),
       ).resolves.toBeUndefined();
-      expect(fetcher).toHaveBeenCalledTimes(6);
+      expect(fetcher).toHaveBeenCalledTimes(7);
     },
   );
 
@@ -107,7 +137,14 @@ describe('staging smoke verification', () => {
       )
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
-        response('Operational overview Personal inbox Activity history'),
+        response(
+          'Operational overview Personal inbox Activity history Standalone Visual Work',
+        ),
+      )
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+        ),
       )
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('', { status: 500 }));
@@ -133,7 +170,14 @@ describe('staging smoke verification', () => {
       )
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
-        response('Operational overview Personal inbox Activity history'),
+        response(
+          'Operational overview Personal inbox Activity history Standalone Visual Work',
+        ),
+      )
+      .mockResolvedValueOnce(
+        response(
+          '<title>Design Flow</title><script type="module" src="/assets/index.js"></script>',
+        ),
       )
       .mockResolvedValueOnce(response('ok'))
       .mockResolvedValueOnce(response('[]'))
@@ -166,7 +210,7 @@ describe('staging smoke verification', () => {
     await expect(
       verifyStaging({ environment, fetcher, frontendAttempts: 1 }),
     ).rejects.toThrow(
-      'The live bundle is missing the Phase 5 marker: Operational overview',
+      'The live bundle is missing the required marker: Operational overview',
     );
   });
 });

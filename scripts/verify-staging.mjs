@@ -1,7 +1,8 @@
-const phaseFiveMarkers = [
+const checkpointMarkers = [
   'Operational overview',
   'Personal inbox',
   'Activity history',
+  'Standalone Visual Work',
 ];
 
 const wait = (milliseconds) =>
@@ -11,7 +12,7 @@ function requiredEnvironment(name, source = process.env) {
   const value = source[name]?.trim();
 
   if (!value) {
-    throw new Error(`Missing required staging environment: ${name}`);
+    throw new Error(`Missing required deployment environment: ${name}`);
   }
 
   return value;
@@ -33,10 +34,38 @@ export function moduleScriptSource(html) {
   );
 
   if (!match?.[1]) {
-    throw new Error('The staging page does not contain a module script.');
+    throw new Error('The deployed page does not contain a module script.');
   }
 
   return match[1];
+}
+
+export function assertSecurityHeaders(response) {
+  const contentSecurityPolicy = response.headers.get('content-security-policy');
+  const requiredDirectives = [
+    "default-src 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "script-src 'self'",
+  ];
+
+  if (
+    !contentSecurityPolicy ||
+    requiredDirectives.some(
+      (directive) => !contentSecurityPolicy.includes(directive),
+    )
+  ) {
+    throw new Error('The deployed frontend is missing its required CSP.');
+  }
+  if (response.headers.get('x-content-type-options') !== 'nosniff') {
+    throw new Error('The deployed frontend is missing nosniff.');
+  }
+  if (response.headers.get('referrer-policy') !== 'no-referrer') {
+    throw new Error('The deployed frontend has an unsafe referrer policy.');
+  }
+  if (!response.headers.get('permissions-policy')?.includes('camera=()')) {
+    throw new Error('The deployed frontend is missing its permissions policy.');
+  }
 }
 
 export function linkedJavaScriptSources(bundle) {
@@ -60,28 +89,29 @@ async function responseText(fetcher, url, init, label) {
 }
 
 async function deployedFrontendJavaScript(fetcher, appUrl) {
-  const { text: html } = await responseText(
+  const { response, text: html } = await responseText(
     fetcher,
     appUrl,
     undefined,
-    'Staging frontend',
+    'Deployed frontend',
   );
+  assertSecurityHeaders(response);
 
   if (!html.includes('<title>Design Flow</title>')) {
-    throw new Error('The staging frontend returned an unexpected document.');
+    throw new Error('The deployed frontend returned an unexpected document.');
   }
 
   const bundleUrl = new URL(moduleScriptSource(html), appUrl);
 
   if (bundleUrl.origin !== appUrl.origin) {
-    throw new Error('The staging module script must be served by Pages.');
+    throw new Error('The deployed module script must be served by Pages.');
   }
 
   const { text: bundle } = await responseText(
     fetcher,
     bundleUrl,
     undefined,
-    'Staging application bundle',
+    'Deployed application bundle',
   );
   const linkedBundles = await Promise.all(
     linkedJavaScriptSources(bundle).map(async (source) => {
@@ -93,7 +123,7 @@ async function deployedFrontendJavaScript(fetcher, appUrl) {
 
       if (linkedUrl.origin !== appUrl.origin) {
         throw new Error(
-          'A staging JavaScript chunk used an unexpected origin.',
+          'A deployed JavaScript chunk used an unexpected origin.',
         );
       }
 
@@ -102,7 +132,7 @@ async function deployedFrontendJavaScript(fetcher, appUrl) {
           fetcher,
           linkedUrl,
           undefined,
-          'Staging JavaScript chunk',
+          'Deployed JavaScript chunk',
         )
       ).text;
     }),
@@ -111,55 +141,41 @@ async function deployedFrontendJavaScript(fetcher, appUrl) {
   return [bundle, ...linkedBundles].join('\n');
 }
 
-export async function verifyStaging({
+function deploymentConfiguration(environment) {
+  const appUrlValue =
+    environment.DEPLOYMENT_APP_URL?.trim() ||
+    environment.STAGING_APP_URL?.trim();
+  if (!appUrlValue) {
+    throw new Error(
+      'Missing required deployment environment: DEPLOYMENT_APP_URL',
+    );
+  }
+
+  return {
+    appUrl: assertHttpsUrl('DEPLOYMENT_APP_URL', appUrlValue),
+    expectedAppEnvironment: requiredEnvironment(
+      'EXPECTED_APP_ENV',
+      environment,
+    ),
+    supabaseUrl: assertHttpsUrl(
+      'VITE_SUPABASE_URL',
+      requiredEnvironment('VITE_SUPABASE_URL', environment),
+    ),
+    publishableKey: requiredEnvironment(
+      'VITE_SUPABASE_PUBLISHABLE_KEY',
+      environment,
+    ),
+  };
+}
+
+export async function verifyBackend({
   environment = process.env,
   fetcher = fetch,
-  frontendAttempts = 6,
-  retryDelayMs = 10_000,
-  waiter = wait,
 } = {}) {
-  const appUrl = assertHttpsUrl(
-    'STAGING_APP_URL',
-    requiredEnvironment('STAGING_APP_URL', environment),
-  );
-  const supabaseUrl = assertHttpsUrl(
-    'VITE_SUPABASE_URL',
-    requiredEnvironment('VITE_SUPABASE_URL', environment),
-  );
-  const publishableKey = requiredEnvironment(
-    'VITE_SUPABASE_PUBLISHABLE_KEY',
-    environment,
-  );
-  const headers = {
-    apikey: publishableKey,
-  };
+  const { appUrl, publishableKey, supabaseUrl } =
+    deploymentConfiguration(environment);
+  const headers = { apikey: publishableKey };
   const checks = [];
-
-  let missingMarker;
-
-  for (let attempt = 1; attempt <= frontendAttempts; attempt += 1) {
-    const deployedJavaScript = await deployedFrontendJavaScript(
-      fetcher,
-      appUrl,
-    );
-    missingMarker = phaseFiveMarkers.find(
-      (marker) => !deployedJavaScript.includes(marker),
-    );
-
-    if (!missingMarker || attempt === frontendAttempts) {
-      break;
-    }
-
-    await waiter(retryDelayMs);
-  }
-
-  if (missingMarker) {
-    throw new Error(
-      `The live bundle is missing the Phase 5 marker: ${missingMarker}`,
-    );
-  }
-
-  checks.push('Phase 5 frontend bundle');
 
   await responseText(
     fetcher,
@@ -178,14 +194,13 @@ export async function verifyStaging({
     const profiles = JSON.parse(await profileResponse.text());
 
     if (!Array.isArray(profiles) || profiles.length !== 0) {
-      throw new Error('Anonymous staging access exposed profile records.');
+      throw new Error('Anonymous deployment access exposed profile records.');
     }
   } else if (![401, 403].includes(profileResponse.status)) {
     throw new Error(
       `Anonymous profile boundary returned HTTP ${profileResponse.status}.`,
     );
   }
-
   checks.push('anonymous profile denial');
 
   const { response: functionResponse, text: functionPayload } =
@@ -206,18 +221,73 @@ export async function verifyStaging({
     functionResponse.headers.get('access-control-allow-origin') !==
     appUrl.origin
   ) {
-    throw new Error('The Edge Function staging origin is not allowed.');
+    throw new Error('The Edge Function deployment origin is not allowed.');
   }
 
   const functionResult = JSON.parse(functionPayload);
-
   if (functionResult.ok !== true) {
     throw new Error('The Edge Function CORS smoke check was not acknowledged.');
   }
-
   checks.push('Edge Function origin');
 
-  console.log(`Staging smoke checks passed: ${checks.join(', ')}.`);
+  console.log(`Backend smoke checks passed: ${checks.join(', ')}.`);
+}
+
+export async function verifyStaging({
+  environment = process.env,
+  fetcher = fetch,
+  frontendAttempts = 6,
+  retryDelayMs = 10_000,
+  waiter = wait,
+} = {}) {
+  const { appUrl, expectedAppEnvironment } =
+    deploymentConfiguration(environment);
+  const checks = [];
+
+  let missingMarker;
+
+  for (let attempt = 1; attempt <= frontendAttempts; attempt += 1) {
+    const deployedJavaScript = await deployedFrontendJavaScript(
+      fetcher,
+      appUrl,
+    );
+    missingMarker = checkpointMarkers.find(
+      (marker) => !deployedJavaScript.includes(marker),
+    );
+
+    if (!missingMarker || attempt === frontendAttempts) {
+      break;
+    }
+
+    await waiter(retryDelayMs);
+  }
+
+  if (missingMarker) {
+    throw new Error(
+      `The live bundle is missing the required marker: ${missingMarker}`,
+    );
+  }
+
+  const documentResponse = await responseText(
+    fetcher,
+    appUrl,
+    undefined,
+    'Deployed environment marker',
+  );
+  const environmentPattern = new RegExp(
+    `<meta[^>]+name=["']design-flow-environment["'][^>]+content=["']${expectedAppEnvironment}["']`,
+    'u',
+  );
+  if (!environmentPattern.test(documentResponse.text)) {
+    throw new Error('The deployed frontend environment marker is incorrect.');
+  }
+
+  checks.push('complete frontend bundle and environment');
+
+  await verifyBackend({ environment, fetcher });
+  checks.push('backend boundaries');
+
+  console.log(`Deployment smoke checks passed: ${checks.join(', ')}.`);
 }
 
 if (import.meta.url === new URL(process.argv[1], 'file:').href) {

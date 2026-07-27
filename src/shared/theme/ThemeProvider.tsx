@@ -10,10 +10,29 @@ import { ThemeContext, type Theme } from './themeContext';
 
 const themeStorageKey = 'design-flow-theme';
 
-function getInitialTheme(): Theme {
-  const storedTheme = window.localStorage.getItem(themeStorageKey);
+function readStoredTheme(): Theme | null {
+  try {
+    const storedTheme = window.localStorage.getItem(themeStorageKey);
+    return storedTheme === 'light' || storedTheme === 'dark'
+      ? storedTheme
+      : null;
+  } catch {
+    return null;
+  }
+}
 
-  if (storedTheme === 'light' || storedTheme === 'dark') {
+function storeTheme(theme: Theme) {
+  try {
+    window.localStorage.setItem(themeStorageKey, theme);
+  } catch {
+    // Theme persistence is optional; the active session remains usable.
+  }
+}
+
+function getInitialTheme(): Theme {
+  const storedTheme = readStoredTheme();
+
+  if (storedTheme) {
     return storedTheme;
   }
 
@@ -27,7 +46,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem(themeStorageKey, theme);
+    storeTheme(theme);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {

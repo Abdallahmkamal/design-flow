@@ -57,6 +57,20 @@ function hasAllowedProtocol(value: string): boolean {
   );
 }
 
+function isSentryBrowserDsn(value: string): boolean {
+  const url = parseUrl(value);
+
+  return (
+    url !== null &&
+    url.protocol === 'https:' &&
+    (url.hostname === 'sentry.io' || url.hostname.endsWith('.sentry.io')) &&
+    url.username.length > 0 &&
+    url.password.length === 0 &&
+    url.search.length === 0 &&
+    url.hash.length === 0
+  );
+}
+
 const publicEnvironmentSchema = z
   .object({
     VITE_APP_ENV: z.enum(['local', 'test', 'preview', 'staging', 'production']),
@@ -75,6 +89,16 @@ const publicEnvironmentSchema = z
             'A server-held Supabase secret must never be exposed to Vite.',
         },
       ),
+    VITE_SENTRY_DSN: z.preprocess(
+      (value) => (value === '' ? undefined : value),
+      z
+        .string()
+        .refine(isSentryBrowserDsn, {
+          message:
+            'Use only an HTTPS sentry.io browser DSN without a password, query, or fragment.',
+        })
+        .optional(),
+    ),
   })
   .superRefine((environment, context) => {
     const isLocalUrl = isLocalSupabaseUrl(environment.VITE_SUPABASE_URL);
@@ -93,6 +117,18 @@ const publicEnvironmentSchema = z
         code: 'custom',
         path: ['VITE_SUPABASE_URL'],
         message: 'Local development must use local Supabase.',
+      });
+    }
+
+    if (
+      environment.VITE_SENTRY_DSN &&
+      environment.VITE_APP_ENV !== 'staging' &&
+      environment.VITE_APP_ENV !== 'production'
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['VITE_SENTRY_DSN'],
+        message: 'Monitoring is enabled only for staging or production.',
       });
     }
   });

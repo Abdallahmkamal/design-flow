@@ -1,0 +1,125 @@
+name: Design Flow encrypted database backup
+
+on:
+  schedule:
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Protected source environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      label:
+        description: Non-secret backup label
+        required: true
+        default: manual
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      label:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-flow-backup-${{ inputs.environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Encrypt, verify, upload, and retain
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: ${{ inputs.environment || 'production' }}
+    env:
+      BACKUP_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+      BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_ACCOUNT_ID: ${{ vars.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ vars.R2_BACKUP_BUCKET }}
+      AWS_DEFAULT_REGION: auto
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Require explicitly enabled protected configuration
+        env:
+          BACKUP_AUTOMATION_ENABLED: ${{ vars.BACKUP_AUTOMATION_ENABLED }}
+        run: |
+          test "$BACKUP_AUTOMATION_ENABLED" = "true"
+          test -n "$BACKUP_DATABASE_URL"
+          test -n "$BACKUP_ENCRYPTION_KEY"
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+          test -n "$R2_ACCOUNT_ID"
+          test -n "$R2_BUCKET_NAME"
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+
+      - name: Create encrypted backup
+        id: backup
+        env:
+          BACKUP_LABEL: ${{ inputs.label || 'scheduled' }}
+          BACKUP_OUTPUT_DIR: ${{ runner.temp }}/design-flow-backup
+        run: scripts/backups/create-backup.sh
+
+      - name: Verify checksum, decryption, and archive
+        run: >-
+          scripts/backups/verify-backup.sh "${{ steps.backup.outputs.artifact
+          }}" "${{ steps.backup.outputs.checksum }}"
+
+      - name: Upload private R2 retention tiers
+        env:
+          AWS_ENDPOINT_URL:
+            https://${{ vars.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          ARTIFACT: ${{ steps.backup.outputs.artifact }}
+          CHECKSUM: ${{ steps.backup.outputs.checksum }}
+          BASENAME: ${{ steps.backup.outputs.basename }}
+        run: |
+          tiers=(daily)
+          day_of_week=$(date -u +%u)
+          day_of_month=$(date -u +%d)
+          if [[ "$day_of_week" = "7" ]]; then tiers+=(weekly); fi
+          if [[ "$day_of_month" = "01" ]]; then tiers+=(monthly); fi
+          for tier in "${tiers[@]}"; do
+            aws s3 cp "$ARTIFACT" "s3://$R2_BUCKET_NAME/backups/$tier/$BASENAME" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+            aws s3 cp "$CHECKSUM" "s3://$R2_BUCKET_NAME/backups/$tier/$BASENAME.sha256" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+          done
+
+      - name: Apply 7 daily, 4 weekly, and 6 monthly retention
+        env:
+          AWS_ENDPOINT_URL:
+            https://${{ vars.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+        run: |
+          for tier_limit in daily:7 weekly:4 monthly:6; do
+            tier=${tier_limit%%:*}
+            limit=${tier_limit##*:}
+            listing="$RUNNER_TEMP/r2-$tier.json"
+            expired="$RUNNER_TEMP/r2-$tier-expired.txt"
+            aws s3api list-objects-v2 --bucket "$R2_BUCKET_NAME" --prefix "backups/$tier/" --endpoint-url "$AWS_ENDPOINT_URL" --output json > "$listing"
+            node scripts/backups/retention.mjs "$listing" "backups/$tier/" "$limit" > "$expired"
+            while IFS= read -r key; do
+              if [[ -n "$key" ]]; then
+                aws s3api delete-object --bucket "$R2_BUCKET_NAME" --key "$key" --endpoint-url "$AWS_ENDPOINT_URL"
+              fi
+            done < "$expired"
+          done
+
+      - name: Record non-secret backup result
+        run: |
+          echo "Encrypted backup and checksum uploaded to the approved private R2 retention tiers." >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact: ${{ steps.backup.outputs.basename }}" >> "$GITHUB_STEP_SUMMARY"

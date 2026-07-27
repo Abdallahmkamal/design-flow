@@ -5,6 +5,7 @@ interface ImportMetaEnv {
     'local' | 'test' | 'preview' | 'staging' | 'production';
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_PUBLISHABLE_KEY: string;
+  readonly VITE_SENTRY_DSN?: string;
 }
 
 interface ImportMeta {

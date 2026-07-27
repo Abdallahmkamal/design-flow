@@ -15,6 +15,39 @@ export default defineConfig({
     sourcemap:
       process.env.VITE_APP_ENV !== 'staging' &&
       process.env.VITE_APP_ENV !== 'production',
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react-runtime',
+              test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
+              priority: 30,
+            },
+            {
+              name: 'router',
+              test: /node_modules[\\/]react-router/,
+              priority: 25,
+            },
+            {
+              name: 'supabase',
+              test: /node_modules[\\/]@supabase[\\/]/,
+              priority: 20,
+            },
+            {
+              name: 'forms-validation',
+              test: /node_modules[\\/](?:react-hook-form|zod|@hookform)[\\/]/,
+              priority: 15,
+            },
+            {
+              name: 'query',
+              test: /node_modules[\\/]@tanstack[\\/]/,
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
   },
   test: {
     environment: 'jsdom',
