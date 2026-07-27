@@ -6,6 +6,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      rehearse_failed_migration:
+        description: Intentionally fail an ephemeral staging migration
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -133,6 +139,21 @@ jobs:
 
       - name: Link the staging database
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Prepare synthetic failed migration rehearsal
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          inputs.rehearse_failed_migration
+        run: |
+          rehearsal_version="$(date -u +%Y%m%d%H%M%S)"
+          rehearsal_path="supabase/migrations/${rehearsal_version}_phase_7_failure_rehearsal.sql"
+          printf '%s\n' \
+            'do $phase_7$' \
+            'begin' \
+            "  raise exception 'intentional Phase 7 failed migration rehearsal';" \
+            'end' \
+            '$phase_7$;' > "$rehearsal_path"
+          echo "Prepared an ephemeral intentionally failing migration; no credential or data value is logged."
 
       - name: Preview pending staging migrations
         run: |
