@@ -46,9 +46,6 @@ jobs:
         ${{ inputs.environment == 'production' &&
         vars.PRODUCTION_SUPABASE_PUBLISHABLE_KEY ||
         vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-      VITE_SENTRY_DSN:
-        ${{ inputs.environment == 'production' && vars.PRODUCTION_SENTRY_DSN ||
-        vars.STAGING_SENTRY_DSN }}
       DEPLOYMENT_APP_URL:
         ${{ inputs.environment == 'production' && vars.PRODUCTION_APP_URL ||
         'https://design-flow-staging.pages.dev' }}

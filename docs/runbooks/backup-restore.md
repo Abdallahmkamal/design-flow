@@ -2,9 +2,8 @@
 
 **Owner:** Admin/technical maintainer
 
-**Status:** Local encrypted restore rehearsal passed; staging R2
-configuration/upload authorized but blocked by signed-out provider and missing
-protected values
+**Status:** Local encrypted restore rehearsal passed; strict zero-billing
+offline production destination and production-source rehearsal remain open
 
 ## Backup contract
 
@@ -20,38 +19,37 @@ dump on every exit, and writes a SHA-256 checksum for the encrypted artifact.
 `verify-backup.sh` verifies the checksum, decrypts into a permission-restricted
 temporary file, and requires `pg_restore --list` to accept the archive.
 
-The encryption key must be at least 32 characters and lives only in the
-protected GitHub environment plus a separate approved Admin-controlled
-recovery location. The database URL, R2 access key/secret, encryption key, and
-any Supabase secret must never be printed, committed, placed in a browser
-variable, uploaded as a GitHub artifact, or copied into evidence.
+The encryption key must be at least 32 characters and remain in an approved
+Admin-controlled recovery location separate from the backup media. The
+database URL, encryption key, and any Supabase secret must never be printed,
+committed, placed in a browser variable, uploaded as a GitHub artifact, or
+copied into evidence.
 
-## R2 automation
+## Zero-billing offline operation
 
-`.github/workflows/backup.yml` is scheduled daily and can be manually targeted
-at a protected staging or production environment. It refuses to run until
-`BACKUP_AUTOMATION_ENABLED=true` and every protected value exists. Configure:
+No R2 subscription, bucket, token, or hosted backup workflow is used. The Admin
+runs `create-backup.sh` from an approved operator environment, immediately runs
+`verify-backup.sh`, and copies only the encrypted artifact and checksum to the
+named offline destination. The recovery key is kept separately.
 
-- secrets: `SUPABASE_DATABASE_URL`, `BACKUP_ENCRYPTION_KEY`,
-  `R2_ACCESS_KEY_ID`, and `R2_SECRET_ACCESS_KEY`;
-- variables: `R2_ACCOUNT_ID`, `R2_BACKUP_BUCKET`, and
-  `BACKUP_AUTOMATION_ENABLED`; and
-- a private, non-public R2 bucket with the access pair limited to object
-  list/read/write/delete in that bucket only.
+For every backup:
 
-The workflow uploads encrypted artifact/checksum pairs under `backups/daily/`,
-adds `weekly/` on Sunday UTC and `monthly/` on the first UTC day, then retains
-the newest 7 daily, 4 weekly, and 6 monthly pairs. It stops on dump,
-encryption, checksum, archive, upload, listing, or deletion failure. GitHub
-failed-workflow notifications are the required technical-owner alert; confirm
-the owner watches Actions failures before enabling automation.
+1. record UTC time, source environment, operator, non-secret label, and reason;
+2. create and verify the encrypted artifact without retaining plaintext;
+3. copy the artifact/checksum pair to the named offline destination and verify
+   the checksum again from that destination;
+4. maintain 7 daily, 4 weekly, and 6 monthly pairs, deleting an expired pair
+   only after confirming a newer verified copy exists; and
+5. for pre-migration backups, enter the exact label, 64-character lowercase
+   SHA-256, and `BACKUP_VERIFIED_OFFLINE` confirmation in the production
+   workflow.
 
-No R2 bucket, token, secret, workflow run, or alert has been created or sent.
-Staging configuration is authorized, but the current Chrome provider session is
-signed out and the staging environment lacks all required backup/R2 protected
-values. Do not dispatch until the private bucket, least-privilege token,
-separate recovery key, database URL, and technical-owner failure notification
-are configured without exposing their values.
+Creation, encryption, verification, or destination-copy failure stops the
+release before workflow dispatch. The GitHub workflow validates and records
+the non-secret attestation; it cannot inspect offline media and must never be
+presented as independent proof that the file exists. Production bootstrap,
+pilot, and release remain blocked until the offline destination is named and a
+production-source backup is successfully restored into an isolated target.
 
 ## Restore decision
 
@@ -62,10 +60,10 @@ write-pause requirements are recorded.
 
 Before any hosted restore:
 
-1. obtain explicit authorization naming the target and backup object;
+1. obtain explicit authorization naming the target and backup artifact;
 2. pause writes using the recovery runbook and record the incident timeline;
-3. download both encrypted artifact and checksum into a restricted temporary
-   location;
+3. copy both encrypted artifact and checksum from offline media into a
+   restricted temporary location;
 4. run `verify-backup.sh` before inspecting or restoring it;
 5. restore first into a disposable isolated database and reconcile migrations,
    profiles, First Admin, Viewer + Admin rejection, Areas, tickets, batches,
@@ -104,14 +102,14 @@ decryption, archive listing, and restore into the guarded disposable database
 The disposable database was dropped after evidence capture. The encrypted
 synthetic artifact remains under `/private/tmp` for this local session only and
 is not committed. Recovery duration was under one minute after the final
-artifact existed; hosted R2 transfer/provider recovery time is not yet
-measured. Auth credential validity was not tested and is an explicit recovery
+artifact existed; offline-media transfer time is not yet measured. Auth
+credential validity was not tested and is an explicit recovery
 limitation, not a successful credential-recovery claim.
 
 ## Quarterly record
 
 For each rehearsal, record UTC date, environment classification, non-secret
-object name/checksum, operator, restore target, start/end/duration, schema and
+artifact label/checksum, operator, restore target, start/end/duration, schema and
 fixture reconciliation, Auth limitation/result, failures and corrective
 actions, cleanup, and the next due date. Never record a URL containing
 credentials or any decrypted content.

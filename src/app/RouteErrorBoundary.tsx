@@ -6,7 +6,6 @@ import {
 } from 'react';
 
 import { Button } from '../ui/Button/Button';
-import { reportUnexpectedError } from '../shared/monitoring/monitoring';
 import styles from './RouteErrorBoundary.module.css';
 
 interface RouteErrorBoundaryState {
@@ -26,8 +25,6 @@ export class RouteErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
-    reportUnexpectedError(error, 'react_boundary');
-
     if (import.meta.env.DEV) {
       console.error('Design Flow render failure', error, info);
     }

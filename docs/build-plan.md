@@ -258,10 +258,10 @@ During Phase 7, perform and evidence a cross-product review for UI consistency, 
 
 Complete the approved operating model:
 
-- privacy-scrubbed Sentry integration without session replay;
-- encrypted, checksummed R2 backups, retention automation, failure alerts, and a successful restore rehearsal;
+- no external client telemetry or error-ingestion dependency; use the approved fail-safe UI and existing Supabase/GitHub/Cloudflare operational evidence;
+- provider-agnostic encrypted/checksummed backups, Admin-controlled offline storage, explicit retention evidence, and a successful isolated restore rehearsal;
 - complete staging and manually triggered production delivery workflows;
-- pre-migration backup, ordered migrations/Functions/frontend deployment, smoke checks, and failure stop behavior;
+- independently verified pre-migration backup evidence, ordered migrations/Functions/frontend deployment, smoke checks, and failure stop behavior;
 - deployment, incident, quota, pause/resume, and recovery runbooks;
 - production performance, accessibility, responsive, security, and quota review;
 - auditable production bootstrap; and
@@ -270,6 +270,7 @@ Complete the approved operating model:
 ### Exit gate
 
 - Every production launch gate in `docs/technical-plan.md` is evidenced as passing.
+- The Admin-controlled offline destination is named and a production-source encrypted backup is restored successfully in isolation; until then production bootstrap/pilot/release is blocked.
 - Restore behavior, including Supabase Auth recovery/reset limitations, is demonstrated rather than assumed.
 - A previous known-good application release can be redeployed and a failed migration cannot continue to later delivery stages.
 - The pilot group completes one working week without an unresolved security, data-integrity, authentication, or core-workflow blocker.

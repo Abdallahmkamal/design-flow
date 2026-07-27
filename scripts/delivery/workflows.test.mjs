@@ -19,12 +19,18 @@ function expectInOrder(source, labels) {
 }
 
 describe('production delivery workflows', () => {
-  it('requires backup and preserves the contracted production stage order', () => {
+  it('requires verified offline backup evidence and preserves the contracted production stage order', () => {
     const production = workflow('production.yml');
 
     expect(production).toContain('workflow_dispatch:');
-    expect(production).toContain('needs: backup');
-    expect(production).toContain('uses: ./.github/workflows/backup.yml');
+    expect(production).toContain('BACKUP_VERIFIED_OFFLINE');
+    expect(production).toContain('backup_sha256:');
+    expect(production).toContain(
+      '[[ "$BACKUP_ARTIFACT_LABEL" =~ ^[a-z0-9][a-z0-9_-]{0,63}$ ]]',
+    );
+    expect(production).toContain('[[ "$BACKUP_SHA256" =~ ^[a-f0-9]{64}$ ]]');
+    expect(production).toContain('needs: authorize');
+    expect(production).not.toMatch(/R2_|backup\.yml/iu);
     expectInOrder(production, [
       'Preview pending production migrations',
       'Apply forward production migrations',

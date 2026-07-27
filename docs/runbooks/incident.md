@@ -8,7 +8,7 @@
    environment, release SHA, symptoms, and suspected scope.
 2. Classify first: security/data integrity; authentication/core workflow;
    degraded lower-impact behavior. During stabilization, handle in that order.
-3. Preserve workflow IDs and relevant Supabase, Cloudflare, Sentry, and GitHub
+3. Preserve workflow IDs and relevant Supabase, Cloudflare, and GitHub
    timestamps. Do not copy ticket text, comments, work logs, emails, tokens,
    Figma URLs, credentials, or production rows into the record.
 4. If writes could increase loss or corruption, use the pause/resume runbook.

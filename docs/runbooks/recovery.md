@@ -9,12 +9,12 @@
 2. Database behavior defect without confirmed loss: ship a reviewed,
    forward-only corrective migration.
 3. Confirmed data loss/corruption: pause writes, select an authorized encrypted
-   backup, and rehearse the restore into an isolated database before any hosted
-   recovery.
+   offline backup, and rehearse the restore into an isolated database before
+   any hosted recovery.
 
 ## Data recovery
 
-Follow `backup-restore.md`: verify the encrypted-object checksum, decrypt only
+Follow `backup-restore.md`: verify the encrypted-artifact checksum, decrypt only
 to a permission-restricted temporary path, require `pg_restore --list`, then
 restore into a disposable target. Reconcile migration history, profiles, Auth
 identity rows, First Admin Manager + Admin state, zero Viewer + Admin, Areas,
@@ -30,7 +30,7 @@ in the backup and must be restored/rotated separately in their owning systems.
 
 Run migration/type checks, Auth/RLS/Function backend smoke, critical application
 journeys, reports/exports reconciliation, security headers, monitoring privacy,
-and live smoke. Record incident, exact release/migrations, backup object and
+and live smoke. Record incident, exact release/migrations, backup artifact and
 checksum, restore target/duration/counts, Auth limitation/actions, approvers,
 write-resume time, and cleanup. Drop disposable targets and securely remove
 decrypted temporary files after evidence is retained.

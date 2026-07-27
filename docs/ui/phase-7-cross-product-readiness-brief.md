@@ -35,7 +35,7 @@ behavior and Design Flow-owned `src/ui/` components.
 | Accessibility | Semantic HTML, visible focus, accessible names, keyboard operation, focus return, error/status announcements, color-independent meaning, and axe coverage pass. |
 | Required states | Applicable loading, empty, no-results, error, unauthorized, disabled, generating, success, long-content, and partial-success states are present and accurate. |
 | Data meaning | Planned dates, actual `work_date`, and system timestamps stay distinct; `Planned until` remains due-date disclosure; standalone Visual Work stays outside ticket activity. |
-| Security/privacy | RLS and direct-write denial remain authoritative; exports stay capability-limited; no secret, withdrawn body, personal/production data, source map, or sensitive monitoring payload is exposed. |
+| Security/privacy | RLS and direct-write denial remain authoritative; exports stay capability-limited; no secret, withdrawn body, personal/production data, source map, analytics, replay, or external client telemetry is exposed. |
 | Performance/quota | Production build size, critical route behavior, provider usage boundaries, security headers, and the approved 70%/85% quota thresholds are reviewed without adding product controls. |
 
 ## Component decision
@@ -94,6 +94,8 @@ values remain blocking gaps rather than guessed literals.
 ## Approval and open gates
 
 Local implementation was approved on 2026-07-27 after review of this brief and
-the Phase 7 operating-readiness brief. Staging alteration, external alerting or
-service configuration, production infrastructure, production bootstrap,
-pilot, release, push, PR, and merge each remain separately gated actions.
+the Phase 7 operating-readiness brief. D-103 later removed Sentry/R2 from the
+MVP and preserved the existing failure UI without adding a component. The
+configured staging gate passed; one-working-week acceptance, production
+infrastructure, production bootstrap, pilot, and release remain open or
+separately gated actions.

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -49,7 +49,7 @@ const main = () => {
     },
   )
     .split('\0')
-    .filter(Boolean);
+    .filter((path) => path.length > 0 && existsSync(path));
   const files = tracked.map((path) => ({
     path,
     content: readFileSync(path, 'utf8'),

@@ -16,8 +16,8 @@ not approval to deploy.
 
 The Admin/technical maintainer owns delivery and recovery. A Manager owns the
 team hierarchy and reporting view but gains no deployment authority from that
-position. Never place service-role, Auth-admin, Supabase, Cloudflare, R2,
-Sentry, database, or bootstrap credentials in browser variables, commands,
+position. Never place service-role, Auth-admin, Supabase, Cloudflare, database,
+backup, or bootstrap credentials in browser variables, commands,
 logs, screenshots, or evidence.
 
 ## Protected production configuration
@@ -25,18 +25,15 @@ logs, screenshots, or evidence.
 Create a reviewer-protected GitHub environment named `production`. Configure
 non-secret variables for `PRODUCTION_APP_URL`, `PRODUCTION_SUPABASE_PROJECT_ID`,
 `PRODUCTION_SUPABASE_URL`, `PRODUCTION_SUPABASE_PUBLISHABLE_KEY`,
-`PRODUCTION_PAGES_PROJECT`, `CLOUDFLARE_ACCOUNT_ID`, `R2_ACCOUNT_ID`,
-`R2_BACKUP_BUCKET`, and `BACKUP_AUTOMATION_ENABLED`. Add
-`PRODUCTION_SENTRY_DSN` only after monitoring authorization; it is the public
-browser-ingest DSN, never an auth token.
+`PRODUCTION_PAGES_PROJECT`, and `CLOUDFLARE_ACCOUNT_ID`.
 
 Configure protected secrets for `SUPABASE_ACCESS_TOKEN`,
-`SUPABASE_DATABASE_URL`, `BACKUP_ENCRYPTION_KEY`, `R2_ACCESS_KEY_ID`,
-`R2_SECRET_ACCESS_KEY`, and the least-privilege `CLOUDFLARE_API_TOKEN`. The
-backup key must also exist in an approved separate recovery location. Confirm
+and the least-privilege `CLOUDFLARE_API_TOKEN`. Production database backup
+credentials and the encryption key remain only in the approved operator
+environment; the recovery key is separate from the offline media. Confirm
 names/presence without printing values. Bootstrap secrets are temporary
 Function secrets under the bootstrap runbook and are not normal deployment
-configuration.
+configuration. Do not configure Sentry or R2.
 
 ## Ordered delivery
 
@@ -44,7 +41,8 @@ configuration.
 order:
 
 1. complete repository verification;
-2. create and verify the encrypted pre-migration production backup;
+2. validate the exact label/checksum and Admin attestation for the independently
+   created and verified encrypted offline pre-migration backup;
 3. preview and apply forward-only migrations;
 4. verify migration history and generated hosted types;
 5. deploy Edge Functions;
@@ -56,7 +54,7 @@ order:
 
 `scripts/delivery/stage-gate.mjs` permits a stage only when all preceding
 stages are complete. Every shell and workflow step uses failure-stop behavior;
-a failed backup, migration, type comparison, Function deployment, smoke,
+a missing/invalid backup attestation, migration, type comparison, Function deployment, smoke,
 build, source-map check, Pages upload, or live smoke prevents a success claim.
 Do not manually skip a failed stage.
 
@@ -65,8 +63,8 @@ Do not manually skip a failed stage.
 - Confirm the SHA is on current `main`, checks are green, the approved change
   set is understood, and no unresolved security/data/core-workflow issue exists.
 - Confirm the protected production variables and secrets are present without
-  printing their values, backup automation is enabled, failure notifications
-  reach the technical owner, and current quota usage is below the decision gate.
+  printing their values, the named offline destination contains the verified
+  artifact/checksum pair, and current quota usage is below the decision gate.
 - Record release SHA, operator, approval, intended migrations, known-good SHA,
   smoke scope, and rollback decision before dispatch.
 - Use authenticated Chrome for GitHub review, environment approval, workflow
@@ -88,7 +86,7 @@ corruption under the recovery runbook.
 
 ## Evidence record
 
-Record environment, exact SHA, workflow/run ID and duration, backup object and
+Record environment, exact SHA, workflow/run ID and duration, backup artifact label and
 checksum, ordered-stage results, migration list, pre/post smoke results,
 known-good SHA if used, incident link, and final disposition. Never record
 credentials, private payloads, or signed URLs. Staging run `30257511622` proves
