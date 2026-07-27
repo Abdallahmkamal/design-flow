@@ -103,7 +103,7 @@ npm run security:scan
 npm run staging:smoke
 ```
 
-`npm run verify` covers formatting, linting, strict types, 116
+`npm run verify` covers formatting, linting, strict types, 117
 unit/component/automation tests, and a production build. Playwright schedules
 28 desktop/mobile browser
 scenarios across authentication, Team, Settings, Dashboard, Notifications,

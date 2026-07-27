@@ -4,6 +4,7 @@ const checkpointMarkers = [
   'Activity history',
   'Standalone Visual Work',
 ];
+const maximumLinkedJavaScriptSources = 64;
 
 const wait = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -75,7 +76,7 @@ export function linkedJavaScriptSources(bundle) {
         (match) => match[0],
       ),
     ),
-  ].slice(0, 20);
+  ].slice(0, maximumLinkedJavaScriptSources);
 }
 
 async function responseText(fetcher, url, init, label) {

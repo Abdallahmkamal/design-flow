@@ -52,6 +52,18 @@ describe('staging smoke verification', () => {
     ).toEqual(['./TeamPage-a.js', './SettingsPage-b.js']);
   });
 
+  it('keeps checkpoint chunks beyond the first twenty entry imports', () => {
+    const imports = Array.from(
+      { length: 24 },
+      (_, index) => `"./Feature-${index}.js"`,
+    );
+    imports.push('"./WorkItemPage-checkpoint.js"');
+
+    expect(linkedJavaScriptSources(`[${imports.join(',')}]`)).toContain(
+      './WorkItemPage-checkpoint.js',
+    );
+  });
+
   it('verifies the frontend, Auth, RLS, and Edge origin boundaries', async () => {
     const fetcher = vi
       .fn()
