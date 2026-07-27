@@ -608,10 +608,10 @@ partial-success, generating, long-content, Light/Dark, desktop/mobile,
 keyboard, focus, accessible-name, and axe behavior. Route composition stays
 thin; RLS and server authorization remain authoritative.
 
-Sentry has no user-facing surface. Instrumentation may observe unexpected
-application failures only after sensitive data is scrubbed and must not enable
-session replay, user identity collection, form capture, or a product-visible
-control.
+External monitoring has no user-facing surface and is excluded from the MVP by
+D-103. The existing accessible failure view remains the only product surface;
+no telemetry, replay, user identity collection, form capture, or monitoring
+control is added.
 
 ## Explicitly excluded
 
@@ -639,15 +639,16 @@ runtime code, and all documented post-MVP v1.1 items.
 ## Approval gate
 
 This map and the two Phase 7 readiness briefs were approved for local
-implementation on 2026-07-27. Staging and every external or production action
-remain separately gated.
+implementation on 2026-07-27. The configured staging gate later passed; D-103
+approved the zero-billing correction. One-working-week acceptance and every
+production action remain separately gated.
 
 ## Local implementation evidence
 
 No shared component or public API was added. The only material component-level
 finding was constrained-browser-storage failure in `ThemeProvider`; its
-persistence is now fail-soft and regression-tested. Monitoring stays invisible
-and reports only allowlisted generic failure data. The cross-product review and
-completed local Playwright/axe gate found no remaining release-blocking UI
-issue. Staging responsive/accessibility/privacy evidence is still pending exact
-authorization.
+persistence is now fail-soft and regression-tested. D-103 removes external
+client telemetry entirely while preserving the accessible fail-safe error view.
+The cross-product review and completed local Playwright/axe gate found no
+remaining release-blocking UI issue. The configured staging delivery evidence
+passed; the one-working-week acceptance gate remains open.

@@ -29,7 +29,6 @@ Create a GitHub environment named `staging` with these environment variables:
 | `STAGING_SUPABASE_PROJECT_ID` | Project reference for `design-flow-staging` |
 | `STAGING_SUPABASE_URL` | HTTPS Data API/Auth base URL |
 | `STAGING_SUPABASE_PUBLISHABLE_KEY` | Browser-safe publishable key |
-| `STAGING_SENTRY_DSN` | Optional browser-safe Sentry DSN; only after separate monitoring-provider authorization |
 | `CLOUDFLARE_ACCOUNT_ID` | Account containing `design-flow-staging` Pages |
 
 Add these encrypted environment secrets:
@@ -198,10 +197,11 @@ closed.
 ## Phase 7 delivery status
 
 The local Phase 7 implementation adds ordered stage gates, pre-frontend backend
-smoke, an exact environment marker, security-header checks, private monitoring
-configuration, encrypted backup/recovery workflows, and manual production and
+smoke, an exact environment marker, security-header checks,
+encrypted/checksummed backup/recovery tooling, and manual production and
 known-good redeploy workflows. Local contracts prove later stages are blocked
-when migrations have not completed.
+when migrations have not completed. D-103 subsequently removed the unused
+Sentry/R2 provider paths to preserve strict zero-billing operation.
 
 PR #22 merged the local Phase 7 implementation to `main` at `78aeae0` after
 workflow #54 passed both required PR jobs. Workflow #55 then passed migrations,
@@ -231,7 +231,9 @@ later delivery step was skipped. Recovery workflow #65 (`30258611718`) found
 the remote database up to date, reconciled exactly fourteen hosted migrations,
 and passed the complete staging gate in 3m30s.
 
-Sentry/R2 configuration remains a separate provider-authentication gate.
+Sentry/R2 configuration is not an MVP gate. No account, subscription, bucket,
+token, DSN, or charge was created; production instead requires the separately
+verified offline-backup gate in the backup/restore runbook.
 Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
 reserved nine-persona fixture; do not reset or replace it.

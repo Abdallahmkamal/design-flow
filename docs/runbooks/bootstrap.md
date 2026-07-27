@@ -7,8 +7,9 @@ are not authorized or executed
 
 ## Preconditions
 
-Production delivery, backup, restore rehearsal, privacy monitoring, security,
-quota, and live smoke gates must pass first. Confirm production has no customer
+Production delivery, offline backup destination, production-source restore
+rehearsal, privacy, security, quota, and live smoke gates must pass first.
+Confirm production has no customer
 records, public registration is closed, the one-time bootstrap database state
 is unconsumed, and the approved first identity/email/timezone are recorded out
 of band. Generate the bootstrap secret and initial credential in an approved

@@ -114,7 +114,6 @@ jobs:
       VITE_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY:
         ${{ vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-      VITE_SENTRY_DSN: ${{ vars.STAGING_SENTRY_DSN }}
       DEPLOYMENT_APP_URL: https://design-flow-staging.pages.dev
       EXPECTED_APP_ENV: staging
       DELIVERY_STATE_PATH: /tmp/design-flow-delivery-state.json

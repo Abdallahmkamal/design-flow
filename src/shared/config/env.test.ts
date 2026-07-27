@@ -89,51 +89,6 @@ describe('parsePublicEnvironment', () => {
     ).toThrow(/Use HTTPS except for the local Supabase address/i);
   });
 
-  it('accepts an empty optional monitoring value', () => {
-    expect(
-      parsePublicEnvironment({
-        ...validLocalEnvironment,
-        VITE_SENTRY_DSN: '',
-      }),
-    ).toEqual(validLocalEnvironment);
-  });
-
-  it('accepts only a sentry.io browser DSN in staging or production', () => {
-    expect(() =>
-      parsePublicEnvironment({
-        ...validLocalEnvironment,
-        VITE_APP_ENV: 'staging',
-        VITE_SUPABASE_URL: 'https://synthetic-staging.supabase.co',
-        VITE_SENTRY_DSN: 'https://public-key@o123.ingest.us.sentry.io/456',
-      }),
-    ).not.toThrow();
-  });
-
-  it.each([
-    'http://public-key@o123.ingest.sentry.io/456',
-    'https://public-key@example.invalid/456',
-    'https://public-key:secret@o123.ingest.sentry.io/456',
-    'https://public-key@o123.ingest.sentry.io/456?token=secret',
-  ])('rejects unsafe monitoring DSN %s', (dsn) => {
-    expect(() =>
-      parsePublicEnvironment({
-        ...validLocalEnvironment,
-        VITE_APP_ENV: 'production',
-        VITE_SUPABASE_URL: 'https://synthetic-production.supabase.co',
-        VITE_SENTRY_DSN: dsn,
-      }),
-    ).toThrow(/sentry\.io browser DSN/i);
-  });
-
-  it('rejects monitoring transport in local, test, or preview environments', () => {
-    expect(() =>
-      parsePublicEnvironment({
-        ...validLocalEnvironment,
-        VITE_SENTRY_DSN: 'https://public-key@o123.ingest.sentry.io/456',
-      }),
-    ).toThrow(/only for staging or production/i);
-  });
-
   it.each([
     'http://172.32.0.5:54321',
     'http://192.169.1.5:54321',

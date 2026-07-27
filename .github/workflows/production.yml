@@ -11,6 +11,18 @@ on:
         description: Type DEPLOY_PRODUCTION
         required: true
         type: string
+      backup_artifact_label:
+        description: Non-secret label of the verified offline encrypted backup
+        required: true
+        type: string
+      backup_sha256:
+        description: SHA-256 of the verified encrypted backup
+        required: true
+        type: string
+      backup_confirmation:
+        description: Type BACKUP_VERIFIED_OFFLINE
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -26,25 +38,27 @@ jobs:
     steps:
       - name: Require main and exact confirmation
         env:
+          BACKUP_ARTIFACT_LABEL: ${{ inputs.backup_artifact_label }}
+          BACKUP_CONFIRMATION: ${{ inputs.backup_confirmation }}
+          BACKUP_SHA256: ${{ inputs.backup_sha256 }}
           CONFIRMATION: ${{ inputs.confirmation }}
           CONFIRM_RELEASE_SHA: ${{ inputs.confirm_release_sha }}
         run: |
           test "$GITHUB_REF" = "refs/heads/main"
           test "$CONFIRMATION" = "DEPLOY_PRODUCTION"
           test "$CONFIRM_RELEASE_SHA" = "$GITHUB_SHA"
-
-  backup:
-    name: Verified pre-migration backup
-    needs: authorize
-    uses: ./.github/workflows/backup.yml
-    with:
-      environment: production
-      label: pre_migration_${{ github.run_id }}
-    secrets: inherit
+          test "$BACKUP_CONFIRMATION" = "BACKUP_VERIFIED_OFFLINE"
+          [[ "$BACKUP_ARTIFACT_LABEL" =~ ^[a-z0-9][a-z0-9_-]{0,63}$ ]]
+          [[ "$BACKUP_SHA256" =~ ^[a-f0-9]{64}$ ]]
+          {
+            echo "Offline encrypted backup evidence accepted."
+            echo "Artifact label: $BACKUP_ARTIFACT_LABEL"
+            echo "SHA-256: $BACKUP_SHA256"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deliver:
     name: Ordered production delivery
-    needs: backup
+    needs: authorize
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment:
@@ -60,7 +74,6 @@ jobs:
       VITE_SUPABASE_URL: ${{ vars.PRODUCTION_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY:
         ${{ vars.PRODUCTION_SUPABASE_PUBLISHABLE_KEY }}
-      VITE_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
       DEPLOYMENT_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
       EXPECTED_APP_ENV: production
       DELIVERY_STATE_PATH: /tmp/design-flow-delivery-state.json

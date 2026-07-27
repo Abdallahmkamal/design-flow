@@ -3,7 +3,7 @@
 A lightweight work-management portal for one internal UX/design team.
 
 Phases 0–6 are complete and the implemented Phase 7 production hardening has
-passed its local and configured staging gates; provider configuration and
+passed its local and configured staging gates; offline production-backup and
 time-based rollout gates remain open. Design Flow now includes the contracted database and
 permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
@@ -195,11 +195,13 @@ with comments off by default and opt-in. PR #21 merged the team-date collision
 regression at `18233b9`; workflow #52 passed the complete staging closure gate
 in 3m56s.
 
-Phase 7 now has privacy-scrubbed monitoring, encrypted/checksummed backup and
-restore tooling, ordered delivery failure stops, security headers, recovery
-workflows, and operating runbooks. Workflow #65 passed the complete configured
-staging gate after the hosted failed-migration and recovery demonstration; the
-known-good no-database-mutation redeploy passed in workflow run `30257511622`.
-Sentry/R2 provider configuration and the one-working-week staging acceptance
-remain open. No production infrastructure, bootstrap, pilot, or release was
-performed.
+Phase 7 now has a strict zero-billing-exposure operating decision,
+encrypted/checksummed provider-agnostic backup and restore tooling, ordered
+delivery failure stops, security headers, recovery workflows, and operating
+runbooks. No Sentry or R2 account, subscription, credential, runtime, or
+delivery dependency is part of the MVP. Workflow #65 passed the complete
+configured staging gate after the hosted failed-migration and recovery
+demonstration; the known-good no-database-mutation redeploy passed in workflow
+run `30257511622`. The one-working-week staging acceptance and a named,
+rehearsed Admin-controlled offline production-backup destination remain open.
+No production infrastructure, bootstrap, pilot, or release was performed.

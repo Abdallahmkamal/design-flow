@@ -6,8 +6,8 @@ describe('tracked secret scanning', () => {
   it('accepts placeholders and example environment files', () => {
     expect(
       findSecretFindings([
-        { path: '.env.production.example', content: 'VITE_SENTRY_DSN=' },
-        { path: 'docs/runbook.md', content: 'R2_SECRET_ACCESS_KEY' },
+        { path: '.env.production.example', content: 'PUBLIC_VALUE=' },
+        { path: 'docs/runbook.md', content: 'PROVIDER_SECRET_PLACEHOLDER' },
       ]),
     ).toEqual([]);
   });

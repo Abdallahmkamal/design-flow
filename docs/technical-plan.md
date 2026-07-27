@@ -108,7 +108,12 @@ Every implementation slice must test the relevant organizational positions and r
 
 ## 9. Backup and recovery
 
-Run a daily logical database backup through GitHub Actions and store it in a private Cloudflare R2 bucket. The backup artifact must be compressed, encrypted before upload, and accompanied by a checksum. The R2 bucket must never be public, and its automation token must be limited to the backup bucket and the operations the workflow needs.
+The strict zero-billing MVP does not accept a hosted backup subscription. An
+authorized Admin creates each logical database backup from an approved operator
+environment, compresses and encrypts it before storage, and keeps its SHA-256
+checksum alongside the encrypted artifact on named Admin-controlled offline
+storage. The recovery key is stored separately. No unencrypted dump may be
+retained or uploaded.
 
 Retain:
 
@@ -116,9 +121,19 @@ Retain:
 - 4 weekly backups
 - 6 monthly backups
 
-Create and verify an additional backup immediately before every production database migration. Application code, migrations, Edge Functions, and configuration contracts remain versioned in Git rather than duplicated as the primary source of truth in database backups. No separate user-file backup is required while the MVP has no uploads.
+Create and verify an additional backup immediately before every production
+database migration. Record its non-secret label and checksum in the manually
+triggered production workflow. Application code, migrations, Edge Functions,
+and configuration contracts remain versioned in Git rather than duplicated as
+the primary source of truth in database backups. No separate user-file backup
+is required while the MVP has no uploads.
 
-Keep the automation encryption key in protected GitHub secrets and a separate recovery copy under Admin control in an approved secure location. A failed backup must fail visibly and notify the technical owner. Perform an actual restore rehearsal to local or staging every three months, recording the date, result, recovery duration, and follow-up actions.
+Keep the recovery key separate from the offline backup media under Admin
+control. A failed creation or verification stops the release before the
+production workflow is dispatched. Perform an actual isolated restore rehearsal
+every three months, recording the date, result, recovery duration, and follow-up
+actions. Production bootstrap and rollout remain blocked until the destination
+is named and the production-source backup procedure is rehearsed successfully.
 
 The first restore rehearsal must explicitly verify what Supabase Auth identity data and credential state can be recovered from the selected logical export. If credentials cannot be restored safely, the recovery runbook must require Admin-led account recreation or password reset; never imply that an untested database dump guarantees credential recovery.
 
@@ -136,7 +151,7 @@ GitHub Actions owns the ordered delivery workflow. A pull request must:
 
 After an approved change is merged to `main`, production deployment is a manually triggered workflow started by an authorized repository owner/Admin. It must:
 
-1. Create and verify the pre-deployment backup.
+1. Confirm the independently created and verified offline pre-deployment backup label and checksum.
 2. Apply production database migrations.
 3. Deploy Edge Functions.
 4. Run authentication and database smoke checks.
@@ -149,16 +164,23 @@ For a frontend or Edge Function regression, redeploy the previous known-good com
 
 ## 11. Monitoring, alerts, and free-tier boundaries
 
-Use the following free MVP monitoring layers:
+Use only monitoring already included with the approved hosting/repository stack:
 
-- Sentry Free for frontend errors and unexpected application failures, owned by the technical maintainer account.
+- the portal's fail-safe route error state and reproducible incident details reported to the Admin without private record contents;
 - Supabase Logs Explorer for Auth, database/API, and Edge Function investigation.
-- GitHub notifications for failed tests, backups, and deployments.
+- GitHub workflow results for failed tests and deployments.
 - Cloudflare email notifications for relevant Pages and account events supported by the selected free plan.
 
-Do not enable session replay in the MVP. Error instrumentation must disable default personal-information collection and scrub ticket descriptions, comments, work-log details, email addresses, Figma URLs, form contents, credentials, and tokens.
+Do not add external error ingestion, analytics, session replay, or client-side
+telemetry in the MVP. Incident records and screenshots must omit ticket
+descriptions, comments, work-log details, email addresses, Figma URLs, form
+contents, credentials, and tokens.
 
-Review provider consumption at least monthly, including Supabase database size and egress, Edge Function usage, GitHub Actions minutes, R2 backup storage, and Sentry event volume. Treat 70% of an applicable free allowance as a warning and 85% as a decision point for cleanup, an architectural adjustment, or a paid upgrade before the limit becomes disruptive.
+Review provider consumption at least monthly, including Supabase database size
+and egress, Edge Function usage, GitHub Actions minutes/storage, and Cloudflare
+Pages usage. Treat 70% of an applicable included allowance as a warning and 85%
+as a stop-and-decide point. A paid upgrade requires a separate explicit
+decision; it is never automatic.
 
 Do not generate artificial keep-alive traffic solely to prevent a free Supabase project from pausing. The Admin runbook must explain how to detect and resume a project after extended inactivity. The free MVP has no formal uptime or service-level guarantee; this limitation is explicit and acceptable for the current internal team.
 
