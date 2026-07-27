@@ -43,6 +43,8 @@ describe('production delivery workflows', () => {
     expect(redeploy).not.toMatch(
       /supabase db push|pg_restore|scripts\/backups\/restore/iu,
     );
+    expect(redeploy).not.toContain('--project-name=$PAGES_PROJECT');
+    expect(redeploy).toContain('--project-name=${{ env.PAGES_PROJECT }}');
     expect(redeploy).toContain('git merge-base --is-ancestor');
     expectInOrder(redeploy, [
       'Redeploy known-good Edge Functions',
