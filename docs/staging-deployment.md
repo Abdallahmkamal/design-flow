@@ -211,7 +211,14 @@ URL still served the preceding headerless document; the required CSP and other
 headers were present after propagation. The closure fix extends the existing
 bounded canonical-URL retry to headers and the environment marker as well as
 bundle markers; it adds regression coverage and raises the local test count to
-116.
+116. PR #23 merged that correction at `7d2d531` after workflow #56 passed in
+2m15s. Main workflow #57 (`30255283154`) preserved the ordered gate and again
+passed migrations, hosted types, Functions, backend smoke, build, source-map
+denial, and Pages deployment. Its 51-second final smoke then exposed a separate
+bounded-scanner defect: `Activity history` is in the Work Item chunk after the
+first twenty entry imports, while the scanner inspected only twenty. The
+follow-up keeps the same-origin bound, raises it to 64, adds a beyond-twenty
+regression, and raises the local test count to 117.
 
 Sentry/R2 configuration, a failed hosted migration demonstration, and the
 known-good staging redeploy remain separate evidence gates. Preserve the
