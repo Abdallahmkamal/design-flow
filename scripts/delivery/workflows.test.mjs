@@ -58,7 +58,10 @@ describe('production delivery workflows', () => {
   it('adds stage gates to the existing staging delivery', () => {
     const staging = workflow('ci.yml');
 
+    expect(staging).toContain('rehearse_failed_migration');
+    expect(staging).toContain('intentional Phase 7 failed migration rehearsal');
     expectInOrder(staging, [
+      'Prepare synthetic failed migration rehearsal',
       'Preview pending staging migrations',
       'Apply staging migrations',
       'Verify staging migration history and generated type schema',
