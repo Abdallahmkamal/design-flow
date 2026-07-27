@@ -244,42 +244,44 @@ export async function verifyStaging({
     deploymentConfiguration(environment);
   const checks = [];
 
-  let missingMarker;
-
   for (let attempt = 1; attempt <= frontendAttempts; attempt += 1) {
-    const deployedJavaScript = await deployedFrontendJavaScript(
-      fetcher,
-      appUrl,
-    );
-    missingMarker = checkpointMarkers.find(
-      (marker) => !deployedJavaScript.includes(marker),
-    );
+    try {
+      const deployedJavaScript = await deployedFrontendJavaScript(
+        fetcher,
+        appUrl,
+      );
+      const missingMarker = checkpointMarkers.find(
+        (marker) => !deployedJavaScript.includes(marker),
+      );
 
-    if (!missingMarker || attempt === frontendAttempts) {
+      if (missingMarker) {
+        throw new Error(
+          `The live bundle is missing the required marker: ${missingMarker}`,
+        );
+      }
+
+      const documentResponse = await responseText(
+        fetcher,
+        appUrl,
+        undefined,
+        'Deployed environment marker',
+      );
+      const environmentPattern = new RegExp(
+        `<meta[^>]+name=["']design-flow-environment["'][^>]+content=["']${expectedAppEnvironment}["']`,
+        'u',
+      );
+      if (!environmentPattern.test(documentResponse.text)) {
+        throw new Error(
+          'The deployed frontend environment marker is incorrect.',
+        );
+      }
+
       break;
+    } catch (error) {
+      if (attempt === frontendAttempts) throw error;
     }
 
     await waiter(retryDelayMs);
-  }
-
-  if (missingMarker) {
-    throw new Error(
-      `The live bundle is missing the required marker: ${missingMarker}`,
-    );
-  }
-
-  const documentResponse = await responseText(
-    fetcher,
-    appUrl,
-    undefined,
-    'Deployed environment marker',
-  );
-  const environmentPattern = new RegExp(
-    `<meta[^>]+name=["']design-flow-environment["'][^>]+content=["']${expectedAppEnvironment}["']`,
-    'u',
-  );
-  if (!environmentPattern.test(documentResponse.text)) {
-    throw new Error('The deployed frontend environment marker is incorrect.');
   }
 
   checks.push('complete frontend bundle and environment');

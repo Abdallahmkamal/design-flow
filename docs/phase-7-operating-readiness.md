@@ -109,7 +109,7 @@ reset, deactivation, or removal of the preserved staging First Admin identity.
 
 ## Current local evidence — 2026-07-27
 
-Formatting, lint, strict types, 115 unit/component/automation tests, the
+Formatting, lint, strict types, 116 unit/component/automation tests, the
 production build, 26 applicable Playwright/axe checks with two intended device
 skips, all fourteen migrations from zero on Colima, 400 pgTAP/RLS assertions,
 generated types, 16 Edge Function tests, and a 308-file repository secret scan
