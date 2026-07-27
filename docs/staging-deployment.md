@@ -220,7 +220,18 @@ first twenty entry imports, while the scanner inspected only twenty. The
 follow-up keeps the same-origin bound, raises it to 64, adds a beyond-twenty
 regression, and raises the local test count to 117.
 
-Sentry/R2 configuration, a failed hosted migration demonstration, and the
-known-good staging redeploy remain separate evidence gates. Preserve the
+PR #24 merged the scanner correction at `bd6eaa3`; workflow #59
+(`30256148301`) passed the complete gate in 4m01s. PR #25 corrected the
+known-good Pages project expression at `f4d6c25`; ordinary workflow #61 passed
+in 4m11s, and known-good run `30257511622` redeployed `7d2d531` without a
+database mutation in 1m12s. PR #26 added the manual-only ephemeral migration
+rehearsal at `de23dcd`; default workflow #63 passed in 4m54s. Rehearsal workflow
+#64 (`30258329567`) failed on the intentional PostgreSQL exception and every
+later delivery step was skipped. Recovery workflow #65 (`30258611718`) found
+the remote database up to date, reconciled exactly fourteen hosted migrations,
+and passed the complete staging gate in 3m30s.
+
+Sentry/R2 configuration remains a separate provider-authentication gate.
+Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
 reserved nine-persona fixture; do not reset or replace it.

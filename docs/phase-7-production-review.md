@@ -67,10 +67,11 @@ separate from Manager organizational responsibility.
 
 ## Unresolved launch gates
 
-- Configure and prove private Sentry/R2/backups/failure notifications only with
-  exact external-service authorization.
-- Run the complete Phase 7 staging gate, hosted failure-stop demonstration, and
-  known-good redeploy through authenticated Chrome after staging authorization.
+- Configure and prove private Sentry/R2/backups/failure notifications when the
+  authenticated provider sessions and protected values are available.
+- Complete staging gate, hosted failure-stop/recovery, and known-good redeploy
+  passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
+  record.
 - Record current provider quota values and hosted performance/security headers.
 - Complete one working week of staging acceptance, separately authorized
   production bootstrap, one working week pilot, launch-blocker retest,

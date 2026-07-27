@@ -2,8 +2,9 @@
 
 **Owner:** Admin/technical maintainer
 
-**Status:** Local encrypted restore rehearsal passed; R2 configuration/upload
-and hosted restore remain unauthorized
+**Status:** Local encrypted restore rehearsal passed; staging R2
+configuration/upload authorized but blocked by signed-out provider and missing
+protected values
 
 ## Backup contract
 
@@ -45,9 +46,12 @@ encryption, checksum, archive, upload, listing, or deletion failure. GitHub
 failed-workflow notifications are the required technical-owner alert; confirm
 the owner watches Actions failures before enabling automation.
 
-No R2 bucket, token, secret, workflow run, or alert was created or sent during
-local implementation. Enabling or manually dispatching the workflow requires
-separate authorization for the exact environment.
+No R2 bucket, token, secret, workflow run, or alert has been created or sent.
+Staging configuration is authorized, but the current Chrome provider session is
+signed out and the staging environment lacks all required backup/R2 protected
+values. Do not dispatch until the private bucket, least-privilege token,
+separate recovery key, database URL, and technical-owner failure notification
+are configured without exposing their values.
 
 ## Restore decision
 
