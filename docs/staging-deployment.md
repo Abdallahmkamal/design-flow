@@ -203,10 +203,17 @@ configuration, encrypted backup/recovery workflows, and manual production and
 known-good redeploy workflows. Local contracts prove later stages are blocked
 when migrations have not completed.
 
-No Phase 7 change has been pushed, merged, deployed, or verified against
-staging. Altering staging, configuring Sentry/R2/GitHub environments, running a
-failed hosted migration demonstration, or executing the known-good staging
-redeploy requires explicit authorization for that exact action. When
-authorized, preserve the original `[SYNTHETIC] Manager + Admin` Auth identity
-and credentials and the reserved nine-persona fixture; do not reset or replace
-it.
+PR #22 merged the local Phase 7 implementation to `main` at `78aeae0` after
+workflow #54 passed both required PR jobs. Workflow #55 then passed migrations,
+hosted types, Functions, pre-frontend backend smoke, build, source-map denial,
+and Pages upload. Its immediate final smoke stopped because the canonical Pages
+URL still served the preceding headerless document; the required CSP and other
+headers were present after propagation. The closure fix extends the existing
+bounded canonical-URL retry to headers and the environment marker as well as
+bundle markers; it adds regression coverage and raises the local test count to
+116.
+
+Sentry/R2 configuration, a failed hosted migration demonstration, and the
+known-good staging redeploy remain separate evidence gates. Preserve the
+original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
+reserved nine-persona fixture; do not reset or replace it.
