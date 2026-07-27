@@ -234,6 +234,14 @@ and passed the complete staging gate in 3m30s.
 Sentry/R2 configuration is not an MVP gate. No account, subscription, bucket,
 token, DSN, or charge was created; production instead requires the separately
 verified offline-backup gate in the backup/restore runbook.
+
+PR #28 published the D-103 zero-billing correction at `a22b43b`; its PR
+workflow `30262584748` passed in 3m23s. The PR merged to `main` at `54af2a3`,
+and workflow #69 (`30262859965`) passed frontend/browser in 1m58s,
+Supabase/Deno in 2m06s, the staging delivery in 1m43s, and the complete run in
+3m56s. Authenticated Chrome loaded the canonical staging application with the
+preserved `[SYNTHETIC] Manager + Admin`, the staging marker, and no Sentry
+script.
 Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
 reserved nine-persona fixture; do not reset or replace it.
