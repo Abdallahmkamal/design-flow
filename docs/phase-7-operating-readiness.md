@@ -123,3 +123,9 @@ focused contract tests, and a 301-file secret scan. The named offline
 production-backup destination and production-source restore rehearsal, one
 working week of staging acceptance, production bootstrap, pilot, release, and
 stabilization remain unperformed gates.
+
+PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
+3m23s. It merged to `main` at `54af2a3`, and workflow #69 (`30262859965`)
+passed the complete staging gate in 3m56s. Authenticated Chrome confirmed the
+canonical staging application, staging marker, preserved synthetic First Admin,
+and absence of a Sentry script.

@@ -202,6 +202,8 @@ runbooks. No Sentry or R2 account, subscription, credential, runtime, or
 delivery dependency is part of the MVP. Workflow #65 passed the complete
 configured staging gate after the hosted failed-migration and recovery
 demonstration; the known-good no-database-mutation redeploy passed in workflow
-run `30257511622`. The one-working-week staging acceptance and a named,
+run `30257511622`. PR #28 then removed the Sentry/R2 MVP paths, merged at
+`54af2a3`, and workflow #69 (`30262859965`) passed the complete staging gate in
+3m56s. The one-working-week staging acceptance and a named,
 rehearsed Admin-controlled offline production-backup destination remain open.
 No production infrastructure, bootstrap, pilot, or release was performed.
