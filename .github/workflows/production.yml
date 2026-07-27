@@ -63,7 +63,7 @@ jobs:
       VITE_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
       DEPLOYMENT_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
       EXPECTED_APP_ENV: production
-      DELIVERY_STATE_PATH: ${{ runner.temp }}/design-flow-delivery-state.json
+      DELIVERY_STATE_PATH: /tmp/design-flow-delivery-state.json
 
     steps:
       - name: Check out exact release

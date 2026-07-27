@@ -111,7 +111,7 @@ jobs:
       VITE_SENTRY_DSN: ${{ vars.STAGING_SENTRY_DSN }}
       DEPLOYMENT_APP_URL: https://design-flow-staging.pages.dev
       EXPECTED_APP_ENV: staging
-      DELIVERY_STATE_PATH: ${{ runner.temp }}/design-flow-delivery-state.json
+      DELIVERY_STATE_PATH: /tmp/design-flow-delivery-state.json
 
     steps:
       - name: Check out repository
