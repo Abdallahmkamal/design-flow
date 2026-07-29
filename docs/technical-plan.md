@@ -1,7 +1,7 @@
 # Design Flow technical plan
 
 **Status:** Approved for MVP implementation  
-**Last updated:** 2026-07-19 — D-099 refines component-presentation authority
+**Last updated:** 2026-07-29 — D-104 shortens the staging and pilot acceptance gates
 
 This document records the approved implementation architecture and operating model for Design Flow. The approved module sequence and slice-level completion gates are defined in [build-plan.md](build-plan.md).
 
@@ -192,11 +192,14 @@ Do not automatically import historical data in the MVP. Current work items may b
 
 Roll out in this order:
 
-1. One working week of staging acceptance and full position/Admin/RLS testing.
-2. One working week of limited production use by the Admin + Lead, Manager, another Lead, and two Designers.
+1. Two full working days of staging acceptance and full position/Admin/RLS testing.
+2. Two full working days of limited production use by the Admin + Lead, Manager, another Lead, and two Designers.
 3. Resolve launch-blocking findings and re-run affected acceptance checks.
 4. Open production to the complete team.
 5. Keep a two-week stabilization period before taking nonessential enhancements into implementation.
+
+A working day counts only when its complete approved acceptance matrix passes.
+Blocked or partial attempts do not count toward either two-day gate.
 
 Production launch requires:
 

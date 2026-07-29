@@ -16,9 +16,9 @@ sanitized Work Item PDF export.
 The Supabase Free staging project contains the verified Phase 7 checkpoint,
 six account-lifecycle Edge Functions, nine reserved synthetic personas, and the
 guarded lightweight acceptance dataset, including clearly labelled standalone
-Visual Work. The original First Admin Auth identity and credentials are
-preserved as the synthetic Manager + Admin; other legacy staging accounts were
-removed. The non-production Cloudflare Pages Free staging deployment is live at
+Visual Work. The bootstrap identity is the synthetic Manager + Admin; there is
+no separate staging First Admin account. The non-production Cloudflare Pages
+Free staging deployment is live at
 <https://design-flow-staging.pages.dev>. No production service, credential, or
 production data is involved.
 
@@ -204,6 +204,6 @@ configured staging gate after the hosted failed-migration and recovery
 demonstration; the known-good no-database-mutation redeploy passed in workflow
 run `30257511622`. PR #28 then removed the Sentry/R2 MVP paths, merged at
 `54af2a3`, and workflow #69 (`30262859965`) passed the complete staging gate in
-3m56s. The one-working-week staging acceptance and a named,
+3m56s. The D-104 two-working-day staging acceptance and a named,
 rehearsed Admin-controlled offline production-backup destination remain open.
 No production infrastructure, bootstrap, pilot, or release was performed.

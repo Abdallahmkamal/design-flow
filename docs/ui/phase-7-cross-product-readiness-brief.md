@@ -96,6 +96,11 @@ values remain blocking gaps rather than guessed literals.
 Local implementation was approved on 2026-07-27 after review of this brief and
 the Phase 7 operating-readiness brief. D-103 later removed Sentry/R2 from the
 MVP and preserved the existing failure UI without adding a component. The
-configured staging gate passed; one-working-week acceptance, production
+configured staging gate passed; D-104 two-working-day acceptance, production
 infrastructure, production bootstrap, pilot, and release remain open or
 separately gated actions.
+
+D-105 accepts the evidenced 390 px Reports overflow for staging and the limited
+pilot only; correction and affected responsive retest remain required before
+full-team release. The separate inactive owner test profiles are excluded from
+the active acceptance-principal set.

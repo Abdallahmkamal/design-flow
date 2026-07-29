@@ -171,9 +171,10 @@ for acceptance:
 The production-guarded fixture passed two exact loads with anchor 2026-07-27:
 nine reserved personas, nine Areas, fourteen tickets, twenty work-log batches,
 fifty entries, all six statuses, zero non-synthetic profiles, and zero rejected
-Viewer + Admin states. The original First Admin Auth identity and password were
-preserved as the synthetic Manager + Admin; all other legacy staging identities
-were removed before the reserved personas were provisioned. The approved
+Viewer + Admin states. The bootstrap Auth identity and password were preserved
+as the synthetic Manager + Admin; this is one account, not a separate First
+Admin persona. All other legacy staging identities were removed before the
+reserved personas were provisioned. The approved
 inactive and password-restricted states remain distinct.
 
 The hosted all-people Reports view reconciled to 13 ticket source rows, seven

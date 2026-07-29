@@ -64,10 +64,18 @@ It must then establish the approved hierarchy and controlled lists without
 automatic historical import. Documentation is authorized only after brief
 approval; executing bootstrap is not.
 
-Rollout remains staging acceptance for one working week, limited production
-pilot for one working week, launch-blocker resolution/retest, full-team release,
-then two-week stabilization. No record may state that a time-based gate passed
-before it actually completes.
+Under D-104, rollout requires two full working days of staging acceptance, two
+full working days of limited production pilot, launch-blocker
+resolution/retest, full-team release, then two-week stabilization. A blocked or
+partial day does not count, and no record may state that a time-based gate
+passed before it actually completes.
+
+D-105 accepts two named exceptions for staging and the limited pilot: two
+owner-created inactive test profiles remain outside the active reserved-persona
+matrix, and the evidenced 390 px Reports overflow is nonblocking until
+full-team release. The overflow must be corrected and retested before that
+release; neither exception weakens security, recovery, permission, or
+data-integrity gates.
 
 ## Efficiency and token use
 
@@ -95,7 +103,8 @@ tests, quota review, reconciled synthetic fixtures, and unresolved gates.
 
 Final review must reject secrets, personal/production data, unrelated changes,
 post-MVP code, unsafe delivery behavior, invented success, and any replacement,
-reset, deactivation, or removal of the preserved staging First Admin identity.
+reset, deactivation, or removal of the preserved staging bootstrap Manager +
+Admin identity; there is no separate First Admin account.
 
 ## Approval and external-action matrix
 
@@ -120,12 +129,12 @@ failure stop/recovery, and known-good redeploy passed. The strict zero-billing
 correction passed formatting, lint, strict types, 29 test files/105 tests, 26
 Playwright/axe passes with two intended skips, a production-mode build, 25
 focused contract tests, and a 301-file secret scan. The named offline
-production-backup destination and production-source restore rehearsal, one
-working week of staging acceptance, production bootstrap, pilot, release, and
+production-backup destination and production-source restore rehearsal, two
+full working days of staging acceptance, production bootstrap, pilot, release, and
 stabilization remain unperformed gates.
 
 PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
 3m23s. It merged to `main` at `54af2a3`, and workflow #69 (`30262859965`)
 passed the complete staging gate in 3m56s. Authenticated Chrome confirmed the
-canonical staging application, staging marker, preserved synthetic First Admin,
-and absence of a Sentry script.
+canonical staging application, staging marker, preserved synthetic bootstrap
+Manager + Admin identity, and absence of a Sentry script.
