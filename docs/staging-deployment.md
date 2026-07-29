@@ -243,6 +243,18 @@ Supabase/Deno in 2m06s, the staging delivery in 1m43s, and the complete run in
 3m56s. Authenticated Chrome loaded the canonical staging application with the
 preserved `[SYNTHETIC] Manager + Admin`, the staging marker, and no Sentry
 script.
+
+The D-104 acceptance time gate then passed across two full working days on
+2026-07-29 and 2026-07-30 using only the reserved synthetic personas. Both days
+verified all seven valid active principal variants, independent Admin versus
+Manager ownership, fail-closed inactive and password-restricted states,
+report/export visibility, fixture meaning, and desktop/narrow routes. D-105
+accepts the two inactive owner test profiles outside the active persona set and
+the measured 390 px Reports overflow through staging and the limited pilot
+only; the overflow still requires correction and retest before full-team
+release. Exact evidence and the audited Day 2 credential-maintenance deviation
+are in the Phase 7 rollout record.
+
 Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
 reserved nine-persona fixture; do not reset or replace it.

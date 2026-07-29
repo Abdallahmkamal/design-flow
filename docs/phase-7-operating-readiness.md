@@ -129,9 +129,10 @@ failure stop/recovery, and known-good redeploy passed. The strict zero-billing
 correction passed formatting, lint, strict types, 29 test files/105 tests, 26
 Playwright/axe passes with two intended skips, a production-mode build, 25
 focused contract tests, and a 301-file secret scan. The named offline
-production-backup destination and production-source restore rehearsal, two
-full working days of staging acceptance, production bootstrap, pilot, release, and
-stabilization remain unperformed gates.
+production-backup destination and production-source restore rehearsal,
+production bootstrap, pilot, release, and stabilization remain unperformed
+gates. The two-working-day staging acceptance gate passed on 2026-07-30 under
+the explicit D-105 staging/pilot exceptions.
 
 PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
 3m23s. It merged to `main` at `54af2a3`, and workflow #69 (`30262859965`)
