@@ -49,7 +49,7 @@ states. Its material theme-storage failure is fixed fail-soft. The completed
 local browser gate has 26 applicable desktop/mobile Playwright/axe passes and
 two intended device skips, with no local release-blocking finding. The
 configured staging gate passed; the D-104 two-working-day acceptance matrix
-has one of two days passed under the explicit D-105 exceptions. The 390 px
+passed on 2026-07-30 under the explicit D-105 exceptions. The 390 px
 Reports overflow remains a required correction before full-team release.
 
 ## Quota and operational readiness
@@ -73,7 +73,7 @@ separate from Manager organizational responsibility.
   passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
   record.
 - Record current provider quota values and hosted performance/security headers.
-- Complete two full working days of staging acceptance, separately authorized
-  production bootstrap, two full working days of pilot, launch-blocker retest,
-  full-team release, and two-week stabilization. None is started or passed.
-  Blocked or partial days do not count under D-104.
+- The two full working days of staging acceptance passed on 2026-07-29 and
+  2026-07-30. Separately authorized production bootstrap, two full working days
+  of pilot, launch-blocker retest, full-team release, and two-week stabilization
+  remain open. Blocked or partial days do not count under D-104.

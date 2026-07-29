@@ -204,6 +204,7 @@ configured staging gate after the hosted failed-migration and recovery
 demonstration; the known-good no-database-mutation redeploy passed in workflow
 run `30257511622`. PR #28 then removed the Sentry/R2 MVP paths, merged at
 `54af2a3`, and workflow #69 (`30262859965`) passed the complete staging gate in
-3m56s. The D-104 two-working-day staging acceptance and a named,
-rehearsed Admin-controlled offline production-backup destination remain open.
-No production infrastructure, bootstrap, pilot, or release was performed.
+3m56s. The D-104 two-working-day staging acceptance passed on 2026-07-30 under
+the two D-105 staging/pilot exceptions. A production-source restore rehearsal,
+production infrastructure, bootstrap, pilot, and release remain open; none was
+performed.
