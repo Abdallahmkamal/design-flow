@@ -2,6 +2,7 @@ begin;
 
 select plan(65);
 
+select set_config('design_flow.phase3_due_date', private.current_team_date()::text, true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001', true);
 set local role authenticated;
@@ -38,7 +39,7 @@ select lives_ok(
     '[SYNTHETIC TEST] Phase 3 foundation',
     '[SYNTHETIC TEST] Created by pgTAP.',
     '50000000-0000-4000-8000-000000000001', null,
-    '2026-07-22', '2026-07-28',
+    '2026-07-22', current_setting('design_flow.phase3_due_date')::date,
     'https://www.figma.com/design/synthetic-pgtap',
     array['60000000-0000-4000-8000-000000000001']::uuid[],
     '90000000-0000-4000-8000-000000000002'
@@ -52,7 +53,7 @@ select set_config(
     '[SYNTHETIC TEST] Phase 3 foundation',
     '[SYNTHETIC TEST] Created by pgTAP.',
     '50000000-0000-4000-8000-000000000001', null,
-    '2026-07-22', '2026-07-28',
+    '2026-07-22', current_setting('design_flow.phase3_due_date')::date,
     'https://www.figma.com/design/synthetic-pgtap',
     array['60000000-0000-4000-8000-000000000001']::uuid[],
     '90000000-0000-4000-8000-000000000002'
@@ -96,7 +97,7 @@ select lives_ok(
     '[SYNTHETIC TEST] Phase 3 foundation',
     '[SYNTHETIC TEST] Created by pgTAP.',
     '50000000-0000-4000-8000-000000000001', null,
-    '2026-07-22', '2026-07-28',
+    '2026-07-22', current_setting('design_flow.phase3_due_date')::date,
     'https://www.figma.com/design/synthetic-pgtap',
     array['60000000-0000-4000-8000-000000000001']::uuid[],
     '90000000-0000-4000-8000-000000000002'
@@ -134,7 +135,7 @@ select set_config(
 
 select lives_ok(
   format(
-    $$ select public.update_work_item('%s', '[SYNTHETIC TEST] Updated foundation', '[SYNTHETIC TEST] Preserved description', '50000000-0000-4000-8000-000000000001', '2026-07-22', '2026-07-28', 'https://www.figma.com/design/synthetic-updated', array['60000000-0000-4000-8000-000000000001']::uuid[], '%s', '90000000-0000-4000-8000-000000000030') $$,
+    $$ select public.update_work_item('%s', '[SYNTHETIC TEST] Updated foundation', '[SYNTHETIC TEST] Preserved description', '50000000-0000-4000-8000-000000000001', '2026-07-22', current_setting('design_flow.phase3_due_date')::date, 'https://www.figma.com/design/synthetic-updated', array['60000000-0000-4000-8000-000000000001']::uuid[], '%s', '90000000-0000-4000-8000-000000000030') $$,
     current_setting('design_flow.phase3_item'),
     current_setting('design_flow.phase3_old_version')
   ),
@@ -159,7 +160,7 @@ select throws_ok(
 
 select lives_ok(
   format(
-    $$ select public.update_work_item('%s', '[SYNTHETIC TEST] Updated foundation', '[SYNTHETIC TEST] Preserved description', '50000000-0000-4000-8000-000000000001', '2026-07-22', '2026-07-28', 'https://www.figma.com/design/synthetic-updated', array['60000000-0000-4000-8000-000000000001']::uuid[], '%s', '90000000-0000-4000-8000-000000000030') $$,
+    $$ select public.update_work_item('%s', '[SYNTHETIC TEST] Updated foundation', '[SYNTHETIC TEST] Preserved description', '50000000-0000-4000-8000-000000000001', '2026-07-22', current_setting('design_flow.phase3_due_date')::date, 'https://www.figma.com/design/synthetic-updated', array['60000000-0000-4000-8000-000000000001']::uuid[], '%s', '90000000-0000-4000-8000-000000000030') $$,
     current_setting('design_flow.phase3_item'),
     current_setting('design_flow.phase3_old_version')
   ),
