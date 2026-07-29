@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-26 — D-102 records approved post-MVP v1.1 planning without changing MVP implementation order
+**Last updated:** 2026-07-29 — D-104 shortens the staging and pilot acceptance gates
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -273,7 +273,10 @@ Complete the approved operating model:
 - The Admin-controlled offline destination is named and a production-source encrypted backup is restored successfully in isolation; until then production bootstrap/pilot/release is blocked.
 - Restore behavior, including Supabase Auth recovery/reset limitations, is demonstrated rather than assumed.
 - A previous known-good application release can be redeployed and a failed migration cannot continue to later delivery stages.
-- The pilot group completes one working week without an unresolved security, data-integrity, authentication, or core-workflow blocker.
+- The staging matrix completes on two full working days and the pilot group then
+  completes two full working days without an unresolved security,
+  data-integrity, authentication, or core-workflow blocker. Blocked or partial
+  days do not count.
 - Admin operational ownership and Manager organizational responsibility remain distinct in the system and runbooks.
 - The cross-product UI consistency, responsive, accessibility, and state-coverage review is complete with no unresolved release-blocking issue.
 

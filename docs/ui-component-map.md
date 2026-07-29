@@ -640,8 +640,13 @@ runtime code, and all documented post-MVP v1.1 items.
 
 This map and the two Phase 7 readiness briefs were approved for local
 implementation on 2026-07-27. The configured staging gate later passed; D-103
-approved the zero-billing correction. One-working-week acceptance and every
+approved the zero-billing correction. D-104 two-working-day acceptance and every
 production action remain separately gated.
+
+D-105 counts Day 1 with two explicit staging/pilot exceptions: inactive owner
+test profiles are outside the active persona set, and the 390 px Reports
+overflow remains a required pre-release correction rather than a staging/pilot
+blocker.
 
 ## Local implementation evidence
 
@@ -651,4 +656,5 @@ persistence is now fail-soft and regression-tested. D-103 removes external
 client telemetry entirely while preserving the accessible fail-safe error view.
 The cross-product review and completed local Playwright/axe gate found no
 remaining release-blocking UI issue. The configured staging delivery evidence
-passed; the one-working-week acceptance gate remains open.
+passed; the D-104 two-working-day acceptance gate has one of two days passed
+under D-105.
