@@ -2,8 +2,8 @@
 
 **Owner:** Admin/technical maintainer
 
-**Status:** Local encrypted restore rehearsal passed; strict zero-billing
-offline production destination and production-source rehearsal remain open
+**Status:** Local and hosted production-source restore rehearsals passed;
+Admin-controlled offline backup procedure verified
 
 ## Backup contract
 
@@ -113,3 +113,47 @@ artifact label/checksum, operator, restore target, start/end/duration, schema an
 fixture reconciliation, Auth limitation/result, failures and corrective
 actions, cleanup, and the next due date. Never record a URL containing
 credentials or any decrypted content.
+
+## Production pre-migration evidence — 2026-07-29
+
+Before workflow `30526117799`, the Admin created and verified encrypted artifact
+`design-flow_production_pre_migration_20260729T225324Z.dump.enc` with SHA-256
+`31934e3def6b7c5cfb473a4fc751b01ff220e7746cada2ec12ee3769afb61da1`.
+Checksum, decrypt, and archive-list checks passed. The encrypted artifact and
+checksum copied to the named Admin-controlled Google Drive destination were
+downloaded through authenticated Chrome and proved byte-identical to the local
+pair. The recovery key remained separate. This proves the pre-migration
+backup/offline-copy procedure; it does not replace the required post-delivery
+production-source restore into an isolated hosted target.
+
+## Production post-delivery evidence — 2026-07-30
+
+After the guarded production workflow passed, the Admin created encrypted
+artifact `design-flow_production_post_delivery_20260730T083655Z.dump.enc`
+(594,800 bytes), SHA-256
+`fe83fcf571aaa97ebb95181c3964a0168707280f4c22f65186e299a6fc0f9309`.
+Local checksum, decrypt, archive-list, and plaintext-cleanup checks passed. The
+Admin-controlled Drive copies were downloaded through authenticated Chrome;
+their checksum passed and both files were byte-identical to the local pair.
+
+With explicit authorization, staging was paused and a disposable Free Supabase
+project was created for the hosted rehearsal. Four preparation attempts failed
+closed on policy-clean ordering, protected Auth-schema ownership, an overly
+broad Auth exclusion, and missing extensions. The final 35.7-second restore
+installed the approved extension set, restored `public`, `private`, and
+`supabase_migrations` with an exact TOC filter, and preserved the provider-owned
+empty Auth schema because the source contained zero Auth identities.
+
+Production and the restored target reconciled to 14 migrations; zero profiles,
+Auth users, Viewer + Admin, Areas, tickets, batches, entries, comments,
+notifications, and audit events; one unconsumed bootstrap row; 4 positions, 6
+statuses, 19 work types, 26 policies, and 55 public functions. The target also
+had 31 public tables, RLS on all 30 applicable tables, forced RLS/direct-write
+denial on profiles, and the collision-fix migration. No Auth credential
+recovery is claimed.
+
+The disposable project and its one-time Keychain credential were deleted; all
+decrypted temporary files were removed. Staging resumed and passed frontend,
+security-header, Function-origin, fail-closed inactive-account, and
+authenticated Manager + Admin Dashboard smoke checks. The next rehearsal is
+due by 2026-10-30 and after any material backup-contract change.

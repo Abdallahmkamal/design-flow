@@ -3,9 +3,11 @@
 A lightweight work-management portal for one internal UX/design team.
 
 Phases 0–6 are complete and the implemented Phase 7 production hardening has
-passed its local and configured staging gates; offline production-backup and
-time-based rollout gates remain open. Design Flow now includes the contracted database and
-permission foundation, authentication and account lifecycle, Team and Settings,
+passed its local, configured staging, two-day staging-acceptance, and guarded
+production-delivery gates, including the checksum-verified production-source
+restore rehearsal. Bootstrap, pilot, release, and stabilization remain open.
+Design Flow now includes
+the contracted database and permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
 idempotent work logging for ticket and standalone Visual Work. Phase 5 adds the
 source-reconciled Dashboard, position-based people scopes, final actual-date Work
@@ -19,8 +21,9 @@ guarded lightweight acceptance dataset, including clearly labelled standalone
 Visual Work. The bootstrap identity is the synthetic Manager + Admin; there is
 no separate staging First Admin account. The non-production Cloudflare Pages
 Free staging deployment is live at
-<https://design-flow-staging.pages.dev>. No production service, credential, or
-production data is involved.
+<https://design-flow-staging.pages.dev>. The separately configured production
+application is live at <https://designflowapp.pages.dev> with no bootstrapped
+identity or customer/product data yet.
 
 ## Local setup
 
@@ -153,7 +156,7 @@ reconciliation, notification isolation/idempotency, and direct-write denial.
 - Vodafone Foundations are authoritative for color and typography.
 - Astryx is the preferred reference baseline for the remaining component presentation and interaction. Design Flow reimplements that guidance in its owned component library under `src/ui/`; Astryx is not a runtime dependency or source-code dependency.
 - Dashboard, All Tickets, Work Item, Reports/exports, access/hierarchy, Team and Settings, and minimal in-app Notifications are approved.
-- Cloudflare Pages Free is selected for the static frontend and Supabase Free for authentication, database, and backend services; the preferred free production address is `designflow.pages.dev`, subject to name availability.
+- Cloudflare Pages Free is selected for the static frontend and Supabase Free for authentication, database, and backend services; the reserved production address is `designflowapp.pages.dev`.
 - The complete technical and operating plan is approved in `docs/technical-plan.md`, including the React/Supabase architecture, styling delivery, environments, verification, encrypted backup and restore routine, controlled deployment, monitoring, bootstrap, and rollout.
 - The eight-phase implementation sequence and shared completion gate are approved in `docs/build-plan.md`.
 - Phase 0 is complete: the physical schema, permission/RLS, operation-boundary, transaction, bootstrap, recalculation, migration, seed, fixture, and test contracts are fixed in the three Phase 0 contract documents.
@@ -205,6 +208,11 @@ demonstration; the known-good no-database-mutation redeploy passed in workflow
 run `30257511622`. PR #28 then removed the Sentry/R2 MVP paths, merged at
 `54af2a3`, and workflow #69 (`30262859965`) passed the complete staging gate in
 3m56s. The D-104 two-working-day staging acceptance passed on 2026-07-30 under
-the two D-105 staging/pilot exceptions. A production-source restore rehearsal,
-production infrastructure, bootstrap, pilot, and release remain open; none was
-performed.
+the two D-105 staging/pilot exceptions. Production workflow run `30526117799`
+then preserved two failure-stop attempts and passed on attempt 3 in 2m06s for
+`main` SHA `5e4ccbc`: fourteen ordered migrations, hosted types, six Edge
+Functions, Auth/RLS/origin checks, source-map denial, Cloudflare Pages delivery,
+security headers, and final live smoke all passed. The post-delivery encrypted
+backup, Admin-controlled Drive copy, and isolated hosted restore rehearsal also
+passed. Bootstrap, the two-day pilot, overflow correction/retest, release, and
+stabilization remain open.

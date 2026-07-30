@@ -258,3 +258,13 @@ are in the Phase 7 rollout record.
 Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the
 reserved nine-persona fixture; do not reset or replace it.
+
+For the authorized production-source restore rehearsal on 2026-07-30, staging
+was paused only to free one active Free-project slot. After the disposable
+restore target was reconciled and deleted, staging resumed with its original
+data. Authenticated Chrome loaded the preserved synthetic Manager + Admin
+Dashboard with Manager and Admin indicators and normal navigation. The earlier
+inactive session remained fail-closed; the frontend returned HTTP 200 with the
+required security headers; and Function OPTIONS returned HTTP 200 with the
+exact staging origin. No staging fixture, identity, role, or credential was
+changed by the rehearsal.

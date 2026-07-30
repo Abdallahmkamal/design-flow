@@ -2,8 +2,8 @@
 
 **Owner:** Admin/technical maintainer
 
-**Status:** Local contracts, configured staging delivery, hosted failure stop,
-recovery, and known-good redeploy verified; production not authorized
+**Status:** Local/staging contracts, hosted failure stop/recovery, known-good
+redeploy, and guarded production delivery verified
 
 ## Release boundary
 
@@ -94,3 +94,12 @@ known-good Functions/frontend redeploy without database mutation. Workflow #64
 (`30258329567`) proves a hosted migration exception stops every later stage;
 workflow #65 (`30258611718`) proves the failed transaction left no migration
 residue and the complete staging gate recovered.
+
+Production workflow #2 (`30526117799`) delivered exact `main` SHA
+`5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34`. Attempt 1 proved that a missing
+Function-origin environment stops before frontend publication. Attempt 2
+passed the backend gate and Pages upload but stopped on a transient same-origin
+JavaScript-chunk HTTP 522 during final smoke. After authenticated Chrome showed
+the canonical sign-in page and main bundle healthy, attempt 3 passed every
+ordered stage in 2m06s. Preserve all attempts; do not relabel either failure as
+a pass.

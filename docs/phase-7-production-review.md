@@ -1,7 +1,7 @@
 # Phase 7 production review
 
-**Status:** Local review complete; zero-billing correction approved;
-offline-backup and time-based evidence remain open
+**Status:** Local, staging, guarded production delivery, and production-source
+restore complete; bootstrap and later rollout gates remain open
 
 ## Performance
 
@@ -65,14 +65,20 @@ Runbooks now cover deployment, backup/restore, incident, quota, pause/resume,
 recovery, and production bootstrap. Admin operational ownership remains
 separate from Manager organizational responsibility.
 
+The guarded production workflow passed on run `30526117799`, attempt 3, for
+exact `main` SHA `5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34` after two preserved
+failure-stop attempts. The final attempt verified Auth, anonymous RLS denial,
+the exact Function origin, source-map denial, Pages security headers, and the
+live production marker without adding client telemetry.
+
 ## Unresolved launch gates
 
-- Name the Admin-controlled offline production-backup destination and prove a
-  production-source encrypted backup through an isolated restore rehearsal.
 - Complete staging gate, hosted failure-stop/recovery, and known-good redeploy
   passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
   record.
-- Record current provider quota values and hosted performance/security headers.
+- Record current production quota immediately before pilot and preserve the
+  hosted header evidence; obtain a real-user Core Web Vitals sample only after
+  authorized pilot traffic exists.
 - The two full working days of staging acceptance passed on 2026-07-29 and
   2026-07-30. Separately authorized production bootstrap, two full working days
   of pilot, launch-blocker retest, full-team release, and two-week stabilization
