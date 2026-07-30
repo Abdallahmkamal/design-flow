@@ -2,7 +2,7 @@
 
 **Status:** Local/staging hardening, two-day staging acceptance, guarded
 production delivery, production-source restore, and production bootstrap
-verified; pilot, release, and stabilization remain gated
+verified; controlled release and stabilization remain gated
 
 **Prepared:** 2026-07-27 from clean `main` at `18233b9`
 
@@ -10,7 +10,7 @@ verified; pilot, release, and stabilization remain gated
 
 Complete the approved production-hardening operating model without creating or
 altering production infrastructure, deploying, bootstrapping production,
-starting a pilot, sending alerts, changing external services, or altering
+starting release, sending alerts, changing external services, or altering
 staging unless the exact action is separately authorized. No real customer or
 production data may enter local or staging evidence.
 
@@ -28,7 +28,7 @@ gates; they do not turn an unperformed external action into evidence.
 | 7B — Private failure handling | Preserve the accessible fail-safe error UI and use only existing Supabase/GitHub/Cloudflare operational evidence; ship no external client telemetry, replay, analytics, or error-ingestion dependency. |
 | 7C — Backup and restore | Keep compressed, encrypted, checksummed logical-backup tooling and 7 daily/4 weekly/6 monthly offline retention under Admin control. Demonstrate a checksum-verified decrypt/restore rehearsal against disposable infrastructure, including explicit Auth credential limitations. Name and rehearse the production offline destination before rollout. |
 | 7D — Ordered delivery and recovery | Complete guarded staging and manual production workflows: independently verified offline pre-migration backup evidence; forward migrations; Functions; Auth/database smoke; frontend; live smoke. Prove a failed migration stops later stages and a known-good frontend/Function commit can be redeployed. Never add automatic down-migrations or ordinary backup rollback. |
-| 7E — Operations and rollout | Create deployment, backup/restore, incident, quota, pause/resume, recovery, and bootstrap runbooks; add compact performance/security/accessibility/responsive/quota evidence and auditable pilot/release records. Production bootstrap, pilot, and release stay unexecuted without separate authorization. |
+| 7E — Operations and rollout | Create deployment, backup/restore, incident, quota, pause/resume, recovery, and bootstrap runbooks; add compact performance/security/accessibility/responsive/quota evidence and auditable release/stabilization records. Production bootstrap and release stay unexecuted without separate authorization. |
 
 Each slice requires its own accepted criteria, narrow local verification, full
 completed-slice gate, and separately authorized staging checkpoint. A later
@@ -64,13 +64,15 @@ It must then establish the approved hierarchy and controlled lists without
 automatic historical import. Documentation is authorized only after brief
 approval; executing bootstrap is not.
 
-Under D-104, rollout requires two full working days of staging acceptance, two
-full working days of limited production pilot, launch-blocker
-resolution/retest, full-team release, then two-week stabilization. A blocked or
-partial day does not count, and no record may state that a time-based gate
-passed before it actually completes.
+Under D-104, rollout requires two full working days of staging acceptance. D-106
+supersedes the former fixed-roster/two-day production pilot: launch-blocker
+resolution/retest and explicit full-team release authorization remain, while
+the first two working days of real use are monitored inside the two-week
+stabilization period and are not a release or Phase 7 exit gate. A blocked or
+partial staging day does not count, and no record may state that the former
+pilot passed.
 
-D-105 accepts two named exceptions for staging and the limited pilot: two
+D-105 accepts two named exceptions for staging: two
 owner-created inactive test profiles remain outside the active reserved-persona
 matrix, and the evidenced 390 px Reports overflow is nonblocking until
 full-team release. The overflow must be corrected and retested before that
@@ -117,7 +119,8 @@ Admin identity; there is no separate First Admin account.
 | Production infrastructure and guarded delivery | Authorized and completed 2026-07-30 for `main` SHA `5e4ccbc`; workflow run `30526117799` attempt 3 passed |
 | Production-source restore rehearsal | Authorized and passed 2026-07-30; disposable target deleted and staging resumed healthy |
 | Production bootstrap | Authorized and passed 2026-07-30; one active Manager + Admin owner, mandatory password change complete, one-time secret retired |
-| Pilot or full-team release | Not authorized |
+| Former limited pilot | Superseded by D-106; not performed and not marked passed |
+| Full-team release | Not authorized |
 
 ## Current local evidence — 2026-07-27
 
@@ -131,9 +134,9 @@ failure stop/recovery, and known-good redeploy passed. The strict zero-billing
 correction passed formatting, lint, strict types, 29 test files/105 tests, 26
 Playwright/axe passes with two intended skips, a production-mode build, 25
 focused contract tests, and a 301-file secret scan. The named offline
-pilot, release, and stabilization remain unperformed gates. The two-working-day
+release and stabilization remain unperformed gates. The two-working-day
 staging acceptance gate passed on 2026-07-30 under
-the explicit D-105 staging/pilot exceptions.
+the explicit D-105 staging exceptions.
 
 PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
 3m23s. It merged to `main` at `54af2a3`, and workflow #69 (`30262859965`)

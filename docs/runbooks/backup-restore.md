@@ -47,8 +47,8 @@ For every backup:
 Creation, encryption, verification, or destination-copy failure stops the
 release before workflow dispatch. The GitHub workflow validates and records
 the non-secret attestation; it cannot inspect offline media and must never be
-presented as independent proof that the file exists. Production bootstrap,
-pilot, and release remain blocked until the offline destination is named and a
+presented as independent proof that the file exists. Production bootstrap and
+release remain blocked until the offline destination is named and a
 production-source backup is successfully restored into an isolated target.
 
 ## Restore decision

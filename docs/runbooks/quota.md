@@ -4,7 +4,7 @@
 
 ## Monthly review
 
-Review the provider consoles at least monthly and before a pilot/release:
+Review the provider consoles at least monthly and before release:
 
 | Provider | Review |
 | --- | --- |

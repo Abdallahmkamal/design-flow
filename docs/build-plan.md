@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-29 — D-104 shortens the staging and pilot acceptance gates
+**Last updated:** 2026-07-30 — D-106 removes the pre-release pilot gate
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -265,18 +265,21 @@ Complete the approved operating model:
 - deployment, incident, quota, pause/resume, and recovery runbooks;
 - production performance, accessibility, responsive, security, and quota review;
 - auditable production bootstrap; and
-- staging acceptance, limited production pilot, defect resolution, full-team release, and stabilization.
+- staging acceptance, defect resolution, controlled full-team release, monitored operation, and stabilization.
 
 ### Exit gate
 
 - Every production launch gate in `docs/technical-plan.md` is evidenced as passing.
-- The Admin-controlled offline destination is named and a production-source encrypted backup is restored successfully in isolation; until then production bootstrap/pilot/release is blocked.
+- The Admin-controlled offline destination is named and a production-source encrypted backup is restored successfully in isolation; until then production bootstrap/release is blocked.
 - Restore behavior, including Supabase Auth recovery/reset limitations, is demonstrated rather than assumed.
 - A previous known-good application release can be redeployed and a failed migration cannot continue to later delivery stages.
-- The staging matrix completes on two full working days and the pilot group then
-  completes two full working days without an unresolved security,
-  data-integrity, authentication, or core-workflow blocker. Blocked or partial
-  days do not count.
+- The staging matrix completes on two full working days without an unresolved
+  security, data-integrity, authentication, or core-workflow blocker. Blocked
+  or partial staging days do not count.
+- D-106 removes the former fixed-roster/two-day pilot from the exit gate. The
+  first two working days after full-team release are monitored within
+  stabilization; a material blocker invokes incident/pause handling rather
+  than retroactively converting release into a passed or failed pilot.
 - Admin operational ownership and Manager organizational responsibility remain distinct in the system and runbooks.
 - The cross-product UI consistency, responsive, accessibility, and state-coverage review is complete with no unresolved release-blocking issue.
 
@@ -342,7 +345,7 @@ changing workflows while restyling them.
 
 ## General UX Improvements
 
-Reserve a v1.1 discovery track for pilot findings, including onboarding,
+Reserve a v1.1 discovery track for rollout findings, including onboarding,
 settings, workflow refinements, empty states, and accessibility polish. Each
 accepted change still requires its own behavior, permission, accessibility, and
 verification contract before implementation.

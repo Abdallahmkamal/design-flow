@@ -1,8 +1,8 @@
 # Phase 7 rollout record
 
 **Status:** Local, staging, two-day staging acceptance, guarded production
-delivery, production-source restore, and production bootstrap verified; pilot,
-release, and stabilization gates remain open
+delivery, production-source restore, and production bootstrap verified;
+controlled release and stabilization gates remain open
 
 **Primary production owner:** Abdallah Kamal.
 
@@ -24,11 +24,12 @@ recovery-key details are maintained outside Git.
 | First Phase 7 staging delivery | PR #22 merged at `78aeae0`; workflow #55 passed migrations/types, Functions, backend smoke, build, source-map denial, and Pages upload, then stopped at immediate live CSP check while the canonical URL still served the prior document | Failed safely; bounded propagation retry correction in progress |
 | Staging propagation closure | PR #23 merged at `7d2d531`; workflow #56 passed both PR jobs in 2m15s; workflow #57 preserved ordering and passed all delivery stages before the final smoke stopped after 51s because the bounded asset scan omitted the Work Item chunk beyond its first twenty imports | Failed safely; bounded same-origin scan correction verified locally with 117 tests |
 | Complete Phase 7 staging delivery | PR #24 merged at `bd6eaa3`; workflow #59 passed in 4m01s. PR #25 merged at `f4d6c25`; workflow #61 passed in 4m11s. PR #26 merged at `de23dcd`; default workflow #63 passed in 4m54s and post-failure recovery workflow #65 passed in 3m30s | Passed configured staging gate 2026-07-27 |
-| Two-working-day staging acceptance | D-104 requires two full passing working days. D-105 accepts the two inactive owner test profiles and 390 px Reports overflow as explicit nonblocking staging/pilot exceptions. | Day 1 passed 2026-07-29 and Day 2 passed 2026-07-30; two of two days passed |
+| Two-working-day staging acceptance | D-104 requires two full passing working days. D-105 accepts the two inactive owner test profiles and 390 px Reports overflow as explicit nonblocking staging exceptions. | Day 1 passed 2026-07-29 and Day 2 passed 2026-07-30; two of two days passed |
 | Production infrastructure | Supabase Free production and Cloudflare Pages Free configured with exact Auth/origin separation, protected GitHub `production` environment, required reviewer, `main`-only deployment branch, short-lived provider tokens, and public address `https://designflowapp.pages.dev`; secret values and private owner details remain outside Git | Configured 2026-07-30; one approved owner identity bootstrapped, no customer/product row created |
 | Production delivery | Workflow #2 (`30526117799`) targeted exact `main` SHA `5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34` with the independently verified offline backup attestation. Attempts 1 and 2 failed closed; attempt 3 passed every ordered stage in 2m06s (delivery job 1m40s). | Passed 2026-07-30; detailed attempts below |
 | Production bootstrap | Operation `73f8ce95-fc5c-489f-a097-2793d84a25c8` created profile `0a153226-9029-4567-9e1b-f4b420cab0aa` as active Manager + Admin at `2026-07-30T11:38:45.714Z`; mandatory password change completed at `2026-07-30T11:42:38.109Z`; private identity and credentials remain outside Git | Passed 2026-07-30 |
-| Two-working-day limited pilot | D-104 requires two full passing working days with Admin + Lead, Manager, another Lead, and two Designers | Not authorized/not started |
+| Former limited-production pilot | D-106 supersedes the fixed five-person roster and two-day pre-release pilot requirement; it may not be marked passed | Retired unperformed 2026-07-30 |
+| First two post-release working days | Monitor authentication, authorization, notification isolation, report/source reconciliation, provider logs/quotas, and daily backups inside stabilization; material blockers invoke incident/pause handling | Begins only after authorized full-team release; not a release or Phase 7 exit gate |
 | Full-team release | Requires the D-105 Reports overflow correction/retest plus any later launch-blocker resolution | Not authorized/not started |
 | Two-week stabilization | Starts only after full-team release | Not started |
 
@@ -115,7 +116,7 @@ Authenticated Chrome then loaded Dashboard, All Tickets, Reports, Team,
 Settings, and Notifications with the Production marker and separate Manager
 and Admin indicators. Dashboard/All Tickets reconciled to zero product rows;
 the frontend and exact-origin Function preflight returned HTTP 200 with the
-required security/CORS headers. Pilot remains separately gated.
+required security/CORS headers. Release remains separately gated.
 
 A fresh production-source backup containing the bootstrapped owner state was
 created as `design-flow_production_post_bootstrap_20260730T120201Z.dump.enc`
@@ -147,9 +148,9 @@ delivery workflow was changed.
 | Report/export visibility | Tickets, Designers, and separate Visual Work tabs loaded for every valid principal. CSV was absent for Viewer and Designer and present for Designer + Admin, Lead, Lead + Admin, Manager, and Manager + Admin after settled report loading. | Passed |
 | Shipped routes and data meaning | Manager + Admin loaded Dashboard, All Tickets, Reports, Team, Settings, and Notifications; the July 28 All Tickets view showed eleven current tickets and Notifications showed its personal empty state. Standalone Visual Work remained a separate report tab, Admin did not change position-owned scope, and planned/due-date language remained distinct from actual work. | Passed |
 | Active directory | At the end of the run, Team exposed exactly the eight approved active reserved personas, all conspicuously `[SYNTHETIC]`; the inactive reserved persona remained absent. | Passed |
-| Complete staging profile inventory | Admin Settings exposed all nine reserved personas plus two owner-confirmed inactive test profiles. D-105 excludes the two inactive records from the active acceptance-principal set; they remain unused and absent from Team/Dashboard scope. | **Accepted exception — passed for staging/pilot** |
+| Complete staging profile inventory | Admin Settings exposed all nine reserved personas plus two owner-confirmed inactive test profiles. D-105 excludes the two inactive records from the active acceptance-principal set; they remain unused and absent from Team/Dashboard scope. | **Accepted exception — passed for staging** |
 | Narrow Dashboard, Work Items, Team, and Settings | At 390 × 844, Dashboard and Team had no page-level horizontal overflow, All Tickets used structured mobile records with no visible table, Admin Settings used structured member records, non-Admin permission states remained readable, and the skip link moved focus to `main-content`. | Passed |
-| Narrow Reports | At 390 px, the responsive media query applied and the page shell/filter container fit the viewport, but report filter fields extended to x=475. Document `clientWidth` was 390 and `scrollWidth` was 475. The same Manager + Admin Reports page had no horizontal overflow at the restored 1728 px desktop width. D-105 accepts this for staging/pilot and requires correction/retest before full-team release. | **Accepted exception — passed for staging/pilot** |
+| Narrow Reports | At 390 px, the responsive media query applied and the page shell/filter container fit the viewport, but report filter fields extended to x=475. Document `clientWidth` was 390 and `scrollWidth` was 475. The same Manager + Admin Reports page had no horizontal overflow at the restored 1728 px desktop width. D-105 accepts this for staging and requires correction/retest before full-team release. | **Accepted exception — passed for staging** |
 | Monitoring privacy | The staging marker remained visible and the loaded application contained zero Sentry script URLs. Existing workflow security/header/source-map evidence is reused and is not mislabelled as a new Day 1 run. | Passed |
 | Product mutations | No ticket, work log, comment, report filter, fixture row, reference value, or notification was mutated. The only writes were the explicitly authorized and audited account credential/lifecycle operations described above. | Passed within authorization |
 
@@ -158,7 +159,7 @@ delivery workflow was changed.
 The Day 1 attempt is complete and **passed with the two explicit D-105
 exceptions**. It contributes one of the two required passing working days. The
 two inactive owner test profiles remain outside the acceptance-principal set
-and may not be used in Day 2 or the pilot. The 390 px Reports overflow remains
+and may not be used in Day 2. The 390 px Reports overflow remains
 tracked and must be corrected, deployed through the guarded staging workflow,
 and retested before full-team release.
 
@@ -195,7 +196,7 @@ or production resource changed.
 | Report reconciliation and export | The all-people report exposed 13 Ticket, seven Designer, and six standalone Visual Work source records. Manager + Admin retained CSV export. | Passed |
 | Active and complete account inventories | Team exposed exactly eight active reserved synthetic personas. Settings exposed the nine reserved personas plus the two D-105 inactive owner test profiles; the password-restricted and inactive reserved states remained distinct, Viewer + Admin was absent, and Manager + Admin still showed `Access updated: Never`. | Passed |
 | Narrow Dashboard, Work Items, Team, and Settings | At the operator-set 390 × 844 viewport, Dashboard rendered stacked scope and summary cards, All Tickets rendered eleven structured ticket cards rather than a table, Team rendered readable person cards rather than a table, and Settings rendered labelled member cards rather than a table. The visible page shells and controls showed no new clipping; the skip link and bottom navigation remained present in the accessibility tree. Dashboard also remained readable and structurally complete after switching to Dark mode. | Passed |
-| Narrow Reports | At 390 × 844, Reports retained its Tickets, Designers, and separate Visual Work tabs plus Manager + Admin CSV access, but the filter controls reproduced the previously measured 475 px horizontal extent. D-105 accepts this known issue for staging and pilot and still requires correction and retest before full-team release. | **Accepted exception — passed for staging/pilot** |
+| Narrow Reports | At 390 × 844, Reports retained its Tickets, Designers, and separate Visual Work tabs plus Manager + Admin CSV access, but the filter controls reproduced the previously measured 475 px horizontal extent. D-105 accepts this known issue for staging and still requires correction and retest before full-team release. | **Accepted exception — passed for staging** |
 | Monitoring privacy | The staging marker was present and the loaded document contained zero Sentry script or link URLs. | Passed |
 | Product and external mutations | Navigation and an in-browser report-scope selection changed no persisted product data. The owner completed audited resets for Viewer (00:40), Designer (00:46), Designer + Admin (00:48), Lead (00:51), Lead + Admin (00:53), Manager (00:54), and the password-restricted persona (00:57 EEST). To exercise the reserved inactive persona, the owner temporarily reactivated it at 00:59, then reset and deactivated it at 01:00; the append-only audit preserved the lifecycle and reporting-line events and the final account state is inactive with password change required. No position, Admin privilege, fixture data, provider, workflow, other staging resource, or production state changed; Manager + Admin was not reset or altered. | Passed with documented, fully restored access-maintenance deviation |
 
@@ -207,7 +208,7 @@ acceptance time gate is closed. All seven valid active principal variants,
 both fail-closed account states, desktop routes and data meaning, report/export
 visibility, Admin-versus-Manager separation, monitoring privacy, and the
 required narrow routes passed. The known 390 px Reports overflow remains
-accepted only through the limited pilot and must be corrected and retested
+accepted for the completed staging gate and must be corrected and retested
 before full-team release.
 
 The operator's credential and temporary inactive-account lifecycle maintenance
@@ -215,6 +216,6 @@ is preserved in the administration audit, and the reserved inactive persona was
 returned to its required inactive/password-change state. Its synthetic password
 appeared in the authenticated-browser accessibility output after manual entry;
 the field was cleared without submission and the credential must be rotated
-before any future reactivation. This is not a staging/pilot blocker because the
-account remains inactive and outside the active acceptance and pilot sets, and
+before any future reactivation. This is not a staging blocker because the
+account remains inactive and outside the active acceptance set, and
 no production or customer credential or data was involved.

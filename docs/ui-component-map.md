@@ -574,7 +574,7 @@ requires a new readiness decision before implementation.
 # Phase 7 UI component map — Production Hardening
 
 **Status:** Local/staging component review and production delivery complete;
-pilot and full-team responsive retest remain separately gated
+full-team responsive retest remains separately gated
 
 **Scope:** Cross-product review and monitoring presentation only; operational
 workflows and runbooks have no product UI
@@ -644,9 +644,9 @@ approved the zero-billing correction. D-104 two-working-day acceptance passed
 on 2026-07-30. The unchanged reviewed UI was delivered through production run
 `30526117799` attempt 3; no production-only component or control was added.
 
-D-105 counts Day 1 with two explicit staging/pilot exceptions: inactive owner
+D-105 counts Day 1 with two explicit staging exceptions: inactive owner
 test profiles are outside the active persona set, and the 390 px Reports
-overflow remains a required pre-release correction rather than a staging/pilot
+overflow remains a required pre-release correction rather than a staging
 blocker.
 
 ## Local implementation evidence

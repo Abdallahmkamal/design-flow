@@ -5,8 +5,9 @@ A lightweight work-management portal for one internal UX/design team.
 Phases 0–6 are complete and the implemented Phase 7 production hardening has
 passed its local, configured staging, two-day staging-acceptance, and guarded
 production-delivery gates, including the checksum-verified production-source
-restore rehearsal. The one-time production bootstrap is complete; pilot,
-release, and stabilization remain open.
+restore rehearsal. The one-time production bootstrap is complete; controlled
+release and stabilization remain open. D-106 replaces the former limited-pilot
+gate with monitored post-release operation.
 Design Flow now includes
 the contracted database and permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
@@ -209,11 +210,12 @@ demonstration; the known-good no-database-mutation redeploy passed in workflow
 run `30257511622`. PR #28 then removed the Sentry/R2 MVP paths, merged at
 `54af2a3`, and workflow #69 (`30262859965`) passed the complete staging gate in
 3m56s. The D-104 two-working-day staging acceptance passed on 2026-07-30 under
-the two D-105 staging/pilot exceptions. Production workflow run `30526117799`
+the two D-105 staging exceptions. Production workflow run `30526117799`
 then preserved two failure-stop attempts and passed on attempt 3 in 2m06s for
 `main` SHA `5e4ccbc`: fourteen ordered migrations, hosted types, six Edge
 Functions, Auth/RLS/origin checks, source-map denial, Cloudflare Pages delivery,
 security headers, and final live smoke all passed. The post-delivery encrypted
 backup, Admin-controlled Drive copy, and isolated hosted restore rehearsal also
-passed. Bootstrap, the two-day pilot, overflow correction/retest, release, and
-stabilization remain open.
+passed. Bootstrap and its post-bootstrap recovery point are complete. D-106
+retired the unperformed pilot gate; overflow correction/retest, controlled
+release, and stabilization remain open.
