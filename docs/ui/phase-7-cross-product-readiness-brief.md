@@ -1,7 +1,7 @@
 # Phase 7 cross-product readiness brief
 
-**Status:** Approved 2026-07-27 for local Phase 7 implementation; external
-actions remain separately gated
+**Status:** Local/staging review and guarded production delivery complete;
+bootstrap, pilot, and full-team release remain separately gated
 
 **Scope:** Cross-product consistency, responsive, accessibility, required-state,
 performance, security, monitoring-privacy, and release-readiness review only
@@ -96,9 +96,9 @@ values remain blocking gaps rather than guessed literals.
 Local implementation was approved on 2026-07-27 after review of this brief and
 the Phase 7 operating-readiness brief. D-103 later removed Sentry/R2 from the
 MVP and preserved the existing failure UI without adding a component. The
-configured staging gate and D-104 two-working-day acceptance passed; production
-infrastructure, production bootstrap, pilot, and release remain open or
-separately gated actions.
+configured staging gate and D-104 two-working-day acceptance passed. The
+unchanged reviewed UI was delivered through production workflow `30526117799`;
+production bootstrap, pilot, and release remain separately gated actions.
 
 D-105 accepts the evidenced 390 px Reports overflow for staging and the limited
 pilot only; correction and affected responsive retest remain required before

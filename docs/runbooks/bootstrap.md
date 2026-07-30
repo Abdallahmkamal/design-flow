@@ -2,8 +2,8 @@
 
 **Owner:** Authorized Admin/technical maintainer
 
-**Status:** Procedure documented only; production infrastructure and bootstrap
-are not authorized or executed
+**Status:** Procedure documented; production delivery and production-source
+restore rehearsal complete; bootstrap requires separate authorization
 
 ## Preconditions
 
