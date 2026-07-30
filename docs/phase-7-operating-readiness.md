@@ -120,7 +120,7 @@ Admin identity; there is no separate First Admin account.
 | Production-source restore rehearsal | Authorized and passed 2026-07-30; disposable target deleted and staging resumed healthy |
 | Production bootstrap | Authorized and passed 2026-07-30; one active Manager + Admin owner, mandatory password change complete, one-time secret retired |
 | Former limited pilot | Superseded by D-106; not performed and not marked passed |
-| Full-team release | Not authorized |
+| Full-team release | Immediate pre-release quota review passed 2026-07-30; release not authorized |
 
 ## Current local evidence — 2026-07-27
 

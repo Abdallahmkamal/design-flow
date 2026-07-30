@@ -56,11 +56,16 @@ separately scoped post-MVP UI revamp without claiming it is fixed.
 ## Quota and operational readiness
 
 The monthly quota record covers Supabase database/egress/Auth/Functions,
-GitHub Actions, and Cloudflare Pages. Seventy percent is a
-warning and 85% is a decision gate. The product creates no artificial
-keep-alive traffic and adds no product metrics or quota controls. Current
-provider consumption must be read from authenticated consoles before release;
-no percentage is invented here.
+GitHub Actions, Cloudflare Pages, and offline backup media. Seventy percent is
+a warning and 85% is a decision gate. The product creates no artificial
+keep-alive traffic and adds no product metrics or quota controls. The
+authenticated immediate pre-release review on 2026-07-30 passed: Supabase
+organization database usage was 6% and its other applicable allowances were
+below 1%; GitHub Actions used 272/2,000 minutes (13.6%) and zero storage;
+Cloudflare recorded zero Workers requests/build minutes with no active
+subscription; Drive and local encrypted-backup storage remained below the 70%
+warning threshold, and the three production backup pairs re-passed checksum
+verification. The next monthly review is due by 2026-08-30.
 
 Runbooks now cover deployment, backup/restore, incident, quota, pause/resume,
 recovery, and production bootstrap. Admin operational ownership remains
@@ -77,9 +82,9 @@ live production marker without adding client telemetry.
 - Complete staging gate, hosted failure-stop/recovery, and known-good redeploy
   passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
   record.
-- Record current production quota immediately before release and preserve the
-  hosted header evidence; obtain a real-user Core Web Vitals sample only after
-  authorized real-user traffic exists.
+- The immediate pre-release quota gate passed on 2026-07-30. Preserve the
+  hosted header evidence and obtain a real-user Core Web Vitals sample only
+  after authorized real-user traffic exists.
 - The two full working days of staging acceptance passed on 2026-07-29 and
   2026-07-30. Production bootstrap passed on 2026-07-30 with one active Manager
   + Admin owner, mandatory password change, and retired one-time credential.

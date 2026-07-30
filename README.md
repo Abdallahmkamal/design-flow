@@ -216,7 +216,9 @@ then preserved two failure-stop attempts and passed on attempt 3 in 2m06s for
 Functions, Auth/RLS/origin checks, source-map denial, Cloudflare Pages delivery,
 security headers, and final live smoke all passed. The post-delivery encrypted
 backup, Admin-controlled Drive copy, and isolated hosted restore rehearsal also
-passed. Bootstrap and its post-bootstrap recovery point are complete. D-106
-retired the unperformed pilot gate, and D-107 defers the known 390 px Reports
-overflow to the separately scoped post-MVP UI revamp without claiming it is
-fixed. Controlled release and stabilization remain open.
+passed. Bootstrap and its post-bootstrap recovery point are complete. The
+authenticated immediate pre-release quota review passed below the 70% warning
+threshold on 2026-07-30. D-106 retired the unperformed pilot gate, and D-107
+defers the known 390 px Reports overflow to the separately scoped post-MVP UI
+revamp without claiming it is fixed. Explicitly authorized controlled release
+and stabilization remain open.
