@@ -47,8 +47,8 @@ For every backup:
 Creation, encryption, verification, or destination-copy failure stops the
 release before workflow dispatch. The GitHub workflow validates and records
 the non-secret attestation; it cannot inspect offline media and must never be
-presented as independent proof that the file exists. Production bootstrap,
-pilot, and release remain blocked until the offline destination is named and a
+presented as independent proof that the file exists. Production bootstrap and
+release remain blocked until the offline destination is named and a
 production-source backup is successfully restored into an isolated target.
 
 ## Restore decision
@@ -77,6 +77,21 @@ Before any hosted restore:
 Never restore Vault/provider secrets from a logical dump, run an automatic
 production down-migration, overwrite production as a rehearsal, or use a
 production dump in local/staging.
+
+## Post-bootstrap production backup — 2026-07-30
+
+The read-only production dump ran through the existing Colima PostgreSQL 17.6
+client after one missing-host-client stop and two safely rejected connection
+attempts. No artifact was created by the failed attempts. The successful
+artifact is
+`design-flow_production_post_bootstrap_20260730T120201Z.dump.enc`, 596,560
+bytes, with SHA-256
+`9727b82d9a5a4dac6aa0f1babd791dcdd23984866ae4c4e23dfc12dd50f137c9`.
+Local checksum equality, recovery-key decryption, and `pg_restore --list`
+passed. Plaintext, clipboard contents, and the temporary Keychain database URI
+were removed. Authenticated Drive u/2 listed the uploaded encrypted artifact
+and checksum; the downloaded copies were byte-identical to the local originals,
+and the downloaded artifact independently matched the recorded SHA-256.
 
 ## Local rehearsal evidence — 2026-07-27
 

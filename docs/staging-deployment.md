@@ -250,10 +250,10 @@ verified all seven valid active principal variants, independent Admin versus
 Manager ownership, fail-closed inactive and password-restricted states,
 report/export visibility, fixture meaning, and desktop/narrow routes. D-105
 accepts the two inactive owner test profiles outside the active persona set and
-the measured 390 px Reports overflow through staging and the limited pilot
-only; the overflow still requires correction and retest before full-team
-release. Exact evidence and the audited Day 2 credential-maintenance deviation
-are in the Phase 7 rollout record.
+the measured 390 px Reports overflow for the completed staging gate. D-107 later
+classified that known issue as nonblocking and deferred its correction/retest
+to the separately scoped post-MVP UI revamp. Exact evidence and the audited Day
+2 credential-maintenance deviation are in the Phase 7 rollout record.
 
 Preserve the
 original `[SYNTHETIC] Manager + Admin` Auth identity and credentials and the

@@ -1,7 +1,7 @@
 # Phase 7 cross-product readiness brief
 
-**Status:** Local/staging review and guarded production delivery complete;
-bootstrap, pilot, and full-team release remain separately gated
+**Status:** Local/staging review, guarded production delivery, and bootstrap
+complete; full-team release remains separately gated
 
 **Scope:** Cross-product consistency, responsive, accessibility, required-state,
 performance, security, monitoring-privacy, and release-readiness review only
@@ -58,8 +58,8 @@ values remain blocking gaps rather than guessed literals.
    guarded main workflow and verify the approved desktop/mobile, keyboard,
    axe, privacy, performance, security-header, and smoke matrix in
    authenticated Chrome.
-5. Record exact evidence and leave production bootstrap, pilot, and release
-   stopped unless each action receives separate explicit authorization.
+5. Record exact evidence and leave production bootstrap and release stopped
+   unless each action receives separate explicit authorization.
 
 ## Efficiency and token use
 
@@ -98,9 +98,11 @@ the Phase 7 operating-readiness brief. D-103 later removed Sentry/R2 from the
 MVP and preserved the existing failure UI without adding a component. The
 configured staging gate and D-104 two-working-day acceptance passed. The
 unchanged reviewed UI was delivered through production workflow `30526117799`;
-production bootstrap, pilot, and release remain separately gated actions.
+production bootstrap is complete; D-106 retired the former pilot gate, while
+full-team release remains a separately authorized action.
 
-D-105 accepts the evidenced 390 px Reports overflow for staging and the limited
-pilot only; correction and affected responsive retest remain required before
-full-team release. The separate inactive owner test profiles are excluded from
-the active acceptance-principal set.
+D-105 accepts the evidenced 390 px Reports overflow for the completed staging
+gate. D-107 makes it nonblocking for Phase 7 and release and defers correction
+and affected responsive retest to the separately scoped post-MVP UI revamp;
+the defect is not represented as fixed. The separate inactive owner test
+profiles are excluded from the active acceptance-principal set.

@@ -1,7 +1,7 @@
 # Phase 7 production review
 
 **Status:** Local, staging, guarded production delivery, and production-source
-restore complete; bootstrap and later rollout gates remain open
+restore and bootstrap complete; later rollout gates remain open
 
 ## Performance
 
@@ -49,8 +49,9 @@ states. Its material theme-storage failure is fixed fail-soft. The completed
 local browser gate has 26 applicable desktop/mobile Playwright/axe passes and
 two intended device skips, with no local release-blocking finding. The
 configured staging gate passed; the D-104 two-working-day acceptance matrix
-passed on 2026-07-30 under the explicit D-105 exceptions. The 390 px
-Reports overflow remains a required correction before full-team release.
+passed on 2026-07-30 under the explicit D-105 exceptions. D-107 records the
+known 390 px Reports overflow as nonblocking and defers correction/retest to the
+separately scoped post-MVP UI revamp without claiming it is fixed.
 
 ## Quota and operational readiness
 
@@ -58,7 +59,7 @@ The monthly quota record covers Supabase database/egress/Auth/Functions,
 GitHub Actions, and Cloudflare Pages. Seventy percent is a
 warning and 85% is a decision gate. The product creates no artificial
 keep-alive traffic and adds no product metrics or quota controls. Current
-provider consumption must be read from authenticated consoles before pilot;
+provider consumption must be read from authenticated consoles before release;
 no percentage is invented here.
 
 Runbooks now cover deployment, backup/restore, incident, quota, pause/resume,
@@ -76,10 +77,14 @@ live production marker without adding client telemetry.
 - Complete staging gate, hosted failure-stop/recovery, and known-good redeploy
   passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
   record.
-- Record current production quota immediately before pilot and preserve the
+- Record current production quota immediately before release and preserve the
   hosted header evidence; obtain a real-user Core Web Vitals sample only after
-  authorized pilot traffic exists.
+  authorized real-user traffic exists.
 - The two full working days of staging acceptance passed on 2026-07-29 and
-  2026-07-30. Separately authorized production bootstrap, two full working days
-  of pilot, launch-blocker retest, full-team release, and two-week stabilization
-  remain open. Blocked or partial days do not count under D-104.
+  2026-07-30. Production bootstrap passed on 2026-07-30 with one active Manager
+  + Admin owner, mandatory password change, and retired one-time credential.
+  D-106 retired the unperformed fixed-roster/two-day pilot without marking it
+  passed, and D-107 removed the known Reports overflow from the launch-blocker
+  set. Any other launch-blocker retest, full-team release authorization, and
+  two-week stabilization remain open. The first two post-release working days
+  are monitored within stabilization and do not gate release or Phase 7 exit.

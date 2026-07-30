@@ -2,8 +2,8 @@
 
 **Owner:** Authorized Admin/technical maintainer
 
-**Status:** Procedure documented; production delivery and production-source
-restore rehearsal complete; bootstrap requires separate authorization
+**Status:** Production delivery, production-source restore rehearsal, and
+authorized one-time bootstrap complete 2026-07-30
 
 ## Preconditions
 
@@ -53,3 +53,40 @@ profile ID, position/Admin result, timezone, consumed-state result, audit event,
 mandatory-password-change result, secret-removal verification, created-account
 counts by position, hierarchy/configuration checks, and unresolved gates. Do not
 record email, passwords, tokens, or request bodies.
+
+## Production execution evidence — 2026-07-30
+
+- Operator/approver: primary production owner; exact bootstrap authorization
+  recorded out of band from secret values.
+- Release baseline: merged `main` at `790c831`; deployed application baseline
+  `5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34` from workflow
+  `30526117799`, attempt 3.
+- Bootstrap operation: `73f8ce95-fc5c-489f-a097-2793d84a25c8`, completed
+  `2026-07-30T11:38:45.714Z`.
+- First profile: `0a153226-9029-4567-9e1b-f4b420cab0aa`; active Manager plus
+  independent Admin, `Africa/Cairo`, no reporting parent.
+- State/audit: one consumed bootstrap row and one `bootstrap_completed` event;
+  zero Viewer + Admin and zero product rows.
+- Credential: mandatory password change completed
+  `2026-07-30T11:42:38.109Z`; zero password-restricted profiles afterward.
+  The temporary credential was deleted from Keychain and the clipboard cleared.
+- Retirement: the bootstrap secret was removed from Supabase and Keychain; a
+  retry returned HTTP 500 with no temporary-password field.
+- Live smoke: authenticated Dashboard, All Tickets, Reports, Team, Settings,
+  and Notifications passed with the Production marker; frontend security
+  headers and exact-origin Function preflight returned HTTP 200.
+- Recovery point: local post-bootstrap artifact
+  `design-flow_production_post_bootstrap_20260730T120201Z.dump.enc` is 596,560
+  bytes with SHA-256
+  `9727b82d9a5a4dac6aa0f1babd791dcdd23984866ae4c4e23dfc12dd50f137c9`;
+  checksum, decryption, archive validation, plaintext cleanup, and temporary
+  secret cleanup passed.
+- Offline copy: authenticated Drive u/2 listed the artifact/checksum pair; the
+  downloaded copies were byte-identical to the local originals and checksum
+  valid.
+- Remaining gates: record current quotas immediately before release; resolve
+  any blocker other than the D-107-deferred 390 px Reports overflow; obtain
+  explicit full-team release authorization; then monitor the first two working
+  days inside the two-week stabilization window. D-106 retired the former pilot
+  gate without marking it passed, and D-107 moved the known overflow to the
+  separately scoped post-MVP UI revamp.

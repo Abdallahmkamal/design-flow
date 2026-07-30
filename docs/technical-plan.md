@@ -1,7 +1,7 @@
 # Design Flow technical plan
 
 **Status:** Approved for MVP implementation  
-**Last updated:** 2026-07-29 — D-104 shortens the staging and pilot acceptance gates
+**Last updated:** 2026-07-30 — D-106 replaces the pre-release pilot gate with monitored post-release operation
 
 This document records the approved implementation architecture and operating model for Design Flow. The approved module sequence and slice-level completion gates are defined in [build-plan.md](build-plan.md).
 
@@ -184,7 +184,7 @@ decision; it is never automatic.
 
 Do not generate artificial keep-alive traffic solely to prevent a free Supabase project from pausing. The Admin runbook must explain how to detect and resume a project after extended inactivity. The free MVP has no formal uptime or service-level guarantee; this limitation is explicit and acceptable for the current internal team.
 
-## 12. Bootstrap, pilot, and rollout
+## 12. Bootstrap and rollout
 
 Complete synthetic-data acceptance testing in staging before creating production records. Bootstrap production through an auditable Admin procedure that creates the first Admin-privileged Manager account, then establishes any other Managers, Leads, Designers, Viewer accounts, reporting lines, statuses, work types, Areas/Squads, and labels. The first account uses Manager position so the initial active hierarchy is valid before supervisors exist. Admin privilege remains an operational overlay and does not replace the first Admin's organizational position or reporting relationship.
 
@@ -193,13 +193,15 @@ Do not automatically import historical data in the MVP. Current work items may b
 Roll out in this order:
 
 1. Two full working days of staging acceptance and full position/Admin/RLS testing.
-2. Two full working days of limited production use by the Admin + Lead, Manager, another Lead, and two Designers.
-3. Resolve launch-blocking findings and re-run affected acceptance checks.
-4. Open production to the complete team.
+2. Complete production bootstrap/recovery, current quota review, and correction/retest of any remaining launch-blocking finding. D-107 explicitly classifies the known 390 px Reports overflow as deferred nonblocking UI-revamp work.
+3. Obtain explicit authorization and open production to real team members as they are ready; no fixed pilot roster or pre-release pilot duration is required.
+4. Monitor the first two working days of real use for authentication, authorization, notification isolation, source/report reconciliation, provider logs/quotas, and daily encrypted backups. These days are evidence within stabilization, not a release or Phase 7 exit gate; a material blocker triggers incident/pause handling.
 5. Keep a two-week stabilization period before taking nonessential enhancements into implementation.
 
-A working day counts only when its complete approved acceptance matrix passes.
-Blocked or partial attempts do not count toward either two-day gate.
+A staging-acceptance working day counts only when its complete approved matrix
+passes. The first two post-release monitoring days are not acceptance days and
+may not be presented as a completed pilot.
+Blocked or partial staging attempts do not count toward the two-day gate.
 
 Production launch requires:
 
