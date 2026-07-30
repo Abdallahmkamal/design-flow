@@ -5,7 +5,8 @@ A lightweight work-management portal for one internal UX/design team.
 Phases 0–6 are complete and the implemented Phase 7 production hardening has
 passed its local, configured staging, two-day staging-acceptance, and guarded
 production-delivery gates, including the checksum-verified production-source
-restore rehearsal. Bootstrap, pilot, release, and stabilization remain open.
+restore rehearsal. The one-time production bootstrap is complete; pilot,
+release, and stabilization remain open.
 Design Flow now includes
 the contracted database and permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
@@ -22,8 +23,8 @@ Visual Work. The bootstrap identity is the synthetic Manager + Admin; there is
 no separate staging First Admin account. The non-production Cloudflare Pages
 Free staging deployment is live at
 <https://design-flow-staging.pages.dev>. The separately configured production
-application is live at <https://designflowapp.pages.dev> with no bootstrapped
-identity or customer/product data yet.
+application is live at <https://designflowapp.pages.dev> with one active
+Manager + Admin owner identity and no customer/product data yet.
 
 ## Local setup
 

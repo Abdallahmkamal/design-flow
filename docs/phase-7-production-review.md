@@ -1,7 +1,7 @@
 # Phase 7 production review
 
 **Status:** Local, staging, guarded production delivery, and production-source
-restore complete; bootstrap and later rollout gates remain open
+restore and bootstrap complete; later rollout gates remain open
 
 ## Performance
 
@@ -80,6 +80,8 @@ live production marker without adding client telemetry.
   hosted header evidence; obtain a real-user Core Web Vitals sample only after
   authorized pilot traffic exists.
 - The two full working days of staging acceptance passed on 2026-07-29 and
-  2026-07-30. Separately authorized production bootstrap, two full working days
-  of pilot, launch-blocker retest, full-team release, and two-week stabilization
-  remain open. Blocked or partial days do not count under D-104.
+  2026-07-30. Production bootstrap passed on 2026-07-30 with one active Manager
+  + Admin owner, mandatory password change, and retired one-time credential.
+  Two full working days of pilot, launch-blocker retest, full-team release, and
+  two-week stabilization remain open. Blocked or partial days do not count
+  under D-104.

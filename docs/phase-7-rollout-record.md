@@ -1,8 +1,8 @@
 # Phase 7 rollout record
 
 **Status:** Local, staging, two-day staging acceptance, guarded production
-delivery, and production-source restore verified; bootstrap, pilot, release,
-and stabilization gates remain open
+delivery, production-source restore, and production bootstrap verified; pilot,
+release, and stabilization gates remain open
 
 **Primary production owner:** Abdallah Kamal.
 
@@ -17,7 +17,7 @@ recovery-key details are maintained outside Git.
 | Monitoring privacy | External Sentry runtime/DSN path removed under D-103; no account, project, event, or subscription created; accessible fail-safe UI retained | Passed locally 2026-07-27 |
 | Zero-billing local correction | Formatting, lint, strict types, 29 test files/105 unit-component-automation tests, 26 Playwright/axe passes and 2 intended skips, production-mode build without monitoring dependency/source maps, 25 focused contract tests, and 301-file secret scan | Passed locally 2026-07-27 |
 | Zero-billing publication and staging | PR #28 commit `a22b43b`; PR workflow `30262584748` passed in 3m23s (frontend/browser 3m20s, Supabase/Deno 2m17s); merged to `main` at `54af2a3`; main workflow #69 (`30262859965`) passed in 3m56s (frontend/browser 1m58s, Supabase/Deno 2m06s, staging 1m43s). Authenticated Chrome loaded the canonical staging app with the preserved `[SYNTHETIC] Manager + Admin`, the staging marker, and no Sentry script. | Passed staging 2026-07-27 |
-| Backup/restore | Encrypted/checksummed synthetic artifact `design-flow_restore_rehearsal_20260727T083200Z.dump.enc`, SHA-256 `c8c030f7819fd4659db6f8ae3e63ff41f6b36875836a9845e0069a0448b43e90`; 14 migrations, 9 identities/profiles, 9/14/20/50 fixture reconciliation, zero Viewer + Admin. The verified encrypted pre-migration production artifact `design-flow_production_pre_migration_20260729T225324Z.dump.enc` has SHA-256 `31934e3def6b7c5cfb473a4fc751b01ff220e7746cada2ec12ee3769afb61da1`; its local and Admin-controlled offline copies were byte-identical and checksum-valid. Post-delivery artifact `design-flow_production_post_delivery_20260730T083655Z.dump.enc` is 594,800 bytes with SHA-256 `fe83fcf571aaa97ebb95181c3964a0168707280f4c22f65186e299a6fc0f9309`; local and Drive copies were checksum-valid and byte-identical, and the isolated hosted restore reconciled to production. | Passed 2026-07-30; detailed rehearsal below |
+| Backup/restore | Encrypted/checksummed synthetic artifact `design-flow_restore_rehearsal_20260727T083200Z.dump.enc`, SHA-256 `c8c030f7819fd4659db6f8ae3e63ff41f6b36875836a9845e0069a0448b43e90`; 14 migrations, 9 identities/profiles, 9/14/20/50 fixture reconciliation, zero Viewer + Admin. The verified encrypted pre-migration production artifact `design-flow_production_pre_migration_20260729T225324Z.dump.enc` has SHA-256 `31934e3def6b7c5cfb473a4fc751b01ff220e7746cada2ec12ee3769afb61da1`; its local and Admin-controlled offline copies were byte-identical and checksum-valid. Post-delivery artifact `design-flow_production_post_delivery_20260730T083655Z.dump.enc` is 594,800 bytes with SHA-256 `fe83fcf571aaa97ebb95181c3964a0168707280f4c22f65186e299a6fc0f9309`; local and Drive copies were checksum-valid and byte-identical, and the isolated hosted restore reconciled to production. Post-bootstrap artifact `design-flow_production_post_bootstrap_20260730T120201Z.dump.enc` is 596,560 bytes with SHA-256 `9727b82d9a5a4dac6aa0f1babd791dcdd23984866ae4c4e23dfc12dd50f137c9`; local checksum, decryption, and archive validation passed, and the authenticated Drive u/2 download was byte-identical to both local files and checksum-valid. | Passed 2026-07-30; detailed rehearsal below |
 | Zero-billing provider decision | R2 required accepting usage-based overage terms; no acceptance, bucket, token, or charge occurred. D-103 removed Sentry/R2 from the MVP. | Approved 2026-07-27 |
 | Delivery failure stop | Workflow #64 (`30258329567`) applied ephemeral migration `20260727103338_phase_7_failure_rehearsal.sql`, received the intentional PostgreSQL exception, and skipped migration-history verification, Functions, frontend, Pages, and live smoke; workflow #65 then reported the remote database up to date and exactly 14 hosted migrations | Passed staging 2026-07-27 |
 | Known-good redeploy | First run `30256633370` stopped safely at an unexpanded Pages-project input; PR #25 corrected the action expression; run `30257511622` redeployed reviewed main SHA `7d2d531` Functions/frontend with backend/live smoke and no database mutation | Passed staging 2026-07-27 |
@@ -25,17 +25,17 @@ recovery-key details are maintained outside Git.
 | Staging propagation closure | PR #23 merged at `7d2d531`; workflow #56 passed both PR jobs in 2m15s; workflow #57 preserved ordering and passed all delivery stages before the final smoke stopped after 51s because the bounded asset scan omitted the Work Item chunk beyond its first twenty imports | Failed safely; bounded same-origin scan correction verified locally with 117 tests |
 | Complete Phase 7 staging delivery | PR #24 merged at `bd6eaa3`; workflow #59 passed in 4m01s. PR #25 merged at `f4d6c25`; workflow #61 passed in 4m11s. PR #26 merged at `de23dcd`; default workflow #63 passed in 4m54s and post-failure recovery workflow #65 passed in 3m30s | Passed configured staging gate 2026-07-27 |
 | Two-working-day staging acceptance | D-104 requires two full passing working days. D-105 accepts the two inactive owner test profiles and 390 px Reports overflow as explicit nonblocking staging/pilot exceptions. | Day 1 passed 2026-07-29 and Day 2 passed 2026-07-30; two of two days passed |
-| Production infrastructure | Supabase Free production and Cloudflare Pages Free configured with exact Auth/origin separation, protected GitHub `production` environment, required reviewer, `main`-only deployment branch, short-lived provider tokens, and public address `https://designflowapp.pages.dev`; secret values and private owner details remain outside Git | Configured 2026-07-30; no identity or customer/product row bootstrapped |
+| Production infrastructure | Supabase Free production and Cloudflare Pages Free configured with exact Auth/origin separation, protected GitHub `production` environment, required reviewer, `main`-only deployment branch, short-lived provider tokens, and public address `https://designflowapp.pages.dev`; secret values and private owner details remain outside Git | Configured 2026-07-30; one approved owner identity bootstrapped, no customer/product row created |
 | Production delivery | Workflow #2 (`30526117799`) targeted exact `main` SHA `5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34` with the independently verified offline backup attestation. Attempts 1 and 2 failed closed; attempt 3 passed every ordered stage in 2m06s (delivery job 1m40s). | Passed 2026-07-30; detailed attempts below |
-| Production bootstrap | Auditable procedure plus named primary production owner; private operational details remain outside Git | Owner, infrastructure, delivery, and recovery gates prepared; separate bootstrap authorization required |
+| Production bootstrap | Operation `73f8ce95-fc5c-489f-a097-2793d84a25c8` created profile `0a153226-9029-4567-9e1b-f4b420cab0aa` as active Manager + Admin at `2026-07-30T11:38:45.714Z`; mandatory password change completed at `2026-07-30T11:42:38.109Z`; private identity and credentials remain outside Git | Passed 2026-07-30 |
 | Two-working-day limited pilot | D-104 requires two full passing working days with Admin + Lead, Manager, another Lead, and two Designers | Not authorized/not started |
 | Full-team release | Requires the D-105 Reports overflow correction/retest plus any later launch-blocker resolution | Not authorized/not started |
 | Two-week stabilization | Starts only after full-team release | Not started |
 
-No time-based gate may be marked passed early. Production infrastructure and
-the reviewed application/schema now exist, but no identity, hierarchy,
-reference-list customization, ticket, work log, or customer/product datum has
-been bootstrapped.
+No time-based gate may be marked passed early. Production infrastructure, the
+reviewed application/schema, and the single approved Manager + Admin owner now
+exist. No additional hierarchy, reference-list customization, ticket, work
+log, or customer/product datum has been created.
 
 ## Production delivery — 2026-07-30
 
@@ -89,6 +89,43 @@ inactive-persona session still failed closed. The canonical frontend returned
 HTTP 200 with CSP, HSTS, frame denial, `nosniff`, no-referrer, and restricted
 Permissions Policy; Function OPTIONS returned HTTP 200 with the exact staging
 origin. No staging fixture or production row changed.
+
+## Production bootstrap — 2026-07-30
+
+The owner authorized the exact one-time bootstrap parameters. Before execution,
+production had zero Auth users/profiles/work data, one unconsumed bootstrap
+row, fourteen migrations including `20260727010000`, and the required bootstrap
+Function. Supabase project-level public signup was found enabled, disabled to
+meet the runbook precondition, saved, and reverified off before account
+creation.
+
+Operation `73f8ce95-fc5c-489f-a097-2793d84a25c8` completed at
+`2026-07-30T11:38:45.714Z` and created profile
+`0a153226-9029-4567-9e1b-f4b420cab0aa`. Direct reconciliation returned one Auth
+user/profile, active `manager`, independent Admin true, `Africa/Cairo`, one
+consumed bootstrap row, one `bootstrap_completed` audit, one completed
+bootstrap operation, and zero Viewer + Admin. The temporary password was
+delivered only through Keychain/clipboard, changed by the owner, then deleted;
+the completed password-change operation at `2026-07-30T11:42:38.109Z` left
+zero password-restricted profiles.
+
+The one-time bootstrap secret was removed from Supabase and Keychain. A retry
+with the retired secret returned HTTP 500 and no temporary-password field.
+Authenticated Chrome then loaded Dashboard, All Tickets, Reports, Team,
+Settings, and Notifications with the Production marker and separate Manager
+and Admin indicators. Dashboard/All Tickets reconciled to zero product rows;
+the frontend and exact-origin Function preflight returned HTTP 200 with the
+required security/CORS headers. Pilot remains separately gated.
+
+A fresh production-source backup containing the bootstrapped owner state was
+created as `design-flow_production_post_bootstrap_20260730T120201Z.dump.enc`
+(596,560 bytes), SHA-256
+`9727b82d9a5a4dac6aa0f1babd791dcdd23984866ae4c4e23dfc12dd50f137c9`.
+Checksum equality, recovery-key decryption, and PostgreSQL archive structure
+passed; plaintext, clipboard material, and the temporary database URI were
+removed. Authenticated Drive u/2 listed both uploaded files; their downloaded
+copies were byte-identical to the local artifact/checksum and independently
+validated to the same SHA-256.
 
 ## Staging acceptance — Day 1 attempt (2026-07-28–2026-07-29)
 

@@ -1,8 +1,8 @@
 # Phase 7 operating readiness brief
 
 **Status:** Local/staging hardening, two-day staging acceptance, guarded
-production delivery, and production-source restore verified; bootstrap, pilot,
-release, and stabilization remain gated
+production delivery, production-source restore, and production bootstrap
+verified; pilot, release, and stabilization remain gated
 
 **Prepared:** 2026-07-27 from clean `main` at `18233b9`
 
@@ -116,7 +116,7 @@ Admin identity; there is no separate First Admin account.
 | Push, PR, merge, or staging deployment | Authorized for Phase 7; completed through `de23dcd` and workflow #65 |
 | Production infrastructure and guarded delivery | Authorized and completed 2026-07-30 for `main` SHA `5e4ccbc`; workflow run `30526117799` attempt 3 passed |
 | Production-source restore rehearsal | Authorized and passed 2026-07-30; disposable target deleted and staging resumed healthy |
-| Production bootstrap | Not yet authorized/completed |
+| Production bootstrap | Authorized and passed 2026-07-30; one active Manager + Admin owner, mandatory password change complete, one-time secret retired |
 | Pilot or full-team release | Not authorized |
 
 ## Current local evidence — 2026-07-27
@@ -131,8 +131,8 @@ failure stop/recovery, and known-good redeploy passed. The strict zero-billing
 correction passed formatting, lint, strict types, 29 test files/105 tests, 26
 Playwright/axe passes with two intended skips, a production-mode build, 25
 focused contract tests, and a 301-file secret scan. The named offline
-production bootstrap, pilot, release, and stabilization remain unperformed
-gates. The two-working-day staging acceptance gate passed on 2026-07-30 under
+pilot, release, and stabilization remain unperformed gates. The two-working-day
+staging acceptance gate passed on 2026-07-30 under
 the explicit D-105 staging/pilot exceptions.
 
 PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
@@ -145,7 +145,16 @@ Production was then configured without Sentry or R2 and delivered at
 `https://designflowapp.pages.dev`. Workflow `30526117799` preserved a missing
 Function-origin failure and a transient Pages-asset HTTP 522 before attempt 3
 passed every ordered stage in 2m06s. Production contains the reviewed schema,
-Functions, and frontend but no bootstrapped identity or customer/product data.
+Functions, frontend, and one approved active Manager + Admin owner identity,
+but no customer/product data.
 The post-delivery artifact and Drive copy then passed checksum/byte comparison,
 and the authorized isolated hosted restore reconciled to the empty production
 source. The disposable project was deleted and staging resumed healthy.
+
+The separately authorized bootstrap then completed through operation
+`73f8ce95-fc5c-489f-a097-2793d84a25c8`. Production reconciled to one Auth
+identity/profile, Manager position plus independent Admin privilege,
+`Africa/Cairo`, consumed bootstrap state, one bootstrap audit, and no Viewer +
+Admin or product rows. The required first password change completed, the
+one-time secret and temporary credential were retired, a retry disclosed no
+credential, and all six authenticated production routes passed live smoke.
