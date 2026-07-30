@@ -49,8 +49,9 @@ states. Its material theme-storage failure is fixed fail-soft. The completed
 local browser gate has 26 applicable desktop/mobile Playwright/axe passes and
 two intended device skips, with no local release-blocking finding. The
 configured staging gate passed; the D-104 two-working-day acceptance matrix
-passed on 2026-07-30 under the explicit D-105 exceptions. The 390 px
-Reports overflow remains a required correction before full-team release.
+passed on 2026-07-30 under the explicit D-105 exceptions. D-107 records the
+known 390 px Reports overflow as nonblocking and defers correction/retest to the
+separately scoped post-MVP UI revamp without claiming it is fixed.
 
 ## Quota and operational readiness
 
@@ -83,6 +84,7 @@ live production marker without adding client telemetry.
   2026-07-30. Production bootstrap passed on 2026-07-30 with one active Manager
   + Admin owner, mandatory password change, and retired one-time credential.
   D-106 retired the unperformed fixed-roster/two-day pilot without marking it
-  passed. Launch-blocker retest, full-team release, and two-week stabilization
-  remain open. The first two post-release working days are monitored within
-  stabilization and do not gate release or Phase 7 exit.
+  passed, and D-107 removed the known Reports overflow from the launch-blocker
+  set. Any other launch-blocker retest, full-team release authorization, and
+  two-week stabilization remain open. The first two post-release working days
+  are monitored within stabilization and do not gate release or Phase 7 exit.

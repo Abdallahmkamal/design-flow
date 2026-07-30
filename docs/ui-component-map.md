@@ -574,7 +574,7 @@ requires a new readiness decision before implementation.
 # Phase 7 UI component map — Production Hardening
 
 **Status:** Local/staging component review and production delivery complete;
-full-team responsive retest remains separately gated
+known narrow Reports overflow deferred by D-107
 
 **Scope:** Cross-product review and monitoring presentation only; operational
 workflows and runbooks have no product UI
@@ -644,10 +644,10 @@ approved the zero-billing correction. D-104 two-working-day acceptance passed
 on 2026-07-30. The unchanged reviewed UI was delivered through production run
 `30526117799` attempt 3; no production-only component or control was added.
 
-D-105 counts Day 1 with two explicit staging exceptions: inactive owner
-test profiles are outside the active persona set, and the 390 px Reports
-overflow remains a required pre-release correction rather than a staging
-blocker.
+D-105 counts Day 1 with two explicit staging exceptions: inactive owner test
+profiles are outside the active persona set, and the 390 px Reports overflow is
+nonblocking. D-107 defers its correction/retest to the separately scoped
+post-MVP UI revamp without representing it as fixed.
 
 ## Local implementation evidence
 
@@ -657,6 +657,5 @@ persistence is now fail-soft and regression-tested. D-103 removes external
 client telemetry entirely while preserving the accessible fail-safe error view.
 The cross-product review and completed local Playwright/axe gate found no
 remaining release-blocking UI issue. The configured staging delivery evidence
-and D-104 two-working-day acceptance gate passed under D-105. The accepted
-390 px Reports overflow still requires correction and retest before full-team
-release.
+and D-104 two-working-day acceptance gate passed under D-105. D-107 records the
+accepted 390 px Reports overflow as known nonblocking post-MVP UI-revamp work.

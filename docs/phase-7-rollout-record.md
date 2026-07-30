@@ -30,7 +30,7 @@ recovery-key details are maintained outside Git.
 | Production bootstrap | Operation `73f8ce95-fc5c-489f-a097-2793d84a25c8` created profile `0a153226-9029-4567-9e1b-f4b420cab0aa` as active Manager + Admin at `2026-07-30T11:38:45.714Z`; mandatory password change completed at `2026-07-30T11:42:38.109Z`; private identity and credentials remain outside Git | Passed 2026-07-30 |
 | Former limited-production pilot | D-106 supersedes the fixed five-person roster and two-day pre-release pilot requirement; it may not be marked passed | Retired unperformed 2026-07-30 |
 | First two post-release working days | Monitor authentication, authorization, notification isolation, report/source reconciliation, provider logs/quotas, and daily backups inside stabilization; material blockers invoke incident/pause handling | Begins only after authorized full-team release; not a release or Phase 7 exit gate |
-| Full-team release | Requires the D-105 Reports overflow correction/retest plus any later launch-blocker resolution | Not authorized/not started |
+| Full-team release | D-107 makes the known 390 px Reports overflow nonblocking; current quota review, any other later launch-blocker resolution, and explicit release authorization remain required | Not authorized/not started |
 | Two-week stabilization | Starts only after full-team release | Not started |
 
 No time-based gate may be marked passed early. Production infrastructure, the
@@ -150,7 +150,7 @@ delivery workflow was changed.
 | Active directory | At the end of the run, Team exposed exactly the eight approved active reserved personas, all conspicuously `[SYNTHETIC]`; the inactive reserved persona remained absent. | Passed |
 | Complete staging profile inventory | Admin Settings exposed all nine reserved personas plus two owner-confirmed inactive test profiles. D-105 excludes the two inactive records from the active acceptance-principal set; they remain unused and absent from Team/Dashboard scope. | **Accepted exception — passed for staging** |
 | Narrow Dashboard, Work Items, Team, and Settings | At 390 × 844, Dashboard and Team had no page-level horizontal overflow, All Tickets used structured mobile records with no visible table, Admin Settings used structured member records, non-Admin permission states remained readable, and the skip link moved focus to `main-content`. | Passed |
-| Narrow Reports | At 390 px, the responsive media query applied and the page shell/filter container fit the viewport, but report filter fields extended to x=475. Document `clientWidth` was 390 and `scrollWidth` was 475. The same Manager + Admin Reports page had no horizontal overflow at the restored 1728 px desktop width. D-105 accepts this for staging and requires correction/retest before full-team release. | **Accepted exception — passed for staging** |
+| Narrow Reports | At 390 px, the responsive media query applied and the page shell/filter container fit the viewport, but report filter fields extended to x=475. Document `clientWidth` was 390 and `scrollWidth` was 475. The same Manager + Admin Reports page had no horizontal overflow at the restored 1728 px desktop width. D-105 accepts this for staging; D-107 defers correction/retest to the post-MVP UI revamp and makes it nonblocking for release. | **Accepted exception — passed for staging; deferred known issue** |
 | Monitoring privacy | The staging marker remained visible and the loaded application contained zero Sentry script URLs. Existing workflow security/header/source-map evidence is reused and is not mislabelled as a new Day 1 run. | Passed |
 | Product mutations | No ticket, work log, comment, report filter, fixture row, reference value, or notification was mutated. The only writes were the explicitly authorized and audited account credential/lifecycle operations described above. | Passed within authorization |
 
@@ -159,9 +159,9 @@ delivery workflow was changed.
 The Day 1 attempt is complete and **passed with the two explicit D-105
 exceptions**. It contributes one of the two required passing working days. The
 two inactive owner test profiles remain outside the acceptance-principal set
-and may not be used in Day 2. The 390 px Reports overflow remains
-tracked and must be corrected, deployed through the guarded staging workflow,
-and retested before full-team release.
+and may not be used in Day 2. The 390 px Reports overflow remains tracked;
+D-107 later moved correction and retest into the separately scoped post-MVP UI
+revamp without claiming it is fixed.
 
 The credential, role, Admin-overlay, inactive, password-restricted, desktop,
 keyboard, non-Reports narrow, and all other Day 1 evidence passed. Day 2 must
@@ -196,7 +196,7 @@ or production resource changed.
 | Report reconciliation and export | The all-people report exposed 13 Ticket, seven Designer, and six standalone Visual Work source records. Manager + Admin retained CSV export. | Passed |
 | Active and complete account inventories | Team exposed exactly eight active reserved synthetic personas. Settings exposed the nine reserved personas plus the two D-105 inactive owner test profiles; the password-restricted and inactive reserved states remained distinct, Viewer + Admin was absent, and Manager + Admin still showed `Access updated: Never`. | Passed |
 | Narrow Dashboard, Work Items, Team, and Settings | At the operator-set 390 × 844 viewport, Dashboard rendered stacked scope and summary cards, All Tickets rendered eleven structured ticket cards rather than a table, Team rendered readable person cards rather than a table, and Settings rendered labelled member cards rather than a table. The visible page shells and controls showed no new clipping; the skip link and bottom navigation remained present in the accessibility tree. Dashboard also remained readable and structurally complete after switching to Dark mode. | Passed |
-| Narrow Reports | At 390 × 844, Reports retained its Tickets, Designers, and separate Visual Work tabs plus Manager + Admin CSV access, but the filter controls reproduced the previously measured 475 px horizontal extent. D-105 accepts this known issue for staging and still requires correction and retest before full-team release. | **Accepted exception — passed for staging** |
+| Narrow Reports | At 390 × 844, Reports retained its Tickets, Designers, and separate Visual Work tabs plus Manager + Admin CSV access, but the filter controls reproduced the previously measured 475 px horizontal extent. D-105 accepts this known issue for staging; D-107 later deferred correction/retest to the post-MVP UI revamp and removed it as a release blocker. | **Accepted exception — passed for staging; deferred known issue** |
 | Monitoring privacy | The staging marker was present and the loaded document contained zero Sentry script or link URLs. | Passed |
 | Product and external mutations | Navigation and an in-browser report-scope selection changed no persisted product data. The owner completed audited resets for Viewer (00:40), Designer (00:46), Designer + Admin (00:48), Lead (00:51), Lead + Admin (00:53), Manager (00:54), and the password-restricted persona (00:57 EEST). To exercise the reserved inactive persona, the owner temporarily reactivated it at 00:59, then reset and deactivated it at 01:00; the append-only audit preserved the lifecycle and reporting-line events and the final account state is inactive with password change required. No position, Admin privilege, fixture data, provider, workflow, other staging resource, or production state changed; Manager + Admin was not reset or altered. | Passed with documented, fully restored access-maintenance deviation |
 
@@ -208,8 +208,8 @@ acceptance time gate is closed. All seven valid active principal variants,
 both fail-closed account states, desktop routes and data meaning, report/export
 visibility, Admin-versus-Manager separation, monitoring privacy, and the
 required narrow routes passed. The known 390 px Reports overflow remains
-accepted for the completed staging gate and must be corrected and retested
-before full-team release.
+accepted for the completed staging gate; D-107 later deferred its correction
+and retest to the separately scoped post-MVP UI revamp.
 
 The operator's credential and temporary inactive-account lifecycle maintenance
 is preserved in the administration audit, and the reserved inactive persona was

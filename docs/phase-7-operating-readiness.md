@@ -72,12 +72,12 @@ stabilization period and are not a release or Phase 7 exit gate. A blocked or
 partial staging day does not count, and no record may state that the former
 pilot passed.
 
-D-105 accepts two named exceptions for staging: two
-owner-created inactive test profiles remain outside the active reserved-persona
-matrix, and the evidenced 390 px Reports overflow is nonblocking until
-full-team release. The overflow must be corrected and retested before that
-release; neither exception weakens security, recovery, permission, or
-data-integrity gates.
+D-105 accepts two named exceptions for staging: two owner-created inactive test
+profiles remain outside the active reserved-persona matrix, and the evidenced
+390 px Reports overflow is nonblocking. D-107 moves that known usability defect
+and its responsive retest into the separately scoped post-MVP UI revamp; it is
+not a Phase 7 or release gate and is not represented as fixed. Neither exception
+weakens security, recovery, permission, accessibility, or data-integrity gates.
 
 ## Efficiency and token use
 

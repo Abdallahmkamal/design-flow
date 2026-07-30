@@ -84,8 +84,9 @@ record email, passwords, tokens, or request bodies.
 - Offline copy: authenticated Drive u/2 listed the artifact/checksum pair; the
   downloaded copies were byte-identical to the local originals and checksum
   valid.
-- Remaining gates: record current quotas immediately before release;
-  fix/retest the accepted 390 px Reports overflow; obtain explicit full-team
-  release authorization; then monitor the first two working days inside the
-  two-week stabilization window. D-106 retired the former pilot gate without
-  marking it passed.
+- Remaining gates: record current quotas immediately before release; resolve
+  any blocker other than the D-107-deferred 390 px Reports overflow; obtain
+  explicit full-team release authorization; then monitor the first two working
+  days inside the two-week stabilization window. D-106 retired the former pilot
+  gate without marking it passed, and D-107 moved the known overflow to the
+  separately scoped post-MVP UI revamp.

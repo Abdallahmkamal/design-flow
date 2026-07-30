@@ -217,5 +217,6 @@ Functions, Auth/RLS/origin checks, source-map denial, Cloudflare Pages delivery,
 security headers, and final live smoke all passed. The post-delivery encrypted
 backup, Admin-controlled Drive copy, and isolated hosted restore rehearsal also
 passed. Bootstrap and its post-bootstrap recovery point are complete. D-106
-retired the unperformed pilot gate; overflow correction/retest, controlled
-release, and stabilization remain open.
+retired the unperformed pilot gate, and D-107 defers the known 390 px Reports
+overflow to the separately scoped post-MVP UI revamp without claiming it is
+fixed. Controlled release and stabilization remain open.

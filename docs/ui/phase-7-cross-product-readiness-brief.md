@@ -102,6 +102,7 @@ production bootstrap is complete; D-106 retired the former pilot gate, while
 full-team release remains a separately authorized action.
 
 D-105 accepts the evidenced 390 px Reports overflow for the completed staging
-gate only; correction and affected responsive retest remain required before
-full-team release. The separate inactive owner test profiles are excluded from
-the active acceptance-principal set.
+gate. D-107 makes it nonblocking for Phase 7 and release and defers correction
+and affected responsive retest to the separately scoped post-MVP UI revamp;
+the defect is not represented as fixed. The separate inactive owner test
+profiles are excluded from the active acceptance-principal set.

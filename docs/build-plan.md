@@ -282,6 +282,9 @@ Complete the approved operating model:
   than retroactively converting release into a passed or failed pilot.
 - Admin operational ownership and Manager organizational responsibility remain distinct in the system and runbooks.
 - The cross-product UI consistency, responsive, accessibility, and state-coverage review is complete with no unresolved release-blocking issue.
+- D-107 records the known 390 px Reports overflow as nonblocking deferred
+  post-MVP UI-revamp work; do not claim it is fixed or add revamp code to Phase
+  7.
 
 ## Definition of done for every implementation slice
 

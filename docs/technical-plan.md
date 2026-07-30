@@ -193,7 +193,7 @@ Do not automatically import historical data in the MVP. Current work items may b
 Roll out in this order:
 
 1. Two full working days of staging acceptance and full position/Admin/RLS testing.
-2. Complete production bootstrap/recovery, current quota review, and launch-blocking finding correction/retest.
+2. Complete production bootstrap/recovery, current quota review, and correction/retest of any remaining launch-blocking finding. D-107 explicitly classifies the known 390 px Reports overflow as deferred nonblocking UI-revamp work.
 3. Obtain explicit authorization and open production to real team members as they are ready; no fixed pilot roster or pre-release pilot duration is required.
 4. Monitor the first two working days of real use for authentication, authorization, notification isolation, source/report reconciliation, provider logs/quotas, and daily encrypted backups. These days are evidence within stabilization, not a release or Phase 7 exit gate; a material blocker triggers incident/pause handling.
 5. Keep a two-week stabilization period before taking nonessential enhancements into implementation.
