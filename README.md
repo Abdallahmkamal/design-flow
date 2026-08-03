@@ -5,9 +5,11 @@ A lightweight work-management portal for one internal UX/design team.
 Phases 0–6 are complete and the implemented Phase 7 production hardening has
 passed its local, configured staging, two-day staging-acceptance, and guarded
 production-delivery gates, including the checksum-verified production-source
-restore rehearsal. The one-time production bootstrap is complete; controlled
-release and stabilization remain open. D-106 replaces the former limited-pilot
-gate with monitored post-release operation.
+restore rehearsal. D-108 closes Phase 7 on the demonstrated production
+readiness and verified pre-release recovery point. Controlled release,
+post-release monitoring, real-user Core Web Vitals, daily operational backups,
+and stabilization remain truthful post-MVP operating work; none is represented
+as already performed.
 Design Flow now includes
 the contracted database and permission foundation, authentication and account lifecycle, Team and Settings,
 ticket creation and lifecycle, All Tickets, Work Item collaboration, and atomic,
@@ -24,8 +26,12 @@ Visual Work. The bootstrap identity is the synthetic Manager + Admin; there is
 no separate staging First Admin account. The non-production Cloudflare Pages
 Free staging deployment is live at
 <https://design-flow-staging.pages.dev>. The separately configured production
-application is live at <https://designflowapp.pages.dev> with one active
-Manager + Admin owner identity and no customer/product data yet.
+application is live at <https://designflowapp.pages.dev> with thirteen active
+profiles, one independent Admin, an approved reporting hierarchy, twenty-two
+active Areas/Squads, two existing work items, and no work-log batches or
+entries. Nine non-restricted profiles are approved for the initial
+controlled-release roster; four password-restricted profiles are explicitly
+excluded until separately onboarded.
 
 ## Local setup
 
@@ -216,7 +222,11 @@ then preserved two failure-stop attempts and passed on attempt 3 in 2m06s for
 Functions, Auth/RLS/origin checks, source-map denial, Cloudflare Pages delivery,
 security headers, and final live smoke all passed. The post-delivery encrypted
 backup, Admin-controlled Drive copy, and isolated hosted restore rehearsal also
-passed. Bootstrap and its post-bootstrap recovery point are complete. D-106
-retired the unperformed pilot gate, and D-107 defers the known 390 px Reports
-overflow to the separately scoped post-MVP UI revamp without claiming it is
-fixed. Controlled release and stabilization remain open.
+passed. Bootstrap and its post-bootstrap recovery point are complete. The
+authenticated immediate pre-release quota review passed below the 70% warning
+threshold on 2026-07-30. D-106 retired the unperformed pilot gate, and D-107
+defers the known 390 px Reports overflow to the separately scoped post-MVP UI
+revamp without claiming it is fixed. D-108 closes Phase 7 on 2026-08-03 after
+the accepted production roster/configuration and fresh encrypted/checksummed
+Drive-verified recovery point. Controlled release and stabilization remain
+unperformed post-MVP operating work.

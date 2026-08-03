@@ -1,7 +1,7 @@
 # Phase 7 production review
 
-**Status:** Local, staging, guarded production delivery, and production-source
-restore and bootstrap complete; later rollout gates remain open
+**Status:** Phase 7 production-readiness review complete and closed 2026-08-03
+under D-108; real-team rollout evidence moves to post-MVP operations
 
 ## Performance
 
@@ -11,8 +11,9 @@ Rolldown code-splitting contract. The prior 588.11 kB initial JavaScript chunk
 (170.72 kB gzip) is 26.56 kB (8.89 kB gzip); the largest initial dependency
 chunk is Supabase at 204.36 kB (52.41 kB gzip), and no build chunk exceeds the
 500 kB advisory. Reports and PDF dependencies remain lazy: Reports is 373.30 kB
-(109.37 kB gzip) and jsPDF is 399.35 kB (129.64 kB gzip). A separate recorded
-hosted Core Web Vitals measurement remains open.
+(109.37 kB gzip) and jsPDF is 399.35 kB (129.64 kB gzip). A real-user hosted
+Core Web Vitals measurement remains unperformed and moves to post-MVP rollout
+monitoring because meaningful traffic has not begun.
 
 ## Security and privacy
 
@@ -56,11 +57,16 @@ separately scoped post-MVP UI revamp without claiming it is fixed.
 ## Quota and operational readiness
 
 The monthly quota record covers Supabase database/egress/Auth/Functions,
-GitHub Actions, and Cloudflare Pages. Seventy percent is a
-warning and 85% is a decision gate. The product creates no artificial
-keep-alive traffic and adds no product metrics or quota controls. Current
-provider consumption must be read from authenticated consoles before release;
-no percentage is invented here.
+GitHub Actions, Cloudflare Pages, and offline backup media. Seventy percent is
+a warning and 85% is a decision gate. The product creates no artificial
+keep-alive traffic and adds no product metrics or quota controls. The
+authenticated immediate pre-release review on 2026-07-30 passed: Supabase
+organization database usage was 6% and its other applicable allowances were
+below 1%; GitHub Actions used 272/2,000 minutes (13.6%) and zero storage;
+Cloudflare recorded zero Workers requests/build minutes with no active
+subscription; Drive and local encrypted-backup storage remained below the 70%
+warning threshold, and the three production backup pairs re-passed checksum
+verification. The next monthly review is due by 2026-08-30.
 
 Runbooks now cover deployment, backup/restore, incident, quota, pause/resume,
 recovery, and production bootstrap. Admin operational ownership remains
@@ -72,19 +78,27 @@ failure-stop attempts. The final attempt verified Auth, anonymous RLS denial,
 the exact Function origin, source-map denial, Pages security headers, and the
 live production marker without adding client telemetry.
 
-## Unresolved launch gates
+## Phase 7 closure and post-MVP handoff
 
 - Complete staging gate, hosted failure-stop/recovery, and known-good redeploy
   passed on 2026-07-27; preserve their workflow/run identifiers in the rollout
   record.
-- Record current production quota immediately before release and preserve the
-  hosted header evidence; obtain a real-user Core Web Vitals sample only after
-  authorized real-user traffic exists.
+- The immediate pre-release quota gate passed on 2026-07-30. Preserve the
+  hosted header evidence and obtain a real-user Core Web Vitals sample only
+  after authorized real-user traffic exists.
 - The two full working days of staging acceptance passed on 2026-07-29 and
-  2026-07-30. Production bootstrap passed on 2026-07-30 with one active Manager
-  + Admin owner, mandatory password change, and retired one-time credential.
+  2026-07-30. Production bootstrap passed on 2026-07-30. By the 2026-08-03
+  pre-release reconciliation, production contained thirteen active profiles
+  (one Manager, three Leads, and nine Designers), one independent Admin, and
+  twenty-two active Areas/Squads. Four password-restricted profiles are
+  explicitly excluded from the nine-account initial release roster. The same
+  reconciliation found two work items and zero work-log batches/entries; work
+  item contents were not copied into evidence. The resulting encrypted
+  pre-release recovery point passed local decrypt/archive verification and its
+  Drive `u/2` upload/download pair was checksum-valid and byte-identical.
   D-106 retired the unperformed fixed-roster/two-day pilot without marking it
   passed, and D-107 removed the known Reports overflow from the launch-blocker
-  set. Any other launch-blocker retest, full-team release authorization, and
-  two-week stabilization remain open. The first two post-release working days
-  are monitored within stabilization and do not gate release or Phase 7 exit.
+  set. D-108 closes Phase 7 on this demonstrated readiness evidence. Controlled
+  release, the first two monitored working days, real-user Core Web Vitals,
+  daily operational backups, and two-week stabilization remain unperformed
+  post-MVP operating work with unchanged incident and recovery controls.

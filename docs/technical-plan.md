@@ -194,14 +194,20 @@ Roll out in this order:
 
 1. Two full working days of staging acceptance and full position/Admin/RLS testing.
 2. Complete production bootstrap/recovery, current quota review, and correction/retest of any remaining launch-blocking finding. D-107 explicitly classifies the known 390 px Reports overflow as deferred nonblocking UI-revamp work.
-3. Obtain explicit authorization and open production to real team members as they are ready; no fixed pilot roster or pre-release pilot duration is required.
-4. Monitor the first two working days of real use for authentication, authorization, notification isolation, source/report reconciliation, provider logs/quotas, and daily encrypted backups. These days are evidence within stabilization, not a release or Phase 7 exit gate; a material blocker triggers incident/pause handling.
-5. Keep a two-week stabilization period before taking nonessential enhancements into implementation.
+3. After Phase 7 readiness closure, obtain explicit authorization and open production to real team members as they are ready; no fixed pilot roster or pre-release pilot duration is required.
+4. As post-MVP operating work, monitor the first two working days of real use for authentication, authorization, notification isolation, source/report reconciliation, provider logs/quotas, and daily encrypted backups. A material blocker triggers incident/pause handling.
+5. Continue a two-week post-release stabilization period while post-MVP work proceeds under the normal review, deployment-authorization, incident, and recovery controls.
 
 A staging-acceptance working day counts only when its complete approved matrix
 passes. The first two post-release monitoring days are not acceptance days and
 may not be presented as a completed pilot.
 Blocked or partial staging attempts do not count toward the two-day gate.
+
+Under D-108, steps 1–2 plus the demonstrated delivery, recovery, bootstrap,
+quota, configuration, and fresh offline recovery-point evidence close Phase 7.
+Steps 3–5 and real-user Core Web Vitals remain unperformed post-MVP operating
+work until real-team release begins; closure does not claim otherwise or waive
+their controls.
 
 Production launch requires:
 

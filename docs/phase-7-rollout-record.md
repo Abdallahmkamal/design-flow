@@ -1,8 +1,9 @@
 # Phase 7 rollout record
 
-**Status:** Local, staging, two-day staging acceptance, guarded production
-delivery, production-source restore, and production bootstrap verified;
-controlled release and stabilization gates remain open
+**Status:** Phase 7 closed 2026-08-03 under D-108 after local/staging hardening,
+two-day staging acceptance, guarded production delivery, production-source
+restore, bootstrap, quota review, accepted configuration, and verified offline
+pre-release recovery point
 
 **Primary production owner:** Abdallah Kamal.
 
@@ -18,6 +19,7 @@ recovery-key details are maintained outside Git.
 | Zero-billing local correction | Formatting, lint, strict types, 29 test files/105 unit-component-automation tests, 26 Playwright/axe passes and 2 intended skips, production-mode build without monitoring dependency/source maps, 25 focused contract tests, and 301-file secret scan | Passed locally 2026-07-27 |
 | Zero-billing publication and staging | PR #28 commit `a22b43b`; PR workflow `30262584748` passed in 3m23s (frontend/browser 3m20s, Supabase/Deno 2m17s); merged to `main` at `54af2a3`; main workflow #69 (`30262859965`) passed in 3m56s (frontend/browser 1m58s, Supabase/Deno 2m06s, staging 1m43s). Authenticated Chrome loaded the canonical staging app with the preserved `[SYNTHETIC] Manager + Admin`, the staging marker, and no Sentry script. | Passed staging 2026-07-27 |
 | Backup/restore | Encrypted/checksummed synthetic artifact `design-flow_restore_rehearsal_20260727T083200Z.dump.enc`, SHA-256 `c8c030f7819fd4659db6f8ae3e63ff41f6b36875836a9845e0069a0448b43e90`; 14 migrations, 9 identities/profiles, 9/14/20/50 fixture reconciliation, zero Viewer + Admin. The verified encrypted pre-migration production artifact `design-flow_production_pre_migration_20260729T225324Z.dump.enc` has SHA-256 `31934e3def6b7c5cfb473a4fc751b01ff220e7746cada2ec12ee3769afb61da1`; its local and Admin-controlled offline copies were byte-identical and checksum-valid. Post-delivery artifact `design-flow_production_post_delivery_20260730T083655Z.dump.enc` is 594,800 bytes with SHA-256 `fe83fcf571aaa97ebb95181c3964a0168707280f4c22f65186e299a6fc0f9309`; local and Drive copies were checksum-valid and byte-identical, and the isolated hosted restore reconciled to production. Post-bootstrap artifact `design-flow_production_post_bootstrap_20260730T120201Z.dump.enc` is 596,560 bytes with SHA-256 `9727b82d9a5a4dac6aa0f1babd791dcdd23984866ae4c4e23dfc12dd50f137c9`; local checksum, decryption, and archive validation passed, and the authenticated Drive u/2 download was byte-identical to both local files and checksum-valid. | Passed 2026-07-30; detailed rehearsal below |
+| Pre-release recovery point | Encrypted artifact `design-flow_production_pre_release_20260803T120516Z.dump.enc` is 615,776 bytes with SHA-256 `fbab6f1b30da9fc99aac96e0c0488a0c5898bfee0a4f5cac7cca0274c67f2f22`. Local checksum, recovery-key decryption, PostgreSQL archive listing, plaintext cleanup, and aggregate source reconciliation passed: 14 migrations, 13 Auth identities/active profiles, 1 Manager, 3 Leads, 9 Designers, 1 independent Admin, 4 password-restricted profiles, zero Viewer + Admin, 22 active Areas/Squads, 2 work items, and zero work-log batches/entries. Temporary database credentials and the local recovery-key copy were removed. Chrome file attachment first stopped before upload because extension file-URL access was disabled. The owner then uploaded the encrypted artifact/checksum pair to the approved Drive `u/2` Production folder, downloaded both files, and the downloaded pair was checksum-valid and byte-identical to the local originals. | Passed 2026-08-03 |
 | Zero-billing provider decision | R2 required accepting usage-based overage terms; no acceptance, bucket, token, or charge occurred. D-103 removed Sentry/R2 from the MVP. | Approved 2026-07-27 |
 | Delivery failure stop | Workflow #64 (`30258329567`) applied ephemeral migration `20260727103338_phase_7_failure_rehearsal.sql`, received the intentional PostgreSQL exception, and skipped migration-history verification, Functions, frontend, Pages, and live smoke; workflow #65 then reported the remote database up to date and exactly 14 hosted migrations | Passed staging 2026-07-27 |
 | Known-good redeploy | First run `30256633370` stopped safely at an unexpanded Pages-project input; PR #25 corrected the action expression; run `30257511622` redeployed reviewed main SHA `7d2d531` Functions/frontend with backend/live smoke and no database mutation | Passed staging 2026-07-27 |
@@ -25,18 +27,30 @@ recovery-key details are maintained outside Git.
 | Staging propagation closure | PR #23 merged at `7d2d531`; workflow #56 passed both PR jobs in 2m15s; workflow #57 preserved ordering and passed all delivery stages before the final smoke stopped after 51s because the bounded asset scan omitted the Work Item chunk beyond its first twenty imports | Failed safely; bounded same-origin scan correction verified locally with 117 tests |
 | Complete Phase 7 staging delivery | PR #24 merged at `bd6eaa3`; workflow #59 passed in 4m01s. PR #25 merged at `f4d6c25`; workflow #61 passed in 4m11s. PR #26 merged at `de23dcd`; default workflow #63 passed in 4m54s and post-failure recovery workflow #65 passed in 3m30s | Passed configured staging gate 2026-07-27 |
 | Two-working-day staging acceptance | D-104 requires two full passing working days. D-105 accepts the two inactive owner test profiles and 390 px Reports overflow as explicit nonblocking staging exceptions. | Day 1 passed 2026-07-29 and Day 2 passed 2026-07-30; two of two days passed |
-| Production infrastructure | Supabase Free production and Cloudflare Pages Free configured with exact Auth/origin separation, protected GitHub `production` environment, required reviewer, `main`-only deployment branch, short-lived provider tokens, and public address `https://designflowapp.pages.dev`; secret values and private owner details remain outside Git | Configured 2026-07-30; one approved owner identity bootstrapped, no customer/product row created |
+| Production infrastructure | Supabase Free production and Cloudflare Pages Free configured with exact Auth/origin separation, protected GitHub `production` environment, required reviewer, `main`-only deployment branch, short-lived provider tokens, and public address `https://designflowapp.pages.dev`; secret values and private owner details remain outside Git | Configured 2026-07-30; thirteen active profiles, twenty-two active Areas/Squads, and two work items now exist; no work-log batch or entry exists |
 | Production delivery | Workflow #2 (`30526117799`) targeted exact `main` SHA `5e4ccbcbd2126f36d0a71780e6215c1a6ccf5b34` with the independently verified offline backup attestation. Attempts 1 and 2 failed closed; attempt 3 passed every ordered stage in 2m06s (delivery job 1m40s). | Passed 2026-07-30; detailed attempts below |
 | Production bootstrap | Operation `73f8ce95-fc5c-489f-a097-2793d84a25c8` created profile `0a153226-9029-4567-9e1b-f4b420cab0aa` as active Manager + Admin at `2026-07-30T11:38:45.714Z`; mandatory password change completed at `2026-07-30T11:42:38.109Z`; private identity and credentials remain outside Git | Passed 2026-07-30 |
+| Immediate pre-release quota review | Authenticated consoles showed Supabase Free organization usage at 6% database and below 1% egress/Auth/Function allowances; the production project itself used 0.03 GB database, 0 GB egress/storage, 2 MAU, and 3 Function invocations. GitHub Actions used 272/2,000 minutes (13.6%) and 0/0.5 GB storage with $0 billed. Cloudflare showed 0/100,000 Workers requests today, 0 build minutes, no active subscription, and no payment method. The Admin-controlled Drive had 246.73 GB available; the local encrypted-backup filesystem had 400 GiB available and all three production artifact/checksum pairs re-verified `OK`. | Passed below the 70% warning threshold 2026-07-30; next monthly review by 2026-08-30 and restore rehearsal by 2026-10-30 |
 | Former limited-production pilot | D-106 supersedes the fixed five-person roster and two-day pre-release pilot requirement; it may not be marked passed | Retired unperformed 2026-07-30 |
-| First two post-release working days | Monitor authentication, authorization, notification isolation, report/source reconciliation, provider logs/quotas, and daily backups inside stabilization; material blockers invoke incident/pause handling | Begins only after authorized full-team release; not a release or Phase 7 exit gate |
-| Full-team release | D-107 makes the known 390 px Reports overflow nonblocking; current quota review, any other later launch-blocker resolution, and explicit release authorization remain required | Not authorized/not started |
-| Two-week stabilization | Starts only after full-team release | Not started |
+| Post-MVP first two release working days | When release begins, monitor authentication, authorization, notification isolation, report/source reconciliation, provider logs/quotas, and daily backups; material blockers invoke incident/pause handling | Required after authorized release; not started and not a Phase 7 exit gate under D-108 |
+| Post-MVP initial controlled release roster | D-107 makes the known 390 px Reports overflow nonblocking; the immediate pre-release quota review passed below warning thresholds. Live read-only reconciliation on 2026-08-03 found thirteen active profiles: one Manager, three Leads, nine Designers, one independent Admin, and four password-restricted profiles. The owner explicitly excluded those four restricted profiles from the initial release, leaving nine eligible accounts. No password was reset or distributed by this decision. Explicit release authorization remains required. | Roster approved; release not authorized/not started |
+| Post-MVP two-week stabilization | Starts only after authorized real-team release and retains incident, quota, and recovery controls | Required after release; not started and not a Phase 7 exit gate under D-108 |
+| Phase 7 closure | D-108 closes the phase on the demonstrated readiness evidence above without claiming controlled release, post-release monitoring, real-user Core Web Vitals, or stabilization occurred. | **Closed 2026-08-03** |
 
 No time-based gate may be marked passed early. Production infrastructure, the
-reviewed application/schema, and the single approved Manager + Admin owner now
-exist. No additional hierarchy, reference-list customization, ticket, work
-log, or customer/product datum has been created.
+reviewed application/schema, thirteen active profiles, the approved reporting
+hierarchy, and twenty-two active Areas/Squads now exist. The production owner
+is Lead + Admin and reports to the non-Admin Manager, preserving operational
+Admin ownership separately from organizational responsibility. Four
+password-restricted profiles are excluded from the nine-account initial
+release roster. Two work items and zero work-log batches/entries exist; work
+item contents were not copied into evidence.
+
+D-108 closes Phase 7 on this demonstrated production-readiness state. The
+approved nine-account release roster, first two monitored working days, daily
+operational backups, real-user Core Web Vitals, and two-week stabilization are
+carried forward as unperformed post-MVP operating work. Their authorization,
+incident, security, quota, and recovery controls remain unchanged.
 
 ## Production delivery — 2026-07-30
 
