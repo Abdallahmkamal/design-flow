@@ -1,8 +1,9 @@
 # Phase 7 operating readiness brief
 
-**Status:** Local/staging hardening, two-day staging acceptance, guarded
-production delivery, production-source restore, and production bootstrap
-verified; controlled release and stabilization remain gated
+**Status:** Phase 7 closed 2026-08-03 under D-108 after local/staging hardening,
+two-day staging acceptance, guarded production delivery, restore rehearsal,
+bootstrap, quota review, accepted configuration, and verified offline
+pre-release recovery point
 
 **Prepared:** 2026-07-27 from clean `main` at `18233b9`
 
@@ -64,13 +65,14 @@ It must then establish the approved hierarchy and controlled lists without
 automatic historical import. Documentation is authorized only after brief
 approval; executing bootstrap is not.
 
-Under D-104, rollout requires two full working days of staging acceptance. D-106
-supersedes the former fixed-roster/two-day production pilot: launch-blocker
-resolution/retest and explicit full-team release authorization remain, while
-the first two working days of real use are monitored inside the two-week
-stabilization period and are not a release or Phase 7 exit gate. A blocked or
-partial staging day does not count, and no record may state that the former
-pilot passed.
+Under D-104, Phase 7 required two full working days of staging acceptance, which
+passed. D-106 supersedes the former fixed-roster/two-day production pilot.
+D-108 closes Phase 7 on demonstrated production readiness and moves explicit
+team-release authorization, the first two monitored working days, real-user
+Core Web Vitals, daily operational backups, and two-week stabilization into
+post-MVP operations. A blocked or partial staging day does not count, and no
+record may state that the former pilot or any unperformed rollout activity
+passed.
 
 D-105 accepts two named exceptions for staging: two owner-created inactive test
 profiles remain outside the active reserved-persona matrix, and the evidenced
@@ -120,7 +122,9 @@ Admin identity; there is no separate First Admin account.
 | Production-source restore rehearsal | Authorized and passed 2026-07-30; disposable target deleted and staging resumed healthy |
 | Production bootstrap | Authorized and passed 2026-07-30; one active Manager + Admin owner, mandatory password change complete, one-time secret retired |
 | Former limited pilot | Superseded by D-106; not performed and not marked passed |
-| Full-team release | Immediate pre-release quota review passed 2026-07-30; release not authorized |
+| Post-MVP initial controlled release | Immediate pre-release quota review passed 2026-07-30. Live reconciliation on 2026-08-03 found thirteen active profiles and twenty-two active Areas/Squads; four password-restricted profiles are explicitly excluded, leaving nine eligible initial-release accounts. Release is not authorized or represented as performed. |
+| Pre-release recovery point | The 2026-08-03 encrypted/checksummed production artifact passed local decrypt/archive verification and source reconciliation; its Drive `u/2` upload/download pair was checksum-valid and byte-identical. |
+| Phase 7 closure | D-108 closes Phase 7 on the completed readiness evidence above; release monitoring, Core Web Vitals, daily operational backups, and stabilization continue as post-MVP obligations. |
 
 ## Current local evidence — 2026-07-27
 
@@ -133,10 +137,11 @@ in the backup/restore runbook. The complete configured staging gate, hosted
 failure stop/recovery, and known-good redeploy passed. The strict zero-billing
 correction passed formatting, lint, strict types, 29 test files/105 tests, 26
 Playwright/axe passes with two intended skips, a production-mode build, 25
-focused contract tests, and a 301-file secret scan. The named offline
-release and stabilization remain unperformed gates. The two-working-day
-staging acceptance gate passed on 2026-07-30 under
-the explicit D-105 staging exceptions.
+focused contract tests, and a 301-file secret scan. The two-working-day staging
+acceptance gate passed on 2026-07-30 under the explicit D-105 staging
+exceptions. D-108 closes Phase 7 on 2026-08-03; release, monitoring, and
+stabilization remain explicitly unperformed post-MVP operating work rather
+than Phase 7 gates.
 
 PR #28 published that correction at `a22b43b`; workflow `30262584748` passed in
 3m23s. It merged to `main` at `54af2a3`, and workflow #69 (`30262859965`)
@@ -148,8 +153,10 @@ Production was then configured without Sentry or R2 and delivered at
 `https://designflowapp.pages.dev`. Workflow `30526117799` preserved a missing
 Function-origin failure and a transient Pages-asset HTTP 522 before attempt 3
 passed every ordered stage in 2m06s. Production contains the reviewed schema,
-Functions, frontend, and one approved active Manager + Admin owner identity,
-but no customer/product data.
+Functions, frontend, thirteen active profiles, one independent Admin, the
+approved reporting hierarchy, and twenty-two active Areas/Squads. Two work
+items and zero work-log batches/entries exist; work item contents are not copied
+into evidence.
 The post-delivery artifact and Drive copy then passed checksum/byte comparison,
 and the authorized isolated hosted restore reconciled to the empty production
 source. The disposable project was deleted and staging resumed healthy.

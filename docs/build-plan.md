@@ -265,7 +265,9 @@ Complete the approved operating model:
 - deployment, incident, quota, pause/resume, and recovery runbooks;
 - production performance, accessibility, responsive, security, and quota review;
 - auditable production bootstrap; and
-- staging acceptance, defect resolution, controlled full-team release, monitored operation, and stabilization.
+- staging acceptance, defect resolution, demonstrated production readiness,
+  and an auditable handoff of controlled release, monitored operation, and
+  stabilization to post-MVP operations.
 
 ### Exit gate
 
@@ -276,15 +278,19 @@ Complete the approved operating model:
 - The staging matrix completes on two full working days without an unresolved
   security, data-integrity, authentication, or core-workflow blocker. Blocked
   or partial staging days do not count.
-- D-106 removes the former fixed-roster/two-day pilot from the exit gate. The
-  first two working days after full-team release are monitored within
-  stabilization; a material blocker invokes incident/pause handling rather
-  than retroactively converting release into a passed or failed pilot.
+- D-106 removes the former fixed-roster/two-day pilot. D-108 closes Phase 7 on
+  demonstrated production readiness: controlled release, its first two
+  monitored working days, real-user Core Web Vitals, daily operational
+  backups, and two-week stabilization remain truthful post-MVP operating work
+  and are never relabeled as passed before they occur.
 - Admin operational ownership and Manager organizational responsibility remain distinct in the system and runbooks.
 - The cross-product UI consistency, responsive, accessibility, and state-coverage review is complete with no unresolved release-blocking issue.
 - D-107 records the known 390 px Reports overflow as nonblocking deferred
   post-MVP UI-revamp work; do not claim it is fixed or add revamp code to Phase
   7.
+- The accepted production roster/configuration and a fresh encrypted,
+  checksummed, offline-copied recovery point are reconciled without copying
+  credentials or production-row contents into repository evidence.
 
 ## Definition of done for every implementation slice
 
@@ -308,6 +314,12 @@ A later phase may begin early only for a small enabling task that does not inven
 These D-102 initiatives are intentionally deferred until after MVP completion.
 They are planning decisions only and do not alter the Phase 0–7 contracts,
 current schema, authentication, permissions, or Phase 6 implementation.
+
+D-108 also moves controlled team release, the first two monitored working days,
+real-user Core Web Vitals, daily operational backups, and two-week
+stabilization into the post-MVP operating workstream. Those controls remain
+mandatory when release begins, but they do not block starting post-MVP
+implementation after the Phase 7 closeout merges.
 
 ## Authentication Improvements
 

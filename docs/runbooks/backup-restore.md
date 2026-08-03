@@ -93,6 +93,30 @@ were removed. Authenticated Drive u/2 listed the uploaded encrypted artifact
 and checksum; the downloaded copies were byte-identical to the local originals,
 and the downloaded artifact independently matched the recorded SHA-256.
 
+## Pre-release production backup — 2026-08-03
+
+The read-only production dump used the existing Colima PostgreSQL 17.6 client
+and the approved schema allowlist. Failed credential and temporary-path
+attempts stopped without creating a success artifact. The final encrypted
+artifact is
+`design-flow_production_pre_release_20260803T120516Z.dump.enc`, 615,776 bytes,
+with SHA-256
+`fbab6f1b30da9fc99aac96e0c0488a0c5898bfee0a4f5cac7cca0274c67f2f22`.
+Local checksum equality, recovery-key decryption, PostgreSQL archive listing,
+and plaintext cleanup passed. Source reconciliation returned 14 migrations,
+13 Auth identities/active profiles, one Manager, three Leads, nine Designers,
+one independent Admin, four password-restricted profiles, zero Viewer + Admin,
+22 active Areas/Squads, two work items, and zero work-log batches/entries.
+Temporary database credentials and the local recovery-key copy were removed.
+
+Authenticated Chrome reached the approved Drive `u/2` Production folder, but
+the extension rejected file attachment because file-URL access was disabled.
+No Drive file was created by that failed attempt. The owner then uploaded the
+encrypted artifact/checksum pair manually and downloaded both files from the
+same folder. The downloaded artifact was 615,776 bytes, independently matched
+the recorded SHA-256, and both downloaded files were byte-identical to the
+local originals. The offline-copy gate passed.
+
 ## Local rehearsal evidence — 2026-07-27
 
 Colima local Supabase was reset and loaded with the guarded synthetic Phase 6
