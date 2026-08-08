@@ -54,9 +54,7 @@ export const AvatarFallback = forwardRef<
 });
 
 export function getInitials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/u)
+  return (name.replace(/\[[^\]]+\]/gu, ' ').match(/\p{L}[\p{L}\p{N}]*/gu) ?? [])
     .slice(0, 2)
     .map((part) => part[0])
     .join('')

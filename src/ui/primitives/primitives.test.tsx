@@ -54,6 +54,7 @@ describe('team-ready primitives', () => {
 
     expect(screen.getByText('Ready')).toBeVisible();
     expect(screen.getByLabelText('Ada Lovelace')).toHaveTextContent('AL');
+    expect(getInitials('[SYNTHETIC] Manager + Admin')).toBe('MA');
     expect(screen.queryByRole('separator')).not.toBeInTheDocument();
   });
 

@@ -21,7 +21,8 @@ but their public APIs and implementation belong to Design Flow.
 - `Tooltip`: delayed/focus-accessible description with provider/trigger/content.
 - `DropdownMenu`: keyboard-managed menu, items, labels, separators, check/radio
   items, and submenus.
-- `Sheet`: modal top/right/bottom/left surface with title, description, close,
+- `Sheet`: modal top/right/bottom/left surface with title, description, close;
+  `SheetPortal` and `SheetPrimitiveContent` support source-owned composed modal layouts,
   header, and footer; focus trap and restoration are provided by Radix Dialog.
 - `Separator`: decorative by default, horizontal or vertical.
 

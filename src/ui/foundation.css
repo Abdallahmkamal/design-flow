@@ -45,8 +45,14 @@
   --radius-md: var(--radius-element);
   --radius-lg: var(--radius-container);
   --radius-xl: var(--radius-overlay);
+  /* Approved shell navigation radius from Figma node 105:5824. */
+  --radius-shell: 1.5rem;
 
   --shadow-surface: var(--shadow-xs);
   --shadow-popover: var(--shadow-sm);
   --shadow-overlay: var(--shadow-lg);
+  /* Approved shell navigation shadow from Figma nodes 105:17360 and 105:17095. */
+  --shadow-shell:
+    0 34px 64px -22px rgb(0 0 0 / 16%), 0 20px 40px -14px rgb(0 0 0 / 8%),
+    0 2px 6px -2px rgb(0 0 0 / 4%);
 }

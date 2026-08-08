@@ -478,6 +478,24 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   ).toBeVisible();
   await expect(page.getByRole('link', { name: 'Log Work' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Create Ticket' })).toBeVisible();
+  await expect(page.getByTestId('quick-actions-scrim')).toHaveCSS(
+    'background-color',
+    /0\.3/,
+  );
+  const expandedLogWork = await page
+    .getByRole('link', { name: 'Log Work' })
+    .boundingBox();
+  const expandedCreateTicket = await page
+    .getByRole('link', { name: 'Create Ticket' })
+    .boundingBox();
+  const closeQuickActionsIcon = await page
+    .getByRole('button', { name: 'Close Quick Actions' })
+    .locator('svg')
+    .boundingBox();
+  expect(expandedLogWork).toMatchObject({ x: 12, width: 366, height: 64 });
+  expect(expandedCreateTicket).toMatchObject({ x: 12, width: 366, height: 64 });
+  expect(expandedLogWork?.y).toBeLessThan(expandedCreateTicket?.y ?? 0);
+  expect(closeQuickActionsIcon).toMatchObject({ width: 32, height: 32 });
   await page.keyboard.press('Escape');
 
   await page.getByRole('button', { name: /Open profile menu/u }).click();
@@ -491,12 +509,30 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   const navigationItem = await page
     .getByRole('link', { name: 'Work Items' })
     .boundingBox();
+  const quickActions = await page
+    .getByRole('button', { name: 'Open Quick Actions' })
+    .boundingBox();
+  const quickActionsIcon = await page
+    .getByRole('button', { name: 'Open Quick Actions' })
+    .locator('svg')
+    .boundingBox();
   const main = await page.locator('#main-content').boundingBox();
 
-  expect(header?.height).toBeGreaterThanOrEqual(64);
-  expect(navigationItem?.height).toBeGreaterThanOrEqual(56);
-  expect(navigation?.y).toBeGreaterThan(760);
-  expect((navigation?.y ?? 0) + (navigation?.height ?? 0)).toBe(844);
+  expect(header?.height).toBe(64);
+  expect(navigationItem?.height).toBeGreaterThanOrEqual(53);
+  expect(navigation?.y).toBe(759);
+  expect(navigation?.height).toBe(61);
+  expect(quickActions).toMatchObject({ y: 759, width: 61, height: 61 });
+  expect(quickActionsIcon).toMatchObject({ width: 32, height: 32 });
+  await expect(
+    page.getByRole('navigation', { name: 'Primary navigation' }),
+  ).toHaveCSS(
+    'box-shadow',
+    /rgba\(0, 0, 0, 0\.16\).*rgba\(0, 0, 0, 0\.08\).*rgba\(0, 0, 0, 0\.04\)/,
+  );
+  expect(
+    844 - ((navigation?.y ?? 0) + (navigation?.height ?? 0)),
+  ).toBeGreaterThanOrEqual(16);
   expect(main?.width).toBe(390);
   const bottomPadding = Number.parseFloat(
     await page
@@ -523,12 +559,29 @@ test('desktop shell uses the team-ready persistent sidebar geometry', async ({
     .getByRole('link', { name: 'Dashboard' })
     .boundingBox();
 
-  expect(navigation?.width).toBe(280);
-  expect(navigation?.height).toBe(720);
+  expect(navigation).toMatchObject({ x: 16, y: 16, width: 215, height: 530 });
   expect(navigationItem?.height).toBeGreaterThanOrEqual(40);
   await expect(page.locator('aside')).toHaveCSS('position', 'fixed');
+  await expect(page.locator('#main-content')).toHaveCSS('margin-left', '247px');
   await expect(page.getByRole('link', { name: 'Log Work' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Create Ticket' })).toBeVisible();
+
+  const logWork = await page
+    .getByRole('link', { name: 'Log Work' })
+    .boundingBox();
+  const createTicket = await page
+    .getByRole('link', { name: 'Create Ticket' })
+    .boundingBox();
+  expect(logWork?.y).toBeLessThan(createTicket?.y ?? 0);
+  await expect(page.locator('aside')).toHaveCSS(
+    'box-shadow',
+    /rgba\(0, 0, 0, 0\.16\).*rgba\(0, 0, 0, 0\.08\).*rgba\(0, 0, 0, 0\.04\)/,
+  );
+  await expect(page.locator('aside').getByText('Design Flow')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'font-size',
+    '14px',
+  );
 });
 
 test('Vodafone variable font and default authentication control sizing load', async ({
