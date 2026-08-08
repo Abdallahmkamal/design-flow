@@ -15,6 +15,17 @@ vi.mock('../shared/supabase/client', () => ({
   getSupabaseClient: getSupabaseClientMock,
 }));
 
+async function openProfileMenu(
+  user: ReturnType<typeof userEvent.setup>,
+  displayName = 'Synthetic Designer',
+) {
+  await user.click(
+    screen.getAllByRole('button', {
+      name: `Open profile menu for ${displayName}`,
+    })[0]!,
+  );
+}
+
 describe('authenticated application routing', () => {
   beforeEach(() => {
     window.history.pushState({}, '', '/');
@@ -35,7 +46,11 @@ describe('authenticated application routing', () => {
       }),
     ).toBeVisible();
     expect(screen.getByText('Synthetic Designer')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Sign out' })).toBeVisible();
+    expect(
+      screen.getAllByRole('button', {
+        name: 'Open profile menu for Synthetic Designer',
+      })[0],
+    ).toBeVisible();
     expect(screen.getByText('Operational overview')).toBeVisible();
     expect(screen.getByText('Synthetic test environment')).toBeInTheDocument();
   });
@@ -288,7 +303,8 @@ describe('authenticated application routing', () => {
 
     render(<App />);
     await screen.findByText('Synthetic Designer');
-    await user.click(screen.getByRole('button', { name: 'Sign out' }));
+    await openProfileMenu(user);
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 
     expect(
       await screen.findByRole('heading', { name: 'Sign in' }),
@@ -307,10 +323,11 @@ describe('authenticated application routing', () => {
 
     render(<App />);
     await screen.findByText('Synthetic Designer');
-    await user.click(screen.getByRole('button', { name: 'Sign out' }));
+    await openProfileMenu(user);
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 
     expect(await screen.findByText(/could not sign you out/i)).toBeVisible();
-    expect(screen.getByRole('navigation')).toBeVisible();
+    expect(screen.getAllByRole('navigation')[0]).toBeVisible();
   });
 
   it('switches theme without changing the authenticated account state', async () => {
@@ -324,12 +341,12 @@ describe('authenticated application routing', () => {
     render(<App />);
     await screen.findByText('Synthetic Designer');
     await user.click(
-      screen.getByRole('button', { name: 'Switch to dark mode' }),
+      screen.getAllByRole('button', { name: 'Switch to dark mode' })[0]!,
     );
 
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
     expect(
-      screen.getByRole('button', { name: 'Switch to light mode' }),
+      screen.getAllByRole('button', { name: 'Switch to light mode' })[0],
     ).toBeVisible();
   });
 
@@ -342,8 +359,10 @@ describe('authenticated application routing', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('link', { name: 'Settings' })).toBeVisible();
-    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(
+      (await screen.findAllByRole('link', { name: 'Settings' }))[0],
+    ).toBeVisible();
+    expect(screen.getAllByText(/Admin/u).length).toBeGreaterThan(0);
   });
 
   it('denies direct Settings routing to a Manager without Admin privilege', async () => {

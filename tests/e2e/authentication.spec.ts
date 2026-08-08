@@ -467,42 +467,68 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   await expect(
     page.getByRole('navigation', { name: 'Primary navigation' }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Work items' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Work Items' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Open Quick Actions' }),
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: 'Open Quick Actions' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Quick Actions' }),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Log Work' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Create Ticket' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await page.getByRole('button', { name: /Open profile menu/u }).click();
+  await expect(page.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
+  await page.keyboard.press('Escape');
 
   const header = await page.getByRole('banner').boundingBox();
-  const navigationItem = await page
-    .getByRole('link', { name: 'Work items' })
+  const navigation = await page
+    .getByRole('navigation', { name: 'Primary navigation' })
     .boundingBox();
+  const navigationItem = await page
+    .getByRole('link', { name: 'Work Items' })
+    .boundingBox();
+  const main = await page.locator('#main-content').boundingBox();
 
-  expect(header?.height).toBeGreaterThanOrEqual(48);
-  expect(navigationItem?.height).toBe(32);
-  await expect(page.locator('#main-content')).toHaveCSS(
-    'border-start-start-radius',
-    '0px',
+  expect(header?.height).toBeGreaterThanOrEqual(64);
+  expect(navigationItem?.height).toBeGreaterThanOrEqual(56);
+  expect(navigation?.y).toBeGreaterThan(760);
+  expect((navigation?.y ?? 0) + (navigation?.height ?? 0)).toBe(844);
+  expect(main?.width).toBe(390);
+  const bottomPadding = Number.parseFloat(
+    await page
+      .locator('#main-content')
+      .evaluate((element) => getComputedStyle(element).paddingBottom),
   );
+  expect(bottomPadding).toBeGreaterThanOrEqual(navigation?.height ?? 0);
+
+  await page.getByRole('button', { name: /Open profile menu/u }).click();
+  await page.getByRole('menuitem', { name: 'Sign out' }).click();
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+  await expect(page).toHaveURL('/sign-in');
 });
 
-test('desktop shell preserves the verified Astryx geometry', async ({
+test('desktop shell uses the team-ready persistent sidebar geometry', async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium');
   await configureAuthMocks(page);
   await signIn(page);
 
-  const header = await page.getByRole('banner').boundingBox();
   const navigation = await page.locator('aside').boundingBox();
   const navigationItem = await page
     .getByRole('link', { name: 'Dashboard' })
     .boundingBox();
 
-  expect(header?.height).toBe(48);
-  expect(navigation?.width).toBe(260);
-  expect(navigationItem?.height).toBe(32);
-  await expect(page.locator('#main-content')).toHaveCSS(
-    'border-start-start-radius',
-    '32px',
-  );
+  expect(navigation?.width).toBe(280);
+  expect(navigation?.height).toBe(720);
+  expect(navigationItem?.height).toBeGreaterThanOrEqual(40);
+  await expect(page.locator('aside')).toHaveCSS('position', 'fixed');
+  await expect(page.getByRole('link', { name: 'Log Work' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Create Ticket' })).toBeVisible();
 });
 
 test('Vodafone variable font and default authentication control sizing load', async ({
@@ -528,34 +554,65 @@ test('Vodafone variable font and default authentication control sizing load', as
   );
 });
 
-test('Team directory preserves approved fields and responsive semantics', async ({
+test('Team is absent from navigation and its former direct route', async ({
   page,
-}, testInfo) => {
+}) => {
   await configureAuthMocks(page);
   await signIn(page);
-  await page.getByRole('link', { name: 'Team' }).click();
+  await expect(page.getByRole('link', { name: 'Team' })).toHaveCount(0);
 
-  await expect(page.getByRole('heading', { name: 'Team' })).toBeVisible();
-  await expect(page.getByLabel('Search team')).toBeVisible();
-  await expect(page.getByLabel('Position')).toBeVisible();
-  await expect(page.getByText(/@design-flow/u)).toHaveCount(0);
-  await expect(page.getByText(/last sign-in/i)).toHaveCount(0);
-
-  if (testInfo.project.name === 'mobile-chromium') {
-    await expect(
-      page.getByRole('list', { name: 'Active Team directory' }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('table', { name: 'Active Team directory' }),
-    ).toBeHidden();
-  } else {
-    await expect(
-      page.getByRole('table', { name: 'Active Team directory' }),
-    ).toBeVisible();
-  }
+  await page.goto('/team');
+  await expect(
+    page.getByRole('heading', {
+      name: 'This Design Flow view does not exist',
+    }),
+  ).toBeVisible();
 
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScanResults.violations).toEqual([]);
+});
+
+test('Viewer keeps read destinations and is denied global and direct mutation actions', async ({
+  page,
+}) => {
+  await configureAuthMocks(page, { account: { position_code: 'viewer' } });
+  await signIn(page);
+
+  await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Work Items' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Reports' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Settings' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Create Ticket' })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole('button', { name: 'Open Quick Actions' }),
+  ).toHaveCount(0);
+
+  await page.goto('/work-items/new');
+  await expect(
+    page.getByText('Viewers can review Work Items but cannot create them.'),
+  ).toBeVisible();
+  await page.goto('/work-logs/new');
+  await expect(
+    page.getByText(
+      'Viewers can review recorded work but cannot log or edit work.',
+    ),
+  ).toBeVisible();
+});
+
+test('explicit theme selection persists across reloads', async ({ page }) => {
+  await configureAuthMocks(page);
+  await signIn(page);
+
+  await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: 'Switch to light mode' }),
+  ).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
 test('Admin Settings exposes only approved sections and account-support fields', async ({

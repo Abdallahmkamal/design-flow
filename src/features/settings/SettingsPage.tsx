@@ -29,7 +29,7 @@ export function SettingsRoute() {
           Organizational position alone does not grant Settings access. Only
           eligible members with independent Admin privilege can open this page.
         </p>
-        <Link to="/team">Return to Team</Link>
+        <Link to="/">Return to Dashboard</Link>
       </div>
     );
   }

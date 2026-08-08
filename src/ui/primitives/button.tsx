@@ -11,13 +11,13 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'border border-primary bg-primary text-primary-foreground hover:brightness-95',
+          'border border-primary bg-primary text-primary-foreground! hover:brightness-95',
         secondary:
-          'border border-border bg-secondary text-secondary-foreground hover:bg-accent',
+          'border border-border bg-secondary text-secondary-foreground! hover:bg-accent',
         ghost:
-          'border border-transparent bg-transparent text-foreground hover:bg-accent',
+          'border border-transparent bg-transparent text-foreground! hover:bg-accent',
         destructive:
-          'border border-destructive bg-destructive text-destructive-foreground hover:brightness-95',
+          'border border-destructive bg-destructive text-destructive-foreground! hover:brightness-95',
       },
       size: {
         sm: 'h-9 px-3 text-xs',
@@ -58,15 +58,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) {
-    const Component = asChild ? Slot : 'button';
+    if (asChild) {
+      return (
+        <Slot
+          {...props}
+          ref={ref}
+          className={cn(buttonVariants({ variant, size }), className)}
+          aria-busy={isLoading || undefined}
+        >
+          {children}
+        </Slot>
+      );
+    }
 
     return (
-      <Component
+      <button
         {...props}
         ref={ref}
         className={cn(buttonVariants({ variant, size }), className)}
-        type={asChild ? undefined : type}
-        disabled={asChild ? undefined : isLoading || disabled}
+        type={type}
+        disabled={isLoading || disabled}
         aria-busy={isLoading || undefined}
       >
         {isLoading ? (
@@ -78,7 +89,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           leadingIcon
         )}
         {children}
-      </Component>
+      </button>
     );
   },
 );

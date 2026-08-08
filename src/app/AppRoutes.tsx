@@ -13,11 +13,6 @@ import { SignInPage } from '../features/auth/SignInPage';
 import { NotFoundPage } from '../routes/NotFoundPage';
 import { AppShell } from '../routes/shell/AppShell';
 
-const TeamPage = lazy(() =>
-  import('../features/team/TeamPage').then((module) => ({
-    default: module.TeamPage,
-  })),
-);
 const DashboardPage = lazy(() =>
   import('../features/dashboard/DashboardPage').then((module) => ({
     default: module.DashboardPage,
@@ -119,7 +114,6 @@ export function AppRoutes() {
             path="work-logs/:batchId/edit"
             element={featureElement(<WorkLogEditPage />)}
           />
-          <Route path="team" element={featureElement(<TeamPage />)} />
           <Route path="settings" element={featureElement(<SettingsRoute />)} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
