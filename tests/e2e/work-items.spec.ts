@@ -129,9 +129,11 @@ async function mocks(
   options: {
     viewer?: boolean;
     conflict?: boolean;
+    subtaskFailsOnce?: boolean;
     mutationBodies?: { url: string; body: unknown }[];
   } = {},
 ) {
+  let subtaskAttempts = 0;
   const user = {
     id: userId,
     aud: 'authenticated',
@@ -409,6 +411,21 @@ async function mocks(
         contentType: 'application/json',
         body: JSON.stringify({ code: 'P0001', message: 'DF_CONFLICT' }),
       });
+    } else if (url.includes('set_subtask_completion')) {
+      subtaskAttempts += 1;
+      options.mutationBodies?.push({
+        url,
+        body: route.request().postDataJSON(),
+      });
+      await route.fulfill({
+        status: options.subtaskFailsOnce && subtaskAttempts === 1 ? 500 : 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          options.subtaskFailsOnce && subtaskAttempts === 1
+            ? { message: 'Synthetic retryable failure' }
+            : { status: 'updated' },
+        ),
+      });
     } else {
       options.mutationBodies?.push({
         url,
@@ -527,6 +544,45 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     mutationBodies.filter(({ url }) => url.includes('submit_work_log')),
   ).toHaveLength(1);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('partial follow-up failure retries only the failed subtask with its stable operation ID', async ({
+  page,
+}) => {
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { mutationBodies, subtaskFailsOnce: true });
+  await signIn(page);
+  await page.goto(`/work-logs/new?workItemId=${itemId}`);
+  await page.getByLabel('Work type 1 *').selectOption('ui_visual_design');
+  await page.getByText('Show more options').click();
+  await page
+    .getByRole('checkbox', {
+      name: '[SYNTHETIC] Keyboard verification',
+      exact: true,
+    })
+    .check();
+  await page.getByRole('button', { name: 'Log work', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    'Subtasks not completed: [SYNTHETIC] Keyboard verification.',
+  );
+  await page.getByRole('button', { name: 'Retry failed follow-ups' }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+
+  const workLogMutations = mutationBodies.filter(({ url }) =>
+    url.includes('submit_work_log'),
+  );
+  const subtaskMutations = mutationBodies.filter(({ url }) =>
+    url.includes('set_subtask_completion'),
+  );
+  expect(workLogMutations).toHaveLength(1);
+  expect(subtaskMutations).toHaveLength(2);
+  expect(subtaskMutations[0]?.body).toMatchObject({
+    operation_id: expect.any(String),
+  });
+  expect(subtaskMutations[1]?.body).toMatchObject({
+    operation_id: (subtaskMutations[0]?.body as { operation_id: string })
+      .operation_id,
+  });
 });
 
 test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({
