@@ -265,7 +265,10 @@ export async function getWorkItemOptions(): Promise<WorkItemOptions> {
   };
 }
 
-export async function createWorkItem(values: WorkItemFormValues) {
+export async function createWorkItem(
+  values: WorkItemFormValues,
+  operationId = createOperationId(),
+) {
   const { data, error } = await getSupabaseClient().rpc('create_work_item', {
     title: values.title,
     description: values.description,
@@ -275,7 +278,7 @@ export async function createWorkItem(values: WorkItemFormValues) {
     due_date: values.dueDate || null,
     figma_url: values.figmaUrl || null,
     label_ids: values.labelIds,
-    operation_id: createOperationId(),
+    operation_id: operationId,
   } as never);
   if (error) throwApiError(error);
   return z
@@ -311,10 +314,11 @@ export async function updateWorkItem(
 async function mutation(
   name: Parameters<ReturnType<typeof getSupabaseClient>['rpc']>[0],
   args: Record<string, unknown>,
+  operationId = createOperationId(),
 ) {
   const { data, error } = await getSupabaseClient().rpc(name, {
     ...args,
-    operation_id: createOperationId(),
+    operation_id: operationId,
   } as never);
   if (error) throwApiError(error);
   return data;
@@ -331,14 +335,19 @@ export const transitionWorkItem = (
   item: WorkItemDetail,
   status: string,
   acknowledge = false,
+  operationId = createOperationId(),
 ) =>
-  mutation('transition_work_item_status', {
-    work_item_id: item.id,
-    target_status_code: status,
-    expected_status_code: item.status.code,
-    expected_updated_at: item.updatedAt,
-    acknowledge_incomplete_subtasks: acknowledge,
-  });
+  mutation(
+    'transition_work_item_status',
+    {
+      work_item_id: item.id,
+      target_status_code: status,
+      expected_status_code: item.status.code,
+      expected_updated_at: item.updatedAt,
+      acknowledge_incomplete_subtasks: acknowledge,
+    },
+    operationId,
+  );
 export const archiveWorkItem = (item: WorkItemDetail) =>
   mutation('archive_work_item', {
     work_item_id: item.id,
@@ -389,12 +398,17 @@ export const setSubtaskCompletion = (
   id: string,
   completed: boolean,
   expected: boolean,
+  operationId = createOperationId(),
 ) =>
-  mutation('set_subtask_completion', {
-    subtask_id: id,
-    completed,
-    expected_completed: expected,
-  });
+  mutation(
+    'set_subtask_completion',
+    {
+      subtask_id: id,
+      completed,
+      expected_completed: expected,
+    },
+    operationId,
+  );
 export const withdrawSubtask = (id: string, expected: string) =>
   mutation('withdraw_subtask', {
     subtask_id: id,

@@ -1,21 +1,40 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Plus, Search, Trash2 } from 'lucide-react';
+import { useMemo, useRef, useState, type FormEvent } from 'react';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 
-import { useAuthentication } from '../auth/authContext';
+import { createOperationId } from '../../shared/operations/operationId';
+import { Button as ModernButton } from '../../ui/primitives/button';
+import { WorkflowOverlay } from '../../ui/WorkflowOverlay/WorkflowOverlay';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { Input } from '../../ui/Input/Input';
 import { Select } from '../../ui/Select/Select';
 import { Textarea } from '../../ui/Textarea/Textarea';
+import { useAuthentication } from '../auth/authContext';
+import { WorkItemForm } from '../work-items/WorkItemForm';
 import {
+  createWorkItem,
   getWorkItemDetail,
   getWorkItemOptions,
   listWorkItems,
+  setSubtaskCompletion,
   transitionWorkItem,
 } from '../work-items/workItemsApi';
-import { type WorkItemListRow } from '../work-items/workItemTypes';
-import { submitWorkLog, type WorkLogContext } from './workLogsApi';
+import type {
+  WorkItemFormValues,
+  WorkItemListRow,
+} from '../work-items/workItemTypes';
+import {
+  submitWorkLog,
+  type WorkLogContext,
+  type WorkLogEntryInput,
+} from './workLogsApi';
 import styles from './WorkLogPage.module.css';
 
 const ticketTypes = [
@@ -42,63 +61,56 @@ const visualTypes = [
   ['other_visual_work', 'Other visual work'],
 ] as const;
 const today = new Date().toISOString().slice(0, 10);
-const draftKey = 'design-flow:log-work-draft';
+const newEntry = (): WorkLogEntryInput => ({
+  workDate: today,
+  workTypeCode: '',
+  description: '',
+});
+const blankTicket = (assigneeId = ''): WorkItemFormValues => ({
+  title: '',
+  description: '',
+  areaId: '',
+  assigneeId,
+  plannedStartDate: '',
+  dueDate: '',
+  figmaUrl: '',
+  labelIds: [],
+});
 
-function storedDraft() {
-  try {
-    const value = sessionStorage.getItem(draftKey);
-    return value
-      ? (JSON.parse(value) as {
-          context: WorkLogContext;
-          workedBy: string;
-          entries: {
-            workDate: string;
-            workTypeCode: string;
-            description: string;
-          }[];
-          targetStatus: string;
-          addBlocker: boolean;
-          blockerReason: string;
-          blockerDate: string;
-        })
-      : null;
-  } catch {
-    return null;
-  }
+interface FollowupFailures {
+  status: boolean;
+  subtasks: { id: string; title: string }[];
 }
 
 export function WorkLogPage() {
   const { account } = useAuthentication();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const [params] = useSearchParams();
-  const initialDraft = storedDraft();
-  const [context, setContext] = useState<WorkLogContext>(
-    initialDraft?.context ?? 'ticket',
-  );
+  const [view, setView] = useState<'log' | 'create'>('log');
+  const [context, setContext] = useState<WorkLogContext>('ticket');
   const [ticketId, setTicketId] = useState(params.get('workItemId') ?? '');
-  const [workedBy, setWorkedBy] = useState(
-    initialDraft?.workedBy ?? account?.id ?? '',
-  );
-  const [targetStatus, setTargetStatus] = useState(
-    initialDraft?.targetStatus ?? '',
-  );
-  const [statusError, setStatusError] = useState(false);
-  const [addBlocker, setAddBlocker] = useState(
-    initialDraft?.addBlocker ?? false,
-  );
-  const [blockerReason, setBlockerReason] = useState(
-    initialDraft?.blockerReason ?? '',
-  );
-  const [blockerDate, setBlockerDate] = useState(
-    initialDraft?.blockerDate ?? '',
-  );
+  const [ticketDisplayId, setTicketDisplayId] = useState('');
+  const [workedBy, setWorkedBy] = useState(account?.id ?? '');
+  const [entries, setEntries] = useState<WorkLogEntryInput[]>([newEntry()]);
+  const [targetStatus, setTargetStatus] = useState('');
+  const [addBlocker, setAddBlocker] = useState(false);
+  const [blockerReason, setBlockerReason] = useState('');
+  const [blockerDate, setBlockerDate] = useState('');
+  const [selectedSubtasks, setSelectedSubtasks] = useState<string[]>([]);
   const [ticketSearch, setTicketSearch] = useState('');
-  const [entries, setEntries] = useState(
-    initialDraft?.entries?.length
-      ? initialDraft.entries
-      : [{ workDate: today, workTypeCode: '', description: '' }],
+  const [createDraft, setCreateDraft] = useState<WorkItemFormValues | null>(
+    null,
   );
+  const [createOperation, setCreateOperation] = useState(createOperationId);
+  const [failures, setFailures] = useState<FollowupFailures | null>(null);
+  const [logSucceeded, setLogSucceeded] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+  const logOperation = useRef(createOperationId());
+  const statusOperation = useRef(createOperationId());
+  const subtaskOperations = useRef(new Map<string, string>());
+
   const options = useQuery({
     queryKey: ['work-item-options'],
     queryFn: getWorkItemOptions,
@@ -122,52 +134,167 @@ export function WorkLogPage() {
         page: 1,
       }),
   });
-  const mutation = useMutation({ mutationFn: submitWorkLog });
+  const row = tickets.data?.rows.find((item) => item.id === ticketId);
+  const effectiveDisplayId = ticketDisplayId || (row?.displayId ?? '');
+  const selectedTicket = useQuery({
+    queryKey: ['work-log-ticket', effectiveDisplayId],
+    queryFn: () => getWorkItemDetail(effectiveDisplayId),
+    enabled: Boolean(effectiveDisplayId),
+  });
+  const submitMutation = useMutation({ mutationFn: submitWorkLog });
+  const createMutation = useMutation({
+    mutationFn: (values: WorkItemFormValues) =>
+      createWorkItem(values, createOperation),
+  });
   const filteredTickets = useMemo(() => {
     const search = ticketSearch.trim().toLowerCase();
-    if (!search) return tickets.data?.rows.slice(0, 8) ?? [];
-    return (tickets.data?.rows ?? []).filter((ticket) =>
-      `${ticket.displayId} ${ticket.title} ${ticket.status.label} ${ticket.assignee?.displayName ?? ''}`
-        .toLowerCase()
-        .includes(search),
-    );
+    const rows = tickets.data?.rows ?? [];
+    return (
+      search
+        ? rows.filter((item) =>
+            `${item.displayId} ${item.title} ${item.status.label} ${item.assignee?.displayName ?? ''}`
+              .toLowerCase()
+              .includes(search),
+          )
+        : rows
+    ).slice(0, 8);
   }, [ticketSearch, tickets.data?.rows]);
-  const selectedTicket = useQuery({
-    queryKey: ['work-log-ticket', ticketId],
-    queryFn: async () => {
-      const row = tickets.data?.rows.find((ticket) => ticket.id === ticketId);
-      return row ? getWorkItemDetail(row.displayId) : null;
-    },
-    enabled: Boolean(ticketId && tickets.data),
-  });
-  const types = context === 'ticket' ? ticketTypes : visualTypes;
   const canChoosePerson = Boolean(
     account &&
     (account.isAdmin || ['lead', 'manager'].includes(account.positionCode)),
   );
+  const canCreateTicket = account?.positionCode !== 'viewer';
+  const types = context === 'ticket' ? ticketTypes : visualTypes;
+  const incompleteSubtasks =
+    selectedTicket.data?.subtasks.filter((subtask) => !subtask.isCompleted) ??
+    [];
+  const defaultCreate = useMemo(
+    () =>
+      blankTicket(
+        options.data?.people.some((person) => person.id === account?.id)
+          ? account?.id
+          : '',
+      ),
+    [account?.id, options.data?.people],
+  );
+  const isValid = Boolean(
+    entries.length &&
+    entries.every(
+      (entry) =>
+        entry.workDate && entry.workDate <= today && entry.workTypeCode,
+    ) &&
+    (context !== 'ticket' || ticketId) &&
+    (!addBlocker || blockerReason.trim()),
+  );
+  const isDirty =
+    context !== 'ticket' ||
+    ticketId !== (params.get('workItemId') ?? '') ||
+    workedBy !== (account?.id ?? '') ||
+    entries.length !== 1 ||
+    Boolean(entries[0]?.workTypeCode) ||
+    Boolean(entries[0]?.description) ||
+    entries[0]?.workDate !== today ||
+    targetStatus ||
+    addBlocker ||
+    selectedSubtasks.length > 0;
+  const createDirty =
+    createDraft !== null &&
+    JSON.stringify(createDraft) !== JSON.stringify(defaultCreate);
 
-  if (account?.positionCode === 'viewer') {
-    return (
-      <main className={styles.page}>
-        <header className={styles.header}>
-          <div>
-            <p className={styles.eyebrow}>Permission state</p>
-            <h1>Log work</h1>
-          </div>
-        </header>
-        <div className={styles.state} role="status">
-          <p>Viewers can review recorded work but cannot log or edit work.</p>
-          <Link to="/work-items">Return to Work Items</Link>
-        </div>
-      </main>
+  const dismiss = () => {
+    if (location.key === 'default')
+      void navigate('/work-items', { replace: true });
+    else void navigate(-1);
+  };
+  const refreshTicket = async () => {
+    if (!effectiveDisplayId) return null;
+    await queryClient.invalidateQueries({
+      queryKey: ['work-log-ticket', effectiveDisplayId],
+    });
+    return getWorkItemDetail(effectiveDisplayId);
+  };
+  const finish = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['work-items'] }),
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+      queryClient.invalidateQueries({ queryKey: ['reports'] }),
+    ]);
+    void navigate(
+      context === 'ticket' && effectiveDisplayId
+        ? `/work-items/${effectiveDisplayId}`
+        : '/work-items',
+      {
+        replace: true,
+        state: { confirmation: announcement || 'Work logged.' },
+      },
     );
-  }
-
+  };
+  const runFollowups = async (onlyFailures?: FollowupFailures) => {
+    let current = await refreshTicket();
+    const next: FollowupFailures = { status: false, subtasks: [] };
+    const shouldStatus = onlyFailures
+      ? onlyFailures.status
+      : Boolean(targetStatus);
+    if (
+      shouldStatus &&
+      targetStatus &&
+      current &&
+      targetStatus !== current.status.code
+    ) {
+      if (current.capabilities.canTransition) {
+        try {
+          await transitionWorkItem(
+            current,
+            targetStatus,
+            false,
+            statusOperation.current,
+          );
+          current = await refreshTicket();
+        } catch {
+          next.status = true;
+          current = await refreshTicket();
+        }
+      } else next.status = true;
+    }
+    const intended = onlyFailures
+      ? onlyFailures.subtasks.map((item) => item.id)
+      : selectedSubtasks;
+    for (const id of intended) {
+      const subtask = current?.subtasks.find((item) => item.id === id);
+      if (!subtask || subtask.isCompleted) continue;
+      const operationId =
+        subtaskOperations.current.get(id) ?? createOperationId();
+      subtaskOperations.current.set(id, operationId);
+      if (!current?.capabilities.canEditSubtasks) {
+        next.subtasks.push({ id, title: subtask.title });
+        continue;
+      }
+      try {
+        await setSubtaskCompletion(id, true, false, operationId);
+        current = await refreshTicket();
+      } catch {
+        next.subtasks.push({ id, title: subtask.title });
+        current = await refreshTicket();
+      }
+    }
+    if (next.status || next.subtasks.length) {
+      setFailures(next);
+      setAnnouncement(
+        `Work was logged. ${next.status ? 'Status change failed. ' : ''}${next.subtasks.length ? `Subtasks not completed: ${next.subtasks.map((item) => item.title).join(', ')}.` : ''}`,
+      );
+      return;
+    }
+    setFailures(null);
+    setAnnouncement(
+      'Work logged and all selected ticket follow-ups completed.',
+    );
+    await finish();
+  };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!account || (context === 'ticket' && !ticketId)) return;
+    if (!account || !isValid || logSucceeded) return;
     try {
-      const result = await mutation.mutateAsync({
+      await submitMutation.mutateAsync({
         context,
         workItemId: context === 'ticket' ? ticketId : null,
         relatedAreaId: null,
@@ -177,60 +304,150 @@ export function WorkLogPage() {
           context === 'ticket' && addBlocker
             ? { reason: blockerReason, expectedResolutionDate: blockerDate }
             : null,
+        operationId: logOperation.current,
       });
-      sessionStorage.removeItem(draftKey);
-      await queryClient.invalidateQueries({ queryKey: ['work-items'] });
-      if (
-        targetStatus &&
-        selectedTicket.data &&
-        targetStatus !== selectedTicket.data.status.code
-      ) {
-        try {
-          await transitionWorkItem(selectedTicket.data, targetStatus);
-        } catch {
-          setStatusError(true);
-          return;
-        }
+      setLogSucceeded(true);
+      setAnnouncement('Work logged. Completing selected follow-ups…');
+      if (context === 'ticket') await runFollowups();
+      else {
+        setAnnouncement('Standalone visual work logged.');
+        await finish();
       }
-      void navigate(
-        context === 'ticket'
-          ? `/work-items/${tickets.data?.rows.find((ticket) => ticket.id === ticketId)?.displayId ?? ''}`
-          : '/work-logs/new',
-        { replace: context === 'ticket' },
+    } catch {
+      setAnnouncement(
+        'Work could not be logged. No ticket follow-up was attempted; your draft is preserved.',
       );
-      if (context === 'standalone_visual')
-        alert(`Visual work logged (${result.id}).`);
-    } catch {
-      /* rendered below without losing draft */
     }
   };
-  const retryStatus = async () => {
-    if (!selectedTicket.data || !targetStatus) return;
-    setStatusError(false);
-    try {
-      await transitionWorkItem(selectedTicket.data, targetStatus);
-      void navigate(`/work-items/${selectedTicket.data.displayId}`, {
-        replace: true,
-      });
-    } catch {
-      setStatusError(true);
-    }
-  };
+
+  if (account?.positionCode === 'viewer')
+    return (
+      <main className={styles.page}>
+        <h1>Log work</h1>
+        <div className={styles.state} role="status">
+          <p>Viewers can review recorded work but cannot log or edit work.</p>
+          <Link to="/work-items">Return to Work Items</Link>
+        </div>
+      </main>
+    );
+
+  if (view === 'create') {
+    const values = createDraft ?? defaultCreate;
+    return (
+      <WorkflowOverlay
+        title="Create ticket"
+        description="Create a Backlog ticket, then return to the preserved Log Work draft."
+        isDirty={Boolean(isDirty || createDirty)}
+        isBusy={createMutation.isPending}
+        onDismiss={dismiss}
+        onBack={() => setView('log')}
+        backLabel="Back to Log work"
+        footer={
+          <ModernButton
+            className="h-12 w-full rounded-xl text-base"
+            type="submit"
+            form="nested-create-ticket-form"
+            disabled={
+              !values.title.trim() || !values.areaId || options.isPending
+            }
+            isLoading={createMutation.isPending}
+          >
+            Create ticket
+          </ModernButton>
+        }
+      >
+        {options.isPending ? <p role="status">Loading ticket fields…</p> : null}
+        {options.isError ? (
+          <div role="alert">
+            <p>Ticket fields could not be loaded.</p>
+            <Button variant="secondary" onClick={() => void options.refetch()}>
+              Retry
+            </Button>
+          </div>
+        ) : null}
+        {options.data ? (
+          <WorkItemForm
+            formId="nested-create-ticket-form"
+            hideSubmitButton
+            showCreationStatus={false}
+            options={options.data}
+            initialValues={values}
+            submitLabel="Create ticket"
+            isSubmitting={createMutation.isPending}
+            serverError={
+              createMutation.isError
+                ? 'The ticket was not created. These values and your Log Work draft are preserved.'
+                : undefined
+            }
+            onValuesChange={(next) => {
+              setCreateDraft(next);
+              if (createMutation.isError) {
+                createMutation.reset();
+                setCreateOperation(createOperationId());
+              }
+            }}
+            onSubmit={(next) =>
+              createMutation.mutate(next, {
+                onSuccess: (result) => {
+                  setTicketId(result.id);
+                  setTicketDisplayId(result.display_id);
+                  setTicketSearch('');
+                  setView('log');
+                  setAnnouncement(
+                    `${result.display_id} created in Backlog and selected. Finish the work log when ready.`,
+                  );
+                },
+              })
+            }
+          />
+        ) : null}
+      </WorkflowOverlay>
+    );
+  }
+
   return (
-    <main className={styles.page}>
-      <header>
-        <Link to="/work-items">All Tickets</Link>
-        <h1>Log Work</h1>
-        <p>
-          Record actual work dates. Planned dates and submission timestamps
-          remain separate.
-        </p>
-      </header>
-      <form className={styles.form} onSubmit={submit}>
-        <div className={styles.actions}>
+    <WorkflowOverlay
+      title="Log work"
+      description="Record one to five actual work dates and optional independent ticket follow-ups."
+      isDirty={Boolean(isDirty)}
+      isBusy={submitMutation.isPending}
+      onDismiss={dismiss}
+      footer={
+        failures ? (
+          <ModernButton
+            className="h-12 w-full rounded-xl text-base"
+            onClick={() => void runFollowups(failures)}
+          >
+            Retry failed follow-ups
+          </ModernButton>
+        ) : (
+          <ModernButton
+            className="h-12 w-full rounded-xl text-base"
+            type="submit"
+            form="log-work-form"
+            disabled={!isValid || logSucceeded}
+            isLoading={submitMutation.isPending}
+          >
+            Log work
+          </ModernButton>
+        )
+      }
+    >
+      <form
+        id="log-work-form"
+        className={styles.overlayForm}
+        onSubmit={submit}
+        noValidate
+      >
+        <div
+          className={styles.segmented}
+          role="group"
+          aria-label="Work context"
+        >
           <Button
             type="button"
             variant={context === 'ticket' ? 'primary' : 'secondary'}
+            aria-pressed={context === 'ticket'}
             onClick={() => setContext('ticket')}
           >
             Ticket work
@@ -238,7 +455,15 @@ export function WorkLogPage() {
           <Button
             type="button"
             variant={context === 'standalone_visual' ? 'primary' : 'secondary'}
-            onClick={() => setContext('standalone_visual')}
+            aria-pressed={context === 'standalone_visual'}
+            onClick={() => {
+              setContext('standalone_visual');
+              setTicketId('');
+              setTicketDisplayId('');
+              setTargetStatus('');
+              setSelectedSubtasks([]);
+              setAddBlocker(false);
+            }}
           >
             Standalone Visual Work
           </Button>
@@ -248,40 +473,63 @@ export function WorkLogPage() {
             className={styles.ticketPicker}
             aria-labelledby="ticket-picker-title"
           >
-            <h2 id="ticket-picker-title">Work item</h2>
-            <Input
-              label="Search tickets"
-              value={ticketSearch}
-              onChange={(event) => setTicketSearch(event.target.value)}
-              placeholder="Search ID, title, status, or assignee"
-            />
+            <h2 id="ticket-picker-title">Work Item</h2>
+            <div className={styles.searchRow}>
+              <span aria-hidden="true">
+                <Search />
+              </span>
+              <input
+                aria-label="Search tickets"
+                value={ticketSearch}
+                onChange={(event) => setTicketSearch(event.target.value)}
+                placeholder="Search tickets"
+              />
+              {canCreateTicket ? (
+                <ModernButton
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-12 border-l border-border rounded-none"
+                  aria-label="Create new ticket"
+                  title="Create new ticket"
+                  onClick={() => setView('create')}
+                >
+                  <Plus aria-hidden="true" />
+                </ModernButton>
+              ) : null}
+            </div>
             {tickets.isPending ? <p role="status">Loading tickets…</p> : null}
             {tickets.isError ? (
-              <p role="alert">Tickets could not be loaded. Retry the page.</p>
+              <p role="alert">Tickets could not be loaded.</p>
             ) : null}
-            {!tickets.isPending &&
-            !tickets.isError &&
-            filteredTickets.length === 0 ? (
+            {!tickets.isPending && !filteredTickets.length ? (
               <p>No unarchived ticket matches this search.</p>
             ) : null}
-            <div className={styles.ticketResults} aria-label="Ticket results">
-              {filteredTickets.map((ticket: WorkItemListRow) => (
-                <Button
-                  key={ticket.id}
-                  type="button"
-                  variant={ticket.id === ticketId ? 'primary' : 'secondary'}
-                  onClick={() => setTicketId(ticket.id)}
-                  aria-pressed={ticket.id === ticketId}
-                >
-                  {ticket.displayId} — {ticket.title} · {ticket.status.label} ·{' '}
-                  {ticket.assignee?.displayName ?? 'Unassigned'}
-                </Button>
-              ))}
-            </div>
-            {ticketId && selectedTicket.data ? (
+            {ticketSearch ? (
+              <div className={styles.ticketResults} aria-label="Ticket results">
+                {filteredTickets.map((item: WorkItemListRow) => (
+                  <Button
+                    key={item.id}
+                    type="button"
+                    variant={item.id === ticketId ? 'primary' : 'secondary'}
+                    aria-pressed={item.id === ticketId}
+                    onClick={() => {
+                      setTicketId(item.id);
+                      setTicketDisplayId(item.displayId);
+                      setTicketSearch('');
+                      setSelectedSubtasks([]);
+                    }}
+                  >
+                    {item.displayId} — {item.title} · {item.status.label} ·{' '}
+                    {item.assignee?.displayName ?? 'Unassigned'}
+                  </Button>
+                ))}
+              </div>
+            ) : null}
+            {effectiveDisplayId ? (
               <p role="status">
-                Selected: {selectedTicket.data.displayId} —{' '}
-                {selectedTicket.data.title}
+                Selected: {effectiveDisplayId} —{' '}
+                {selectedTicket.data?.title ?? row?.title ?? 'Loading…'}
               </p>
             ) : (
               <p>Select a ticket before logging work.</p>
@@ -292,68 +540,6 @@ export function WorkLogPage() {
             Standalone visual work is not attached to a ticket or its lifecycle.
           </p>
         )}
-        {context === 'ticket' ? (
-          <Link
-            to="/work-items/new"
-            onClick={() =>
-              sessionStorage.setItem(
-                draftKey,
-                JSON.stringify({
-                  context,
-                  workedBy,
-                  entries,
-                  targetStatus,
-                  addBlocker,
-                  blockerReason,
-                  blockerDate,
-                }),
-              )
-            }
-          >
-            Create New Ticket
-          </Link>
-        ) : null}
-        {context === 'ticket' &&
-        selectedTicket.data?.capabilities.canTransition ? (
-          <Select
-            label="Optional status change"
-            value={targetStatus}
-            onChange={(event) => setTargetStatus(event.target.value)}
-          >
-            <option value="">Keep current status</option>
-            {options.data?.statuses.map((status) => (
-              <option key={status.code} value={status.code}>
-                {status.label}
-              </option>
-            ))}
-          </Select>
-        ) : null}
-        {context === 'ticket' ? (
-          <fieldset className={styles.rows}>
-            <legend>Optional blocker</legend>
-            <Checkbox
-              label="Add a blocker with this work log"
-              checked={addBlocker}
-              onChange={(event) => setAddBlocker(event.target.checked)}
-            />
-            {addBlocker ? (
-              <>
-                <Textarea
-                  label="Blocker reason"
-                  value={blockerReason}
-                  required
-                  onChange={(event) => setBlockerReason(event.target.value)}
-                />
-                <Input
-                  label="Expected resolution date (optional)"
-                  type="date"
-                  value={blockerDate}
-                  onChange={(event) => setBlockerDate(event.target.value)}
-                />
-              </>
-            ) : null}
-          </fieldset>
-        ) : null}
         {canChoosePerson ? (
           <Select
             label="Worked by"
@@ -366,25 +552,24 @@ export function WorkLogPage() {
               </option>
             ))}
           </Select>
-        ) : (
-          <p>
-            Worked by: <strong>{account?.displayName}</strong>
-          </p>
-        )}
-        <fieldset className={styles.rows}>
-          <legend>Actual work dates</legend>
+        ) : null}
+        <fieldset className={styles.dateRows}>
+          <legend>Work Date(s)</legend>
           {entries.map((entry, index) => (
-            <div className={styles.row} key={index}>
+            <div className={styles.dateRow} key={index}>
               <Input
                 label={`Work date ${index + 1}`}
                 type="date"
                 max={today}
-                value={entry.workDate}
                 required
+                value={entry.workDate}
+                {...(entry.workDate > today
+                  ? { error: 'Future dates are not allowed.' }
+                  : {})}
                 onChange={(event) =>
                   setEntries(
-                    entries.map((value, itemIndex) =>
-                      itemIndex === index
+                    entries.map((value, i) =>
+                      i === index
                         ? { ...value, workDate: event.target.value }
                         : value,
                     ),
@@ -393,12 +578,12 @@ export function WorkLogPage() {
               />
               <Select
                 label={`Work type ${index + 1}`}
-                value={entry.workTypeCode}
                 required
+                value={entry.workTypeCode}
                 onChange={(event) =>
                   setEntries(
-                    entries.map((value, itemIndex) =>
-                      itemIndex === index
+                    entries.map((value, i) =>
+                      i === index
                         ? { ...value, workTypeCode: event.target.value }
                         : value,
                     ),
@@ -413,75 +598,121 @@ export function WorkLogPage() {
                 ))}
               </Select>
               <Textarea
-                label={`Optional detail ${index + 1}`}
+                label={`Description ${index + 1} (optional)`}
                 rows={2}
                 value={entry.description}
                 onChange={(event) =>
                   setEntries(
-                    entries.map((value, itemIndex) =>
-                      itemIndex === index
+                    entries.map((value, i) =>
+                      i === index
                         ? { ...value, description: event.target.value }
                         : value,
                     ),
                   )
                 }
               />
-              {entries.length > 1 ? (
-                <Button
+              {index > 0 ? (
+                <ModernButton
                   type="button"
-                  variant="destructive"
+                  variant="ghost"
+                  aria-label={`Remove work date ${index + 1}`}
                   onClick={() =>
-                    setEntries(
-                      entries.filter((_, itemIndex) => itemIndex !== index),
-                    )
+                    setEntries(entries.filter((_, i) => i !== index))
                   }
                 >
-                  Remove date
-                </Button>
+                  <Trash2 aria-hidden="true" /> Remove date
+                </ModernButton>
               ) : null}
+              <p className={styles.help}>
+                Friday and Saturday may be entered manually when work occurred.
+              </p>
             </div>
           ))}
-        </fieldset>
-        <div className={styles.actions}>
-          <Button
+          <ModernButton
             type="button"
             variant="secondary"
-            disabled={entries.length === 5}
-            onClick={() =>
-              setEntries([
-                ...entries,
-                { workDate: today, workTypeCode: '', description: '' },
-              ])
-            }
+            disabled={entries.length >= 5}
+            onClick={() => setEntries([...entries, newEntry()])}
           >
-            Add date
-          </Button>
-          <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Logging work…' : 'Log work'}
-          </Button>
-        </div>
-        {mutation.error ? (
-          <p role="alert">
-            Work could not be logged. Your draft is preserved; refresh and try
-            again.
+            <Plus aria-hidden="true" /> Add another date
+          </ModernButton>
+        </fieldset>
+        {context === 'ticket' ? (
+          <details className={styles.followups}>
+            <summary>Show more options</summary>
+            {selectedTicket.data?.capabilities.canTransition ? (
+              <Select
+                label="Optional status change"
+                value={targetStatus}
+                onChange={(event) => {
+                  setTargetStatus(event.target.value);
+                  statusOperation.current = createOperationId();
+                }}
+              >
+                <option value="">Keep current status</option>
+                {options.data?.statuses.map((status) => (
+                  <option key={status.code} value={status.code}>
+                    {status.label}
+                  </option>
+                ))}
+              </Select>
+            ) : null}
+            <Checkbox
+              label="Add a blocker with this work log"
+              checked={addBlocker}
+              onChange={(event) => setAddBlocker(event.target.checked)}
+            />
+            {addBlocker ? (
+              <>
+                <Textarea
+                  label="Blocker reason"
+                  required
+                  value={blockerReason}
+                  onChange={(event) => setBlockerReason(event.target.value)}
+                />
+                <Input
+                  label="Expected resolution date (optional)"
+                  type="date"
+                  value={blockerDate}
+                  onChange={(event) => setBlockerDate(event.target.value)}
+                />
+              </>
+            ) : null}
+            {incompleteSubtasks.length &&
+            selectedTicket.data?.capabilities.canEditSubtasks ? (
+              <fieldset className={styles.subtasks}>
+                <legend>Complete subtasks</legend>
+                {incompleteSubtasks.map((subtask) => (
+                  <Checkbox
+                    key={subtask.id}
+                    label={subtask.title}
+                    checked={selectedSubtasks.includes(subtask.id)}
+                    onChange={(event) =>
+                      setSelectedSubtasks(
+                        event.target.checked
+                          ? [...selectedSubtasks, subtask.id]
+                          : selectedSubtasks.filter((id) => id !== subtask.id),
+                      )
+                    }
+                  />
+                ))}
+              </fieldset>
+            ) : null}
+          </details>
+        ) : null}
+        {announcement ? (
+          <p
+            className={
+              failures || submitMutation.isError
+                ? styles.error
+                : styles.feedback
+            }
+            role={failures || submitMutation.isError ? 'alert' : 'status'}
+          >
+            {announcement}
           </p>
         ) : null}
-        {statusError && selectedTicket.data ? (
-          <>
-            <p role="alert">
-              Work was logged, but the status did not change. Refresh the ticket
-              and retry only the status change.
-            </p>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void retryStatus()}
-            >
-              Retry status change
-            </Button>
-          </>
-        ) : null}
       </form>
-    </main>
+    </WorkflowOverlay>
   );
 }

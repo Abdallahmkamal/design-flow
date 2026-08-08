@@ -28,13 +28,19 @@ export interface WorkItemFormProps {
   showCreationStatus?: boolean;
   includeAssignee?: boolean;
   onSubmit: (values: WorkItemFormValues) => void;
+  onValuesChange?: (values: WorkItemFormValues) => void;
+  formId?: string;
+  hideSubmitButton?: boolean;
 }
 
 export function WorkItemForm({
   initialValues = emptyValues,
+  formId,
+  hideSubmitButton = false,
   includeAssignee = true,
   isSubmitting,
   onSubmit,
+  onValuesChange,
   options,
   serverError,
   showCreationStatus = true,
@@ -43,19 +49,17 @@ export function WorkItemForm({
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const update = (name: keyof WorkItemFormValues, value: string | string[]) =>
-    setValues((current) => ({ ...current, [name]: value }));
+    setValues((current) => {
+      const next = { ...current, [name]: value };
+      onValuesChange?.(next);
+      return next;
+    });
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const nextErrors: Record<string, string> = {};
     if (!values.title.trim()) nextErrors.title = 'Enter a title.';
     if (!values.areaId) nextErrors.areaId = 'Choose an Area or Squad.';
-    if (
-      values.plannedStartDate &&
-      values.dueDate &&
-      values.dueDate < values.plannedStartDate
-    )
-      nextErrors.dueDate = 'Due date cannot be before planned start.';
     if (values.figmaUrl) {
       try {
         const url = new URL(values.figmaUrl);
@@ -79,7 +83,12 @@ export function WorkItemForm({
   };
 
   return (
-    <form className={styles.workItemForm} onSubmit={submit} noValidate>
+    <form
+      id={formId}
+      className={styles.workItemForm}
+      onSubmit={submit}
+      noValidate
+    >
       {showCreationStatus ? (
         <div className={styles.fixedStatus}>
           <span>Status</span>
@@ -93,11 +102,6 @@ export function WorkItemForm({
         value={values.title}
         {...(errors.title ? { error: errors.title } : {})}
         onChange={(event) => update('title', event.target.value)}
-      />
-      <Textarea
-        label="Description"
-        value={values.description}
-        onChange={(event) => update('description', event.target.value)}
       />
       <div className={styles.formGrid}>
         <Select
@@ -154,6 +158,11 @@ export function WorkItemForm({
         {...(errors.figmaUrl ? { error: errors.figmaUrl } : {})}
         onChange={(event) => update('figmaUrl', event.target.value)}
       />
+      <Textarea
+        label="Description"
+        value={values.description}
+        onChange={(event) => update('description', event.target.value)}
+      />
       <fieldset className={styles.checkboxGroup}>
         <legend>Labels</legend>
         {options.labels
@@ -184,9 +193,11 @@ export function WorkItemForm({
           {serverError}
         </div>
       ) : null}
-      <Button type="submit" isLoading={isSubmitting}>
-        {submitLabel}
-      </Button>
+      {!hideSubmitButton ? (
+        <Button type="submit" isLoading={isSubmitting}>
+          {submitLabel}
+        </Button>
+      ) : null}
     </form>
   );
 }
