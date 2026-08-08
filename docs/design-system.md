@@ -6,9 +6,11 @@
 
 For Design Flow, this document is the contract for **Vodafone color and typography** plus the centralized runtime mappings used by Design Flow-owned components. Under D-099, Vodafone Foundations are authoritative for color and typography only. The extracted Vodafone spacing, elevation, and component inventories remain source research, but they do not determine Design Flow's non-color component presentation.
 
+Under D-109, team-ready migrated surfaces map these same authoritative Vodafone color and typography roles into Design Flow-owned shadcn/Tailwind semantic variables. shadcn is source-owned implementation material rather than visual authority. Tailwind utilities and legacy CSS Modules may coexist during migration, and global Tailwind Preflight remains disabled while unmigrated legacy screens remain. The D-099 Astryx mappings remain historically correct for the completed MVP and for legacy components until their owning slice migrates.
+
 - Design Flow owns its component code and public APIs under `src/ui/`.
 - Vodafone semantic color roles/modes and Vodafone text styles remain authoritative.
-- Verified Astryx references under `references/astryx/` are the preferred baseline for anatomy, proportions, density, sizing, spacing, shape, border/elevation geometry, motion, states, responsive behavior, interaction, and accessibility. Astryx is not installed, imported, copied, or wrapped.
+- Verified Astryx references under `references/astryx/` remain the preferred MVP/legacy baseline for anatomy, proportions, density, sizing, spacing, shape, border/elevation geometry, motion, states, responsive behavior, interaction, and accessibility. Team-ready migrated surfaces instead follow D-109, the approved written handoff/Figma direction, product behavior, and mandatory accessibility after Vodafone mapping. Astryx is not installed, imported, copied, or wrapped.
 - The Vodafone spacing, elevation, shared-component, and product-component inventories later in this file are provenance records only after D-099. They do not override verified Astryx non-color presentation, bind Design Flow to Vodafone Figma properties, or prescribe a code API.
 - Translate verified Astryx presentation into centralized Design Flow semantic aliases here. If official Astryx guidance does not expose a required value, record the gap and approve an explicit fallback before implementation.
 - See [ui-architecture.md](ui-architecture.md) for the full precedence and component workflow.

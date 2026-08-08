@@ -6,6 +6,8 @@
 
 **Phase:** 3 — Work-item Foundation
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 4 and `team-ready-ui-handoff.md` supersede the full-page primary presentation with route-backed inline Ticket Details, permissioned inline editing, the work calendar, effective-date Activity & Work Log, and separate Comments. Existing mutation, audit, one-primary-assignee, and direct-route contracts remain.
+
 ## Purpose
 
 Show the authoritative current state and Phase 3 lifecycle of one Work Item,

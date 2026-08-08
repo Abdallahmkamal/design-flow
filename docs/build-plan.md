@@ -218,7 +218,7 @@ Complete the everyday management surfaces:
 ### Exit gate
 
 - Dashboard values reconcile with controlled source records for every default people scope.
-- Admin privilege does not silently replace the underlying position default.
+- For the completed MVP, Admin privilege did not replace the underlying position default. D-110 supersedes this only when Dashboard Slice 6 deploys, defaulting Admin scope to All without changing organizational attribution.
 - Leads and Managers can deliberately broaden or change people scope as approved.
 - Stale work uses five Sunday–Thursday working days and never uses sign-in recency as a performance signal.
 - Notifications fire only for approved events/recipients, exclude self-events, and do not introduce email, push, reminders, mentions, or subscriptions.
@@ -246,7 +246,7 @@ Implement the approved reporting layer:
 - Ownership, contribution, active days, ticket-days, and visual work remain distinct and explainable.
 - The single-person recorded activity table reconciles every visible row to valid work-log sources, preserves `worked_by` credit separately from `logged_by` submission, and excludes withdrawn entries.
 - CSV exports contain all matching rows rather than only the visible page and preserve the visible view controls defined by the specification.
-- CSV access is limited to Lead, Manager, or Admin privilege; Work Item PDF access follows its approved capability rule.
+- The completed MVP limited CSV to Lead, Manager, or Admin privilege. D-110 supersedes this only when modernization Slice 7 deploys: Designer without Admin may export their server-enforced personal Reports scope, while Viewer remains denied; Work Item PDF access is unchanged.
 - Charts remain understandable through their accessible text/table alternative and do not imply productivity scoring.
 - Reports and export staging behavior is verified against the approved briefs.
 
@@ -311,9 +311,12 @@ A later phase may begin early only for a small enabling task that does not inven
 
 # Post-MVP Product Enhancements (v1.1 Planning)
 
-These D-102 initiatives are intentionally deferred until after MVP completion.
-They are planning decisions only and do not alter the Phase 0–7 contracts,
-current schema, authentication, permissions, or Phase 6 implementation.
+These initiatives began as D-102 post-MVP planning. D-109 and D-110 now approve
+the team-ready architecture, behavior, permission, export, and authentication
+amendments described below. The completed Phase 0–7 contracts remain historical
+MVP truth; changed behavior becomes effective only when its owning modernization
+slice deploys. One-primary-assignee storage, derived contributors, absent
+Priority, and independent operation boundaries remain unchanged.
 
 D-108 also moves controlled team release, the first two monitored working days,
 real-user Core Web Vitals, daily operational backups, and two-week
@@ -323,11 +326,12 @@ implementation after the Phase 7 closeout merges.
 
 ## Authentication Improvements
 
-- Move from email-as-username presentation to username-based login while
-  remaining compatible with the authentication provider.
-- Reduce the password minimum from twelve characters to eight and remove
-  unnecessary complexity requirements.
-- Review onboarding and password-reset usability as one coherent flow.
+- The team-ready Authentication slice keeps email as the sign-in identifier,
+  reduces the password minimum from twelve characters to eight, and removes
+  composition requirements. The changed policy becomes effective only when
+  Slice 5 is deployed.
+- Username-based login, broader onboarding changes, and additional credential
+  methods remain post-rollout discovery rather than team-ready scope.
 
 ## User Profile Improvements
 
@@ -344,13 +348,173 @@ implementation after the Phase 7 closeout merges.
 - Support local and staging only, with a production safety guard.
 - Follow the planned scale and behavior in `docs/testing/demo-dataset.md`.
 
-## UI Modernization
+## Team-ready UI modernization — nine slices
 
-Run a complete Figma-first redesign after MVP covering the application shell,
-navigation, Dashboard, ticket list, ticket details, Log Work, Reports,
-responsive layouts, accessibility review, and design-system refinement. The
-redesign must start from the proven product behavior rather than silently
-changing workflows while restyling them.
+The approved behavior contract is
+[ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md). D-109 governs the
+incremental Tailwind/shadcn architecture and D-110 governs the reconciled
+behavior and permissions. The workstream has exactly nine independently
+testable and deployable slices. Do not merge additional slices. Changed
+permission behavior becomes effective only when its owning implementation
+slice is deployed.
+
+### Slice 1 — Foundation, shell, and navigation
+
+Branch: `codex/ui-modernization-foundation-shell`.
+
+Scope:
+
+- Add Vodafone-mapped Tailwind/shadcn configuration, Design Flow-owned
+  primitives, semantic Light/Dark mappings, and utility composition under
+  `src/ui/`. Disable global Tailwind Preflight while legacy screens coexist.
+- Build the persistent desktop sidebar, mobile header, fixed bottom
+  navigation, permission-filtered Quick Actions, theme, notifications,
+  profile context, and sign-out.
+- Remove Team from routing/navigation while retaining profile and hierarchy
+  data. Viewer keeps Dashboard, Work Items, and read-only Reports with no
+  mutation actions; Settings remains Admin-only.
+- Use only Button, Badge, Avatar, Tooltip, Dropdown Menu, Sheet, and Separator
+  initially. Do not install primitives for later slices.
+
+Internal checkpoints on the same branch and staging unit:
+
+1. Foundation and primitive layer. Run focused token, theme, primitive,
+   legacy-regression, type, lint, unit, and production-build checks.
+2. Shell and navigation migration. Repeat the foundation checks and add the
+   seven-principal navigation/action matrix, responsive, safe-area, keyboard,
+   focus, notification, theme, profile, and sign-out checks.
+
+Exit gate: the new shell is the first verified consumer of the foundation;
+both checkpoints pass; legacy screens remain visually and behaviorally
+unaffected; Team is absent from the product UI; and desktop plus 390 px staging
+checks pass. There is no separate branch or deployment between checkpoints.
+
+### Slice 2 — Work actions: Log Work and Create Ticket
+
+Branch: `codex/ui-modernization-work-actions`.
+
+Scope:
+
+- Build the shared right-side desktop/full-screen mobile overlay family and
+  common header/footer, focus, dismissal, discard, error, loading, and
+  feedback behavior.
+- Implement Log Work and Create Ticket from global and ticket contexts,
+  including nested Create Ticket, full Log Work draft preservation, return
+  with the newly created ticket selected, one-to-five stacked date rows,
+  on-behalf rules, optional blocker/status/subtasks, and one primary assignee
+  defaulted to the eligible creator on a fresh ticket form.
+- Preserve independent operations: submit the work log; refresh ticket state
+  and permissions; attempt status; attempt selected subtasks with independent
+  IDs. Show complete versus partial success, name every failed follow-up,
+  preserve successes, retry only failures, never duplicate the work log, and
+  refresh ticket state after each completed operation.
+
+Internal checkpoints on the same branch and staging unit:
+
+1. Overlay foundation and Log Work, including role, date, mode, validation,
+   dismissal, focus, partial-result, and independent-operation tests.
+2. Create Ticket and the complete nested workflow, including creator default,
+   failure retention, draft restoration, and duplicate-operation tests.
+
+Exit gate: the complete Create Ticket → return to Log Work → submit sequence
+passes locally and in staging without stacked focus traps/backdrops, lost
+drafts, unauthorized follow-ups, or duplicate operations. There is no separate
+branch or deployment between checkpoints.
+
+### Slice 3 — All Tickets
+
+Branch: `codex/ui-modernization-all-tickets`.
+
+Implement the locked desktop sticky-edge table, mobile cards, exact columns,
+Add Filter/chip model, archived-only visibility, People union semantics,
+Days Open/Days Active filters, URL-backed sorting/pagination/page size, exact
+counts, and route launch state. Extend the server read model so calculated
+filtering and sorting occur before pagination. Preserve whole-team ticket
+visibility, one primary assignee, derived contributors, direct Figma behavior,
+and the absence of an All Tickets CSV action. Exit requires calculation edge
+tests, URL round trips, desktop/390 px responsive checks, keyboard row opening,
+and complete filter/pagination regression coverage.
+
+### Slice 4 — Route-backed inline Ticket Details
+
+Branch: `codex/ui-modernization-ticket-details`.
+
+Keep `/work-items/:displayId` canonical while presenting list-launched details
+as the approved wider desktop overlay and mobile full-screen view. Implement
+permissioned inline field edits, one-primary-assignee editing, read-only
+contributors, subtasks, blockers, low-text work calendar, effective-date
+Activity & Work Log feed, separate Comments, and top-only Log Work action.
+Preserve direct URL compatibility, list query state, browser Back, audit/history,
+and current mutation RPCs. Exit requires direct/list route, focus restoration,
+calendar/feed ordering, every inline allow/deny path, and notification deep-link
+tests.
+
+### Slice 5 — Authentication uplift
+
+Branch: `codex/ui-modernization-auth`.
+
+Apply the light shadcn uplift while retaining email sign-in, closed account
+provisioning, mandatory first/reset change, inactive handling, autofill, and
+password-manager behavior. Change UI, Edge validation, tests, and applicable
+Supabase configuration together to an eight-character minimum with no
+composition requirement; do not force existing-user resets solely for this
+change. Exit requires 7/8/long password boundaries, Edge/UI agreement,
+first/reset/inactive flows, mobile, reduced-motion, and staging checks.
+
+### Slice 6 — Dashboard uplift
+
+Branch: `codex/ui-modernization-dashboard`.
+
+Implement the shared header, persistent People scope, Add Filter chips, one
+local dropdown per card, and accurate filtered-All-Tickets drill-down while
+preserving cards, metrics, formulas, and non-productivity meaning. Enforce
+Designer-without-Admin Me-only scope in the RPC and direct URLs; Lead defaults
+to group with All/Me; Manager/Admin defaults to All; Viewer remains whole-team
+read-only. Exit requires seven-principal scope/tamper tests, filter and card
+isolation, source reconciliation, Back/scroll restoration, and responsive
+chart/table alternatives.
+
+### Slice 7 — Reports uplift and revised exports
+
+Branch: `codex/ui-modernization-reports`.
+
+Implement the shared header, persistent Period/People scope, Add Filter chips,
+responsive Designers/Tickets/Standalone Visuals tabs, and one direct tab-aware
+CSV action. Enforce Designer-without-Admin self-only reads and personal CSV in
+SQL/RPC authorization; Lead defaults to group with All/Me; Manager/Admin
+defaults to All; Viewer retains whole-team read-only Reports and is denied CSV.
+Use the reconciled three schemas with one Primary Assignee and no Priority,
+export all filtered rows, and keep All Tickets export-free. Exit requires the
+seven-principal read/export matrix, direct-RPC and URL tamper denial, exact
+headers/order/filenames, fixture reconciliation, accessible charts, and closure
+of the known 390 px overflow.
+
+### Slice 8 — Settings uplift
+
+Branch: `codex/ui-modernization-settings`.
+
+Replace anchor navigation with true URL-backed tabs that render one panel,
+preserve Back/Forward and deep links, and protect actual unsaved edits. Apply
+the shared shadcn form/table/dialog/feedback presentation without changing
+Admin-only access, categories, account administration, controlled lists,
+timezone, audit, or trusted operations. Exit requires seven-principal access,
+URL/tab/history, unsaved-change, mutation retention, keyboard, and narrow-screen
+checks.
+
+### Slice 9 — Integrated release and staging gate
+
+Branch: `codex/ui-modernization-release-gate`.
+
+Run the full formatting, lint, strict type, unit/component, pgTAP/RLS, Edge,
+Playwright, automated accessibility, clean migration/type-generation, and
+production-build baseline. Manually verify all seven principals, permission
+tampering, direct routes, responsive 390 px/desktop behavior, keyboard/focus,
+Light/Dark, state refresh, CSV reconciliation, legacy retirement, rollback,
+and the required staging matrix. Add no new product behavior. Exit only when no
+security, authorization, data-integrity, accessibility, responsive,
+authentication, or core-workflow blocker remains and existing release,
+backup/recovery, deployment, incident, and post-release monitoring controls are
+preserved.
 
 ## Ticket Experience Improvements
 

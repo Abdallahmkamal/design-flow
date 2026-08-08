@@ -1,10 +1,20 @@
 # Work Item specification
 
-**Version:** 1.1  
+**Version:** 1.2
 **Decision date:** 2026-07-16  
-**Status:** Approved for MVP planning
+**Status:** Approved MVP baseline with D-110 route-backed Ticket Details amendment
 
 The Work Item page is the complete source for a ticket's current state, planned dates, actual work, ownership and contribution, subtasks, discussion, blockers, and preserved history.
+
+## Team-ready amendment
+
+Modernization Slice 4 retains `/work-items/:displayId` as the canonical route but makes Ticket Details the primary operational presentation: a wider right overlay over All Tickets on desktop and full-screen route-backed view on mobile. Direct visits still establish a usable Work Items context. Browser Back/close preserves URL-backed list state and restores launcher focus where possible.
+
+- Ticket name, description, status, one primary assignee, Area, planned start, due date, labels, and Figma URL are edited inline through their existing permissioned operations; no general Edit mode is added.
+- Contributors remain read-only and derived from work logs. The reviewed multi-assignee direction is intentionally deferred until after rollout.
+- The work calendar shows Sunday–Thursday rows from first through latest valid log week, preserves internal empty weeks, and visualizes log counts rather than effort.
+- Activity & Work Log merges ticket-change events and dated work entries by effective activity date. Comments remain a separate final section even though meaningful comment activity updates Last Activity.
+- Existing blocker, subtask, comment, PDF, audit/history, and direct-route contracts remain unchanged unless the handoff explicitly refines their presentation.
 
 ## 1. Header and at-a-glance summary
 

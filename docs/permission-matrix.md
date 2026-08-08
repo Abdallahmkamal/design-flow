@@ -5,7 +5,9 @@
 **Applies to:** Browser capabilities, Postgres RLS/RPC authorization, Edge Functions, and permission tests  
 **Companion contracts:** `schema-contract.md` and `operation-contracts.md`
 
-**Last amended:** 2026-07-20 — D-100 stages permission verification by owning phase
+**Last amended:** 2026-08-08 — D-110 adds the team-ready Dashboard/Reports boundaries and Viewer navigation contract
+
+The D-110 changes become effective only with their owning implementation slice. Until Slice 6 deploys, the existing Dashboard scope remains active; until Slice 7 deploys, the existing Reports read/export implementation remains active. UI visibility never substitutes for the server rules below.
 
 Permissions are evaluated from the authenticated profile's current database state. UI checks improve usability only; they never grant authority.
 
@@ -17,11 +19,11 @@ Permissions are evaluated from the authenticated profile's current database stat
 |---|---|:---:|---|
 | V | Viewer | No | All |
 | D | Designer | No | Me |
-| D+A | Designer | Yes | Me |
+| D+A | Designer | Yes | All |
 | L | Lead | No | Lead group |
-| L+A | Lead | Yes | Lead group |
-| M | Manager | No | Manager group |
-| M+A | Manager | Yes | Manager group |
+| L+A | Lead | Yes | All |
+| M | Manager | No | All |
+| M+A | Manager | Yes | All |
 
 Viewer + Admin is not an eighth principal. It is an invalid account state rejected by Edge validation, the access-management RPC, a database check, and negative tests.
 
@@ -36,7 +38,7 @@ Before any application policy is evaluated:
 
 An inactive profile receives no normal application rows, RPC access, report/export access, or notification access. A `must_change_password` profile may read only the minimum own-account fields needed to complete the password flow, update its Auth password, call the completion RPC, and sign out.
 
-Reporting groups and people filters never narrow RLS. All valid active principals have the approved whole-team read visibility; position changes defaults and mutation capability, not the readable team partition.
+Ordinary Work Item, history, and safe profile reads remain whole-team in the single-team model; reporting groups are not tenant partitions. D-110 adds a narrower authorization boundary inside Dashboard/Reports read and export functions for Designer without Admin. Those functions must ignore or reject broader client filters and return only the authenticated Designer's permitted dataset even though underlying ordinary ticket rows remain whole-team readable.
 
 ## 2. Capability matrix
 
@@ -46,21 +48,24 @@ Legend: **Own/related** is defined below; **Any** means any Work Item or normal 
 
 | Capability | V | D | D+A | L | L+A | M | M+A |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Dashboard, All Tickets, Work Items | Any | Any | Any | Any | Any | Any | Any |
+| Dashboard | Any read-only | Own | Any | Any | Any | Any | Any |
+| All Tickets and Work Items | Any | Any | Any | Any | Any | Any | Any |
 | Current/archived ticket history | Any | Any | Any | Any | Any | Any | Any |
 | Visible comments and Figma URLs | Any | Any | Any | Any | Any | Any | Any |
-| Valid work history and Reports UI | Any | Any | Any | Any | Any | Any | Any |
-| Active Team directory fields | Any | Any | Any | Any | Any | Any | Any |
+| Valid work history and Reports UI | Any read-only | Own | Any | Any | Any | Any | Any |
+| Active profile/hierarchy directory fields (no Team module) | Any | Any | Any | Any | Any | Any | Any |
 | Own notification inbox | Own | Own | Own | Own | Own | Own | Own |
 | Work Item PDF | — | Any | Any | Any | Any | Any | Any |
-| Reports CSV | — | — | Any | Any | Any | Any | Any |
+| Reports CSV | — | Own | Any | Any | Any | Any | Any |
 | Work email/Auth support fields | — | — | Any | — | Any | — | Any |
 | Administration audit | — | — | Any | — | Any | — | Any |
 | Raw withdrawn bodies/revision tables | — | — | — | — | — | — | — |
 
 Raw withdrawn bodies and revision tables are not browser-readable for any principal, including Admin. Approved server-side export/audit functions may read only the fields required by their contract, and normal PDF/CSV output excludes withdrawn bodies.
 
-The general Work email/Auth-support row refers to directory/account views. The Designer summary CSV is a narrower approved exception: its server-side export may include the specified work-email column for Lead, Manager, or Admin because `reports-ui.md` requires it. This does not expose email in Team, Dashboard, ordinary Reports UI, or direct profile reads.
+`Own` in Dashboard/Reports is a hard authorization boundary for Designer without Admin: filters, direct URLs, drill-downs, RPC inputs, and CSV cannot broaden the dataset beyond the authenticated Designer. Viewer receives whole-team read-only Reports and no CSV. Lead without Admin defaults to their reporting group and may select All or Me; Manager and Admin default to All. Ordinary whole-team Work Item visibility is unchanged.
+
+The active profile/hierarchy read contract remains because Settings, authorization, and reporting require it, but D-110 removes Team as a visible route/module. The general Work email/Auth-support row refers to account views. Approved server exports never broaden the caller's report scope or expose unrelated authentication data.
 
 ### Work Item operations
 
@@ -238,7 +243,7 @@ Private database helpers, unavailable for arbitrary client execution, are the si
 - `can_edit_work_item(work_item_id)`;
 - `can_moderate_comments()`;
 - `can_manage_settings()`;
-- `can_export_reports()`;
+- `can_export_reports()` — false for Viewer; personal-scope only for Designer without Admin; broader authorized scope for Lead, Manager, or Admin;
 - `can_export_work_item()`.
 
 Helpers are `STABLE` only when safe for the duration of one statement. Mutation RPCs still lock and re-read authoritative rows to prevent time-of-check/time-of-use races.
@@ -270,8 +275,8 @@ Every affected operation test runs against each applicable valid principal. The 
 
 ### Global/read cases
 
-- Each of V, D, D+A, L, L+A, M, and M+A can read normal whole-team Work Item/report data.
-- Position-default people scopes resolve correctly and Admin does not change the default.
+- Each valid principal can read normal whole-team Work Item data. Reports follow the D-110 scopes: V whole-team read-only, D own only, and D+A/L/L+A/M/M+A broader authorized scopes.
+- V can read whole-team Reports but cannot export. D is self-only in Dashboard/Reports and may export only that personal dataset. D+A/L+A/M+A and M default to All; L defaults to their group and may select All or Me.
 - Inactive and password-restricted variants cannot read normal data.
 - V cannot read email, last-sign-in support data, administration audit, or raw revisions.
 - D/L/M without Admin cannot read Settings data.
@@ -296,7 +301,7 @@ Every affected operation test runs against each applicable valid principal. The 
 - D can launch Create New Ticket from ticket Log Work, and the created ticket follows the ordinary creation contract.
 - D is denied the integrated optional status change on an unrelated ticket even though D may log work there; created, assigned, or already-contributed tickets use the ordinary Own/related rule.
 - D can create or resolve the one active blocker on any visible ticket.
-- D cannot log for another person, change `worked_by`, correct another person's batch, moderate another person's comment, archive/restore, or export Reports CSV.
+- D cannot log for another person, change `worked_by`, correct another person's batch, moderate another person's comment, or archive/restore. D may export only the server-enforced personal Reports dataset and cannot select another reporting identity.
 - D can export a visible Work Item PDF.
 - D+A receives the Admin overlay: any-ticket mutation, on-behalf logging, moderation, archive/restore, CSV export, and Settings.
 

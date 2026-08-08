@@ -6,6 +6,8 @@
 
 **Phase:** 5 — Operational Experience
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 6 and `team-ready-ui-handoff.md` supersede page/filter/control presentation and scope defaults. Designer without Admin is authorization-limited to Me; Lead without Admin defaults to group with All/Me; Manager/Admin defaults to All; Viewer remains whole-team read-only. Existing cards and formulas remain.
+
 ## Purpose and users
 
 Provide one explainable, position-aware operational view of current ticket state

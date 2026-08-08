@@ -1,8 +1,8 @@
 # Reporting definitions
 
-**Version:** 0.6
+**Version:** 0.7
 **Checkpoint date:** 2026-07-20
-**Status:** Core attribution, metrics, UI layouts, and CSV export contracts approved
+**Status:** Core attribution/metrics approved with D-110 team-ready scope and CSV amendments
 
 Reporting is a primary product outcome. Every metric must be explainable, traceable to source records, and exportable without implying that activity frequency equals effort, quality, complexity, or performance.
 
@@ -20,12 +20,12 @@ The Designers report may include people whose organizational position is Designe
 
 ### Reporting-group scope
 
-- Designer defaults to Me.
+- Designer without Admin is restricted to Me at the authorization boundary, including direct URLs, RPC filters, drill-downs, and CSV.
 - Lead defaults to My reporting group: the Lead plus their direct-report Designers.
-- Manager defaults to My Manager group: the Manager, reporting Leads, and Designers beneath them.
+- Lead without Admin may select All or Me in addition to the default group.
+- Manager and every Admin-privileged principal default to All; individual reporting groups and Me remain available.
 - Viewer defaults to All with read-only report access and no export; Viewer cannot hold Admin privilege.
-- Admin privilege does not change the user's position-based default scope.
-- A Lead or Manager may switch to All, another Lead/Manager group, or specific people; reporting groups never restrict visibility.
+- These changed defaults and boundaries become effective only when modernization Slices 6 and 7 deploy. Ordinary whole-team ticket visibility remains unchanged.
 - Current snapshot metrics use current reporting relationships.
 - Period activity and event metrics use the reporting relationship effective on the applicable work/event date so a reassignment does not rewrite historical group reporting.
 - The selected Lead/Manager group and scope definition must be included in export metadata.
@@ -287,21 +287,17 @@ unless hours or another validated effort input is added later.
 
 ## 10. CSV portability
 
-Exact columns are locked in [reports-ui.md](reports-ui.md); exports follow these shapes:
+Under D-110, Reports owns one direct Export CSV action. The active tab selects exactly one row model, and every export applies the visible Period, People scope, optional filters, and server authorization boundary to all matching rows rather than only the visible page. Exact columns are locked in [reports-ui.md](reports-ui.md) and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md).
 
-### Ticket summary CSV
+### Tickets-tab CSV
 
-One row per ticket. Contributor and label lists may be serialized as delimited values.
+One row per ticket. Use one `Primary Assignee`, keep Contributors separate, and include no Priority column. This is a ticket-level report rather than a complete ticket-history export.
 
-### Designer summary CSV
+### Designers-tab CSV
 
-One row per designer for the selected period, with organizational position, Admin privilege, applicable reporting Lead/Manager, and clearly defined ownership, contribution, ticket-day, active-day, blocker, overdue, planned-until, missing-due-date, last-recorded-work, and visual fields.
+One row per permitted designer for the selected period. Designer without Admin receives only their own row; Viewer cannot export.
 
-### Designer-ticket detail CSV
-
-One row per designer-ticket relationship with a relationship type such as `primary` or `contributor`, plus actual activity dates/counts.
-
-### Visual-work detail CSV
+### Standalone-Visuals-tab CSV
 
 One row per visual work-log entry/date, including designer, work date, visual type, optional Area/Squad, optional description, and logged-at timestamp.
 
@@ -325,6 +321,6 @@ CSV files must include:
 
 The final card sets, charts, responsive behavior, presets, current-view export semantics, filenames, and exact CSV columns are defined in [reports-ui.md](reports-ui.md).
 
-- Reports use filter-aware CSV exports for Lead, Manager, and Admin-privileged users.
+- Reports use the D-110 tab-aware, filter-aware CSV action. Designer without Admin may export only their personal authorized dataset; Lead, Manager, and Admin may export their authorized scope; Viewer cannot export.
 - Reports do not include saved configurations or PDF output in the MVP.
 - Work Item PDF export remains a separate approved feature.

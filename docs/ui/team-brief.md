@@ -3,6 +3,8 @@
 **Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
+> **Team-ready amendment (2026-08-08):** This is historical MVP verification evidence. D-110 removes Team as a visible route/navigation module in Slice 1 while retaining the safe profile/hierarchy read and privacy contracts for Settings, authorization, and reporting.
+
 ## Purpose
 
 Give every active user a factual directory of active people, organizational position, separate Admin privilege, and current reporting relationship without exposing account-support details or performance signals.

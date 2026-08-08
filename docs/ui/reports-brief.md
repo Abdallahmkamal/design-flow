@@ -6,6 +6,8 @@
 
 **Phase:** 6 — Reports and Exports
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 7 and `team-ready-ui-handoff.md` supersede scope defaults, responsive presentation, and the five-export menu. Designer without Admin is self-only and may export only personal authorized data; Viewer remains whole-team read-only and cannot export. One direct tab-aware CSV action produces the reconciled three schemas with one Primary Assignee and no Priority.
+
 ## Purpose and users
 
 Provide explainable Tickets, Designers, and Visual Work reporting over the

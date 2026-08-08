@@ -6,6 +6,8 @@
 
 **Prepared:** 2026-07-21
 
+> **Team-ready amendment (2026-08-08):** This map remains the verified MVP inventory. D-109 and the nine-slice build plan govern new/migrated components: Design Flow-owned shadcn source and Tailwind may extend or replace legacy entries slice by slice, with Vodafone color/typography retained and global Tailwind Preflight disabled during coexistence.
+
 ## Authority and boundaries
 
 This map applies the approved behavior in `build-plan.md`, `all-tickets.md`,

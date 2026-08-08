@@ -135,8 +135,9 @@ These paths add no public mutation:
 | Create New Ticket | `create_work_item` | Independent authorization, initial Backlog history/event, optional assignment notification, and operation result |
 | Submit the unfinished ticket-work draft | `submit_work_log` | Independent work-log validation, audit/event, contribution, and recalculation |
 | Apply an optional status change | `transition_work_item_status` | Independent edit authorization, workflow validation, status history/event, notification, and operation result |
+| Complete each selected subtask after a saved log | `set_subtask_completion` | Independent current-state/edit authorization, subtask history/event, idempotency, and operation result per subtask |
 
-No operation accepts another operation's payload. The client may use the Work Item ID returned by `create_work_item` as the selected ticket in its preserved draft, but that return value grants no additional permission and proves no work-log or status operation occurred.
+No operation accepts another operation's payload. The client may use the Work Item ID returned by `create_work_item` as the selected ticket in its preserved draft, but that return value grants no additional permission and proves no work-log, status, or subtask operation occurred.
 
 ## 4. Auth and account Edge contracts
 
@@ -244,6 +245,8 @@ If database finalization fails, the Auth account may be enabled but RLS still se
 Caller: the authenticated user, including one restricted by `must_change_password`.
 
 Input: new password and operation ID. Password is never logged or sent to Postgres.
+
+When the team-ready Authentication slice is deployed, validation requires at least eight characters and no uppercase, number, symbol, or other composition rule. UI, Edge validation, tests, and applicable provider configuration must change together. The existing deployed policy remains effective until that slice deploys, and existing users are not reset solely because the minimum changes.
 
 Procedure:
 
@@ -556,10 +559,12 @@ The unfinished Log Work form is client state, not a database record.
 2. Before launching normal ticket creation, the client retains all current Log Work draft values. A successful `create_work_item` result resumes the same draft with the returned Work Item ID selected. Creation does not call `submit_work_log` or `transition_work_item_status`.
 3. An optional target status is shown only when the caller independently satisfies `can_edit_work_item` for the selected ticket before submission. The client does not treat permission to log or a prospective contributor relationship as transition authority.
 4. Final submission calls `submit_work_log` first with its own operation ID. A target status is not part of that RPC payload.
-5. After work submission succeeds, the client refreshes authoritative Work Item state and, when the requested target is still different, calls `transition_work_item_status` with a separate operation ID and current expected status/version.
-6. A failed work submission leaves the draft available and prevents the status call. A successful work submission is never rolled back because the later status operation is denied, invalid, stale, or unavailable. The interface reports the two outcomes separately and retries only the failed operation according to its own idempotency rules.
+5. After work submission succeeds, the client refreshes authoritative Work Item state and permissions and, when the requested target is still different, calls `transition_work_item_status` with a separate operation ID and current expected status/version.
+6. After each completed follow-up, refresh displayed authoritative ticket state. Then attempt each selected incomplete subtask through its own `set_subtask_completion` call and operation ID, rechecking current edit authority/state.
+7. A failed work submission leaves the draft available and prevents every follow-up. A successful work submission is never rolled back because a later status or subtask operation is denied, invalid, stale, or unavailable.
+8. The interface distinguishes complete success from partial success, identifies exactly which follow-up failed, preserves all successful outcomes, and retains the failed operation IDs for precise retry. Retry only failed operations; never call `submit_work_log` again for the saved batch and never duplicate a successful status/subtask operation.
 
-The existing optional blocker action remains an atomic part of `submit_work_log`; it does not make status transition or ticket creation part of that transaction. Standalone visual work exposes neither integrated ticket action.
+The existing optional blocker action remains an atomic part of `submit_work_log`; it does not make status transition, subtask completion, or ticket creation part of that transaction. Standalone visual work exposes none of the integrated ticket follow-ups.
 
 ### Shared validation
 
@@ -739,9 +744,9 @@ prove all of them:
 - Viewer + Admin, inactive, and password-restricted states are rejected correctly;
 - every compound operation is atomic under forced mid-operation failures;
 - repeated operation IDs produce no duplicate history, notifications, work entries, accounts, or audit;
-- ticket creation, work-log submission, and status transition require distinct operation IDs and cannot accept one another's fields;
+- ticket creation, work-log submission, status transition, and each selected subtask completion require distinct operation IDs and cannot accept one another's fields;
 - Create New Ticket resumes the client draft with the returned Work Item selected without creating work-log or status effects;
-- a failed work-log submission prevents the optional status call, while a failed status call after successful logging preserves the committed log and reports partial success without compensation;
+- a failed work-log submission prevents every follow-up, while a failed status/subtask operation after successful logging preserves the committed log and prior successes, reports the exact partial result, and retries only failed operations without compensation or resubmission;
 - concurrent status, assignment, blocker, work-log, and final-Admin changes serialize correctly;
 - temporary credentials never appear in database/log fixtures;
 - old/new ticket recalculation after work correction/withdrawal is complete;
