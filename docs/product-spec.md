@@ -4,9 +4,9 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-07-20 — D-101 adds the single-person recorded ticket activity drill-down
+**Last amended:** 2026-08-08 — D-109 and D-110 add the reconciled team-ready post-MVP contract
 
-This document is the current product source of truth for Design Flow. It records approved MVP behavior, not every idea discussed while reaching it. Open decisions are listed at the end and must not be invented during implementation.
+This document is the current product source of truth for Design Flow. The completed MVP decisions remain historical context; D-109, D-110, and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) govern the approved team-ready post-MVP amendments. Open decisions must not be invented during implementation.
 
 ## 1. Product purpose
 
@@ -39,6 +39,7 @@ The portal must answer:
 - Design Flow translates verified Astryx presentation into centralized semantic aliases documented in the design-system contract. If official guidance does not expose a required value, record the gap and approve an explicit Design Flow fallback before implementation rather than claiming exact Astryx fidelity.
 - Product behavior, mandatory accessibility, Vodafone color, and Vodafone typography may require a documented deviation from Astryx geometry; such a deviation must be explicit and tested.
 - Detailed ownership, precedence, and component Definition of Done are in [ui-architecture.md](ui-architecture.md).
+- For team-ready surfaces, D-109 authorizes Vodafone-mapped, Design Flow-owned shadcn source and Tailwind utilities. Vodafone remains authoritative for color and typography; shadcn is not visual authority. Legacy CSS Modules may coexist, and global Tailwind Preflight remains disabled while legacy screens remain.
 
 ## 2. Team and access model
 
@@ -50,6 +51,7 @@ The MVP serves one team. There are no organizations, workspaces, team switching,
 - Public sign-up is disabled.
 - Admin-privileged users create individual accounts using work email addresses and temporary passwords.
 - The user must choose a new password after first sign-in.
+- When the Authentication uplift slice is deployed, a new password requires at least eight characters and no uppercase, number, symbol, or other composition rule. Existing users are not reset solely because this policy changes.
 - Forgotten passwords are reset by an Admin-privileged user in the MVP; self-service email reset can be added later.
 - Never use one shared team account.
 
@@ -75,7 +77,7 @@ Organizational position and portal administration are separate axes. The fixed b
 | Manage Areas/Squads and labels | No | No | No | No |
 | Manage accounts, positions, Admin privilege, and system settings | No | No | No | No |
 
-Admin privilege grants every operational capability plus accounts, positions, reporting lines, Areas/Squads, labels, and Settings management to an eligible Designer, Lead, or Manager. It does not replace that position, change the reporting line, or determine the default people filter. For example, a Lead with Admin privilege remains a Lead reporting to a Manager and defaults to that Lead's group while retaining the ability to switch to any scope and administer the portal. Account creation and access-management operations must reject Viewer + Admin; changing an Admin-privileged account to Viewer must remove Admin privilege in the same atomic operation.
+Admin privilege grants every operational capability plus accounts, positions, reporting lines, Areas/Squads, labels, and Settings management to an eligible Designer, Lead, or Manager. It does not replace that position or change the reporting line. Under D-110, Admin privilege defaults Dashboard and Reports people scope to All once the owning slices deploy. Account creation and access-management operations must reject Viewer + Admin; changing an Admin-privileged account to Viewer must remove Admin privilege in the same atomic operation.
 
 Viewer is trusted internal, whole-team read-only access:
 
@@ -95,19 +97,19 @@ Viewer is trusted internal, whole-team read-only access:
 - The current organization has one Manager, but the model must not hard-code a one-Manager limit.
 - Reporting groups are hierarchy-based filter presets inside the single team; they are not teams, workspaces, tenant boundaries, or data-visibility boundaries.
 - Admin-privileged users manage reporting relationships.
-- Designers default to Me; Leads default to their Lead group; Managers default to their Manager group; Viewers default to All.
-- Admin privilege never changes the base-position default. Every Lead and Manager may view All, another Lead/Manager group, or specific people.
+- Designer without Admin is authorization-limited to Me in Dashboard and Reports. Leads without Admin default to their Lead group and may select All or Me. Managers and Admin-privileged principals default to All. Viewers default to All with read-only scope.
+- These changed Dashboard and Reports defaults/boundaries become effective only when their owning implementation slices deploy. All Tickets retains whole-team visibility and its own explicit People filter.
 - The shared people scope applies to Dashboard, All Tickets, and Reports. It does not restrict ticket assignee choices.
-- The Team directory shows organizational position, a separate Admin badge where applicable, and `Reports to`: Designer → Lead, Lead → Manager, Manager → none.
+- Team-ready navigation removes the Team module for every principal. The underlying organizational position, Admin badge, and `Reports to` data remains available to authorized Settings, permission, and reporting operations.
 
 ## 3. MVP modules
 
 1. **Dashboard** — approved position-aware overview with scoped cards, attention signals, workload by person, recent recorded work, and quick actions. See [dashboard.md](dashboard.md).
 2. **All Tickets** — approved searchable/filterable list with position-aware people scope, explicit ownership/contribution relationships, responsive ticket summaries, and direct Figma access. See [all-tickets.md](all-tickets.md).
-3. **Work Item** — approved complete ticket view with glanceable metadata, parent-only subtasks, a five-column actual Work Dates grid, vertical history timeline, comments, and PDF export. See [work-item.md](work-item.md).
+3. **Ticket Details / Work Item** — the canonical Work Item route opens the approved route-backed inline details experience from All Tickets while retaining direct-route compatibility, inline permissioned edits, work calendar, Activity & Work Log, comments, and PDF export. See [work-item.md](work-item.md).
 4. **Log Work** — ticket work by default, with an alternative standalone visual-work mode, an optional independently authorized status change, and an independent Create New Ticket path that returns to the unfinished log draft.
 5. **Reports** — approved Tickets, Designers, and Visual Work views with neutral charts, a single-person cross-ticket recorded-activity drill-down, source drill-down, and filtered CSV exports. See [reporting.md](reporting.md) and [reports-ui.md](reports-ui.md).
-6. **Team and Settings** — approved shared directory plus Admin-only accounts, positions/Admin privilege, reporting hierarchy, Areas/Squads, labels, team timezone, and administration audit. See [team-settings.md](team-settings.md).
+6. **Settings** — Admin-only accounts, positions/Admin privilege, reporting hierarchy, Areas/Squads, labels, team timezone, and administration audit. The former Team module is removed while its data contracts remain. See [team-settings.md](team-settings.md).
 7. **Notifications** — approved narrow in-app inbox for primary-assignee assignment, status, blocker, and comment events. See [notifications.md](notifications.md).
 
 ## 4. Work items
@@ -192,6 +194,7 @@ At ticket level, **Active work days** is the number of distinct valid ticket `wo
 ## 5. Ownership and contribution
 
 - Every active ticket has exactly one primary assignee.
+- The reviewed multi-assignee direction is intentionally deferred until after the team-ready rollout. This is a conscious scope decision, not a correction of the earlier requirement, and no team-ready slice changes assignment cardinality.
 - Primary assignees must have Designer, Lead, or Manager position; Viewer is not assignable.
 - A designer becomes a contributor automatically when valid work is logged for a ticket while that designer is not its primary assignee for that work date.
 - Contributors are derived from actual work; they are not manually maintained.
@@ -266,8 +269,8 @@ Ticket-mode Log Work adds two launch paths without combining their domain operat
 
 - **Create New Ticket** is available only to a caller with the existing ticket-creation capability. The client preserves the unfinished Log Work draft while launching the normal ticket-creation flow. After `create_work_item` succeeds, Log Work resumes with the returned Work Item selected and every existing draft value preserved. Ticket creation does not submit work or change status.
 - **Optional status change** is available only when the caller independently satisfies the existing status-transition capability for the selected Work Item. Permission to log work on a visible ticket does not grant permission to change its status, and a prospective contribution from the unfinished log is not used to pre-authorize the transition.
-- On final submission, `submit_work_log` runs first as the primary action. Only after it succeeds does the client call `transition_work_item_status` when a different target status was requested.
-- If work-log submission fails, no status transition is attempted and the draft remains available. If the work log succeeds but the status transition fails, the log remains committed; the interface reports the successful log and failed status separately and permits only the status action to be retried after authoritative state is refreshed.
+- On final submission, `submit_work_log` runs first as the primary action. After success, the client refreshes authoritative ticket state and permissions, then attempts a requested status transition and selected incomplete-subtask completions through their existing independent operations and operation IDs.
+- If work-log submission fails, no follow-up is attempted and the draft remains available. If the log succeeds but a status or subtask operation fails, the log and every successful follow-up remain committed. The interface distinguishes complete from partial success, identifies each failed operation, refreshes ticket state after every completion, and retries only failures without resubmitting the work log.
 - Each operation uses its own operation ID and keeps its existing validation, history, audit, notification, and retry behavior. There is no combined Log Work/create/status transaction or automatic compensation across them.
 
 Create New Ticket and optional status change do not appear in standalone visual-work mode, which has no Work Item lifecycle.
@@ -358,17 +361,19 @@ Reports are separate views for:
 - Designers
 - Visual Work
 
-Designer selection is a normal multi-select filter:
+Designer selection for authorized broader scopes remains a normal multi-select filter:
 
 - One designer produces an individual view.
 - Two designers produce a neutral side-by-side view without a Compare button or versus language.
 - Multiple/all designers produce the team overview.
 
+Designer without Admin is restricted to their own Dashboard and Reports data at the authorization boundary, including direct URLs, RPC filters, drill-downs, and personal CSV. Viewer retains whole-team read-only Reports and cannot export. Lead without Admin defaults to their reporting group and may select All or Me; Manager and Admin default to All. These rules become effective with the Dashboard and Reports slices.
+
 Do not produce a combined productivity score or claim that activity counts equal effort, quality, or complexity. See [reporting.md](reporting.md) for approved definitions.
 
-## 13. Team and Settings foundation
+## 13. Team data and Settings foundation
 
-- The shared Team directory shows active people, position, separate Admin badge, and Reports to; it hides work email and authentication details.
+- The team-ready product has no visible Team module or route. Existing active-profile and reporting-hierarchy read contracts remain because Settings, authorization, and Reports depend on them; their removal is not authorized.
 - Only Admin-privileged users access Settings.
 - Members/access supports closed account provisioning, position/Admin management, hierarchy changes, temporary-password resets, and deactivate/reactivate without hard deletion.
 - Areas/Squads and labels are Admin-managed archiveable vocabularies with usage disclosure.
@@ -390,14 +395,14 @@ See [team-settings.md](team-settings.md) for the approved UI and acceptance crit
 
 See [notifications.md](notifications.md) for exact triggers and permissions.
 
-## 15. Explicit MVP exclusions
+## 15. Explicit MVP exclusions and team-ready deferrals
 
 - Multi-team tenancy or workspaces
 - PO request forms or PO accounts
 - Area/Squad-restricted Viewer access or external stakeholder access
 - Microsoft/OAuth sign-in
 - Public sign-up
-- Multiple equal assignees
+- Multiple equal assignees — reviewed for team-ready but consciously deferred until after rollout
 - Projects, epics, or nested subtasks
 - Priority
 - Generic links, file attachments, or file storage

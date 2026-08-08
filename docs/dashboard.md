@@ -1,8 +1,8 @@
 # Dashboard specification
 
-**Version:** 1.1  
+**Version:** 1.2
 **Decision date:** 2026-07-16  
-**Status:** Approved for MVP planning
+**Status:** Approved MVP contract with D-110 team-ready amendments
 
 The Dashboard is a position-aware view over one team. Reporting groups change the default people scope; they never create separate teams or restrict a Lead's or Manager's visibility.
 
@@ -13,18 +13,16 @@ The Dashboard is a position-aware view over one team. Reporting groups change th
 | Viewer | Everyone |
 | Designer | Me |
 | Lead | My reporting group: the signed-in Lead plus their current direct-report Designers |
-| Manager | My Manager group: the Manager, reporting Leads, and Designers beneath them |
+| Manager | All people |
 
 Where people filtering applies, support:
 
 - My reporting group, when the user is a Lead.
-- My Manager group, when the user is a Manager.
+- Individual reporting groups, when the user is a Manager or Admin.
 - All eligible work contributors.
-- Any named Lead's reporting group.
-- Any named Manager's reporting group.
 - Specific people where the view supports person-level multi-selection.
 
-Leads and Managers may switch from their default group to All, another Lead/Manager group, or individual people. Admin privilege grants full access but does not replace the user's position-based default. Reporting-group scope is a filter preset, not a permission boundary. It applies consistently to Dashboard, All Tickets, and Reports. It does not narrow assignee choices in ticket forms.
+Designer without Admin is restricted to Me at the authorization boundary; URL or RPC filters cannot broaden that scope. Lead without Admin defaults to My reporting group and may select All or Me. Manager and every Admin-privileged principal default to All and may select individual reporting groups or Me. Viewer remains whole-team read-only at All. Reporting-group scope is a filter preset for broader-authorized principals, not a tenant boundary. These changed defaults and the Designer boundary become effective only when modernization Slice 6 is deployed. They do not narrow assignee choices or ordinary whole-team Work Item visibility.
 
 ## 2. Shared filters
 
@@ -124,8 +122,8 @@ Default ordering is alphabetical. The UI may prioritize an attention filter, but
 ## 9. Acceptance criteria
 
 - Position defaults resolve correctly on first load.
-- A Lead or Manager can switch from their position-based group to All, any other Lead/Manager group, or specific people without losing permitted data access.
-- Adding Admin privilege does not change the user's default people scope.
+- Designer without Admin remains Me-only even with forged URL/RPC scope. Lead without Admin defaults to their group and may select All or Me. Manager/Admin defaults to All and may select approved group/Me refinements. Viewer remains All/read-only.
+- Adding Admin privilege changes the Dashboard default to All without changing organizational position or reporting-line attribution.
 - Reporting-group changes refresh all scoped Dashboard content consistently.
 - Active, blocked, overdue, due-soon, stale, and backlog totals match their documented definitions.
 - Friday and Saturday are excluded from working-day thresholds.

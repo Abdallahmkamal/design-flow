@@ -2,9 +2,9 @@
 
 **Status:** Approved product UI direction
 
-**Decisions:** D-098, D-099
+**Decisions:** D-098, D-099, D-109, D-110
 
-**Last updated:** 2026-07-19 — D-099 refines Vodafone/Astryx visual authority
+**Last updated:** 2026-08-08 — D-109/D-110 add the team-ready modernization direction
 
 This document defines stable UI principles and high-level visual direction for Design Flow. It is not a screen-by-screen specification and does not replace product specifications, feature acceptance criteria, Vodafone color/typography foundations, verified Astryx references, or approved screen briefs.
 
@@ -29,6 +29,7 @@ Use moderate operational density: compact enough to scan lists, histories, filte
 - Design Flow owns its implementation, public component APIs, tests, documentation, and product-specific components under `src/ui/`. [ui-architecture.md](ui-architecture.md) defines this boundary in detail.
 - Verified Astryx references are the preferred baseline for the remaining component presentation and engineering behavior: anatomy, proportions, density, sizing, internal spacing, shape, border/elevation geometry, motion, interaction patterns, accessibility, keyboard behavior, states, and responsive behavior.
 - Astryx must not be added as a dependency, wrapper, runtime integration, copied implementation, copied styling file, or copied component API. Design Flow reimplements verified guidance through its own components and semantic aliases.
+- For team-ready migrated surfaces, Design Flow uses source-owned shadcn components and Tailwind utilities mapped to Vodafone color/typography. shadcn is not visual authority; the approved handoff, Figma references, product behavior, accessibility, and Vodafone tokens govern the result. Legacy CSS Modules and their historical Astryx mapping may coexist until migrated, with global Tailwind Preflight disabled during coexistence.
 
 When sources appear to disagree, use the authority and conflict-resolution order in [ui-architecture.md](ui-architecture.md). Surface unresolved conflicts before implementation.
 

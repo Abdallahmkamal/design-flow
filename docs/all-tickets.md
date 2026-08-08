@@ -1,10 +1,26 @@
 # All Tickets specification
 
-**Version:** 1.2
+**Version:** 1.3
 **Decision date:** 2026-07-20
-**Status:** Approved for MVP planning
+**Status:** Approved MVP baseline with D-110 team-ready amendments
 
 All Tickets is the primary searchable and filterable ticket list. It is optimized for scanning ownership, status, planned dates, actual work recency, and attention signals without becoming an editable spreadsheet.
+
+## Team-ready amendment
+
+D-110 and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) supersede the MVP presentation/filter details below when modernization Slice 3 deploys:
+
+- Default to every non-archived status, including Done; Archived only is an explicit boolean filter.
+- Remove the permanent All/Active/Done/Archived tabs and Ownership Relationship filter. People matches the one primary assignee or any derived contributor.
+- Use the locked desktop order Ticket, Area, Status, People, Last Activity, Start Date, Due Date, Days Open, Days Active, Labels, Link. Keep Ticket/Link sticky, with the middle columns horizontally scrollable.
+- Use approved expandable mobile cards rather than compressing the table.
+- Search remains visible; Add Filter creates one removable chip per filter type. Include server-side Days Open/Days Active ranges.
+- Sorting, filters, page, and desktop page size remain URL-backed. Use 25 rows by default, desktop choices 25/50/100, and fixed 25 on mobile with exact result ranges.
+- Selecting a row/card opens route-backed Ticket Details at `/work-items/:displayId`, preserving list state and browser Back. Direct ticket URLs retain compatibility.
+- Exactly one primary assignee remains; multi-assignee is consciously deferred until after rollout and contributors remain derived.
+- All Tickets has no CSV action. Reports remains the sole CSV owner.
+
+The sections below preserve the completed MVP baseline where not superseded by this amendment.
 
 ## 1. Default view
 
@@ -56,7 +72,7 @@ Do not create a separate Subtasks column. Selecting the contributor count reveal
 
 ## 4. Row interactions
 
-- Selecting the row, ticket ID, or title opens the Work Item page.
+- Selecting the row, ticket ID, or title opens the canonical Work Item route. After Slice 4, list-launched navigation presents that route as inline Ticket Details while direct links remain compatible.
 - The Figma icon opens the stored Figma URL directly in a new browser tab and does not trigger row navigation.
 - The Figma control uses an accessible label and tooltip such as `Open in Figma`.
 - Log Work opens ticket mode with that ticket preselected.
@@ -137,8 +153,7 @@ Pagination method, page size, responsive breakpoints, exact icon treatment, and 
 
 - Current excludes Done and Archived while keeping them reachable through explicit filters.
 - Position-based people defaults match Dashboard and Reports.
-- A Lead or Manager can view the full team, another Lead/Manager group, or specific people.
-- Admin privilege does not alter the user's position-based default people scope.
+- The People filter remains a whole-team ticket refinement and is not the Designer Dashboard/Reports authorization boundary.
 - Owned and Contributed results follow primary-assignment and derived-contribution rules without duplicate ticket rows.
 - Subtask progress appears only within the Ticket/title cell on desktop and the title area on mobile.
 - The Figma icon appears only when a URL exists and opens that URL without opening the Work Item.

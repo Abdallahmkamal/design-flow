@@ -3,6 +3,8 @@
 **Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
+> **Team-ready amendment (2026-08-08):** This brief preserves the verified MVP shell baseline. Modernization Slice 1 and `team-ready-ui-handoff.md` supersede its navigation/presentation details: use the Vodafone-mapped shadcn/Tailwind foundation, responsive sidebar/header/bottom navigation, permission-filtered Quick Actions, and remove Team. Viewer retains Dashboard, Work Items, and read-only Reports only. Changed shell visibility becomes effective when Slice 1 deploys.
+
 ## Purpose
 
 Provide one authenticated, responsive frame with stable product navigation, clear current-user context, theme control, sign-out, and a skip path to the current page.

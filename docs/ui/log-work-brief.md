@@ -4,6 +4,8 @@
 **Scope:** Phase 4 Work Logging only
 **Prepared:** 2026-07-22
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 2 and `team-ready-ui-handoff.md` supersede the MVP presentation with the shared responsive overlay and nested Create Ticket flow. Domain operations remain independent: save the log, refresh state/permissions, attempt status, then independently attempt selected subtasks. Partial success, precise failed-operation retry, no log resubmission, and refresh after each completion are mandatory.
+
 ## Purpose
 
 Capture actual ticket work by default, or secondary standalone Visual Work,

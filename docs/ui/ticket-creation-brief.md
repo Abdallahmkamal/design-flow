@@ -6,6 +6,8 @@
 
 **Phase:** 3 — Work-item Foundation
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 2 and `team-ready-ui-handoff.md` supersede the full-page presentation with the shared overlay and nested Log Work workflow. A fresh form defaults the one primary assignee to the eligible creator; multi-assignee support is consciously deferred until after rollout.
+
 ## Purpose
 
 Create one Work Item in Backlog with its initial core fields, optional ownership,

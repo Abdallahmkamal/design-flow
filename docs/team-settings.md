@@ -2,13 +2,13 @@
 
 **Version:** 1.0  
 **Decision date:** 2026-07-16  
-**Status:** Approved for MVP planning
+**Status:** Approved MVP data/Settings contract with D-110 Team-module amendment
 
-Team and Settings separates the whole-team directory from Admin-only portal administration. Organizational position and Admin privilege remain independent for Designer, Lead, and Manager; Viewer is never eligible for Admin privilege.
+The completed MVP separated a whole-team directory from Admin-only portal administration. D-110 removes Team as a visible route and navigation module in modernization Slice 1. The underlying active-profile, position, Admin-badge, reporting-line, privacy, RLS, and administration contracts remain because Settings, authorization, and reporting depend on them. Organizational position and Admin privilege remain independent for Designer, Lead, and Manager; Viewer is never eligible for Admin privilege.
 
-## 1. Team directory
+## 1. Team directory data contract (no visible team-ready module)
 
-The Team directory is visible to every active portal user and shows active people only.
+The MVP Team directory exposed the safe fields below to every active portal user. The team-ready product has no Team destination or route, but these fields remain an approved whole-team read surface for dependent product behavior and must not be replaced with email/Auth data.
 
 Show:
 
@@ -49,6 +49,8 @@ Admin-privileged users may:
 - Assign or change reporting relationships
 - Deactivate or reactivate an account
 - View last sign-in for access/security support only
+
+When modernization Slice 5 deploys, user-chosen replacement passwords require at least eight characters with no composition rule. Temporary credential generation remains protected and server-owned; the policy change does not add self-registration or self-service reset.
 - View account creation and most recent access-administration dates
 
 Rules:
@@ -150,7 +152,7 @@ Audit events are append-only and cannot be edited or deleted through the product
 
 ## 9. Acceptance criteria
 
-- The shared directory exposes position, Admin badge, and Reports to without exposing email or authentication details.
+- No team-ready principal sees a Team route/navigation entry. The retained safe profile/hierarchy read surface exposes position, Admin badge, and Reports to without exposing email or authentication details.
 - Admin privilege can coexist with Designer, Lead, or Manager and never changes reporting-line/default-scope semantics; Viewer + Admin is rejected.
 - Manager without Admin privilege cannot access Settings.
 - Account creation, position changes, Admin changes, and reporting-line changes enforce the approved hierarchy.

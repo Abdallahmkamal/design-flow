@@ -18,7 +18,8 @@ This document fixes the physical Postgres contract for the MVP before applicatio
 - The product does not define a restricted status-transition graph beyond its invariants. The initial system transition table permits every change between two different MVP statuses. Active-assignee, blocker, archive, and authorization rules still apply.
 - A work-log correction may replace the active one-to-five entry set in a batch. Removed entries are soft-withdrawn, not deleted. Withdrawing a submission withdraws the batch as a whole.
 - Current contributors and report aggregates are derived from valid source rows. Only `work_items.last_worked_on`, `last_activity_at`, and `completed_at` are maintained snapshot caches; all are recalculable.
-- The Log Work Create New Ticket path, work-log submission, and optional status transition are independent operations. They use existing records and separate `operation_requests`; no combined flow, draft, requested-status, or compensation row is persisted.
+- The Log Work Create New Ticket path, work-log submission, optional status transition, and each selected subtask completion are independent operations. They use existing records and separate `operation_requests`; no combined flow, draft, requested-status, requested-subtask, or compensation row is persisted.
+- One primary assignee remains the team-ready schema contract. The reviewed multi-assignee direction is consciously deferred until after rollout; contributors continue to be derived from valid work logs and no modernization migration changes assignment cardinality.
 
 ## 2. Database-wide conventions
 

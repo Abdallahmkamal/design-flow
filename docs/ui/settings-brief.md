@@ -3,6 +3,8 @@
 **Status:** Phase 2 complete — staged acceptance verified 2026-07-21
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 8 and `team-ready-ui-handoff.md` supersede the anchor-linked long page with true URL-backed tabs rendering one panel. Admin-only authorization, categories, data, and operations remain unchanged; Team is no longer a visible return destination.
+
 ## Purpose
 
 Provide Admin-privileged users with closed portal administration for members/access, Areas/Squads, labels, team timezone, and append-only administration audit.

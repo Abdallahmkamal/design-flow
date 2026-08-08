@@ -4,6 +4,8 @@
 **Owning phase:** Phase 2 — Authentication, Team, and Settings
 **Implementation scope:** Sign-in, session restoration, mandatory password change, inactive/unavailable account handling, and sign-out
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 5 retains email sign-in and the closed lifecycle but applies the light shadcn uplift and changes new-password validation to at least eight characters with no composition requirement. UI, Edge validation, tests, and provider configuration change together only when Slice 5 deploys.
+
 ## Purpose
 
 Give every provisioned team member a closed, accessible email-and-password entry path and prevent normal application access until the current profile is active and any required first/reset password change is complete.
@@ -41,7 +43,7 @@ Give every provisioned team member a closed, accessible email-and-password entry
 
 - Sign in: Work email and Password.
 - Change password: New password and Confirm new password.
-- Password guidance reflects the local Supabase policy: at least 12 characters with lowercase, uppercase, number, and symbol.
+- The verified MVP guidance reflected the then-current policy: at least 12 characters with lowercase, uppercase, number, and symbol. D-110 replaces it only when Slice 5 deploys with an eight-character minimum and no composition rule.
 - Temporary credentials are never stored in application state beyond the active password input, sent to Postgres, audited, or logged.
 
 ## Business rules

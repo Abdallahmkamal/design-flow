@@ -6,6 +6,8 @@
 
 **Phase:** 3 — Work-item Foundation
 
+> **Team-ready amendment (2026-08-08):** Modernization Slice 3 and `team-ready-ui-handoff.md` supersede the MVP columns, tabs/filter model, responsive list, pagination, and opening behavior. The team-ready list uses route-backed Ticket Details, retains one primary assignee plus derived contributors, and has no CSV action.
+
 ## Purpose
 
 Provide the primary whole-team ticket list for scanning ownership, workflow,

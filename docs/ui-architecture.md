@@ -1,9 +1,20 @@
 # Design Flow UI architecture
 
-**Status:** Approved MVP architecture  
+**Status:** Approved MVP architecture with team-ready post-MVP amendments
 **Decision date:** 2026-07-18
 
-**Last amended:** 2026-07-19 — D-099 refines visual authority
+**Last amended:** 2026-08-08 — D-109 authorizes the team-ready Tailwind/shadcn layer
+
+## Team-ready amendment
+
+D-077 through D-099 remain historically correct for the completed MVP and for unmigrated legacy components. D-109 changes the component workflow only for new or migrated team-ready surfaces:
+
+- Vodafone remains authoritative for color and typography.
+- shadcn/ui supplies source-owned starting code, not product behavior or visual authority. Adopted source becomes Design Flow code under `src/ui/` with project-owned APIs and tests.
+- Tailwind utilities are authorized for the modernization layer; legacy CSS Modules may coexist until their owning slice is accepted.
+- Global Tailwind Preflight remains disabled while any unmigrated legacy screen exists.
+- The locked written handoff and Figma references govern team-ready composition and presentation after Vodafone mapping. Astryx remains historical/reference material for legacy MVP components and is not a runtime dependency.
+- Add primitives only when required by the current slice. Reusable product compositions remain Design Flow-owned patterns rather than shadcn APIs.
 
 Design Flow uses three complementary layers. They are not competing design systems.
 
@@ -104,6 +115,7 @@ A shared component is complete only when it has:
 - automated tests for behavior, accessibility-critical paths, and regressions;
 - usage examples and known limitations;
 - no Astryx runtime import, copied implementation, or wrapper dependency.
+- for a team-ready shadcn-derived component, source ownership, Vodafone token mapping, Tailwind isolation, and legacy coexistence are documented and tested.
 
 ## Authority and conflict resolution
 
@@ -111,8 +123,8 @@ When sources appear to disagree:
 
 1. Approved Design Flow product behavior and mandatory accessibility requirements win for workflow, domain needs, and usable interaction.
 2. Vodafone Foundations win for color and typography.
-3. Verified, source-linked Astryx guidance wins for non-color, non-typographic component presentation and engineering behavior.
-4. Approved Design Flow fallbacks fill explicitly documented Astryx gaps or record the smallest necessary product/accessibility deviation.
+3. For team-ready migrated surfaces, the approved handoff/Figma direction and Design Flow shadcn composition govern non-color presentation; for unmigrated MVP components, verified Astryx guidance retains its historical authority.
+4. Approved Design Flow mappings and fallbacks fill documented gaps or record the smallest necessary product/accessibility deviation.
 5. Design Flow owns the final component API and runtime implementation without changing those authority boundaries.
 
 Surface unresolved conflicts rather than silently choosing a source.

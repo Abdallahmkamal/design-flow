@@ -1,7 +1,7 @@
 # Design Flow technical plan
 
-**Status:** Approved for MVP implementation  
-**Last updated:** 2026-07-30 — D-106 replaces the pre-release pilot gate with monitored post-release operation
+**Status:** Approved MVP architecture with team-ready post-MVP amendments
+**Last updated:** 2026-08-08 — D-109 and D-110 add the incremental UI-modernization architecture
 
 This document records the approved implementation architecture and operating model for Design Flow. The approved module sequence and slice-level completion gates are defined in [build-plan.md](build-plan.md).
 
@@ -51,8 +51,11 @@ Never expose Supabase secret/service-role or Auth-admin credentials in browser c
 - Deactivation updates the application account state and disables the corresponding Supabase Auth account; reactivation reverses both through an authorized Edge Function.
 - Supabase manages browser sessions and token refresh.
 - Never log or store passwords in application or administration audit records.
+- Modernization Slice 5 changes user-chosen password validation to a minimum of eight characters with no composition rule. UI, Edge validation, tests, and applicable Supabase configuration deploy together; email remains the identifier and existing users are not reset solely because the minimum changes.
 
 ## 5. Styling and design-system alignment
+
+### Completed MVP baseline
 
 The styling technology implements the locked design-system hierarchy; it does not alter it.
 
@@ -71,6 +74,35 @@ Therefore:
 - Treat Astryx fidelity as a Design Flow-owned reimplementation from verified official guidance, never as authorization to copy upstream source or styling.
 
 This implements D-099, which supersedes the conflicting visual-authority portions of D-074 through D-076, D-080, and D-096 while preserving the zero-runtime and Design Flow ownership boundaries in D-077 through D-079 and the styling-delivery mechanism in D-087.
+
+### Team-ready modernization layer
+
+D-109 supersedes the MVP-only Tailwind prohibition and Astryx-first presentation requirement for surfaces migrated by the post-MVP team-ready workstream:
+
+- Vodafone semantic colors and typography remain authoritative and map into Tailwind/shadcn semantic variables for Light and Dark modes.
+- shadcn/ui is source-owned starting code. Imported primitives become Design Flow code under `src/ui/`, use project-owned public APIs, and do not become a product-behavior or visual-authority source.
+- Tailwind utilities may style new and migrated components. Existing CSS Modules remain supported for unmigrated screens and may coexist during incremental rollout.
+- Global Tailwind Preflight remains disabled while any unmigrated legacy screen remains, preventing a foundation change from silently restyling working UI.
+- Add only primitives required by the current slice. Product compositions such as the module header, responsive shell, filter chips, and overlay family remain Design Flow-owned patterns.
+- The existing Astryx notes and D-077 through D-099 remain the historical record of the completed MVP and may still explain legacy components; they do not constrain the new shadcn-based presentation layer beyond retained accessibility and Design Flow ownership requirements.
+
+The first modernization slice has two internal checkpoints on one branch: foundation/primitives, then shell/navigation as the first verified consumer. Verification runs after both checkpoints, but there is no separate branch or staging deployment between them.
+
+## 5A. Team-ready routing and incremental replacement
+
+- Keep the canonical copied ticket URL `/work-items/:displayId`. A ticket opened from All Tickets uses that route as a responsive overlay while preserving URL-backed list state; a direct visit establishes the Work Items context with the ticket already open.
+- Log Work and Create Ticket share one responsive overlay family. Nested Create Ticket replaces the Log Work overlay content rather than stacking another backdrop or focus trap, and returns to the preserved draft.
+- Remove Team as a visible route and navigation destination in Slice 1. Retain profile, reporting-line, public-directory read surfaces, and administration contracts because Settings, permissions, and reporting depend on that data.
+- Keep legacy components and feature screens available until their replacement slice passes its local and staging gates. Additive read/API changes should preserve the previous frontend during rollout where practical.
+- Changed permission behavior becomes effective only when the owning slice is deployed: shell visibility in Slice 1, Designer Dashboard scope in Slice 6, and Reports scope/export enforcement in Slice 7.
+
+## 5B. Team-ready permission and operation boundary
+
+- Viewer retains Dashboard, Work Items, and whole-team read-only Reports; server authorization denies every mutation, Team, Settings, and Reports CSV path regardless of hidden controls.
+- Designer without Admin is hard-limited to self in Dashboard and Reports, including direct URLs, RPC filters, drill-down, and CSV. Lead without Admin defaults to their reporting group and may select All or Me. Manager and every Admin-privileged principal default to All.
+- One primary assignee remains the schema and mutation contract. The reviewed multi-assignee direction is intentionally deferred until after rollout; contributors remain derived from valid work logs.
+- All Tickets has no CSV action. Reports owns all portable CSV exports and selects its row schema from the active tab.
+- Log Work remains client-orchestrated independent operations: save the log; refresh authoritative ticket state/permissions; attempt status; attempt selected subtask completions with independent operation IDs. Preserve successful results, identify partial failure precisely, retry only failed operations, never resubmit a successful log, and refresh displayed ticket state after every completed operation.
 
 ## 6. Report charts
 
