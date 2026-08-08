@@ -1,0 +1,52 @@
+/*
+ * Team-ready Tailwind foundation.
+ *
+ * Tailwind Preflight is intentionally not imported while legacy CSS Modules
+ * coexist. Vodafone tokens in styles/tokens.css remain the color and type
+ * authority; this file only maps them into semantic utility names.
+ */
+@layer theme, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme inline {
+  --font-sans: var(--font-family-primary);
+
+  --color-background: var(--color-surface-bg);
+  --color-foreground: var(--color-text-primary);
+  --color-card: var(--color-surface-default);
+  --color-card-foreground: var(--color-text-primary);
+  --color-popover: var(--color-surface-raised);
+  --color-popover-foreground: var(--color-text-primary);
+  --color-primary: var(--color-action-accent-background);
+  --color-primary-foreground: var(--color-action-primary-text);
+  --color-secondary: var(--color-action-secondary-background);
+  --color-secondary-foreground: var(--color-text-primary);
+  --color-muted: var(--color-surface-raised-prominent);
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-accent: var(--color-action-secondary-background);
+  --color-accent-foreground: var(--color-text-primary);
+  --color-destructive: var(--color-action-destructive-background);
+  --color-destructive-foreground: var(--color-action-destructive-text);
+  --color-border: var(--color-border-default);
+  --color-input: var(--color-border-default);
+  --color-ring: var(--color-focus-ring);
+  --color-info: var(--color-status-info-background);
+  --color-info-foreground: var(--color-status-info-text);
+  --color-success: var(--color-status-success-background);
+  --color-success-foreground: var(--color-status-success-text);
+  --color-warning: var(--color-status-warning-background);
+  --color-warning-foreground: var(--color-status-warning-text);
+  --color-error: var(--color-status-error-background);
+  --color-error-foreground: var(--color-status-error-text);
+
+  --radius-sm: var(--radius-inner);
+  --radius-md: var(--radius-element);
+  --radius-lg: var(--radius-container);
+  --radius-xl: var(--radius-overlay);
+
+  --shadow-surface: var(--shadow-xs);
+  --shadow-popover: var(--shadow-sm);
+  --shadow-overlay: var(--shadow-lg);
+}

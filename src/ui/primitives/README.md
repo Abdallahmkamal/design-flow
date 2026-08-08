@@ -1,0 +1,28 @@
+# Team-ready primitives
+
+These source-owned primitives are the initial D-109 modernization layer. They
+are based on the shadcn composition approach and Radix interaction primitives,
+but their public APIs and implementation belong to Design Flow.
+
+## Foundation contract
+
+- `src/ui/foundation.css` maps Tailwind semantic names to the authoritative
+  Vodafone color and typography tokens in `src/styles/tokens.css`.
+- Light/Dark values continue to switch through `data-theme`.
+- Tailwind Preflight is deliberately omitted while legacy CSS Modules coexist.
+- Feature/domain behavior and data access never belong in these primitives.
+
+## Approved Slice 1 set
+
+- `Button`: default, secondary, ghost, destructive; small/default/large/icon;
+  loading and `asChild` composition.
+- `Badge`: neutral and semantic feedback tones.
+- `Avatar`: image and accessible fallback composition; `getInitials` helper.
+- `Tooltip`: delayed/focus-accessible description with provider/trigger/content.
+- `DropdownMenu`: keyboard-managed menu, items, labels, separators, check/radio
+  items, and submenus.
+- `Sheet`: modal top/right/bottom/left surface with title, description, close,
+  header, and footer; focus trap and restoration are provided by Radix Dialog.
+- `Separator`: decorative by default, horizontal or vertical.
+
+Do not add later-slice primitives here until their owning slice requires them.
