@@ -133,8 +133,8 @@ insert into public.operation_requests (
 select set_config('design_flow.dashboard_stale_basis', (
   select candidate::text
   from generate_series(private.current_team_date() - 10, private.current_team_date(), interval '1 day') candidate
-  where private.add_working_days(candidate::date, 5) = private.current_team_date()
-  order by candidate desc limit 1
+  where private.add_working_days(candidate::date, 5) <= private.current_team_date()
+  order by private.add_working_days(candidate::date, 5) desc, candidate desc limit 1
 ), true);
 insert into public.work_items (
   id, title, area_id, status_code, primary_assignee_id, planned_start_date,
@@ -170,8 +170,8 @@ insert into public.work_item_status_history (
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);
 set local role authenticated;
-select is((public.get_dashboard()->'cards'->>'stale')::integer, 1, 'Dashboard becomes stale on the exact fifth working day');
-select is((public.list_work_items('{"peopleIds":["10000000-0000-4000-8000-000000000002"],"stale":"stale"}'::jsonb)->>'totalCount')::integer, 1, 'All Tickets uses the same fifth-working-day stale rule');
+select is((public.get_dashboard()->'cards'->>'stale')::integer, 1, 'Dashboard remains stale on and after the fifth-working-day cutoff');
+select is((public.list_work_items('{"peopleIds":["10000000-0000-4000-8000-000000000002"],"stale":"stale"}'::jsonb)->>'totalCount')::integer, 1, 'All Tickets uses the same fifth-working-day cutoff');
 reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000008', true);
