@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { parseWorkItemFilters } from './workItemFilters';
-import { getWorkItemHistory, listWorkItems } from './workItemsApi';
+import {
+  createWorkItem,
+  getWorkItemHistory,
+  listWorkItems,
+} from './workItemsApi';
 
 const rpc = vi.hoisted(() =>
   vi.fn<
@@ -140,6 +144,36 @@ describe('work-item API mapping', () => {
     expect(result.events[0]?.occurredAt).toBe('2026-07-22T10:00:00Z');
     expect(result.events[0]?.workLog?.entries[0]?.relationship).toBe(
       'contributor',
+    );
+  });
+
+  it('uses the caller-owned operation ID for retry-safe ticket creation', async () => {
+    rpc.mockResolvedValueOnce({
+      data: {
+        id: '00000000-0000-4000-8000-000000000001',
+        display_id: 'DF-000001',
+        status_code: 'backlog',
+        updated_at: '2026-08-09T00:00:00Z',
+      },
+      error: null,
+    });
+    const operationId = '90000000-0000-4000-8000-000000000001';
+    await createWorkItem(
+      {
+        title: 'Synthetic',
+        description: '',
+        areaId: '00000000-0000-4000-8000-000000000002',
+        assigneeId: '',
+        plannedStartDate: '',
+        dueDate: '',
+        figmaUrl: '',
+        labelIds: [],
+      },
+      operationId,
+    );
+    expect(rpc).toHaveBeenCalledWith(
+      'create_work_item',
+      expect.objectContaining({ operation_id: operationId }),
     );
   });
 });

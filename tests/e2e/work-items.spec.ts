@@ -325,6 +325,20 @@ async function mocks(
       }),
     }),
   );
+  await page.route('**/rest/v1/rpc/submit_work_log', (route) => {
+    options.mutationBodies?.push({
+      url: route.request().url(),
+      body: route.request().postDataJSON(),
+    });
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '78000000-0000-4000-8000-000000000001',
+        context_code: 'ticket',
+      }),
+    });
+  });
   await page.route('**/rest/v1/rpc/**', async (route) => {
     const url = route.request().url();
     if (url.includes('get_own_account_state'))
@@ -373,7 +387,23 @@ async function mocks(
           updated_at: '2026-07-21T08:00:00Z',
         }),
       });
-    else if (options.conflict && url.includes('transition_work_item_status')) {
+    else if (url.includes('submit_work_log')) {
+      options.mutationBodies?.push({
+        url,
+        body: route.request().postDataJSON(),
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: '78000000-0000-4000-8000-000000000001',
+          context_code: 'ticket',
+        }),
+      });
+    } else if (
+      options.conflict &&
+      url.includes('transition_work_item_status')
+    ) {
       await route.fulfill({
         status: 409,
         contentType: 'application/json',
@@ -428,26 +458,75 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
-test('ticket creation remains Backlog, preserves the full-page form, and navigates by display ID', async ({
+test('ticket creation uses the responsive overlay, remains Backlog, and navigates by display ID', async ({
   page,
 }) => {
   await mocks(page);
   await signIn(page);
   await page.goto('/work-items/new');
   await expect(
-    page.getByText('Creation cannot submit work or start another status.'),
+    page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Assignee (optional)')).toHaveValue(userId);
   await page.getByLabel('Title *').fill('[SYNTHETIC] Created in browser');
   await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
   await page
     .getByLabel('Figma URL (optional)')
     .fill('https://www.figma.com/design/synthetic-created');
   await page.getByLabel('[SYNTHETIC] Foundation').check();
-  await page.getByRole('button', { name: 'Create ticket' }).click();
+  await page
+    .getByRole('button', { name: 'Create ticket', exact: true })
+    .click();
   await expect(page).toHaveURL(`/work-items/${displayId}`);
   await expect(
     page.getByText(`${displayId} created in Backlog.`, { exact: true }),
   ).toBeVisible();
+});
+
+test('nested Create Ticket replaces Log Work, preserves the draft, and submits once', async ({
+  page,
+}, testInfo) => {
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { mutationBodies });
+  await signIn(page);
+  await page.goto('/work-logs/new');
+  await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Worked by')).toHaveCount(0);
+  await page.getByLabel('Work type 1 *').selectOption('ui_visual_design');
+  await page
+    .getByLabel('Description 1 (optional)')
+    .fill('[SYNTHETIC] Preserved nested draft');
+  await page.getByRole('button', { name: 'Create new ticket' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Create ticket' }),
+  ).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Assignee (optional)')).toHaveValue(userId);
+  await page.getByLabel('Title *').fill('[SYNTHETIC] Nested ticket');
+  await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
+  await page
+    .getByRole('button', { name: 'Create ticket', exact: true })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByText(`Selected: ${displayId}`)).toBeVisible();
+  await expect(page.getByLabel('Description 1 (optional)')).toHaveValue(
+    '[SYNTHETIC] Preserved nested draft',
+  );
+  const dialogBox = await page.getByRole('dialog').boundingBox();
+  if (testInfo.project.name === 'mobile-chromium') {
+    expect(dialogBox?.width).toBe(390);
+  } else {
+    expect(dialogBox?.width).toBe(600);
+  }
+  await page.getByRole('button', { name: 'Log work', exact: true }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+  expect(
+    mutationBodies.filter(({ url }) => url.includes('submit_work_log')),
+  ).toHaveLength(1);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({
