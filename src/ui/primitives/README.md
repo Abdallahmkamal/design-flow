@@ -27,3 +27,14 @@ but their public APIs and implementation belong to Design Flow.
 - `Separator`: decorative by default, horizontal or vertical.
 
 Do not add later-slice primitives here until their owning slice requires them.
+
+## Slice 2 form controls
+
+- `FormInput`, `FormSelect`, and `FormTextarea` provide the shared field label,
+  required marker, description, validation, disabled, hover, and focus states for
+  migrated workflows.
+- Their 48px control height, 12px radius, 1px semantic border, 12px horizontal
+  inset, Vodafone 14px medium label, and Vodafone 16px value typography map the
+  approved Log Work and Create Ticket Figma anatomy through the shadcn layer.
+- Box sizing is explicit because Tailwind Preflight remains disabled during
+  legacy coexistence.

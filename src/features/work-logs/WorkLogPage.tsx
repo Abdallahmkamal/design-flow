@@ -10,12 +10,13 @@ import {
 
 import { createOperationId } from '../../shared/operations/operationId';
 import { Button as ModernButton } from '../../ui/primitives/button';
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+} from '../../ui/primitives/form-controls';
 import { WorkflowOverlay } from '../../ui/WorkflowOverlay/WorkflowOverlay';
-import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
-import { Input } from '../../ui/Input/Input';
-import { Select } from '../../ui/Select/Select';
-import { Textarea } from '../../ui/Textarea/Textarea';
 import { useAuthentication } from '../auth/authContext';
 import { WorkItemForm } from '../work-items/WorkItemForm';
 import {
@@ -360,15 +361,19 @@ export function WorkLogPage() {
         {options.isError ? (
           <div role="alert">
             <p>Ticket fields could not be loaded.</p>
-            <Button variant="secondary" onClick={() => void options.refetch()}>
+            <ModernButton
+              variant="secondary"
+              onClick={() => void options.refetch()}
+            >
               Retry
-            </Button>
+            </ModernButton>
           </div>
         ) : null}
         {options.data ? (
           <WorkItemForm
             formId="nested-create-ticket-form"
             hideSubmitButton
+            teamReadyControls
             showCreationStatus={false}
             options={options.data}
             initialValues={values}
@@ -444,17 +449,27 @@ export function WorkLogPage() {
           role="group"
           aria-label="Work context"
         >
-          <Button
+          <ModernButton
             type="button"
-            variant={context === 'ticket' ? 'primary' : 'secondary'}
+            variant="ghost"
+            className={
+              context === 'ticket'
+                ? 'h-10 rounded-full border-0 bg-background px-4 hover:bg-background'
+                : 'h-10 rounded-full border-0 bg-transparent px-4'
+            }
             aria-pressed={context === 'ticket'}
             onClick={() => setContext('ticket')}
           >
             Ticket work
-          </Button>
-          <Button
+          </ModernButton>
+          <ModernButton
             type="button"
-            variant={context === 'standalone_visual' ? 'primary' : 'secondary'}
+            variant="ghost"
+            className={
+              context === 'standalone_visual'
+                ? 'h-10 rounded-full border-0 bg-background px-4 hover:bg-background'
+                : 'h-10 rounded-full border-0 bg-transparent px-4'
+            }
             aria-pressed={context === 'standalone_visual'}
             onClick={() => {
               setContext('standalone_visual');
@@ -466,7 +481,7 @@ export function WorkLogPage() {
             }}
           >
             Standalone Visual Work
-          </Button>
+          </ModernButton>
         </div>
         {context === 'ticket' ? (
           <section
@@ -489,7 +504,7 @@ export function WorkLogPage() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-12 border-l border-border rounded-none"
+                  className="h-full w-12 rounded-none border-l border-border"
                   aria-label="Create new ticket"
                   title="Create new ticket"
                   onClick={() => setView('create')}
@@ -508,10 +523,10 @@ export function WorkLogPage() {
             {ticketSearch ? (
               <div className={styles.ticketResults} aria-label="Ticket results">
                 {filteredTickets.map((item: WorkItemListRow) => (
-                  <Button
+                  <ModernButton
                     key={item.id}
                     type="button"
-                    variant={item.id === ticketId ? 'primary' : 'secondary'}
+                    variant={item.id === ticketId ? 'default' : 'secondary'}
                     aria-pressed={item.id === ticketId}
                     onClick={() => {
                       setTicketId(item.id);
@@ -522,7 +537,7 @@ export function WorkLogPage() {
                   >
                     {item.displayId} — {item.title} · {item.status.label} ·{' '}
                     {item.assignee?.displayName ?? 'Unassigned'}
-                  </Button>
+                  </ModernButton>
                 ))}
               </div>
             ) : null}
@@ -541,7 +556,7 @@ export function WorkLogPage() {
           </p>
         )}
         {canChoosePerson ? (
-          <Select
+          <FormSelect
             label="Worked by"
             value={workedBy}
             onChange={(event) => setWorkedBy(event.target.value)}
@@ -551,13 +566,13 @@ export function WorkLogPage() {
                 {person.label}
               </option>
             ))}
-          </Select>
+          </FormSelect>
         ) : null}
         <fieldset className={styles.dateRows}>
           <legend>Work Date(s)</legend>
           {entries.map((entry, index) => (
             <div className={styles.dateRow} key={index}>
-              <Input
+              <FormInput
                 label={`Work date ${index + 1}`}
                 type="date"
                 max={today}
@@ -576,7 +591,7 @@ export function WorkLogPage() {
                   )
                 }
               />
-              <Select
+              <FormSelect
                 label={`Work type ${index + 1}`}
                 required
                 value={entry.workTypeCode}
@@ -596,9 +611,10 @@ export function WorkLogPage() {
                     {label}
                   </option>
                 ))}
-              </Select>
-              <Textarea
+              </FormSelect>
+              <FormTextarea
                 label={`Description ${index + 1} (optional)`}
+                className="min-h-12 resize-none"
                 rows={2}
                 value={entry.description}
                 onChange={(event) =>
@@ -641,7 +657,7 @@ export function WorkLogPage() {
           <details className={styles.followups}>
             <summary>Show more options</summary>
             {selectedTicket.data?.capabilities.canTransition ? (
-              <Select
+              <FormSelect
                 label="Optional status change"
                 value={targetStatus}
                 onChange={(event) => {
@@ -655,7 +671,7 @@ export function WorkLogPage() {
                     {status.label}
                   </option>
                 ))}
-              </Select>
+              </FormSelect>
             ) : null}
             <Checkbox
               label="Add a blocker with this work log"
@@ -664,13 +680,13 @@ export function WorkLogPage() {
             />
             {addBlocker ? (
               <>
-                <Textarea
+                <FormTextarea
                   label="Blocker reason"
                   required
                   value={blockerReason}
                   onChange={(event) => setBlockerReason(event.target.value)}
                 />
-                <Input
+                <FormInput
                   label="Expected resolution date (optional)"
                   type="date"
                   value={blockerDate}

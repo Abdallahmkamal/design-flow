@@ -11,6 +11,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FormInput,
+  FormSelect,
+  FormTextarea,
   getInitials,
   Separator,
   Sheet,
@@ -25,6 +28,32 @@ import {
 } from '.';
 
 describe('team-ready primitives', () => {
+  it('keeps the team-ready form controls labelled and described consistently', () => {
+    render(
+      <>
+        <FormInput label="Title" required error="Enter a title." />
+        <FormSelect label="Area / Squad" description="Choose one area.">
+          <option value="">Choose an Area / Squad</option>
+        </FormSelect>
+        <FormTextarea label="Description" />
+      </>,
+    );
+
+    expect(screen.getByLabelText('Title *')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
+    expect(screen.getByLabelText('Title *')).toHaveAccessibleDescription(
+      'Enter a title.',
+    );
+    expect(screen.getByLabelText('Area / Squad')).toHaveAccessibleDescription(
+      'Choose one area.',
+    );
+    expect(screen.getByLabelText('Description')).toBeInstanceOf(
+      HTMLTextAreaElement,
+    );
+  });
+
   it('keeps Button state and activation semantic', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

@@ -3,6 +3,11 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { Input } from '../../ui/Input/Input';
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+} from '../../ui/primitives/form-controls';
 import { Select } from '../../ui/Select/Select';
 import { Textarea } from '../../ui/Textarea/Textarea';
 import type { WorkItemFormValues, WorkItemOptions } from './workItemTypes';
@@ -31,6 +36,7 @@ export interface WorkItemFormProps {
   onValuesChange?: (values: WorkItemFormValues) => void;
   formId?: string;
   hideSubmitButton?: boolean;
+  teamReadyControls?: boolean;
 }
 
 export function WorkItemForm({
@@ -45,9 +51,13 @@ export function WorkItemForm({
   serverError,
   showCreationStatus = true,
   submitLabel,
+  teamReadyControls = false,
 }: WorkItemFormProps) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const InputControl = teamReadyControls ? FormInput : Input;
+  const SelectControl = teamReadyControls ? FormSelect : Select;
+  const TextareaControl = teamReadyControls ? FormTextarea : Textarea;
   const update = (name: keyof WorkItemFormValues, value: string | string[]) =>
     setValues((current) => {
       const next = { ...current, [name]: value };
@@ -96,7 +106,7 @@ export function WorkItemForm({
           <small>Creation cannot submit work or start another status.</small>
         </div>
       ) : null}
-      <Input
+      <InputControl
         label="Title"
         required
         value={values.title}
@@ -104,7 +114,7 @@ export function WorkItemForm({
         onChange={(event) => update('title', event.target.value)}
       />
       <div className={styles.formGrid}>
-        <Select
+        <SelectControl
           label="Area / Squad"
           required
           value={values.areaId}
@@ -121,10 +131,10 @@ export function WorkItemForm({
                 {option.label}
               </option>
             ))}
-        </Select>
+        </SelectControl>
         {includeAssignee ? (
-          <Select
-            label="Assignee (optional)"
+          <SelectControl
+            label={teamReadyControls ? 'Assignee' : 'Assignee (optional)'}
             value={values.assigneeId}
             onChange={(event) => update('assigneeId', event.target.value)}
           >
@@ -134,15 +144,15 @@ export function WorkItemForm({
                 {option.label}
               </option>
             ))}
-          </Select>
+          </SelectControl>
         ) : null}
-        <Input
+        <InputControl
           label="Planned start"
           type="date"
           value={values.plannedStartDate}
           onChange={(event) => update('plannedStartDate', event.target.value)}
         />
-        <Input
+        <InputControl
           label="Due date"
           type="date"
           value={values.dueDate}
@@ -150,15 +160,15 @@ export function WorkItemForm({
           onChange={(event) => update('dueDate', event.target.value)}
         />
       </div>
-      <Input
-        label="Figma URL (optional)"
+      <InputControl
+        label={teamReadyControls ? 'Figma URL' : 'Figma URL (optional)'}
         type="url"
         placeholder="https://www.figma.com/design/…"
         value={values.figmaUrl}
         {...(errors.figmaUrl ? { error: errors.figmaUrl } : {})}
         onChange={(event) => update('figmaUrl', event.target.value)}
       />
-      <Textarea
+      <TextareaControl
         label="Description"
         value={values.description}
         onChange={(event) => update('description', event.target.value)}

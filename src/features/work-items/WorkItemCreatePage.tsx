@@ -128,6 +128,7 @@ export function WorkItemCreatePage() {
         <WorkItemForm
           formId="create-ticket-form"
           hideSubmitButton
+          teamReadyControls
           showCreationStatus={false}
           options={options.data}
           initialValues={draft ?? initialValues}

@@ -485,11 +485,23 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
-  await expect(page.getByLabel('Assignee (optional)')).toHaveValue(userId);
+  await expect(page.getByLabel('Assignee')).toHaveValue(userId);
+  for (const label of [
+    'Title *',
+    'Area / Squad *',
+    'Assignee',
+    'Planned start',
+    'Due date',
+    'Figma URL',
+  ]) {
+    await expect(page.getByLabel(label)).toHaveCSS('height', '48px');
+    await expect(page.getByLabel(label)).toHaveCSS('border-radius', '12px');
+    await expect(page.getByLabel(label)).toHaveCSS('font-size', '16px');
+  }
   await page.getByLabel('Title *').fill('[SYNTHETIC] Created in browser');
   await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
   await page
-    .getByLabel('Figma URL (optional)')
+    .getByLabel('Figma URL')
     .fill('https://www.figma.com/design/synthetic-created');
   await page.getByLabel('[SYNTHETIC] Foundation').check();
   await page
@@ -511,6 +523,19 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
   await expect(page.getByLabel('Worked by')).toHaveCount(0);
+  const searchFrame = page.getByLabel('Search tickets').locator('..');
+  await expect(searchFrame).toHaveCSS('height', '48px');
+  await expect(searchFrame).toHaveCSS('border-radius', '12px');
+  await expect(page.getByLabel('Work date 1 *')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work date 1 *')).toHaveCSS(
+    'border-radius',
+    '12px',
+  );
+  await expect(page.getByLabel('Work type 1 *')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work type 1 *')).toHaveCSS(
+    'border-radius',
+    '12px',
+  );
   await page.getByLabel('Work type 1 *').selectOption('ui_visual_design');
   await page
     .getByLabel('Description 1 (optional)')
@@ -520,7 +545,7 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
-  await expect(page.getByLabel('Assignee (optional)')).toHaveValue(userId);
+  await expect(page.getByLabel('Assignee')).toHaveValue(userId);
   await page.getByLabel('Title *').fill('[SYNTHETIC] Nested ticket');
   await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
   await page
