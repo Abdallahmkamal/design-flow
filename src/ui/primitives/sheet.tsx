@@ -13,6 +13,8 @@ import { cn } from '../lib/cn';
 export const Sheet = DialogPrimitive.Root;
 export const SheetTrigger = DialogPrimitive.Trigger;
 export const SheetClose = DialogPrimitive.Close;
+export const SheetPortal = DialogPrimitive.Portal;
+export const SheetPrimitiveContent = DialogPrimitive.Content;
 
 export const SheetOverlay = forwardRef<
   ElementRef<typeof DialogPrimitive.Overlay>,
