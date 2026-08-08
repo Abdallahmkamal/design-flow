@@ -70,6 +70,7 @@ function storedDraft() {
 export function WorkLogPage() {
   const { account } = useAuthentication();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [params] = useSearchParams();
   const initialDraft = storedDraft();
   const [context, setContext] = useState<WorkLogContext>(
@@ -144,6 +145,24 @@ export function WorkLogPage() {
     account &&
     (account.isAdmin || ['lead', 'manager'].includes(account.positionCode)),
   );
+
+  if (account?.positionCode === 'viewer') {
+    return (
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <div>
+            <p className={styles.eyebrow}>Permission state</p>
+            <h1>Log work</h1>
+          </div>
+        </header>
+        <div className={styles.state} role="status">
+          <p>Viewers can review recorded work but cannot log or edit work.</p>
+          <Link to="/work-items">Return to Work Items</Link>
+        </div>
+      </main>
+    );
+  }
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!account || (context === 'ticket' && !ticketId)) return;
@@ -185,7 +204,6 @@ export function WorkLogPage() {
       /* rendered below without losing draft */
     }
   };
-  const queryClient = useQueryClient();
   const retryStatus = async () => {
     if (!selectedTicket.data || !targetStatus) return;
     setStatusError(false);
@@ -274,7 +292,7 @@ export function WorkLogPage() {
             Standalone visual work is not attached to a ticket or its lifecycle.
           </p>
         )}
-        {context === 'ticket' && account?.positionCode !== 'viewer' ? (
+        {context === 'ticket' ? (
           <Link
             to="/work-items/new"
             onClick={() =>
