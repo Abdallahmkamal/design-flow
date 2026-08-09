@@ -534,6 +534,21 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
   await expect(page.getByLabel('Worked by')).toHaveCount(0);
+  const overlayTitleBox = await page
+    .getByRole('heading', { name: 'Log work' })
+    .boundingBox();
+  const overlayCloseBox = await page
+    .getByRole('button', { name: 'Close Log work' })
+    .boundingBox();
+  expect(overlayTitleBox).not.toBeNull();
+  expect(overlayCloseBox).not.toBeNull();
+  expect(
+    Math.abs(
+      overlayTitleBox!.y +
+        overlayTitleBox!.height / 2 -
+        (overlayCloseBox!.y + overlayCloseBox!.height / 2),
+    ),
+  ).toBeLessThanOrEqual(1);
   const searchFrame = page.getByLabel('Search tickets').locator('..');
   await expect(searchFrame).toHaveCSS('height', '48px');
   await expect(searchFrame).toHaveCSS('border-radius', '12px');

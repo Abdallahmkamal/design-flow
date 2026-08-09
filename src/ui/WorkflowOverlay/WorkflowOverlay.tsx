@@ -68,14 +68,14 @@ export function WorkflowOverlay({
             requestDismiss();
           }}
         >
-          <header className="flex min-w-0 items-start justify-between gap-4 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-5 md:pt-6">
-            <div className="flex min-w-0 items-start gap-2">
+          <header className="flex min-w-0 items-center justify-between gap-4 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 md:py-6">
+            <div className="flex min-w-0 items-center gap-2">
               {onBack ? (
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="mt-0.5 shrink-0"
+                  className="shrink-0"
                   aria-label={backLabel}
                   onClick={onBack}
                   disabled={isBusy}
@@ -84,7 +84,7 @@ export function WorkflowOverlay({
                 </Button>
               ) : null}
               <div className="min-w-0">
-                <SheetTitle className="text-[2rem] leading-[2.3rem] font-semibold break-words">
+                <SheetTitle className="m-0 text-[2rem] leading-[2.3rem] font-semibold break-words">
                   {title}
                 </SheetTitle>
                 <SheetDescription id="workflow-description" className="sr-only">
