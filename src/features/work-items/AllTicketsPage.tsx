@@ -4,7 +4,6 @@ import {
   ArrowUp,
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   Filter,
   ListFilter,
   Plus,
@@ -22,7 +21,12 @@ import {
 } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { Badge as StatusBadge, type BadgeTone } from '../../ui/Badge/Badge';
+import {
+  Badge as StatusBadge,
+  type BadgeProps,
+  type BadgeTone,
+} from '../../ui/Badge/Badge';
+import figmaLinkAction from '../../assets/figma-link-action.svg';
 import {
   Avatar,
   AvatarFallback,
@@ -127,10 +131,11 @@ const activityLabels: Record<string, string> = {
   restored: 'Ticket restored',
 };
 const avatarTones = [
-  'bg-secondary',
-  'bg-muted',
-  'bg-accent',
-  'bg-card border border-border',
+  styles.avatarAqua,
+  styles.avatarAubergine,
+  styles.avatarPharos,
+  styles.avatarTurquoise,
+  styles.avatarViolet,
 ] as const;
 
 function useMobileList() {
@@ -168,6 +173,12 @@ const stableTone = (id: string) =>
       avatarTones.length
   ];
 
+function TicketBadge({ className, ...props }: BadgeProps) {
+  return (
+    <StatusBadge {...props} className={cn(styles.ticketPill, className)} />
+  );
+}
+
 function uniquePeople(row: WorkItemListRow) {
   const people = row.assignee
     ? [row.assignee, ...row.contributors]
@@ -178,7 +189,13 @@ function uniquePeople(row: WorkItemListRow) {
   );
 }
 
-function People({ row }: { row: WorkItemListRow }) {
+function People({
+  hideName = false,
+  row,
+}: {
+  hideName?: boolean;
+  row: WorkItemListRow;
+}) {
   const people = uniquePeople(row);
   const shown = row.assignee ?? people[0] ?? null;
   const remaining = shown
@@ -198,9 +215,11 @@ function People({ row }: { row: WorkItemListRow }) {
             {getInitials(shown.displayName)}
           </AvatarFallback>
         </Avatar>
-        <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
-          {shown.displayName}
-        </span>
+        {hideName ? null : (
+          <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+            {shown.displayName}
+          </span>
+        )}
         {remaining ? <strong className="shrink-0">+{remaining}</strong> : null}
       </PopoverTrigger>
       <PopoverContent className="grid w-72 gap-3 p-4">
@@ -237,16 +256,15 @@ function FigmaLink({ row }: { row: WorkItemListRow }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button asChild variant="secondary" size="icon" className="size-9">
-          <a
-            href={row.figmaUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={label}
-          >
-            <ExternalLink aria-hidden="true" />
-          </a>
-        </Button>
+        <a
+          className={styles.figmaLink}
+          href={row.figmaUrl}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={label}
+        >
+          <img src={figmaLinkAction} alt="" aria-hidden="true" />
+        </a>
       </TooltipTrigger>
       <TooltipContent>Open in Figma</TooltipContent>
     </Tooltip>
@@ -667,15 +685,15 @@ function MobileCards({
                 <FigmaLink row={row} />
               </div>
               <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <People row={row} />
-                <StatusBadge tone="neutral">{row.area.name}</StatusBadge>
-                <StatusBadge tone={statusTones[row.status.code] ?? 'neutral'}>
+                <People row={row} hideName />
+                <TicketBadge tone="neutral">{row.area.name}</TicketBadge>
+                <TicketBadge tone={statusTones[row.status.code] ?? 'neutral'}>
                   {row.status.label}
-                </StatusBadge>
+                </TicketBadge>
                 {row.totalSubtasks ? (
-                  <StatusBadge tone="neutral">
+                  <TicketBadge tone="neutral">
                     {row.completedSubtasks}/{row.totalSubtasks}
-                  </StatusBadge>
+                  </TicketBadge>
                 ) : null}
                 <Button
                   variant="ghost"
@@ -739,9 +757,9 @@ function MobileCards({
                         <dt>Labels</dt>
                         <dd className="flex flex-wrap gap-1">
                           {row.labels.map((label) => (
-                            <StatusBadge key={label.id} tone="neutral">
+                            <TicketBadge key={label.id} tone="neutral">
                               {label.name}
-                            </StatusBadge>
+                            </TicketBadge>
                           ))}
                         </dd>
                       </div>
@@ -878,16 +896,16 @@ export function AllTicketsPage() {
       open={editingFilter === type}
       onOpenChange={(open) => setEditingFilter(open ? type : null)}
     >
-      <div className="inline-flex items-center rounded-full bg-muted">
+      <div className={styles.filterChip}>
         <PopoverTrigger
           render={<button type="button" />}
-          className="min-h-9 rounded-l-full border-0 bg-transparent px-3 font-sans text-sm font-medium text-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+          className={styles.filterChipLabel}
         >
           {chipLabel(type, filters, allOptions)}
         </PopoverTrigger>
         <button
           type="button"
-          className="grid size-9 place-items-center rounded-r-full border-0 bg-transparent text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={styles.filterChipRemove}
           aria-label={`Remove ${filterLabels[type]} filter`}
           onClick={() => {
             setExtraDimensions((items) =>
@@ -896,7 +914,7 @@ export function AllTicketsPage() {
             update(removeFilter(type));
           }}
         >
-          <X aria-hidden="true" />
+          <X className="size-5" aria-hidden="true" />
         </button>
       </div>
       <PopoverContent className="w-72 p-4">
@@ -940,7 +958,7 @@ export function AllTicketsPage() {
           {filterChips}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="h-10 rounded-full">
+              <Button variant="secondary" className="h-12 rounded-full">
                 <Plus aria-hidden="true" />
                 Filter
               </Button>
@@ -1331,24 +1349,24 @@ function TicketRow({
           <strong>{row.title}</strong>
           <span className="flex flex-wrap gap-1">
             {row.totalSubtasks ? (
-              <StatusBadge tone="neutral">
+              <TicketBadge tone="neutral">
                 {row.completedSubtasks}/{row.totalSubtasks} subtasks
-              </StatusBadge>
+              </TicketBadge>
             ) : null}
             {row.isBlocked ? (
-              <StatusBadge tone="blocked">Blocked</StatusBadge>
+              <TicketBadge tone="blocked">Blocked</TicketBadge>
             ) : null}
             {row.isArchived ? (
-              <StatusBadge tone="archived">Archived</StatusBadge>
+              <TicketBadge tone="archived">Archived</TicketBadge>
             ) : null}
           </span>
         </div>
       </td>
       <td className="w-44 max-w-44">{row.area.name}</td>
       <td className="w-32">
-        <StatusBadge tone={statusTones[row.status.code] ?? 'neutral'}>
+        <TicketBadge tone={statusTones[row.status.code] ?? 'neutral'}>
           {row.status.label}
-        </StatusBadge>
+        </TicketBadge>
       </td>
       <td className="w-52 max-w-52">
         <People row={row} />
@@ -1374,9 +1392,9 @@ function TicketRow({
         <span className="flex flex-wrap gap-1">
           {row.labels.length
             ? row.labels.map((label) => (
-                <StatusBadge key={label.id} tone="neutral">
+                <TicketBadge key={label.id} tone="neutral">
                   {label.name}
-                </StatusBadge>
+                </TicketBadge>
               ))
             : '—'}
         </span>

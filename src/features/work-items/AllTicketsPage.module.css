@@ -30,7 +30,7 @@
   padding: 0.625rem 0.75rem;
   border-inline-start: 1px solid var(--color-border-subtle);
   border-block-end: 1px solid var(--color-border-subtle);
-  background: var(--color-surface-default);
+  background: var(--color-surface-bg);
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
@@ -131,10 +131,121 @@
   cursor: pointer;
 }
 
+.sortButton svg {
+  flex: none;
+  inline-size: 1rem;
+  max-inline-size: none;
+  block-size: 1rem;
+}
+
 .sortButton:focus-visible {
   border-radius: var(--radius-inner);
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset);
+}
+
+.filterChip {
+  display: inline-flex;
+  block-size: 3rem;
+  align-items: center;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  color: var(--color-action-primary-text);
+  background: var(--color-action-neutral-background);
+}
+
+.filterChipLabel,
+.filterChipRemove {
+  block-size: 3rem;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-family: var(--font-family-primary);
+  outline: none;
+}
+
+.filterChipLabel {
+  padding-inline: var(--space-lg);
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
+  font: var(--type-label);
+}
+
+.filterChipRemove {
+  display: grid;
+  inline-size: 2.5rem;
+  place-items: center;
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.filterChipLabel:hover,
+.filterChipRemove:hover {
+  background: var(--color-action-neutral-hover);
+}
+
+.filterChipLabel:focus-visible,
+.filterChipRemove:focus-visible {
+  box-shadow: inset 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+}
+
+.figmaLink {
+  display: inline-flex;
+  inline-size: 2rem;
+  block-size: 2rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-inner);
+  background: var(--color-action-secondary-background);
+  outline: none;
+}
+
+.figmaLink img {
+  inline-size: auto;
+  block-size: 0.9375rem;
+  aspect-ratio: 14.82 / 21.4998;
+}
+
+.figmaLink:hover {
+  background: var(--color-surface-raised-prominent);
+}
+
+.figmaLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+:global([data-theme='dark']) .figmaLink img {
+  filter: invert(1);
+}
+
+.ticketPill {
+  padding-block: calc(var(--space-xs) + var(--space-2xs));
+}
+
+.avatarAqua {
+  color: var(--color-avatar-aqua-text);
+  background: var(--color-avatar-aqua-background);
+}
+
+.avatarAubergine {
+  color: var(--color-avatar-aubergine-text);
+  background: var(--color-avatar-aubergine-background);
+}
+
+.avatarPharos {
+  color: var(--color-avatar-pharos-text);
+  background: var(--color-avatar-pharos-background);
+}
+
+.avatarTurquoise {
+  color: var(--color-avatar-turquoise-text);
+  background: var(--color-avatar-turquoise-background);
+}
+
+.avatarViolet {
+  color: var(--color-avatar-violet-text);
+  background: var(--color-avatar-violet-background);
 }
 
 .ticketColumn {

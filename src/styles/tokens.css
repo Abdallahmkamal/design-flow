@@ -141,6 +141,18 @@
   --chart-series-2: #00697c;
   --chart-series-3: #5e2750;
   --chart-grid: #dbdedf;
+  /* Team-ready deterministic initials palette. These curated aliases use
+     Vodafone core colors without reusing brand red or workflow-status roles. */
+  --color-avatar-aqua-background: #c7f1f7;
+  --color-avatar-aqua-text: #00343d;
+  --color-avatar-aubergine-background: #d8c0cf;
+  --color-avatar-aubergine-text: #321326;
+  --color-avatar-pharos-background: #a9d1f5;
+  --color-avatar-pharos-text: #002e4d;
+  --color-avatar-turquoise-background: #c6e6ed;
+  --color-avatar-turquoise-text: #00333d;
+  --color-avatar-violet-background: #e7b6ec;
+  --color-avatar-violet-text: #411147;
   --shadow-xs: 0 1px 1px #00000014, 0 2px 8px #00000014;
   --shadow-sm: 0 1px 2px #00000029, 0 2px 12px #00000029;
   --shadow-lg: 0 2px 2px #00000029, 0 8px 24px #00000029;
@@ -199,6 +211,16 @@
   --chart-series-2: #90e4f0;
   --chart-series-3: #d8c0cf;
   --chart-grid: #444848;
+  --color-avatar-aqua-background: #00343d;
+  --color-avatar-aqua-text: #c7f1f7;
+  --color-avatar-aubergine-background: #321326;
+  --color-avatar-aubergine-text: #d8c0cf;
+  --color-avatar-pharos-background: #002e4d;
+  --color-avatar-pharos-text: #a9d1f5;
+  --color-avatar-turquoise-background: #00333d;
+  --color-avatar-turquoise-text: #c6e6ed;
+  --color-avatar-violet-background: #411147;
+  --color-avatar-violet-text: #e7b6ec;
   --shadow-xs: 0 1px 1px #ffffff0a, 0 2px 8px #ffffff0a;
   --shadow-sm: 0 1px 2px #ffffff14, 0 2px 12px #ffffff14;
   --shadow-lg: 0 2px 2px #ffffff1f, 0 8px 24px #ffffff1f;

@@ -486,6 +486,13 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     })
     .first();
   await expect(figmaLink).toHaveAttribute('href', /figma\.com/u);
+  await expect(figmaLink.locator('img')).toHaveAttribute(
+    'src',
+    /^data:image\/svg\+xml,/u,
+  );
+  await expect(figmaLink).toHaveCSS('width', '32px');
+  await expect(figmaLink).toHaveCSS('height', '32px');
+  await expect(figmaLink.locator('img')).toHaveCSS('height', '15px');
   const beforeFigmaAction = page.url();
   await figmaLink.press('Enter');
   expect(page.url()).toBe(beforeFigmaAction);
@@ -497,6 +504,18 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(
       page.getByRole('button', { name: 'Filter tickets, 0 active' }),
     ).toBeVisible();
+    const card = page.getByRole('article', {
+      name: `Open ${displayId}: ${listRow.title}`,
+    });
+    const peopleButton = card.getByRole('button', {
+      name: new RegExp(`People on ${displayId}`, 'u'),
+    });
+    await expect(peopleButton).not.toContainText(listRow.assignee.displayName);
+    await expect(peopleButton).toContainText('+1');
+    await expect(card.getByText(listRow.area.name, { exact: true })).toHaveCSS(
+      'padding-top',
+      '6px',
+    );
     const listUrl = page.url();
     await page
       .getByRole('button', { name: `Expand ${displayId}` })
@@ -512,6 +531,15 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(
       page.getByRole('heading', { name: 'Sort tickets' }),
     ).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCSS('padding-bottom', '24px');
+    await expect(page.getByRole('button', { name: 'Close' })).toHaveCSS(
+      'width',
+      '40px',
+    );
+    await expect(page.getByRole('button', { name: 'Close' })).toHaveCSS(
+      'box-shadow',
+      'none',
+    );
     await chooseShadcnOption(page, 'Sort field', 'Days Open');
     await chooseShadcnOption(page, 'Direction', 'Descending');
     await expect(page).toHaveURL(/sort=days_open/u);
@@ -530,9 +558,6 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(page.getByText('1 active filters')).toBeVisible();
     await page.getByRole('button', { name: 'Close' }).click();
 
-    const card = page.getByRole('article', {
-      name: `Open ${displayId}: ${listRow.title}`,
-    });
     await card.press('Enter');
     await expect(page).toHaveURL(`/work-items/${displayId}`);
     await page.goBack();
@@ -572,6 +597,11 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(
       page.getByRole('columnheader', { name: 'Days Open' }),
     ).toHaveAttribute('aria-sort', 'descending');
+    const sortIcon = page
+      .getByRole('button', { name: 'Days Open' })
+      .locator('svg');
+    await expect(sortIcon).toHaveCSS('width', '16px');
+    await expect(sortIcon).toHaveCSS('height', '16px');
     await page.getByRole('button', { name: 'Days Open' }).click();
     await expect(page).toHaveURL(/direction=asc/u);
 
@@ -583,6 +613,34 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(
       page.getByRole('button', { name: 'Days Open: ≥5' }),
     ).toBeVisible();
+    const filterChip = page
+      .getByRole('button', { name: 'Days Open: ≥5' })
+      .locator('..');
+    await expect(filterChip).toHaveCSS('height', '48px');
+    await expect(filterChip).toHaveCSS('background-color', 'rgb(42, 44, 44)');
+    await expect(filterChip).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(
+      page
+        .getByRole('button', { name: 'Remove Days Open filter' })
+        .locator('svg'),
+    ).toHaveCSS('width', '20px');
+    const firstTicketCell = page
+      .getByRole('row', { name: `Open ${displayId}: ${listRow.title}` })
+      .locator('td')
+      .first();
+    await expect(firstTicketCell).toHaveCSS(
+      'background-color',
+      'rgb(253, 254, 254)',
+    );
+    const avatar = page
+      .getByRole('button', { name: new RegExp(`People on ${displayId}`, 'u') })
+      .locator('span')
+      .first();
+    expect(
+      await avatar.evaluate((node) => getComputedStyle(node).backgroundColor),
+    ).toMatch(
+      /^rgb\((199, 241, 247|216, 192, 207|169, 209, 245|198, 230, 237|231, 182, 236)\)$/u,
+    );
     await page
       .getByRole('combobox', { name: 'Rows per page' })
       .selectOption('50');
