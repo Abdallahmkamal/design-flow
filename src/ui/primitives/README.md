@@ -27,3 +27,22 @@ but their public APIs and implementation belong to Design Flow.
 - `Separator`: decorative by default, horizontal or vertical.
 
 Do not add later-slice primitives here until their owning slice requires them.
+
+## Slice 2 form controls
+
+- `FormInput`, `FormSelect`, `FormDatePicker`, `FormTextarea`, and `FormCheckbox`
+  provide the shared field label, required marker, description, validation,
+  disabled, hover, and focus states for migrated workflows.
+- Their 48px control height, 12px radius, 1px semantic border, 12px horizontal
+  inset, Vodafone 14px medium label, and Vodafone 16px value typography map the
+  approved Log Work and Create Ticket Figma anatomy through the shadcn layer.
+- Box sizing is explicit because Tailwind Preflight remains disabled during
+  legacy coexistence.
+- `FormSelect` composes the source-owned shadcn Select over Base UI; its trigger
+  and popup remain keyboard-accessible when nested in the route-backed sheet.
+- `FormDatePicker` follows the shadcn Date Picker composition: a Base UI Popover
+  contains the source-owned React DayPicker calendar and preserves ISO values at
+  the feature boundary.
+- `ButtonGroup` owns the connected ticket-search input/button geometry. Select
+  chevrons, date affordances, and checkbox chrome are source-owned so
+  browser-native icon sizing cannot diverge across related fields.

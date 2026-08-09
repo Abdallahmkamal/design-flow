@@ -3,6 +3,12 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { Input } from '../../ui/Input/Input';
+import {
+  FormDatePicker,
+  FormInput,
+  FormSelect,
+  FormTextarea,
+} from '../../ui/primitives/form-controls';
 import { Select } from '../../ui/Select/Select';
 import { Textarea } from '../../ui/Textarea/Textarea';
 import type { WorkItemFormValues, WorkItemOptions } from './workItemTypes';
@@ -28,34 +34,43 @@ export interface WorkItemFormProps {
   showCreationStatus?: boolean;
   includeAssignee?: boolean;
   onSubmit: (values: WorkItemFormValues) => void;
+  onValuesChange?: (values: WorkItemFormValues) => void;
+  formId?: string;
+  hideSubmitButton?: boolean;
+  teamReadyControls?: boolean;
 }
 
 export function WorkItemForm({
   initialValues = emptyValues,
+  formId,
+  hideSubmitButton = false,
   includeAssignee = true,
   isSubmitting,
   onSubmit,
+  onValuesChange,
   options,
   serverError,
   showCreationStatus = true,
   submitLabel,
+  teamReadyControls = false,
 }: WorkItemFormProps) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const InputControl = teamReadyControls ? FormInput : Input;
+  const SelectControl = teamReadyControls ? FormSelect : Select;
+  const TextareaControl = teamReadyControls ? FormTextarea : Textarea;
   const update = (name: keyof WorkItemFormValues, value: string | string[]) =>
-    setValues((current) => ({ ...current, [name]: value }));
+    setValues((current) => {
+      const next = { ...current, [name]: value };
+      onValuesChange?.(next);
+      return next;
+    });
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const nextErrors: Record<string, string> = {};
     if (!values.title.trim()) nextErrors.title = 'Enter a title.';
     if (!values.areaId) nextErrors.areaId = 'Choose an Area or Squad.';
-    if (
-      values.plannedStartDate &&
-      values.dueDate &&
-      values.dueDate < values.plannedStartDate
-    )
-      nextErrors.dueDate = 'Due date cannot be before planned start.';
     if (values.figmaUrl) {
       try {
         const url = new URL(values.figmaUrl);
@@ -79,7 +94,12 @@ export function WorkItemForm({
   };
 
   return (
-    <form className={styles.workItemForm} onSubmit={submit} noValidate>
+    <form
+      id={formId}
+      className={styles.workItemForm}
+      onSubmit={submit}
+      noValidate
+    >
       {showCreationStatus ? (
         <div className={styles.fixedStatus}>
           <span>Status</span>
@@ -87,20 +107,15 @@ export function WorkItemForm({
           <small>Creation cannot submit work or start another status.</small>
         </div>
       ) : null}
-      <Input
+      <InputControl
         label="Title"
         required
         value={values.title}
         {...(errors.title ? { error: errors.title } : {})}
         onChange={(event) => update('title', event.target.value)}
       />
-      <Textarea
-        label="Description"
-        value={values.description}
-        onChange={(event) => update('description', event.target.value)}
-      />
       <div className={styles.formGrid}>
-        <Select
+        <SelectControl
           label="Area / Squad"
           required
           value={values.areaId}
@@ -117,10 +132,10 @@ export function WorkItemForm({
                 {option.label}
               </option>
             ))}
-        </Select>
+        </SelectControl>
         {includeAssignee ? (
-          <Select
-            label="Assignee (optional)"
+          <SelectControl
+            label={teamReadyControls ? 'Assignee' : 'Assignee (optional)'}
             value={values.assigneeId}
             onChange={(event) => update('assigneeId', event.target.value)}
           >
@@ -130,29 +145,51 @@ export function WorkItemForm({
                 {option.label}
               </option>
             ))}
-          </Select>
+          </SelectControl>
         ) : null}
-        <Input
-          label="Planned start"
-          type="date"
-          value={values.plannedStartDate}
-          onChange={(event) => update('plannedStartDate', event.target.value)}
-        />
-        <Input
-          label="Due date"
-          type="date"
-          value={values.dueDate}
-          {...(errors.dueDate ? { error: errors.dueDate } : {})}
-          onChange={(event) => update('dueDate', event.target.value)}
-        />
+        {teamReadyControls ? (
+          <FormDatePicker
+            label="Planned start"
+            value={values.plannedStartDate}
+            onChange={(event) => update('plannedStartDate', event.target.value)}
+          />
+        ) : (
+          <Input
+            label="Planned start"
+            type="date"
+            value={values.plannedStartDate}
+            onChange={(event) => update('plannedStartDate', event.target.value)}
+          />
+        )}
+        {teamReadyControls ? (
+          <FormDatePicker
+            label="Due date"
+            value={values.dueDate}
+            {...(errors.dueDate ? { error: errors.dueDate } : {})}
+            onChange={(event) => update('dueDate', event.target.value)}
+          />
+        ) : (
+          <Input
+            label="Due date"
+            type="date"
+            value={values.dueDate}
+            {...(errors.dueDate ? { error: errors.dueDate } : {})}
+            onChange={(event) => update('dueDate', event.target.value)}
+          />
+        )}
       </div>
-      <Input
-        label="Figma URL (optional)"
+      <InputControl
+        label={teamReadyControls ? 'Figma URL' : 'Figma URL (optional)'}
         type="url"
         placeholder="https://www.figma.com/design/…"
         value={values.figmaUrl}
         {...(errors.figmaUrl ? { error: errors.figmaUrl } : {})}
         onChange={(event) => update('figmaUrl', event.target.value)}
+      />
+      <TextareaControl
+        label="Description"
+        value={values.description}
+        onChange={(event) => update('description', event.target.value)}
       />
       <fieldset className={styles.checkboxGroup}>
         <legend>Labels</legend>
@@ -184,9 +221,11 @@ export function WorkItemForm({
           {serverError}
         </div>
       ) : null}
-      <Button type="submit" isLoading={isSubmitting}>
-        {submitLabel}
-      </Button>
+      {!hideSubmitButton ? (
+        <Button type="submit" isLoading={isSubmitting}>
+          {submitLabel}
+        </Button>
+      ) : null}
     </form>
   );
 }

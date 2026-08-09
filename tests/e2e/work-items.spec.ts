@@ -25,6 +25,11 @@ function jwt() {
   ].join('.');
 }
 
+async function chooseShadcnOption(page: Page, label: string, option: string) {
+  await page.getByRole('combobox', { name: label }).click();
+  await page.getByRole('option', { name: option, exact: true }).click();
+}
+
 const listRow = {
   id: itemId,
   displayId,
@@ -129,9 +134,11 @@ async function mocks(
   options: {
     viewer?: boolean;
     conflict?: boolean;
+    subtaskFailsOnce?: boolean;
     mutationBodies?: { url: string; body: unknown }[];
   } = {},
 ) {
+  let subtaskAttempts = 0;
   const user = {
     id: userId,
     aud: 'authenticated',
@@ -325,6 +332,20 @@ async function mocks(
       }),
     }),
   );
+  await page.route('**/rest/v1/rpc/submit_work_log', (route) => {
+    options.mutationBodies?.push({
+      url: route.request().url(),
+      body: route.request().postDataJSON(),
+    });
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '78000000-0000-4000-8000-000000000001',
+        context_code: 'ticket',
+      }),
+    });
+  });
   await page.route('**/rest/v1/rpc/**', async (route) => {
     const url = route.request().url();
     if (url.includes('get_own_account_state'))
@@ -373,11 +394,42 @@ async function mocks(
           updated_at: '2026-07-21T08:00:00Z',
         }),
       });
-    else if (options.conflict && url.includes('transition_work_item_status')) {
+    else if (url.includes('submit_work_log')) {
+      options.mutationBodies?.push({
+        url,
+        body: route.request().postDataJSON(),
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: '78000000-0000-4000-8000-000000000001',
+          context_code: 'ticket',
+        }),
+      });
+    } else if (
+      options.conflict &&
+      url.includes('transition_work_item_status')
+    ) {
       await route.fulfill({
         status: 409,
         contentType: 'application/json',
         body: JSON.stringify({ code: 'P0001', message: 'DF_CONFLICT' }),
+      });
+    } else if (url.includes('set_subtask_completion')) {
+      subtaskAttempts += 1;
+      options.mutationBodies?.push({
+        url,
+        body: route.request().postDataJSON(),
+      });
+      await route.fulfill({
+        status: options.subtaskFailsOnce && subtaskAttempts === 1 ? 500 : 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          options.subtaskFailsOnce && subtaskAttempts === 1
+            ? { message: 'Synthetic retryable failure' }
+            : { status: 'updated' },
+        ),
       });
     } else {
       options.mutationBodies?.push({
@@ -428,26 +480,221 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
-test('ticket creation remains Backlog, preserves the full-page form, and navigates by display ID', async ({
+test('ticket creation uses the responsive overlay, remains Backlog, and navigates by display ID', async ({
   page,
 }) => {
   await mocks(page);
   await signIn(page);
   await page.goto('/work-items/new');
   await expect(
-    page.getByText('Creation cannot submit work or start another status.'),
+    page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Assignee')).toContainText(
+    '[SYNTHETIC] Designer',
+  );
+  for (const label of [
+    'Title *',
+    'Area / Squad',
+    'Assignee',
+    'Planned start',
+    'Due date',
+    'Figma URL',
+  ]) {
+    await expect(page.getByLabel(label)).toHaveCSS('height', '48px');
+    await expect(page.getByLabel(label)).toHaveCSS('border-radius', '12px');
+    await expect(page.getByLabel(label)).toHaveCSS('font-size', '16px');
+  }
   await page.getByLabel('Title *').fill('[SYNTHETIC] Created in browser');
-  await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
+  await chooseShadcnOption(
+    page,
+    'Area / Squad',
+    '[SYNTHETIC] Internal Experience',
+  );
   await page
-    .getByLabel('Figma URL (optional)')
+    .getByLabel('Figma URL')
     .fill('https://www.figma.com/design/synthetic-created');
   await page.getByLabel('[SYNTHETIC] Foundation').check();
-  await page.getByRole('button', { name: 'Create ticket' }).click();
+  await page
+    .getByRole('button', { name: 'Create ticket', exact: true })
+    .click();
   await expect(page).toHaveURL(`/work-items/${displayId}`);
   await expect(
     page.getByText(`${displayId} created in Backlog.`, { exact: true }),
   ).toBeVisible();
+});
+
+test('nested Create Ticket replaces Log Work, preserves the draft, and submits once', async ({
+  page,
+}, testInfo) => {
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { mutationBodies });
+  await signIn(page);
+  await page.goto('/work-logs/new');
+  await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Worked by')).toHaveCount(0);
+  const overlayTitleBox = await page
+    .getByRole('heading', { name: 'Log work' })
+    .boundingBox();
+  const overlayCloseBox = await page
+    .getByRole('button', { name: 'Close Log work' })
+    .boundingBox();
+  expect(overlayTitleBox).not.toBeNull();
+  expect(overlayCloseBox).not.toBeNull();
+  expect(
+    Math.abs(
+      overlayTitleBox!.y +
+        overlayTitleBox!.height / 2 -
+        (overlayCloseBox!.y + overlayCloseBox!.height / 2),
+    ),
+  ).toBeLessThanOrEqual(1);
+  const searchFrame = page.getByLabel('Search tickets').locator('..');
+  await expect(searchFrame).toHaveCSS('height', '48px');
+  await expect(searchFrame).toHaveCSS('border-radius', '12px');
+  await expect(page.getByLabel('Work Date 1')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work Date 1')).toHaveCSS(
+    'border-radius',
+    '12px',
+  );
+  await expect(page.getByLabel('Work Type 1')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work Type 1')).toHaveCSS(
+    'border-radius',
+    '12px',
+  );
+  for (const label of ['Work Date', 'Work Type', 'Description (optional)']) {
+    await expect(
+      page.locator('label').filter({ hasText: label }).first(),
+    ).toHaveCSS('font-size', '16px');
+  }
+  await expect(
+    page.getByRole('heading', { name: 'Work Item', exact: true }),
+  ).toHaveCSS('font-size', '16px');
+  const dateBox = await page.getByLabel('Work Date 1').boundingBox();
+  const typeBox = await page.getByLabel('Work Type 1').boundingBox();
+  expect(dateBox?.y).toBe(typeBox?.y);
+  await page.getByLabel('Work Date 1').click();
+  await expect(page.locator('[data-selected-single="true"]')).toHaveCSS(
+    'background-color',
+    'rgb(28, 29, 29)',
+  );
+  await expect(page.locator('[data-selected-single="true"]')).toHaveCSS(
+    'color',
+    'rgb(255, 255, 255)',
+  );
+  await page.getByLabel('Work Date 1').click();
+  await page.getByRole('combobox', { name: 'Work Type 1' }).click();
+  const workTypeOption = page.getByRole('option', {
+    name: 'UI & visual design',
+    exact: true,
+  });
+  if (testInfo.project.name === 'chromium') {
+    await workTypeOption.hover();
+    await expect(workTypeOption).toHaveCSS(
+      'background-color',
+      'rgb(244, 246, 247)',
+    );
+  }
+  await workTypeOption.click();
+  await page
+    .getByLabel('Description 1 (optional)')
+    .fill('[SYNTHETIC] Preserved nested draft');
+  await page.getByRole('button', { name: 'Create new ticket' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Create ticket' }),
+  ).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(page.getByLabel('Assignee')).toContainText(
+    '[SYNTHETIC] Designer',
+  );
+  await page.getByLabel('Title *').fill('[SYNTHETIC] Nested ticket');
+  await chooseShadcnOption(
+    page,
+    'Area / Squad',
+    '[SYNTHETIC] Internal Experience',
+  );
+  await page
+    .getByRole('button', { name: 'Create ticket', exact: true })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
+  await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
+  await expect(
+    page.getByRole('textbox', { name: 'Selected ticket' }),
+  ).toHaveValue(`${displayId} — ${listRow.title}`);
+  await expect(
+    page.getByRole('button', { name: 'Remove selected ticket' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Create new ticket' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Remove selected ticket' }).click();
+  await page.getByLabel('Search tickets').fill(displayId);
+  const ticketOption = page.getByRole('option', {
+    name: `${displayId} — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
+    exact: true,
+  });
+  if (testInfo.project.name === 'chromium') {
+    await ticketOption.hover();
+    await expect(ticketOption).toHaveCSS(
+      'background-color',
+      'rgb(244, 246, 247)',
+    );
+  }
+  await ticketOption.click();
+  await expect(
+    page.getByRole('textbox', { name: 'Selected ticket' }),
+  ).toHaveValue(`${displayId} — ${listRow.title}`);
+  await expect(page.getByLabel('Description 1 (optional)')).toHaveValue(
+    '[SYNTHETIC] Preserved nested draft',
+  );
+  const dialogBox = await page.getByRole('dialog').boundingBox();
+  if (testInfo.project.name === 'mobile-chromium') {
+    expect(dialogBox?.width).toBe(390);
+  } else {
+    expect(dialogBox?.width).toBe(600);
+  }
+  await page.getByRole('button', { name: 'Log work', exact: true }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+  expect(
+    mutationBodies.filter(({ url }) => url.includes('submit_work_log')),
+  ).toHaveLength(1);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('partial follow-up failure retries only the failed subtask with its stable operation ID', async ({
+  page,
+}) => {
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { mutationBodies, subtaskFailsOnce: true });
+  await signIn(page);
+  await page.goto(`/work-logs/new?workItemId=${itemId}`);
+  await chooseShadcnOption(page, 'Work Type 1', 'UI & visual design');
+  await page.getByText('Complete subtasks', { exact: true }).click();
+  await page
+    .getByText('[SYNTHETIC] Keyboard verification', { exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Log work', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    'Subtasks not completed: [SYNTHETIC] Keyboard verification.',
+  );
+  await page.getByRole('button', { name: 'Retry failed follow-ups' }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+
+  const workLogMutations = mutationBodies.filter(({ url }) =>
+    url.includes('submit_work_log'),
+  );
+  const subtaskMutations = mutationBodies.filter(({ url }) =>
+    url.includes('set_subtask_completion'),
+  );
+  expect(workLogMutations).toHaveLength(1);
+  expect(subtaskMutations).toHaveLength(2);
+  expect(subtaskMutations[0]?.body).toMatchObject({
+    operation_id: expect.any(String),
+  });
+  expect(subtaskMutations[1]?.body).toMatchObject({
+    operation_id: (subtaskMutations[0]?.body as { operation_id: string })
+      .operation_id,
+  });
 });
 
 test('detail exposes lifecycle, blocker, subtask, and comment actions with confirmations', async ({

@@ -18,6 +18,7 @@ export interface SubmitWorkLogInput {
   workedBy: string | null;
   entries: WorkLogEntryInput[];
   blocker?: { reason: string; expectedResolutionDate: string } | null;
+  operationId?: string;
 }
 export interface WorkLogBatch {
   id: string;
@@ -77,7 +78,7 @@ export async function submitWorkLog(input: SubmitWorkLogInput) {
             input.blocker.expectedResolutionDate || null,
         }
       : null,
-    operation_id: createOperationId(),
+    operation_id: input.operationId ?? createOperationId(),
   } as never);
   if (error) throwApiError(error);
   return z

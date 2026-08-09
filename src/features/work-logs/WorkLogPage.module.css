@@ -34,17 +34,175 @@
   gap: var(--space-sm);
 }
 
-.ticketPicker,
-.ticketResults {
+.ticketPicker {
   display: grid;
   gap: var(--space-3);
 }
 
-.ticketResults {
-  max-block-size: 17rem;
-  overflow: auto;
-  align-content: start;
+.overlayForm,
+.dateRows,
+.dateRow,
+.followups,
+.followupOption,
+.blockerFields,
+.subtaskList {
+  display: grid;
+  min-inline-size: 0;
+  gap: var(--space-lg);
 }
+
+.overlayForm {
+  gap: 1.5rem;
+}
+
+.overlayForm h2,
+.overlayForm p {
+  margin: 0;
+}
+
+.ticketPicker h2 {
+  color: var(--color-text-primary);
+  font: var(--font-weight-medium) 1rem/1.15rem var(--font-family-primary);
+}
+
+.ticketPicker > p {
+  color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+
+.segmented {
+  display: flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border-radius: 999px;
+  background: var(--color-border-subtle);
+}
+
+.segmented button {
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.searchRow {
+  display: grid;
+  box-sizing: border-box;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  block-size: 3rem;
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+  background: var(--color-surface-default);
+}
+
+.searchRow > span {
+  display: grid;
+  padding-inline-start: 0.75rem;
+}
+
+.searchRow svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.searchRow input {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  block-size: 100%;
+  border: 0;
+  outline: 0;
+  padding-inline: 0.75rem;
+  color: var(--color-text-primary);
+  background: transparent;
+  font: var(--type-body);
+  text-overflow: ellipsis;
+}
+
+.searchRow > button {
+  box-sizing: border-box;
+  block-size: 100%;
+  border: 0;
+  border-inline-start: var(--border-width) solid var(--color-border-subtle);
+  border-radius: 0;
+}
+
+.dateRows {
+  padding: 0;
+  border: 0;
+}
+
+.dateRows > legend {
+  padding: 0;
+  margin-block-end: 0.75rem;
+  color: var(--color-text-primary);
+  font: var(--font-weight-medium) 1rem/1.15rem var(--font-family-primary);
+}
+
+.dateRow {
+  gap: 1rem;
+  padding: 1rem;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+
+.dateFieldRow {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.followups {
+  gap: 1.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: var(--border-width) solid var(--color-border-subtle);
+}
+
+.followupOption,
+.blockerFields {
+  gap: 0.75rem;
+}
+
+.subtaskList {
+  gap: 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-element);
+  background: var(--color-surface-raised);
+}
+
+.subtaskList > label {
+  padding-block: 0.5rem;
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+
+.subtaskList > label:last-child {
+  border-block-end: 0;
+}
+
+.feedback,
+.error,
+.state {
+  padding: 1rem;
+  border-radius: var(--radius-element);
+}
+
+.feedback {
+  color: var(--color-status-success-text);
+  background: var(--color-status-success-background);
+}
+
+.error {
+  color: var(--color-status-error-text);
+  background: var(--color-status-error-background);
+}
+
+.state {
+  background: var(--color-surface-raised);
+}
+
 @media (min-width: 48rem) {
   .row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
