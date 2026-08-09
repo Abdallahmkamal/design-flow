@@ -25,6 +25,15 @@ function jwt() {
   ].join('.');
 }
 
+async function chooseShadcnOption(
+  page: Page,
+  label: string,
+  option: string,
+) {
+  await page.getByRole('combobox', { name: label }).click();
+  await page.getByRole('option', { name: option, exact: true }).click();
+}
+
 const listRow = {
   id: itemId,
   displayId,
@@ -485,10 +494,12 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
-  await expect(page.getByLabel('Assignee')).toHaveValue(userId);
+  await expect(page.getByLabel('Assignee')).toContainText(
+    '[SYNTHETIC] Designer',
+  );
   for (const label of [
     'Title *',
-    'Area / Squad *',
+    'Area / Squad',
     'Assignee',
     'Planned start',
     'Due date',
@@ -499,7 +510,11 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     await expect(page.getByLabel(label)).toHaveCSS('font-size', '16px');
   }
   await page.getByLabel('Title *').fill('[SYNTHETIC] Created in browser');
-  await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
+  await chooseShadcnOption(
+    page,
+    'Area / Squad',
+    '[SYNTHETIC] Internal Experience',
+  );
   await page
     .getByLabel('Figma URL')
     .fill('https://www.figma.com/design/synthetic-created');
@@ -526,17 +541,20 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   const searchFrame = page.getByLabel('Search tickets').locator('..');
   await expect(searchFrame).toHaveCSS('height', '48px');
   await expect(searchFrame).toHaveCSS('border-radius', '12px');
-  await expect(page.getByLabel('Work date 1 *')).toHaveCSS('height', '48px');
-  await expect(page.getByLabel('Work date 1 *')).toHaveCSS(
+  await expect(page.getByLabel('Work Date 1')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work Date 1')).toHaveCSS(
     'border-radius',
     '12px',
   );
-  await expect(page.getByLabel('Work type 1 *')).toHaveCSS('height', '48px');
-  await expect(page.getByLabel('Work type 1 *')).toHaveCSS(
+  await expect(page.getByLabel('Work Type 1')).toHaveCSS('height', '48px');
+  await expect(page.getByLabel('Work Type 1')).toHaveCSS(
     'border-radius',
     '12px',
   );
-  await page.getByLabel('Work type 1 *').selectOption('ui_visual_design');
+  const dateBox = await page.getByLabel('Work Date 1').boundingBox();
+  const typeBox = await page.getByLabel('Work Type 1').boundingBox();
+  expect(dateBox?.y).toBe(typeBox?.y);
+  await chooseShadcnOption(page, 'Work Type 1', 'UI & visual design');
   await page
     .getByLabel('Description 1 (optional)')
     .fill('[SYNTHETIC] Preserved nested draft');
@@ -545,15 +563,40 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     page.getByRole('dialog', { name: 'Create ticket' }),
   ).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
-  await expect(page.getByLabel('Assignee')).toHaveValue(userId);
+  await expect(page.getByLabel('Assignee')).toContainText(
+    '[SYNTHETIC] Designer',
+  );
   await page.getByLabel('Title *').fill('[SYNTHETIC] Nested ticket');
-  await page.getByLabel('Area / Squad *').selectOption(listRow.area.id);
+  await chooseShadcnOption(
+    page,
+    'Area / Squad',
+    '[SYNTHETIC] Internal Experience',
+  );
   await page
     .getByRole('button', { name: 'Create ticket', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: 'Log work' })).toBeVisible();
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
-  await expect(page.getByText(`Selected: ${displayId}`)).toBeVisible();
+  await expect(
+    page.getByRole('textbox', { name: 'Selected ticket' }),
+  ).toHaveValue(`${displayId} — ${listRow.title}`);
+  await expect(
+    page.getByRole('button', { name: 'Remove selected ticket' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Create new ticket' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Remove selected ticket' }).click();
+  await page.getByLabel('Search tickets').fill(displayId);
+  await page
+    .getByRole('button', {
+      name: `${displayId} — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole('textbox', { name: 'Selected ticket' }),
+  ).toHaveValue(`${displayId} — ${listRow.title}`);
   await expect(page.getByLabel('Description 1 (optional)')).toHaveValue(
     '[SYNTHETIC] Preserved nested draft',
   );
@@ -578,14 +621,11 @@ test('partial follow-up failure retries only the failed subtask with its stable 
   await mocks(page, { mutationBodies, subtaskFailsOnce: true });
   await signIn(page);
   await page.goto(`/work-logs/new?workItemId=${itemId}`);
-  await page.getByLabel('Work type 1 *').selectOption('ui_visual_design');
-  await page.getByText('Show more options').click();
+  await chooseShadcnOption(page, 'Work Type 1', 'UI & visual design');
+  await page.getByText('Complete subtasks', { exact: true }).click();
   await page
-    .getByRole('checkbox', {
-      name: '[SYNTHETIC] Keyboard verification',
-      exact: true,
-    })
-    .check();
+    .getByText('[SYNTHETIC] Keyboard verification', { exact: true })
+    .click();
   await page.getByRole('button', { name: 'Log work', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText(
     'Subtasks not completed: [SYNTHETIC] Keyboard verification.',

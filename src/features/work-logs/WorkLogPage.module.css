@@ -44,7 +44,9 @@
 .dateRows,
 .dateRow,
 .followups,
-.subtasks {
+.followupOption,
+.blockerFields,
+.subtaskList {
   display: grid;
   min-inline-size: 0;
   gap: var(--space-lg);
@@ -77,7 +79,7 @@
   padding: 0.25rem;
   overflow-x: auto;
   border-radius: 999px;
-  background: var(--color-surface-raised-prominent);
+  background: var(--color-border-subtle);
 }
 
 .segmented button {
@@ -117,6 +119,7 @@
   color: var(--color-text-primary);
   background: transparent;
   font: var(--type-body);
+  text-overflow: ellipsis;
 }
 
 .searchRow > button {
@@ -124,14 +127,12 @@
   block-size: 100%;
 }
 
-.dateRows,
-.subtasks {
+.dateRows {
   padding: 0;
   border: 0;
 }
 
-.dateRows > legend,
-.subtasks > legend {
+.dateRows > legend {
   padding: 0;
   margin-block-end: 0.75rem;
   color: var(--color-text-primary);
@@ -139,25 +140,44 @@
 }
 
 .dateRow {
+  gap: 1rem;
   padding: 1rem;
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-element);
 }
 
-.help {
-  color: var(--color-text-secondary);
-  font: var(--type-caption);
+.dateFieldRow {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .followups {
-  padding-block: 0.25rem;
+  gap: 1.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: var(--border-width) solid var(--color-border-subtle);
 }
 
-.followups summary {
-  cursor: pointer;
-  inline-size: fit-content;
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
+.followupOption,
+.blockerFields {
+  gap: 0.75rem;
+}
+
+.subtaskList {
+  gap: 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-element);
+  background: var(--color-surface-raised);
+}
+
+.subtaskList > label {
+  padding-block: 0.5rem;
+  border-block-end: var(--border-width) solid var(--color-border-subtle);
+}
+
+.subtaskList > label:last-child {
+  border-block-end: 0;
 }
 
 .feedback,

@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { Input } from '../../ui/Input/Input';
 import {
+  FormDatePicker,
   FormInput,
   FormSelect,
   FormTextarea,
@@ -146,19 +147,36 @@ export function WorkItemForm({
             ))}
           </SelectControl>
         ) : null}
-        <InputControl
-          label="Planned start"
-          type="date"
-          value={values.plannedStartDate}
-          onChange={(event) => update('plannedStartDate', event.target.value)}
-        />
-        <InputControl
-          label="Due date"
-          type="date"
-          value={values.dueDate}
-          {...(errors.dueDate ? { error: errors.dueDate } : {})}
-          onChange={(event) => update('dueDate', event.target.value)}
-        />
+        {teamReadyControls ? (
+          <FormDatePicker
+            label="Planned start"
+            value={values.plannedStartDate}
+            onChange={(event) => update('plannedStartDate', event.target.value)}
+          />
+        ) : (
+          <Input
+            label="Planned start"
+            type="date"
+            value={values.plannedStartDate}
+            onChange={(event) => update('plannedStartDate', event.target.value)}
+          />
+        )}
+        {teamReadyControls ? (
+          <FormDatePicker
+            label="Due date"
+            value={values.dueDate}
+            {...(errors.dueDate ? { error: errors.dueDate } : {})}
+            onChange={(event) => update('dueDate', event.target.value)}
+          />
+        ) : (
+          <Input
+            label="Due date"
+            type="date"
+            value={values.dueDate}
+            {...(errors.dueDate ? { error: errors.dueDate } : {})}
+            onChange={(event) => update('dueDate', event.target.value)}
+          />
+        )}
       </div>
       <InputControl
         label={teamReadyControls ? 'Figma URL' : 'Figma URL (optional)'}

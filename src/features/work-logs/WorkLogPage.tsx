@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search, Trash2, X } from 'lucide-react';
 import { useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   Link,
@@ -10,13 +10,15 @@ import {
 
 import { createOperationId } from '../../shared/operations/operationId';
 import { Button as ModernButton } from '../../ui/primitives/button';
+import { ButtonGroup } from '../../ui/primitives/button-group';
 import {
+  FormCheckbox,
+  FormDatePicker,
   FormInput,
   FormSelect,
   FormTextarea,
 } from '../../ui/primitives/form-controls';
 import { WorkflowOverlay } from '../../ui/WorkflowOverlay/WorkflowOverlay';
-import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { useAuthentication } from '../auth/authContext';
 import { WorkItemForm } from '../work-items/WorkItemForm';
 import {
@@ -95,6 +97,8 @@ export function WorkLogPage() {
   const [ticketDisplayId, setTicketDisplayId] = useState('');
   const [workedBy, setWorkedBy] = useState(account?.id ?? '');
   const [entries, setEntries] = useState<WorkLogEntryInput[]>([newEntry()]);
+  const [changeStatus, setChangeStatus] = useState(false);
+  const [completeSubtasks, setCompleteSubtasks] = useState(false);
   const [targetStatus, setTargetStatus] = useState('');
   const [addBlocker, setAddBlocker] = useState(false);
   const [blockerReason, setBlockerReason] = useState('');
@@ -185,6 +189,8 @@ export function WorkLogPage() {
         entry.workDate && entry.workDate <= today && entry.workTypeCode,
     ) &&
     (context !== 'ticket' || ticketId) &&
+    (!changeStatus || targetStatus) &&
+    (!completeSubtasks || selectedSubtasks.length > 0) &&
     (!addBlocker || blockerReason.trim()),
   );
   const isDirty =
@@ -195,12 +201,24 @@ export function WorkLogPage() {
     Boolean(entries[0]?.workTypeCode) ||
     Boolean(entries[0]?.description) ||
     entries[0]?.workDate !== today ||
+    changeStatus ||
+    completeSubtasks ||
     targetStatus ||
     addBlocker ||
     selectedSubtasks.length > 0;
   const createDirty =
     createDraft !== null &&
     JSON.stringify(createDraft) !== JSON.stringify(defaultCreate);
+
+  const resetTicketOptions = () => {
+    setChangeStatus(false);
+    setCompleteSubtasks(false);
+    setTargetStatus('');
+    setSelectedSubtasks([]);
+    setAddBlocker(false);
+    setBlockerReason('');
+    setBlockerDate('');
+  };
 
   const dismiss = () => {
     if (location.key === 'default')
@@ -475,9 +493,7 @@ export function WorkLogPage() {
               setContext('standalone_visual');
               setTicketId('');
               setTicketDisplayId('');
-              setTargetStatus('');
-              setSelectedSubtasks([]);
-              setAddBlocker(false);
+              resetTicketOptions();
             }}
           >
             Standalone Visual Work
@@ -489,18 +505,45 @@ export function WorkLogPage() {
             aria-labelledby="ticket-picker-title"
           >
             <h2 id="ticket-picker-title">Work Item</h2>
-            <div className={styles.searchRow}>
-              <span aria-hidden="true">
+            <ButtonGroup className={styles.searchRow}>
+              <span data-slot="button-group-text" aria-hidden="true">
                 <Search />
               </span>
               <input
-                aria-label="Search tickets"
-                value={ticketSearch}
+                data-slot="input"
+                aria-label={
+                  effectiveDisplayId ? 'Selected ticket' : 'Search tickets'
+                }
+                value={
+                  effectiveDisplayId
+                    ? `${effectiveDisplayId} — ${selectedTicket.data?.title ?? row?.title ?? 'Loading…'}`
+                    : ticketSearch
+                }
+                readOnly={Boolean(effectiveDisplayId)}
                 onChange={(event) => setTicketSearch(event.target.value)}
                 placeholder="Search tickets"
               />
-              {canCreateTicket ? (
+              {effectiveDisplayId ? (
                 <ModernButton
+                  data-slot="button"
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-full w-12 rounded-none border-l border-border"
+                  aria-label="Remove selected ticket"
+                  title="Remove selected ticket"
+                  onClick={() => {
+                    setTicketId('');
+                    setTicketDisplayId('');
+                    setTicketSearch('');
+                    resetTicketOptions();
+                  }}
+                >
+                  <X aria-hidden="true" />
+                </ModernButton>
+              ) : canCreateTicket ? (
+                <ModernButton
+                  data-slot="button"
                   type="button"
                   variant="ghost"
                   size="icon"
@@ -512,15 +555,15 @@ export function WorkLogPage() {
                   <Plus aria-hidden="true" />
                 </ModernButton>
               ) : null}
-            </div>
+            </ButtonGroup>
             {tickets.isPending ? <p role="status">Loading tickets…</p> : null}
             {tickets.isError ? (
               <p role="alert">Tickets could not be loaded.</p>
             ) : null}
-            {!tickets.isPending && !filteredTickets.length ? (
+            {ticketSearch && !tickets.isPending && !filteredTickets.length ? (
               <p>No unarchived ticket matches this search.</p>
             ) : null}
-            {ticketSearch ? (
+            {ticketSearch && !effectiveDisplayId ? (
               <div className={styles.ticketResults} aria-label="Ticket results">
                 {filteredTickets.map((item: WorkItemListRow) => (
                   <ModernButton
@@ -532,7 +575,7 @@ export function WorkLogPage() {
                       setTicketId(item.id);
                       setTicketDisplayId(item.displayId);
                       setTicketSearch('');
-                      setSelectedSubtasks([]);
+                      resetTicketOptions();
                     }}
                   >
                     {item.displayId} — {item.title} · {item.status.label} ·{' '}
@@ -541,14 +584,6 @@ export function WorkLogPage() {
                 ))}
               </div>
             ) : null}
-            {effectiveDisplayId ? (
-              <p role="status">
-                Selected: {effectiveDisplayId} —{' '}
-                {selectedTicket.data?.title ?? row?.title ?? 'Loading…'}
-              </p>
-            ) : (
-              <p>Select a ticket before logging work.</p>
-            )}
           </section>
         ) : (
           <p>
@@ -572,50 +607,54 @@ export function WorkLogPage() {
           <legend>Work Date(s)</legend>
           {entries.map((entry, index) => (
             <div className={styles.dateRow} key={index}>
-              <FormInput
-                label={`Work date ${index + 1}`}
-                type="date"
-                max={today}
-                required
-                value={entry.workDate}
-                {...(entry.workDate > today
-                  ? { error: 'Future dates are not allowed.' }
-                  : {})}
-                onChange={(event) =>
-                  setEntries(
-                    entries.map((value, i) =>
-                      i === index
-                        ? { ...value, workDate: event.target.value }
-                        : value,
-                    ),
-                  )
-                }
-              />
-              <FormSelect
-                label={`Work type ${index + 1}`}
-                required
-                value={entry.workTypeCode}
-                onChange={(event) =>
-                  setEntries(
-                    entries.map((value, i) =>
-                      i === index
-                        ? { ...value, workTypeCode: event.target.value }
-                        : value,
-                    ),
-                  )
-                }
-              >
-                <option value="">Select work type</option>
-                {types.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </FormSelect>
+              <div className={styles.dateFieldRow}>
+                <FormDatePicker
+                  label="Work Date"
+                  aria-label={`Work Date ${index + 1}`}
+                  max={today}
+                  required
+                  value={entry.workDate}
+                  {...(entry.workDate > today
+                    ? { error: 'Future dates are not allowed.' }
+                    : {})}
+                  onChange={(event) =>
+                    setEntries(
+                      entries.map((value, i) =>
+                        i === index
+                          ? { ...value, workDate: event.target.value }
+                          : value,
+                      ),
+                    )
+                  }
+                />
+                <FormSelect
+                  label="Work Type"
+                  aria-label={`Work Type ${index + 1}`}
+                  required
+                  value={entry.workTypeCode}
+                  onChange={(event) =>
+                    setEntries(
+                      entries.map((value, i) =>
+                        i === index
+                          ? { ...value, workTypeCode: event.target.value }
+                          : value,
+                      ),
+                    )
+                  }
+                >
+                  <option value="">Select work type</option>
+                  {types.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </FormSelect>
+              </div>
               <FormTextarea
-                label={`Description ${index + 1} (optional)`}
-                className="min-h-12 resize-none"
-                rows={2}
+                label="Description (optional)"
+                aria-label={`Description ${index + 1} (optional)`}
+                className="h-12 min-h-12 resize-none"
+                rows={1}
                 value={entry.description}
                 onChange={(event) =>
                   setEntries(
@@ -639,82 +678,120 @@ export function WorkLogPage() {
                   <Trash2 aria-hidden="true" /> Remove date
                 </ModernButton>
               ) : null}
-              <p className={styles.help}>
-                Friday and Saturday may be entered manually when work occurred.
-              </p>
             </div>
           ))}
           <ModernButton
             type="button"
             variant="secondary"
+            className="h-8 w-full text-sm font-semibold"
             disabled={entries.length >= 5}
             onClick={() => setEntries([...entries, newEntry()])}
           >
-            <Plus aria-hidden="true" /> Add another date
+            Add another date
           </ModernButton>
         </fieldset>
-        {context === 'ticket' ? (
-          <details className={styles.followups}>
-            <summary>Show more options</summary>
+        {context === 'ticket' && effectiveDisplayId ? (
+          <section className={styles.followups} aria-label="Ticket follow-ups">
             {selectedTicket.data?.capabilities.canTransition ? (
-              <FormSelect
-                label="Optional status change"
-                value={targetStatus}
-                onChange={(event) => {
-                  setTargetStatus(event.target.value);
-                  statusOperation.current = createOperationId();
-                }}
-              >
-                <option value="">Keep current status</option>
-                {options.data?.statuses.map((status) => (
-                  <option key={status.code} value={status.code}>
-                    {status.label}
-                  </option>
-                ))}
-              </FormSelect>
-            ) : null}
-            <Checkbox
-              label="Add a blocker with this work log"
-              checked={addBlocker}
-              onChange={(event) => setAddBlocker(event.target.checked)}
-            />
-            {addBlocker ? (
-              <>
-                <FormTextarea
-                  label="Blocker reason"
-                  required
-                  value={blockerReason}
-                  onChange={(event) => setBlockerReason(event.target.value)}
+              <div className={styles.followupOption}>
+                <FormCheckbox
+                  label="Change status"
+                  checked={changeStatus}
+                  onChange={(event) => {
+                    setChangeStatus(event.target.checked);
+                    if (!event.target.checked) setTargetStatus('');
+                    statusOperation.current = createOperationId();
+                  }}
                 />
-                <FormInput
-                  label="Expected resolution date (optional)"
-                  type="date"
-                  value={blockerDate}
-                  onChange={(event) => setBlockerDate(event.target.value)}
-                />
-              </>
+                {changeStatus ? (
+                  <FormSelect
+                    label="Status"
+                    hideLabel
+                    required
+                    value={targetStatus}
+                    onChange={(event) => {
+                      setTargetStatus(event.target.value);
+                      statusOperation.current = createOperationId();
+                    }}
+                  >
+                    <option value="">Select status</option>
+                    {options.data?.statuses.map((status) => (
+                      <option key={status.code} value={status.code}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </FormSelect>
+                ) : null}
+              </div>
             ) : null}
-            {incompleteSubtasks.length &&
+            {incompleteSubtasks.length > 0 &&
             selectedTicket.data?.capabilities.canEditSubtasks ? (
-              <fieldset className={styles.subtasks}>
-                <legend>Complete subtasks</legend>
-                {incompleteSubtasks.map((subtask) => (
-                  <Checkbox
-                    key={subtask.id}
-                    label={subtask.title}
-                    checked={selectedSubtasks.includes(subtask.id)}
-                    onChange={(event) =>
-                      setSelectedSubtasks(
-                        event.target.checked
-                          ? [...selectedSubtasks, subtask.id]
-                          : selectedSubtasks.filter((id) => id !== subtask.id),
-                      )
-                    }
-                  />
-                ))}
-              </fieldset>
+              <div className={styles.followupOption}>
+                <FormCheckbox
+                  label="Complete subtasks"
+                  checked={completeSubtasks}
+                  onChange={(event) => {
+                    setCompleteSubtasks(event.target.checked);
+                    if (!event.target.checked) setSelectedSubtasks([]);
+                  }}
+                />
+                {completeSubtasks ? (
+                  <div
+                    className={styles.subtaskList}
+                    aria-label="Incomplete subtasks"
+                  >
+                    {incompleteSubtasks.map((subtask) => (
+                      <FormCheckbox
+                        key={subtask.id}
+                        size="sm"
+                        label={subtask.title}
+                        checked={selectedSubtasks.includes(subtask.id)}
+                        onChange={(event) =>
+                          setSelectedSubtasks(
+                            event.target.checked
+                              ? [...selectedSubtasks, subtask.id]
+                              : selectedSubtasks.filter(
+                                  (id) => id !== subtask.id,
+                                ),
+                          )
+                        }
+                      />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             ) : null}
-          </details>
+            {selectedTicket.data?.capabilities.canCreateBlocker ? (
+              <div className={styles.followupOption}>
+                <FormCheckbox
+                  label="Mark as blocked"
+                  checked={addBlocker}
+                  onChange={(event) => {
+                    setAddBlocker(event.target.checked);
+                    if (!event.target.checked) {
+                      setBlockerReason('');
+                      setBlockerDate('');
+                    }
+                  }}
+                />
+                {addBlocker ? (
+                  <div className={styles.blockerFields}>
+                    <FormInput
+                      label="Blocker reason"
+                      required
+                      value={blockerReason}
+                      onChange={(event) => setBlockerReason(event.target.value)}
+                    />
+                    <FormDatePicker
+                      label="Expected resolution date (optional)"
+                      value={blockerDate}
+                      onChange={(event) => setBlockerDate(event.target.value)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
         ) : null}
         {announcement ? (
           <p

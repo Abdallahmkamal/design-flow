@@ -11,6 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FormCheckbox,
   FormInput,
   FormSelect,
   FormTextarea,
@@ -36,6 +37,7 @@ describe('team-ready primitives', () => {
           <option value="">Choose an Area / Squad</option>
         </FormSelect>
         <FormTextarea label="Description" />
+        <FormCheckbox label="Change status" />
       </>,
     );
 
@@ -52,6 +54,9 @@ describe('team-ready primitives', () => {
     expect(screen.getByLabelText('Description')).toBeInstanceOf(
       HTMLTextAreaElement,
     );
+    expect(
+      screen.getByRole('checkbox', { name: 'Change status' }),
+    ).toHaveAttribute('aria-checked', 'false');
   });
 
   it('keeps Button state and activation semantic', async () => {
