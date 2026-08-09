@@ -36,8 +36,10 @@ describe('work-item API mapping', () => {
             labels: [],
             plannedStartDate: null,
             dueDate: null,
-            lastWorkedOn: null,
-            activeWorkDays: 0,
+            lastActivityAt: '2026-07-21T00:00:00Z',
+            lastActivityType: 'created',
+            daysOpen: null,
+            daysActive: 0,
             completedSubtasks: 0,
             totalSubtasks: 0,
             figmaUrl: null,
@@ -58,15 +60,15 @@ describe('work-item API mapping', () => {
 
   it('passes URL-backed state to the read-only list RPC and validates the response', async () => {
     const result = await listWorkItems(
-      parseWorkItemFilters(new URLSearchParams('view=all&q=synthetic')),
+      parseWorkItemFilters(new URLSearchParams('q=synthetic')),
     );
     expect(rpc).toHaveBeenCalledOnce();
     const [name, args] = rpc.mock.calls[0]!;
     expect(name).toBe('list_work_items');
     expect(args.filters).toMatchObject({
-      view: 'all',
       search: 'synthetic',
       page: 1,
+      pageSize: 25,
     });
     expect(result.rows[0]?.displayId).toBe('DF-000001');
   });

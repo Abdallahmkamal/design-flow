@@ -22,8 +22,10 @@ export interface WorkItemListRow {
   labels: NamedRef[];
   plannedStartDate: string | null;
   dueDate: string | null;
-  lastWorkedOn: string | null;
-  activeWorkDays: number;
+  lastActivityAt: string;
+  lastActivityType: string;
+  daysOpen: number | null;
+  daysActive: number;
   completedSubtasks: number;
   totalSubtasks: number;
   figmaUrl: string | null;
@@ -38,7 +40,7 @@ export interface WorkItemListResult {
   rows: WorkItemListRow[];
   totalCount: number;
   page: number;
-  pageSize: 25;
+  pageSize: 25 | 50 | 100;
 }
 
 export interface WorkItemSubtask {

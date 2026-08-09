@@ -31,8 +31,10 @@ const listRowSchema = z.object({
   labels: z.array(namedSchema),
   plannedStartDate: nullableDate,
   dueDate: nullableDate,
-  lastWorkedOn: nullableDate,
-  activeWorkDays: z.number(),
+  lastActivityAt: z.string(),
+  lastActivityType: z.string(),
+  daysOpen: z.number().nullable(),
+  daysActive: z.number(),
   completedSubtasks: z.number(),
   totalSubtasks: z.number(),
   figmaUrl: z.string().nullable(),
@@ -46,7 +48,7 @@ const listResultSchema = z.object({
   rows: z.array(listRowSchema),
   totalCount: z.number(),
   page: z.number(),
-  pageSize: z.literal(25),
+  pageSize: z.union([z.literal(25), z.literal(50), z.literal(100)]),
 });
 
 const blockerSchema = z.object({
