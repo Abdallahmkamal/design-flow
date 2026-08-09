@@ -37,6 +37,7 @@ import {
   setSubtaskCompletion,
   transitionWorkItem,
 } from '../work-items/workItemsApi';
+import { parseWorkItemFilters } from '../work-items/workItemFilters';
 import type {
   WorkItemFormValues,
   WorkItemListRow,
@@ -132,19 +133,9 @@ export function WorkLogPage() {
     queryKey: ['work-log-tickets'],
     queryFn: () =>
       listWorkItems({
-        view: 'all',
-        search: '',
-        peopleIds: [],
-        relationship: '',
-        statusCodes: [],
-        areaIds: [],
-        labelIds: [],
-        blocked: '',
-        due: '',
-        stale: '',
-        sort: 'display_id',
+        ...parseWorkItemFilters(new URLSearchParams()),
+        sort: 'ticket',
         direction: 'asc',
-        page: 1,
       }),
   });
   const row = tickets.data?.rows.find((item) => item.id === ticketId);

@@ -54,8 +54,10 @@ const listRow = {
   ],
   plannedStartDate: '2026-07-21',
   dueDate: '2026-07-25',
-  lastWorkedOn: null,
-  activeWorkDays: 0,
+  lastActivityAt: '2026-07-21T00:00:00Z',
+  lastActivityType: 'comment_added',
+  daysOpen: 5,
+  daysActive: 2,
   completedSubtasks: 0,
   totalSubtasks: 1,
   figmaUrl: 'https://www.figma.com/design/synthetic-phase-3',
@@ -74,6 +76,8 @@ function detail(viewer = false) {
     labels: [{ ...listRow.labels[0], isActive: true }],
     createdBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
     firstWorkedOn: null,
+    lastWorkedOn: null,
+    activeWorkDays: 0,
     lastActivityAt: '2026-07-21T08:00:00Z',
     completedAt: null,
     archivedAt: null,
@@ -135,6 +139,7 @@ async function mocks(
     viewer?: boolean;
     conflict?: boolean;
     subtaskFailsOnce?: boolean;
+    listRows?: (typeof listRow)[];
     mutationBodies?: { url: string; body: unknown }[];
   } = {},
 ) {
@@ -365,18 +370,19 @@ async function mocks(
           },
         ]),
       });
-    else if (url.includes('list_work_items'))
+    else if (url.includes('list_work_items')) {
+      const rows = options.listRows ?? [listRow];
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          rows: [listRow],
-          totalCount: 1,
+          rows,
+          totalCount: rows.length,
           page: 1,
           pageSize: 25,
         }),
       });
-    else if (url.includes('get_work_item_detail'))
+    } else if (url.includes('get_work_item_detail'))
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -464,8 +470,11 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     page.getByRole('heading', { name: 'All Tickets' }),
   ).toBeVisible();
   await page.getByLabel('Search tickets').fill('responsive');
-  await page.getByRole('button', { name: 'Search' }).click();
   await expect(page).toHaveURL(/q=responsive/u);
+  await expect(page.getByText('1–1 of 1', { exact: true })).toBeVisible();
+  await expect(page.getByText('Ownership Relationship')).toHaveCount(0);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await expect(page.getByText(/CSV/u)).toHaveCount(0);
   const results =
     testInfo.project.name === 'mobile-chromium'
       ? page.getByRole('list', { name: 'All Tickets results' })
@@ -477,7 +486,216 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     })
     .first();
   await expect(figmaLink).toHaveAttribute('href', /figma\.com/u);
+  await expect(figmaLink.locator('img')).toHaveAttribute(
+    'src',
+    /^data:image\/svg\+xml,/u,
+  );
+  await expect(figmaLink).toHaveCSS('width', '32px');
+  await expect(figmaLink).toHaveCSS('height', '32px');
+  await expect(figmaLink.locator('img')).toHaveCSS('height', '15px');
+  const beforeFigmaAction = page.url();
+  await figmaLink.press('Enter');
+  expect(page.url()).toBe(beforeFigmaAction);
+
+  if (testInfo.project.name === 'mobile-chromium') {
+    await expect(
+      page.getByRole('button', { name: 'Sort, not active' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Filter tickets, 0 active' }),
+    ).toBeVisible();
+    const card = page.getByRole('article', {
+      name: `Open ${displayId}: ${listRow.title}`,
+    });
+    const peopleButton = card.getByRole('button', {
+      name: new RegExp(`People on ${displayId}`, 'u'),
+    });
+    await expect(peopleButton).not.toContainText(listRow.assignee.displayName);
+    await expect(peopleButton).toContainText('+1');
+    await expect(card.getByText(listRow.area.name, { exact: true })).toHaveCSS(
+      'padding-top',
+      '6px',
+    );
+    const listUrl = page.url();
+    await page
+      .getByRole('button', { name: `Expand ${displayId}` })
+      .press('Enter');
+    await expect(results.getByText('Days Open', { exact: true })).toBeVisible();
+    await expect(
+      results.getByText('Days Active', { exact: true }),
+    ).toBeVisible();
+    await expect(results.getByText('Labels', { exact: true })).toBeVisible();
+    expect(page.url()).toBe(listUrl);
+
+    await page.getByRole('button', { name: 'Sort, not active' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Sort tickets' }),
+    ).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCSS('padding-bottom', '24px');
+    await expect(page.getByRole('button', { name: 'Close' })).toHaveCSS(
+      'width',
+      '40px',
+    );
+    await expect(page.getByRole('button', { name: 'Close' })).toHaveCSS(
+      'box-shadow',
+      'none',
+    );
+    await chooseShadcnOption(page, 'Sort field', 'Days Open');
+    await chooseShadcnOption(page, 'Direction', 'Descending');
+    await expect(page).toHaveURL(/sort=days_open/u);
+    await expect(page).toHaveURL(/direction=desc/u);
+    await page.getByRole('button', { name: 'Close' }).click();
+
+    await page
+      .getByRole('button', { name: 'Filter tickets, 0 active' })
+      .click();
+    await expect(
+      page.getByRole('heading', { name: 'Filter tickets' }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Add Filter' }).click();
+    await page.getByRole('menuitem', { name: 'Archived only' }).click();
+    await expect(page).toHaveURL(/archived=true/u);
+    await expect(page.getByText('1 active filters')).toBeVisible();
+    await page.getByRole('button', { name: 'Close' }).click();
+
+    await card.press('Enter');
+    await expect(page).toHaveURL(`/work-items/${displayId}`);
+    await page.goBack();
+    await expect(page).toHaveURL(/q=responsive/u);
+  } else {
+    const expectedHeaders = [
+      'Ticket',
+      'Area',
+      'Status',
+      'People',
+      'Last Activity',
+      'Start Date',
+      'Due Date',
+      'Days Open',
+      'Days Active',
+      'Labels',
+      'Link',
+    ];
+    await expect(page.getByRole('columnheader')).toHaveText(expectedHeaders);
+    await expect(page.getByRole('columnheader', { name: 'Ticket' })).toHaveCSS(
+      'position',
+      'sticky',
+    );
+    await expect(page.getByRole('columnheader', { name: 'Link' })).toHaveCSS(
+      'position',
+      'sticky',
+    );
+    const viewport = page.getByRole('region', {
+      name: /horizontally and vertically scrollable/u,
+    });
+    expect(
+      await viewport.evaluate((node) => node.scrollWidth > node.clientWidth),
+    ).toBe(true);
+    await page.getByRole('button', { name: 'Days Open' }).click();
+    await expect(page).toHaveURL(/sort=days_open/u);
+    await expect(page).toHaveURL(/direction=desc/u);
+    await expect(
+      page.getByRole('columnheader', { name: 'Days Open' }),
+    ).toHaveAttribute('aria-sort', 'descending');
+    const sortIcon = page
+      .getByRole('button', { name: 'Days Open' })
+      .locator('svg');
+    await expect(sortIcon).toHaveCSS('width', '16px');
+    await expect(sortIcon).toHaveCSS('height', '16px');
+    await page.getByRole('button', { name: 'Days Open' }).click();
+    await expect(page).toHaveURL(/direction=asc/u);
+
+    await page.getByRole('button', { name: 'Filter' }).click();
+    await page.getByRole('menuitem', { name: 'Days Open' }).click();
+    await page.getByLabel('Days Open minimum').fill('5');
+    await expect(page).toHaveURL(/daysOpenMin=5/u);
+    await page.keyboard.press('Escape');
+    await expect(
+      page.getByRole('button', { name: 'Days Open: ≥5' }),
+    ).toBeVisible();
+    const filterChip = page
+      .getByRole('button', { name: 'Days Open: ≥5' })
+      .locator('..');
+    await expect(filterChip).toHaveCSS('height', '48px');
+    await expect(filterChip).toHaveCSS('background-color', 'rgb(42, 44, 44)');
+    await expect(filterChip).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(
+      page
+        .getByRole('button', { name: 'Remove Days Open filter' })
+        .locator('svg'),
+    ).toHaveCSS('width', '20px');
+    const firstTicketCell = page
+      .getByRole('row', { name: `Open ${displayId}: ${listRow.title}` })
+      .locator('td')
+      .first();
+    await expect(firstTicketCell).toHaveCSS(
+      'background-color',
+      'rgb(253, 254, 254)',
+    );
+    const avatar = page
+      .getByRole('button', { name: new RegExp(`People on ${displayId}`, 'u') })
+      .locator('span')
+      .first();
+    expect(
+      await avatar.evaluate((node) => getComputedStyle(node).backgroundColor),
+    ).toMatch(
+      /^rgb\((199, 241, 247|216, 192, 207|169, 209, 245|198, 230, 237|231, 182, 236)\)$/u,
+    );
+    await page
+      .getByRole('combobox', { name: 'Rows per page' })
+      .selectOption('50');
+    await expect(page).toHaveURL(/pageSize=50/u);
+
+    const row = page.getByRole('row', {
+      name: `Open ${displayId}: ${listRow.title}`,
+    });
+    await row.press('Enter');
+    await expect(page).toHaveURL(`/work-items/${displayId}`);
+    await page.goBack();
+    await expect(page).toHaveURL(/q=responsive/u);
+  }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('All Tickets distinguishes loading, retryable error, empty, and no-results states', async ({
+  page,
+}) => {
+  await mocks(page, { listRows: [] });
+  await signIn(page);
+  let listAttempts = 0;
+  await page.route('**/rest/v1/rpc/list_work_items', async (route) => {
+    const isAllTicketsRequest = new URL(page.url()).pathname === '/work-items';
+    if (isAllTicketsRequest) listAttempts += 1;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await route.fulfill({
+      status: isAllTicketsRequest && listAttempts <= 2 ? 500 : 200,
+      contentType: 'application/json',
+      body: JSON.stringify(
+        isAllTicketsRequest && listAttempts <= 2
+          ? { message: 'Synthetic retryable list failure' }
+          : { rows: [], totalCount: 0, page: 1, pageSize: 25 },
+      ),
+    });
+  });
+  await page.goto('/work-items');
+  await expect(page.getByRole('status')).toContainText('Loading tickets…');
+  await expect(page.getByRole('alert')).toContainText(
+    'Design Flow could not load tickets.',
+  );
+  await page.getByRole('button', { name: 'Retry' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'No tickets yet' }),
+  ).toBeVisible();
+  await expect(page.getByText('0 of 0', { exact: true })).toBeVisible();
+
+  await page.getByLabel('Search tickets').fill('missing synthetic ticket');
+  await expect(
+    page.getByRole('heading', { name: 'No tickets match these controls' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Clear search and filters' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'No tickets yet' }),
+  ).toBeVisible();
 });
 
 test('ticket creation uses the responsive overlay, remains Backlog, and navigates by display ID', async ({

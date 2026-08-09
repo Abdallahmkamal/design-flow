@@ -1,0 +1,330 @@
+.tableViewport {
+  position: relative;
+  overflow: auto;
+  max-block-size: calc(100dvh - 18.5rem);
+  min-block-size: 18rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 1rem;
+  background: var(--color-surface-default);
+  overscroll-behavior: contain;
+}
+
+.tableViewport:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.table {
+  inline-size: 100%;
+  min-inline-size: 101rem;
+  border-spacing: 0;
+  border-collapse: separate;
+  color: var(--color-text-primary);
+  font: var(--type-body-compact);
+  text-align: start;
+}
+
+.table th,
+.table td {
+  box-sizing: border-box;
+  padding: 0.625rem 0.75rem;
+  border-inline-start: 1px solid var(--color-border-subtle);
+  border-block-end: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-bg);
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.table th:first-child,
+.table td:first-child {
+  border-inline-start: 0;
+}
+
+.table thead th {
+  position: sticky;
+  z-index: 4;
+  inset-block-start: 0;
+  block-size: 2.5rem;
+  padding-block: 0.5rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-raised);
+  font: var(--type-label);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  cursor: pointer;
+  outline: none;
+}
+
+.table tbody tr:hover td,
+.table tbody tr:focus-visible td {
+  background: var(--color-action-secondary-background);
+}
+
+.table tbody tr:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.stickyLeft,
+.stickyRight {
+  position: sticky;
+  z-index: 2;
+}
+
+.stickyLeft {
+  inset-inline-start: 0;
+  inline-size: 19rem;
+  min-inline-size: 19rem;
+  max-inline-size: 19rem;
+}
+
+.stickyRight {
+  inset-inline-end: 0;
+  inline-size: 4.5rem;
+  min-inline-size: 4.5rem;
+  max-inline-size: 4.5rem;
+  text-align: center;
+}
+
+.table thead .stickyLeft,
+.table thead .stickyRight {
+  z-index: 6;
+  background: var(--color-surface-raised);
+}
+
+.leftPassed .stickyLeft::after,
+.rightRemaining .stickyRight::before {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 0.75rem;
+  content: '';
+  pointer-events: none;
+}
+
+.leftPassed .stickyLeft::after {
+  inset-inline-end: -0.75rem;
+  background: linear-gradient(to right, rgb(0 0 0 / 9%), transparent);
+}
+
+.rightRemaining .stickyRight::before {
+  inset-inline-start: -0.75rem;
+  background: linear-gradient(to left, rgb(0 0 0 / 9%), transparent);
+}
+
+.sortButton {
+  display: inline-flex;
+  min-block-size: 2rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sortButton svg {
+  flex: none;
+  inline-size: 1rem;
+  max-inline-size: none;
+  block-size: 1rem;
+}
+
+.sortButton:focus-visible {
+  border-radius: var(--radius-inner);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.filterChip {
+  display: inline-flex;
+  block-size: 3rem;
+  align-items: center;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  color: var(--color-action-primary-text);
+  background: var(--color-action-neutral-background);
+}
+
+.filterChipLabel,
+.filterChipRemove {
+  block-size: 3rem;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-family: var(--font-family-primary);
+  outline: none;
+}
+
+.filterChipLabel {
+  padding-inline: var(--space-lg);
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
+  font: var(--type-label);
+}
+
+.filterChipRemove {
+  display: grid;
+  inline-size: 2.5rem;
+  place-items: center;
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.filterChipLabel:hover,
+.filterChipRemove:hover {
+  background: var(--color-action-neutral-hover);
+}
+
+.filterChipLabel:focus-visible,
+.filterChipRemove:focus-visible {
+  box-shadow: inset 0 0 0 var(--focus-ring-width) var(--color-focus-ring);
+}
+
+.figmaLink {
+  display: inline-flex;
+  inline-size: 2rem;
+  block-size: 2rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-inner);
+  background: var(--color-action-secondary-background);
+  outline: none;
+}
+
+.figmaLink img {
+  inline-size: auto;
+  block-size: 0.9375rem;
+  aspect-ratio: 14.82 / 21.4998;
+}
+
+.figmaLink:hover {
+  background: var(--color-surface-raised-prominent);
+}
+
+.figmaLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+:global([data-theme='dark']) .figmaLink img {
+  filter: invert(1);
+}
+
+.ticketPill {
+  padding-block: calc(var(--space-xs) + var(--space-2xs));
+}
+
+.avatarAqua {
+  color: var(--color-avatar-aqua-text);
+  background: var(--color-avatar-aqua-background);
+}
+
+.avatarAubergine {
+  color: var(--color-avatar-aubergine-text);
+  background: var(--color-avatar-aubergine-background);
+}
+
+.avatarPharos {
+  color: var(--color-avatar-pharos-text);
+  background: var(--color-avatar-pharos-background);
+}
+
+.avatarTurquoise {
+  color: var(--color-avatar-turquoise-text);
+  background: var(--color-avatar-turquoise-background);
+}
+
+.avatarViolet {
+  color: var(--color-avatar-violet-text);
+  background: var(--color-avatar-violet-background);
+}
+
+.ticketColumn {
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.125rem;
+}
+
+.ticketColumn strong,
+.mobileTitle {
+  overflow-wrap: anywhere;
+}
+
+.mobileList {
+  display: none;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.mobileCard {
+  display: grid;
+  gap: 0.75rem;
+  min-inline-size: 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 1rem;
+  background: var(--color-surface-default);
+  outline: none;
+  cursor: pointer;
+}
+
+.mobileCard:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.mobileDetails {
+  display: grid;
+  gap: 0.75rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.mobileDetails dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.mobileDetailWide {
+  grid-column: 1 / -1;
+}
+
+.mobileDetails dt {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+
+.mobileDetails dd {
+  margin: 0.125rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 47.999rem) {
+  .tableViewport {
+    display: none;
+  }
+
+  .mobileList {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table tbody tr,
+  .mobileCard {
+    scroll-behavior: auto;
+  }
+}

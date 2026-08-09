@@ -1,61 +1,86 @@
-export type WorkItemView = 'current' | 'done' | 'archived' | 'all';
 export type WorkItemSort =
-  | 'due_date'
-  | 'last_worked_on'
-  | 'created_at'
+  | 'ticket'
+  | 'area'
   | 'status'
-  | 'title'
-  | 'display_id';
+  | 'last_activity'
+  | 'planned_start_date'
+  | 'due_date'
+  | 'days_open'
+  | 'days_active';
+
+export type WorkItemPageSize = 25 | 50 | 100;
 
 export interface WorkItemFilters {
   search: string;
-  view: WorkItemView;
   peopleIds: string[];
-  relationship: '' | 'owned' | 'contributed' | 'owned_or_contributed';
   statusCodes: string[];
   areaIds: string[];
   labelIds: string[];
   blocked: '' | 'blocked' | 'unblocked';
   due: '' | 'overdue' | 'due_soon' | 'no_due_date';
   stale: '' | 'stale' | 'active';
-  sort: WorkItemSort;
+  archivedOnly: boolean;
+  daysOpenMin: number | null;
+  daysOpenMax: number | null;
+  daysActiveMin: number | null;
+  daysActiveMax: number | null;
+  sort: WorkItemSort | '';
   direction: 'asc' | 'desc';
   page: number;
+  pageSize: WorkItemPageSize;
 }
 
-const views = new Set<WorkItemView>(['current', 'done', 'archived', 'all']);
 const sorts = new Set<WorkItemSort>([
-  'due_date',
-  'last_worked_on',
-  'created_at',
+  'ticket',
+  'area',
   'status',
-  'title',
-  'display_id',
+  'last_activity',
+  'planned_start_date',
+  'due_date',
+  'days_open',
+  'days_active',
 ]);
-const split = (value: string | null) =>
-  value
-    ?.split(',')
-    .map((part) => part.trim())
-    .filter(Boolean) ?? [];
+const pageSizes = new Set<WorkItemPageSize>([25, 50, 100]);
+const split = (value: string | null) => [
+  ...new Set(
+    value
+      ?.split(',')
+      .map((part) => part.trim())
+      .filter(Boolean) ?? [],
+  ),
+];
+const positiveInteger = (value: string | null, fallback: number) => {
+  if (!value || !/^\d+$/u.test(value)) return fallback;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+const optionalWholeDays = (value: string | null) => {
+  if (value === null || !/^\d+$/u.test(value)) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+};
 
 export function parseWorkItemFilters(params: URLSearchParams): WorkItemFilters {
-  const requestedView = params.get('view') as WorkItemView | null;
   const requestedSort = params.get('sort') as WorkItemSort | null;
-  const requestedPage = Number.parseInt(params.get('page') ?? '1', 10);
-  const relationship = params.get('relationship');
+  const requestedPageSize = positiveInteger(params.get('pageSize'), 25);
   const blocked = params.get('blocked');
   const due = params.get('due');
   const stale = params.get('stale');
+  const rawDaysOpenMin = optionalWholeDays(params.get('daysOpenMin'));
+  const rawDaysOpenMax = optionalWholeDays(params.get('daysOpenMax'));
+  const rawDaysActiveMin = optionalWholeDays(params.get('daysActiveMin'));
+  const rawDaysActiveMax = optionalWholeDays(params.get('daysActiveMax'));
+  const invalidDaysOpenRange =
+    rawDaysOpenMin !== null &&
+    rawDaysOpenMax !== null &&
+    rawDaysOpenMin > rawDaysOpenMax;
+  const invalidDaysActiveRange =
+    rawDaysActiveMin !== null &&
+    rawDaysActiveMax !== null &&
+    rawDaysActiveMin > rawDaysActiveMax;
   return {
     search: params.get('q')?.slice(0, 200) ?? '',
-    view: requestedView && views.has(requestedView) ? requestedView : 'current',
     peopleIds: split(params.get('people')),
-    relationship:
-      relationship === 'owned' ||
-      relationship === 'contributed' ||
-      relationship === 'owned_or_contributed'
-        ? relationship
-        : '',
     statusCodes: split(params.get('status')),
     areaIds: split(params.get('areas')),
     labelIds: split(params.get('labels')),
@@ -65,23 +90,25 @@ export function parseWorkItemFilters(params: URLSearchParams): WorkItemFilters {
         ? due
         : '',
     stale: stale === 'stale' || stale === 'active' ? stale : '',
-    sort:
-      requestedSort && sorts.has(requestedSort) ? requestedSort : 'due_date',
+    archivedOnly: params.get('archived') === 'true',
+    daysOpenMin: invalidDaysOpenRange ? null : rawDaysOpenMin,
+    daysOpenMax: invalidDaysOpenRange ? null : rawDaysOpenMax,
+    daysActiveMin: invalidDaysActiveRange ? null : rawDaysActiveMin,
+    daysActiveMax: invalidDaysActiveRange ? null : rawDaysActiveMax,
+    sort: requestedSort && sorts.has(requestedSort) ? requestedSort : '',
     direction: params.get('direction') === 'desc' ? 'desc' : 'asc',
-    page:
-      Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1,
+    page: positiveInteger(params.get('page'), 1),
+    pageSize: pageSizes.has(requestedPageSize as WorkItemPageSize)
+      ? (requestedPageSize as WorkItemPageSize)
+      : 25,
   };
 }
 
-export function serializeWorkItemFilters(
-  filters: WorkItemFilters,
-): URLSearchParams {
+export function serializeWorkItemFilters(filters: WorkItemFilters) {
   const params = new URLSearchParams();
   if (filters.search) params.set('q', filters.search);
-  if (filters.view !== 'current') params.set('view', filters.view);
   if (filters.peopleIds.length)
     params.set('people', filters.peopleIds.join(','));
-  if (filters.relationship) params.set('relationship', filters.relationship);
   if (filters.statusCodes.length)
     params.set('status', filters.statusCodes.join(','));
   if (filters.areaIds.length) params.set('areas', filters.areaIds.join(','));
@@ -89,18 +116,28 @@ export function serializeWorkItemFilters(
   if (filters.blocked) params.set('blocked', filters.blocked);
   if (filters.due) params.set('due', filters.due);
   if (filters.stale) params.set('stale', filters.stale);
-  if (filters.sort !== 'due_date') params.set('sort', filters.sort);
-  if (filters.direction !== 'asc') params.set('direction', filters.direction);
+  if (filters.archivedOnly) params.set('archived', 'true');
+  if (filters.daysOpenMin !== null)
+    params.set('daysOpenMin', String(filters.daysOpenMin));
+  if (filters.daysOpenMax !== null)
+    params.set('daysOpenMax', String(filters.daysOpenMax));
+  if (filters.daysActiveMin !== null)
+    params.set('daysActiveMin', String(filters.daysActiveMin));
+  if (filters.daysActiveMax !== null)
+    params.set('daysActiveMax', String(filters.daysActiveMax));
+  if (filters.sort) {
+    params.set('sort', filters.sort);
+    params.set('direction', filters.direction);
+  }
   if (filters.page !== 1) params.set('page', String(filters.page));
+  if (filters.pageSize !== 25) params.set('pageSize', String(filters.pageSize));
   return params;
 }
 
 export function toRpcFilters(filters: WorkItemFilters) {
   return {
     search: filters.search || undefined,
-    view: filters.view,
     peopleIds: filters.peopleIds,
-    relationship: filters.relationship || undefined,
     statuses: filters.statusCodes,
     areaIds: filters.areaIds,
     labelIds: filters.labelIds,
@@ -111,8 +148,31 @@ export function toRpcFilters(filters: WorkItemFilters) {
     due: filters.due || undefined,
     stale:
       filters.stale === 'active' ? 'not_stale' : filters.stale || undefined,
-    sort: filters.sort,
-    direction: filters.direction,
+    archivedOnly: filters.archivedOnly,
+    daysOpenMin: filters.daysOpenMin ?? undefined,
+    daysOpenMax: filters.daysOpenMax ?? undefined,
+    daysActiveMin: filters.daysActiveMin ?? undefined,
+    daysActiveMax: filters.daysActiveMax ?? undefined,
+    sort: filters.sort || undefined,
+    direction: filters.sort ? filters.direction : undefined,
     page: filters.page,
+    pageSize: filters.pageSize,
   };
+}
+
+export function hasActiveWorkItemFilters(filters: WorkItemFilters) {
+  return Boolean(
+    filters.peopleIds.length ||
+    filters.statusCodes.length ||
+    filters.areaIds.length ||
+    filters.labelIds.length ||
+    filters.blocked ||
+    filters.due ||
+    filters.stale ||
+    filters.archivedOnly ||
+    filters.daysOpenMin !== null ||
+    filters.daysOpenMax !== null ||
+    filters.daysActiveMin !== null ||
+    filters.daysActiveMax !== null,
+  );
 }

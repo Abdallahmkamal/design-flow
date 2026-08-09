@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { cn } from '../lib/cn';
+import { Button } from './button';
 
 export const Sheet = DialogPrimitive.Root;
 export const SheetTrigger = DialogPrimitive.Trigger;
@@ -43,7 +44,7 @@ const sideClasses: Record<NonNullable<SheetContentProps['side']>, string> = {
   top: 'inset-x-0 top-0 max-h-[90dvh] rounded-b-xl border-b',
   right: 'inset-y-0 right-0 h-full w-[min(32rem,90vw)] rounded-l-xl border-l',
   bottom:
-    'inset-x-0 bottom-0 max-h-[90dvh] rounded-t-xl border-t pb-[env(safe-area-inset-bottom)]',
+    'inset-x-0 bottom-0 max-h-[90dvh] rounded-t-xl border-t pb-[calc(1.5rem+env(safe-area-inset-bottom))]',
   left: 'inset-y-0 left-0 h-full w-[min(32rem,90vw)] rounded-r-xl border-r',
 };
 
@@ -68,9 +69,15 @@ export const SheetContent = forwardRef<
       >
         {children}
         {showClose ? (
-          <DialogPrimitive.Close className="absolute top-4 right-4 inline-flex size-10 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-            <X aria-hidden="true" />
-            <span className="sr-only">Close</span>
+          <DialogPrimitive.Close asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 size-10"
+              aria-label="Close"
+            >
+              <X className="size-6" aria-hidden="true" />
+            </Button>
           </DialogPrimitive.Close>
         ) : null}
       </DialogPrimitive.Content>
