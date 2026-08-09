@@ -25,11 +25,7 @@ function jwt() {
   ].join('.');
 }
 
-async function chooseShadcnOption(
-  page: Page,
-  label: string,
-  option: string,
-) {
+async function chooseShadcnOption(page: Page, label: string, option: string) {
   await page.getByRole('combobox', { name: label }).click();
   await page.getByRole('option', { name: option, exact: true }).click();
 }
@@ -551,10 +547,40 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     'border-radius',
     '12px',
   );
+  for (const label of ['Work Date', 'Work Type', 'Description (optional)']) {
+    await expect(
+      page.locator('label').filter({ hasText: label }).first(),
+    ).toHaveCSS('font-size', '16px');
+  }
+  await expect(
+    page.getByRole('heading', { name: 'Work Item', exact: true }),
+  ).toHaveCSS('font-size', '16px');
   const dateBox = await page.getByLabel('Work Date 1').boundingBox();
   const typeBox = await page.getByLabel('Work Type 1').boundingBox();
   expect(dateBox?.y).toBe(typeBox?.y);
-  await chooseShadcnOption(page, 'Work Type 1', 'UI & visual design');
+  await page.getByLabel('Work Date 1').click();
+  await expect(page.locator('[data-selected-single="true"]')).toHaveCSS(
+    'background-color',
+    'rgb(28, 29, 29)',
+  );
+  await expect(page.locator('[data-selected-single="true"]')).toHaveCSS(
+    'color',
+    'rgb(255, 255, 255)',
+  );
+  await page.getByLabel('Work Date 1').click();
+  await page.getByRole('combobox', { name: 'Work Type 1' }).click();
+  const workTypeOption = page.getByRole('option', {
+    name: 'UI & visual design',
+    exact: true,
+  });
+  if (testInfo.project.name === 'chromium') {
+    await workTypeOption.hover();
+    await expect(workTypeOption).toHaveCSS(
+      'background-color',
+      'rgb(244, 246, 247)',
+    );
+  }
+  await workTypeOption.click();
   await page
     .getByLabel('Description 1 (optional)')
     .fill('[SYNTHETIC] Preserved nested draft');
@@ -588,12 +614,18 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Remove selected ticket' }).click();
   await page.getByLabel('Search tickets').fill(displayId);
-  await page
-    .getByRole('button', {
-      name: `${displayId} — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
-      exact: true,
-    })
-    .click();
+  const ticketOption = page.getByRole('option', {
+    name: `${displayId} — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
+    exact: true,
+  });
+  if (testInfo.project.name === 'chromium') {
+    await ticketOption.hover();
+    await expect(ticketOption).toHaveCSS(
+      'background-color',
+      'rgb(244, 246, 247)',
+    );
+  }
+  await ticketOption.click();
   await expect(
     page.getByRole('textbox', { name: 'Selected ticket' }),
   ).toHaveValue(`${displayId} — ${listRow.title}`);

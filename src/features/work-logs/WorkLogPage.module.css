@@ -34,8 +34,7 @@
   gap: var(--space-sm);
 }
 
-.ticketPicker,
-.ticketResults {
+.ticketPicker {
   display: grid;
   gap: var(--space-3);
 }
@@ -63,7 +62,7 @@
 
 .ticketPicker h2 {
   color: var(--color-text-primary);
-  font: var(--type-label);
+  font: var(--font-weight-medium) 1rem/1.15rem var(--font-family-primary);
 }
 
 .ticketPicker > p {
@@ -125,6 +124,9 @@
 .searchRow > button {
   box-sizing: border-box;
   block-size: 100%;
+  border: 0;
+  border-inline-start: var(--border-width) solid var(--color-border-subtle);
+  border-radius: 0;
 }
 
 .dateRows {
@@ -201,11 +203,6 @@
   background: var(--color-surface-raised);
 }
 
-.ticketResults {
-  max-block-size: 17rem;
-  overflow: auto;
-  align-content: start;
-}
 @media (min-width: 48rem) {
   .row {
     grid-template-columns: repeat(2, minmax(0, 1fr));

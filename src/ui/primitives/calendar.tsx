@@ -1,8 +1,4 @@
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, type ComponentProps } from 'react';
 import {
   DayPicker,
@@ -96,7 +92,7 @@ function CalendarDayButton({
       variant="ghost"
       size="icon"
       className={cn(
-        'size-[var(--cell-size)] border-0 p-0 font-normal data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground',
+        'size-[var(--cell-size)] border-0 p-0 font-normal data-[selected-single=true]:bg-foreground data-[selected-single=true]:text-primary-foreground! data-[selected-single=true]:hover:bg-foreground data-[selected-single=true]:hover:text-primary-foreground!',
         className,
       )}
       data-selected-single={modifiers.selected ? true : undefined}

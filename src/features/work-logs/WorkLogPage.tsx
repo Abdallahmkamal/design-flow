@@ -12,6 +12,14 @@ import { createOperationId } from '../../shared/operations/operationId';
 import { Button as ModernButton } from '../../ui/primitives/button';
 import { ButtonGroup } from '../../ui/primitives/button-group';
 import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '../../ui/primitives/combobox';
+import {
   FormCheckbox,
   FormDatePicker,
   FormInput,
@@ -505,31 +513,23 @@ export function WorkLogPage() {
             aria-labelledby="ticket-picker-title"
           >
             <h2 id="ticket-picker-title">Work Item</h2>
-            <ButtonGroup className={styles.searchRow}>
-              <span data-slot="button-group-text" aria-hidden="true">
-                <Search />
-              </span>
-              <input
-                data-slot="input"
-                aria-label={
-                  effectiveDisplayId ? 'Selected ticket' : 'Search tickets'
-                }
-                value={
-                  effectiveDisplayId
-                    ? `${effectiveDisplayId} — ${selectedTicket.data?.title ?? row?.title ?? 'Loading…'}`
-                    : ticketSearch
-                }
-                readOnly={Boolean(effectiveDisplayId)}
-                onChange={(event) => setTicketSearch(event.target.value)}
-                placeholder="Search tickets"
-              />
-              {effectiveDisplayId ? (
+            {effectiveDisplayId ? (
+              <ButtonGroup className={styles.searchRow}>
+                <span data-slot="button-group-text" aria-hidden="true">
+                  <Search />
+                </span>
+                <input
+                  data-slot="input"
+                  aria-label="Selected ticket"
+                  value={`${effectiveDisplayId} — ${selectedTicket.data?.title ?? row?.title ?? 'Loading…'}`}
+                  readOnly
+                />
                 <ModernButton
                   data-slot="button"
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-full w-12 rounded-none border-l border-border"
+                  className="h-full w-12 rounded-none border-0"
                   aria-label="Remove selected ticket"
                   title="Remove selected ticket"
                   onClick={() => {
@@ -541,48 +541,69 @@ export function WorkLogPage() {
                 >
                   <X aria-hidden="true" />
                 </ModernButton>
-              ) : canCreateTicket ? (
-                <ModernButton
-                  data-slot="button"
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-full w-12 rounded-none border-l border-border"
-                  aria-label="Create new ticket"
-                  title="Create new ticket"
-                  onClick={() => setView('create')}
-                >
-                  <Plus aria-hidden="true" />
-                </ModernButton>
-              ) : null}
-            </ButtonGroup>
+              </ButtonGroup>
+            ) : (
+              <Combobox
+                items={filteredTickets.map((ticket) => ticket.id)}
+                filteredItems={filteredTickets.map((ticket) => ticket.id)}
+                filter={null}
+                value={null}
+                open={Boolean(ticketSearch)}
+                inputValue={ticketSearch}
+                onInputValueChange={(value) => setTicketSearch(value)}
+                onValueChange={(value: string | null) => {
+                  const item = filteredTickets.find(
+                    (ticket) => ticket.id === value,
+                  );
+                  if (!item) return;
+                  setTicketId(item.id);
+                  setTicketDisplayId(item.displayId);
+                  setTicketSearch('');
+                  resetTicketOptions();
+                }}
+              >
+                <ButtonGroup className={styles.searchRow}>
+                  <span data-slot="button-group-text" aria-hidden="true">
+                    <Search />
+                  </span>
+                  <ComboboxInput
+                    data-slot="input"
+                    aria-label="Search tickets"
+                    placeholder="Search tickets"
+                  />
+                  {canCreateTicket ? (
+                    <ModernButton
+                      data-slot="button"
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-full w-12 rounded-none border-0"
+                      aria-label="Create new ticket"
+                      title="Create new ticket"
+                      onClick={() => setView('create')}
+                    >
+                      <Plus aria-hidden="true" />
+                    </ModernButton>
+                  ) : null}
+                </ButtonGroup>
+                <ComboboxContent>
+                  <ComboboxList>
+                    {filteredTickets.map((item: WorkItemListRow) => (
+                      <ComboboxItem key={item.id} value={item.id}>
+                        {item.displayId} — {item.title} · {item.status.label} ·{' '}
+                        {item.assignee?.displayName ?? 'Unassigned'}
+                      </ComboboxItem>
+                    ))}
+                  </ComboboxList>
+                  <ComboboxEmpty>
+                    No unarchived ticket matches this search.
+                  </ComboboxEmpty>
+                </ComboboxContent>
+              </Combobox>
+            )}
             {tickets.isPending ? <p role="status">Loading tickets…</p> : null}
             {tickets.isError ? (
               <p role="alert">Tickets could not be loaded.</p>
-            ) : null}
-            {ticketSearch && !tickets.isPending && !filteredTickets.length ? (
-              <p>No unarchived ticket matches this search.</p>
-            ) : null}
-            {ticketSearch && !effectiveDisplayId ? (
-              <div className={styles.ticketResults} aria-label="Ticket results">
-                {filteredTickets.map((item: WorkItemListRow) => (
-                  <ModernButton
-                    key={item.id}
-                    type="button"
-                    variant={item.id === ticketId ? 'default' : 'secondary'}
-                    aria-pressed={item.id === ticketId}
-                    onClick={() => {
-                      setTicketId(item.id);
-                      setTicketDisplayId(item.displayId);
-                      setTicketSearch('');
-                      resetTicketOptions();
-                    }}
-                  >
-                    {item.displayId} — {item.title} · {item.status.label} ·{' '}
-                    {item.assignee?.displayName ?? 'Unassigned'}
-                  </ModernButton>
-                ))}
-              </div>
             ) : null}
           </section>
         ) : (

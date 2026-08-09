@@ -34,7 +34,7 @@ interface FieldChromeProps {
 }
 
 const fieldClass = 'grid min-w-0 gap-1';
-const labelClass = 'font-sans text-sm font-medium leading-[1.00625rem]';
+const labelClass = 'font-sans text-base font-medium leading-[1.15rem]';
 const controlClass =
   'box-border w-full rounded-md border border-input bg-background px-3 font-sans text-base text-foreground outline-none transition-[border-color,box-shadow,opacity] duration-175 placeholder:text-muted-foreground hover:not-disabled:border-foreground/45 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20';
 
@@ -259,7 +259,9 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
             aria-invalid={error ? true : undefined}
             className={className}
           >
-            <SelectValue placeholder={placeholder?.label ?? 'Select an option'} />
+            <SelectValue
+              placeholder={placeholder?.label ?? 'Select an option'}
+            />
           </SelectTrigger>
           <SelectContent>
             {selectableOptions.map((option) => (
@@ -285,7 +287,8 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
 );
 
 export interface FormDatePickerProps
-  extends Omit<
+  extends
+    Omit<
       InputHTMLAttributes<HTMLInputElement>,
       'defaultValue' | 'onChange' | 'type' | 'value'
     >,
@@ -324,7 +327,8 @@ export const FormDatePicker = forwardRef<
   const describedBy = [descriptionId, errorId].filter(Boolean).join(' ');
   const [open, setOpen] = useState(false);
   const parsedValue = value ? parseISO(value) : undefined;
-  const selected = parsedValue && isValid(parsedValue) ? parsedValue : undefined;
+  const selected =
+    parsedValue && isValid(parsedValue) ? parsedValue : undefined;
   const minDate = typeof min === 'string' && min ? parseISO(min) : undefined;
   const maxDate = typeof max === 'string' && max ? parseISO(max) : undefined;
 
@@ -362,8 +366,13 @@ export const FormDatePicker = forwardRef<
           )}
           data-empty={!selected}
         >
-          <span>{selected ? format(selected, 'MM/dd/yyyy') : 'Select date'}</span>
-          <CalendarDays className="size-[1.125rem] shrink-0" aria-hidden="true" />
+          <span>
+            {selected ? format(selected, 'MM/dd/yyyy') : 'Select date'}
+          </span>
+          <CalendarDays
+            className="size-[1.125rem] shrink-0"
+            aria-hidden="true"
+          />
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar
