@@ -64,7 +64,7 @@ export function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            'pointer-events-auto relative z-[80] max-h-[min(20rem,var(--available-height))] w-[var(--anchor-width)] min-w-48 origin-[var(--transform-origin)] overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            'pointer-events-auto relative z-[80] grid max-h-[min(20rem,var(--available-height))] w-[var(--anchor-width)] min-w-48 origin-[var(--transform-origin)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           {...props}
@@ -72,7 +72,9 @@ export function SelectContent({
           <SelectPrimitive.ScrollUpArrow className="sticky top-0 z-10 flex h-7 w-full items-center justify-center bg-popover">
             <ChevronUp className="size-4" />
           </SelectPrimitive.ScrollUpArrow>
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List className="min-h-0 touch-pan-y scroll-py-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+            {children}
+          </SelectPrimitive.List>
           <SelectPrimitive.ScrollDownArrow className="sticky bottom-0 z-10 flex h-7 w-full items-center justify-center bg-popover">
             <ChevronDown className="size-4" />
           </SelectPrimitive.ScrollDownArrow>

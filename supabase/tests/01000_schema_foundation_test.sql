@@ -126,8 +126,8 @@ select is(
     where namespace.nspname = 'public'
       and function_definition.prokind = 'f'
   ),
-  54,
-  'only the owning Phase 2 through Phase 6 application functions are exposed'
+  55,
+  'only the owning application and approved modernization functions are exposed'
 );
 
 select is(

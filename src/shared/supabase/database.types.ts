@@ -2981,6 +2981,10 @@ export type Database = {
         }[]
       }
       get_reports: { Args: { filters?: Json }; Returns: Json }
+      get_ticket_details_activity: {
+        Args: { target_work_item_id: string }
+        Returns: Json
+      }
       get_work_item_detail: { Args: { display_id: string }; Returns: Json }
       get_work_item_export: {
         Args: { display_id: string; include_comments?: boolean }

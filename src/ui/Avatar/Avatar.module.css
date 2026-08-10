@@ -3,10 +3,30 @@
   inline-size: var(--control-height-sm);
   block-size: var(--control-height-sm);
   place-items: center;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-element);
   background: var(--color-action-secondary-background);
   color: var(--color-text-primary);
   font: var(--type-label);
+}
+.avatar[data-tone='aqua'] {
+  color: var(--color-avatar-aqua-text);
+  background: var(--color-avatar-aqua-background);
+}
+.avatar[data-tone='aubergine'] {
+  color: var(--color-avatar-aubergine-text);
+  background: var(--color-avatar-aubergine-background);
+}
+.avatar[data-tone='pharos'] {
+  color: var(--color-avatar-pharos-text);
+  background: var(--color-avatar-pharos-background);
+}
+.avatar[data-tone='turquoise'] {
+  color: var(--color-avatar-turquoise-text);
+  background: var(--color-avatar-turquoise-background);
+}
+.avatar[data-tone='violet'] {
+  color: var(--color-avatar-violet-text);
+  background: var(--color-avatar-violet-background);
 }
 .srOnly {
   position: absolute;

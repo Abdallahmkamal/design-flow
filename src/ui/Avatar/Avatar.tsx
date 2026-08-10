@@ -1,4 +1,5 @@
 import styles from './Avatar.module.css';
+import { getAvatarTone } from '../primitives/avatar';
 
 export function Avatar({
   name,
@@ -15,7 +16,11 @@ export function Avatar({
     .join('')
     .toUpperCase();
   return (
-    <span className={styles.avatar} aria-hidden={decorative || undefined}>
+    <span
+      className={styles.avatar}
+      data-tone={getAvatarTone(name)}
+      aria-hidden={decorative || undefined}
+    >
       {initials}
       {!decorative ? <span className={styles.srOnly}>{name}</span> : null}
     </span>

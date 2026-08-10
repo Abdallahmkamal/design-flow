@@ -106,11 +106,28 @@ export interface WorkDateSummary {
   date: string;
   people: PersonRef[];
   workTypes: string[];
+  logCount?: number;
+}
+
+export interface WorkItemActivityEntry {
+  id: string;
+  kind: 'work_log' | 'ticket_change';
+  type: string;
+  effectiveDate: string;
+  occurredAt: string;
+  actor: PersonRef;
+  title: string;
+  description: string | null;
+  workTypeLabel: string | null;
+  relationship: 'primary' | 'contributor' | null;
+  subjectId: string | null;
 }
 
 export interface WorkItemHistory {
+  daysOpen: number | null;
   workDates: WorkDateSummary[];
   events: WorkItemHistoryEvent[];
+  activityFeed: WorkItemActivityEntry[];
 }
 
 export interface WorkItemComment {

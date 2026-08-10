@@ -463,14 +463,20 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   test.skip(testInfo.project.name !== 'mobile-chromium');
   await configureAuthMocks(page);
   await signIn(page);
+  const mobileControls = page.getByTestId('mobile-shell-controls');
 
   await expect(
-    page.getByRole('navigation', { name: 'Primary navigation' }),
+    mobileControls.getByRole('navigation', { name: 'Primary navigation' }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Work Items' })).toBeVisible();
+  await expect(
+    mobileControls.getByRole('link', { name: 'Work Items' }),
+  ).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Open Quick Actions' }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Open Quick Actions' }).locator('svg'),
+  ).toHaveCSS('color', 'rgb(230, 0, 0)');
 
   await page.getByRole('button', { name: 'Open Quick Actions' }).click();
   await expect(
@@ -480,8 +486,28 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   await expect(page.getByRole('link', { name: 'Create Ticket' })).toBeVisible();
   await expect(page.getByTestId('quick-actions-scrim')).toHaveCSS(
     'background-color',
-    /0\.3/,
+    /0\.24/,
   );
+  await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'animation-duration',
+    '0.27s',
+  );
+  await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'animation-delay',
+    '0.06s',
+  );
+  await expect(page.getByRole('link', { name: 'Create Ticket' })).toHaveCSS(
+    'animation-delay',
+    '0.11s',
+  );
+  await page
+    .getByRole('link', { name: 'Create Ticket' })
+    .evaluate(
+      async (action) =>
+        await Promise.all(
+          action.getAnimations().map((animation) => animation.finished),
+        ),
+    );
   const expandedLogWork = await page
     .getByRole('link', { name: 'Log Work' })
     .boundingBox();
@@ -492,21 +518,41 @@ test('mobile shell keeps primary navigation and session actions available', asyn
     .getByRole('button', { name: 'Close Quick Actions' })
     .locator('svg')
     .boundingBox();
-  expect(expandedLogWork).toMatchObject({ x: 12, width: 366, height: 64 });
-  expect(expandedCreateTicket).toMatchObject({ x: 12, width: 366, height: 64 });
+  expect(expandedLogWork?.height).toBe(60);
+  expect(expandedCreateTicket?.height).toBe(60);
+  expect(expandedLogWork?.width).toBeCloseTo(390 * 0.64, 0);
+  expect(expandedCreateTicket?.width).toBeCloseTo(
+    expandedLogWork?.width ?? 0,
+    1,
+  );
+  expect((expandedLogWork?.x ?? 0) + (expandedLogWork?.width ?? 0)).toBeCloseTo(
+    370,
+    0,
+  );
+  expect(
+    (expandedCreateTicket?.x ?? 0) + (expandedCreateTicket?.width ?? 0),
+  ).toBeCloseTo(370, 0);
   expect(expandedLogWork?.y).toBeLessThan(expandedCreateTicket?.y ?? 0);
   expect(closeQuickActionsIcon).toMatchObject({ width: 32, height: 32 });
+  await expect(
+    page.getByRole('button', { name: 'Close Quick Actions' }).locator('svg'),
+  ).toHaveCSS('color', 'rgb(28, 29, 29)');
   await page.keyboard.press('Escape');
 
   await page.getByRole('button', { name: /Open profile menu/u }).click();
   await expect(page.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
   await page.keyboard.press('Escape');
+  await expect(
+    page.getByRole('button', { name: 'Open Quick Actions' }),
+  ).toHaveCSS('transform', 'none');
 
   const header = await page.getByRole('banner').boundingBox();
   const navigation = await page
+    .getByTestId('mobile-shell-controls')
     .getByRole('navigation', { name: 'Primary navigation' })
     .boundingBox();
   const navigationItem = await page
+    .getByTestId('mobile-shell-controls')
     .getByRole('link', { name: 'Work Items' })
     .boundingBox();
   const quickActions = await page
@@ -519,20 +565,25 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   const main = await page.locator('#main-content').boundingBox();
 
   expect(header?.height).toBe(64);
+  expect(main?.y).toBe(64);
   expect(navigationItem?.height).toBeGreaterThanOrEqual(53);
-  expect(navigation?.y).toBe(759);
-  expect(navigation?.height).toBe(61);
-  expect(quickActions).toMatchObject({ y: 759, width: 61, height: 61 });
+  expect(navigation?.y).toBe(764);
+  expect(navigation?.height).toBe(64);
+  expect(quickActions).toMatchObject({ y: 764, width: 64, height: 64 });
   expect(quickActionsIcon).toMatchObject({ width: 32, height: 32 });
-  await expect(
-    page.getByRole('navigation', { name: 'Primary navigation' }),
-  ).toHaveCSS(
-    'box-shadow',
-    /rgba\(0, 0, 0, 0\.16\).*rgba\(0, 0, 0, 0\.08\).*rgba\(0, 0, 0, 0\.04\)/,
+  const dockMaterial = await mobileControls
+    .getByRole('navigation', { name: 'Primary navigation' })
+    .evaluate((dock) => ({
+      background: getComputedStyle(dock).backgroundColor,
+      border: getComputedStyle(dock).borderTopColor,
+    }));
+  expect(dockMaterial.background).toMatch(/0\.16|0\.94/);
+  expect(dockMaterial.border).toMatch(/0\.38/);
+  await expect(page.getByTestId('mobile-shell-controls')).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
   );
-  expect(
-    844 - ((navigation?.y ?? 0) + (navigation?.height ?? 0)),
-  ).toBeGreaterThanOrEqual(16);
+  expect(844 - ((navigation?.y ?? 0) + (navigation?.height ?? 0))).toBe(16);
   expect(main?.width).toBe(390);
   const bottomPadding = Number.parseFloat(
     await page
@@ -540,6 +591,114 @@ test('mobile shell keeps primary navigation and session actions available', asyn
       .evaluate((element) => getComputedStyle(element).paddingBottom),
   );
   expect(bottomPadding).toBeGreaterThanOrEqual(navigation?.height ?? 0);
+
+  const restingFabGlow = await page
+    .getByRole('button', { name: 'Open Quick Actions' })
+    .evaluate((button) => {
+      const perimeter = getComputedStyle(button, '::before');
+      const halo = getComputedStyle(button, '::after');
+      return {
+        perimeterAnimation: perimeter.animationName,
+        haloAnimation: halo.animationName,
+        haloAnimationDuration: halo.animationDuration,
+        perimeterGradient: perimeter.backgroundImage,
+        perimeterMask: perimeter.maskImage || perimeter.webkitMaskImage,
+        perimeterFilter: perimeter.filter,
+        perimeterOpacity: perimeter.opacity,
+        perimeterPadding: perimeter.paddingTop,
+        haloFilter: halo.filter,
+        haloOpacity: halo.opacity,
+        haloPadding: halo.paddingTop,
+      };
+    });
+  expect(restingFabGlow.perimeterAnimation).toBe('none');
+  expect(restingFabGlow.haloAnimation).toContain('mobile-fab-glow-orbit');
+  expect(restingFabGlow.haloAnimationDuration).toBe('4.8s');
+  expect(restingFabGlow.perimeterGradient).toContain('conic-gradient');
+  expect(restingFabGlow.perimeterGradient).toContain('rgb(230, 0, 0)');
+  expect(restingFabGlow.perimeterGradient).toContain('/ 0.12');
+  expect(restingFabGlow.perimeterMask).toContain('linear-gradient');
+  expect(restingFabGlow.perimeterFilter).toBe('blur(0.4px)');
+  expect(Number(restingFabGlow.perimeterOpacity)).toBeLessThanOrEqual(0.03);
+  expect(restingFabGlow.perimeterPadding).toBe('1px');
+  expect(restingFabGlow.haloFilter).toBe('blur(5px)');
+  expect(Number(restingFabGlow.haloOpacity)).toBeGreaterThanOrEqual(0.7);
+  expect(restingFabGlow.haloPadding).toBe('2px');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(
+    Number.parseFloat(
+      await page
+        .getByRole('button', { name: 'Open Quick Actions' })
+        .evaluate((button) => getComputedStyle(button).transitionDuration),
+    ),
+  ).toBeLessThanOrEqual(0.08);
+  expect(
+    await page
+      .getByRole('button', { name: 'Open Quick Actions' })
+      .evaluate((button) => getComputedStyle(button, '::before').animationName),
+  ).toBe('none');
+  expect(
+    await page
+      .getByRole('button', { name: 'Open Quick Actions' })
+      .evaluate((button) => getComputedStyle(button, '::after').animationName),
+  ).toBe('none');
+
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const dock = await page
+      .getByTestId('mobile-shell-controls')
+      .getByRole('navigation', { name: 'Primary navigation' })
+      .boundingBox();
+    const fab = await page
+      .getByRole('button', { name: 'Open Quick Actions' })
+      .boundingBox();
+    expect(dock?.x).toBeGreaterThanOrEqual(8);
+    expect((dock?.x ?? 0) + (dock?.width ?? 0)).toBeLessThan(fab?.x ?? 0);
+    expect((fab?.x ?? 0) + (fab?.width ?? 0)).toBeLessThanOrEqual(width - 8);
+    await page.getByRole('button', { name: 'Open Quick Actions' }).click();
+    await expect(
+      page.getByRole('dialog', { name: 'Quick Actions' }),
+    ).toBeVisible();
+    await page
+      .getByRole('link', { name: 'Create Ticket' })
+      .evaluate(
+        async (action) =>
+          await Promise.all(
+            action.getAnimations().map((animation) => animation.finished),
+          ),
+      );
+    const responsiveLogWork = await page
+      .getByRole('link', { name: 'Log Work' })
+      .boundingBox();
+    const responsiveCreateTicket = await page
+      .getByRole('link', { name: 'Create Ticket' })
+      .boundingBox();
+    expect(responsiveLogWork?.width).toBeCloseTo(width * 0.64, 0);
+    expect(responsiveCreateTicket?.width).toBeCloseTo(
+      responsiveLogWork?.width ?? 0,
+      1,
+    );
+    expect((responsiveLogWork?.width ?? 0) / width).toBeGreaterThanOrEqual(
+      0.55,
+    );
+    expect((responsiveLogWork?.width ?? 0) / width).toBeLessThanOrEqual(0.7);
+    const actionRight =
+      (responsiveLogWork?.x ?? 0) + (responsiveLogWork?.width ?? 0);
+    const fabRight = (fab?.x ?? 0) + (fab?.width ?? 0);
+    expect(fabRight - actionRight).toBeGreaterThanOrEqual(0);
+    expect(fabRight - actionRight).toBeLessThanOrEqual(16);
+    expect(
+      (responsiveCreateTicket?.y ?? 0) + (responsiveCreateTicket?.height ?? 0),
+    ).toBeLessThan(dock?.y ?? 0);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await page.keyboard.press('Escape');
+    await expect(
+      page.getByRole('dialog', { name: 'Quick Actions' }),
+    ).toHaveCount(0);
+  }
 
   await page.getByRole('button', { name: /Open profile menu/u }).click();
   await page.getByRole('menuitem', { name: 'Sign out' }).click();
@@ -559,7 +718,7 @@ test('desktop shell uses the team-ready persistent sidebar geometry', async ({
     .getByRole('link', { name: 'Dashboard' })
     .boundingBox();
 
-  expect(navigation).toMatchObject({ x: 16, y: 16, width: 215, height: 530 });
+  expect(navigation).toMatchObject({ x: 24, y: 24, width: 215, height: 530 });
   expect(navigationItem?.height).toBeGreaterThanOrEqual(40);
   await expect(page.locator('aside')).toHaveCSS('position', 'fixed');
   await expect(page.locator('#main-content')).toHaveCSS('margin-left', '247px');
