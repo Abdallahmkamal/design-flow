@@ -221,31 +221,7 @@
 
 .ticketPill {
   padding-block: calc(var(--space-xs) + var(--space-2xs));
-}
-
-.avatarAqua {
-  color: var(--color-avatar-aqua-text);
-  background: var(--color-avatar-aqua-background);
-}
-
-.avatarAubergine {
-  color: var(--color-avatar-aubergine-text);
-  background: var(--color-avatar-aubergine-background);
-}
-
-.avatarPharos {
-  color: var(--color-avatar-pharos-text);
-  background: var(--color-avatar-pharos-background);
-}
-
-.avatarTurquoise {
-  color: var(--color-avatar-turquoise-text);
-  background: var(--color-avatar-turquoise-background);
-}
-
-.avatarViolet {
-  color: var(--color-avatar-violet-text);
-  background: var(--color-avatar-violet-background);
+  border-radius: var(--radius-element);
 }
 
 .ticketColumn {

@@ -8,6 +8,42 @@ import {
 
 import { cn } from '../lib/cn';
 
+export type AvatarTone =
+  'aqua' | 'aubergine' | 'pharos' | 'turquoise' | 'violet';
+
+const avatarTones: readonly AvatarTone[] = [
+  'aqua',
+  'aubergine',
+  'pharos',
+  'turquoise',
+  'violet',
+];
+
+const avatarToneClassNames: Record<AvatarTone, string> = {
+  aqua: 'bg-[var(--color-avatar-aqua-background)] text-[var(--color-avatar-aqua-text)]',
+  aubergine:
+    'bg-[var(--color-avatar-aubergine-background)] text-[var(--color-avatar-aubergine-text)]',
+  pharos:
+    'bg-[var(--color-avatar-pharos-background)] text-[var(--color-avatar-pharos-text)]',
+  turquoise:
+    'bg-[var(--color-avatar-turquoise-background)] text-[var(--color-avatar-turquoise-text)]',
+  violet:
+    'bg-[var(--color-avatar-violet-background)] text-[var(--color-avatar-violet-text)]',
+};
+
+export function getAvatarTone(identity: string): AvatarTone {
+  return avatarTones[
+    [...identity].reduce(
+      (total, character) => total + character.charCodeAt(0),
+      0,
+    ) % avatarTones.length
+  ]!;
+}
+
+export function getAvatarToneClassName(identity: string) {
+  return avatarToneClassNames[getAvatarTone(identity)];
+}
+
 export const Avatar = forwardRef<
   ElementRef<typeof AvatarPrimitive.Root>,
   ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
@@ -16,7 +52,7 @@ export const Avatar = forwardRef<
     <AvatarPrimitive.Root
       ref={ref}
       className={cn(
-        'relative flex size-10 shrink-0 overflow-hidden rounded-full bg-secondary text-secondary-foreground',
+        'relative flex size-10 shrink-0 overflow-hidden rounded-[var(--radius-element)] bg-secondary text-secondary-foreground',
         className,
       )}
       {...props}

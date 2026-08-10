@@ -105,9 +105,13 @@
   --color-status-error-border: #ff8a94;
   --color-status-error-text: #5a1117;
   --color-status-info-background: #d4ebfb;
+  --color-status-info-icon: #1a7fcd;
   --color-status-info-text: #002e4d;
   --color-status-success-background: #e3faef;
+  --color-status-success-icon: #1fc16b;
   --color-status-success-text: #0b4026;
+  --color-work-calendar-single: #7fe3ac;
+  --color-work-calendar-multiple: #1c955a;
   --color-status-warning-background: #fff8dd;
   --color-status-warning-text: #5a4200;
   --color-workflow-backlog-background: #f7f8f9;
@@ -175,9 +179,13 @@
   --color-status-error-border: #fb3748;
   --color-status-error-text: #ffb8be;
   --color-status-info-background: #a9d1f5;
+  --color-status-info-icon: #a9d1f5;
   --color-status-info-text: #a9d1f5;
   --color-status-success-background: #115635;
+  --color-status-success-icon: #b2f0cc;
   --color-status-success-text: #b2f0cc;
+  --color-work-calendar-single: #4fd38b;
+  --color-work-calendar-multiple: #1c955a;
   --color-status-warning-background: #7a5a00;
   --color-status-warning-text: #fff0b3;
   --color-workflow-backlog-background: #2a2c2c;

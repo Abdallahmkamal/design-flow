@@ -53,6 +53,15 @@ const WorkItemEditPage = lazy(() =>
     default: module.WorkItemEditPage,
   })),
 );
+
+function TicketDetailsRoute() {
+  return (
+    <>
+      {featureElement(<AllTicketsPage />)}
+      {featureElement(<WorkItemPage />)}
+    </>
+  );
+}
 const WorkLogPage = lazy(() =>
   import('../features/work-logs/WorkLogPage').then((module) => ({
     default: module.WorkLogPage,
@@ -100,7 +109,7 @@ export function AppRoutes() {
           />
           <Route
             path="work-items/:displayId"
-            element={featureElement(<WorkItemPage />)}
+            element={<TicketDetailsRoute />}
           />
           <Route
             path="work-items/:displayId/edit"

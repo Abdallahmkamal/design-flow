@@ -5,6 +5,7 @@ import { getSupabaseClient } from '../../shared/supabase/client';
 import type { Json } from '../../shared/supabase/database.types';
 import { toRpcFilters, type WorkItemFilters } from './workItemFilters';
 import type {
+  WorkItemActivityEntry,
   WorkItemDetail,
   WorkItemFormValues,
   WorkItemHistory,
@@ -182,6 +183,31 @@ const historySchema = z.object({
     }),
   ),
 });
+const activityFeedEntrySchema = z.object({
+  id: z.string(),
+  kind: z.enum(['work_log', 'ticket_change']),
+  type: z.string(),
+  effectiveDate: z.string(),
+  occurredAt: z.string(),
+  actor: personSchema,
+  title: z.string(),
+  description: z.string().nullable(),
+  workTypeLabel: z.string().nullable(),
+  relationship: z.enum(['primary', 'contributor']).nullable(),
+  subjectId: z.string().uuid().nullable(),
+});
+const ticketActivitySchema = z.object({
+  daysOpen: z.number().nullable().optional(),
+  workDates: z.array(
+    z.object({
+      date: z.string(),
+      people: z.array(personSchema),
+      workTypes: z.array(z.string()),
+      logCount: z.number(),
+    }),
+  ),
+  activityFeed: z.array(activityFeedEntrySchema),
+});
 
 export class WorkItemApiError extends Error {
   constructor(
@@ -222,12 +248,83 @@ export async function getWorkItemDetail(
 export async function getWorkItemHistory(
   workItemId: string,
 ): Promise<WorkItemHistory> {
-  const { data, error } = await getSupabaseClient().rpc(
-    'get_work_item_history',
-    { target_work_item_id: workItemId },
+  const client = getSupabaseClient();
+  const [historyResponse, activityResponse] = await Promise.all([
+    client.rpc('get_work_item_history', { target_work_item_id: workItemId }),
+    client.rpc('get_ticket_details_activity', {
+      target_work_item_id: workItemId,
+    }),
+  ]);
+  if (historyResponse.error) throwApiError(historyResponse.error);
+  if (activityResponse.error) throwApiError(activityResponse.error);
+  const parsed = historySchema.parse(historyResponse.data);
+  const parsedActivity = ticketActivitySchema.safeParse(activityResponse.data);
+  const serverActivity = parsedActivity.success
+    ? parsedActivity.data
+    : { daysOpen: undefined, workDates: [], activityFeed: [] };
+  const activityFeed = parsed.events.reduce<WorkItemActivityEntry[]>(
+    (entries, event) => {
+      if (event.workLog?.entries.length) {
+        entries.push(
+          ...event.workLog.entries.map((entry) => ({
+            id: `${event.id}:${entry.id}`,
+            kind: 'work_log' as const,
+            type: 'work_log',
+            effectiveDate: entry.workDate,
+            occurredAt: event.workLog!.submittedAt,
+            actor: event.workLog!.workedBy,
+            title: entry.workTypeLabel,
+            description: entry.description,
+            workTypeLabel: entry.workTypeLabel,
+            relationship: entry.relationship,
+            subjectId: event.subjectId,
+          })),
+        );
+        return entries;
+      }
+      entries.push({
+        id: event.id,
+        kind: 'ticket_change' as const,
+        type: event.type,
+        effectiveDate: event.occurredAt,
+        occurredAt: event.occurredAt,
+        actor: event.actor,
+        title: event.type,
+        description: null,
+        workTypeLabel: null,
+        relationship: null,
+        subjectId: event.subjectId,
+      });
+      return entries;
+    },
+    [],
   );
-  if (error) throwApiError(error);
-  return historySchema.parse(data);
+  activityFeed.sort((left, right) => {
+    const effective = right.effectiveDate.localeCompare(left.effectiveDate);
+    if (effective) return effective;
+    const occurred = right.occurredAt.localeCompare(left.occurredAt);
+    return occurred || right.id.localeCompare(left.id);
+  });
+  const counts = new Map<string, number>();
+  for (const entry of activityFeed)
+    if (entry.kind === 'work_log')
+      counts.set(
+        entry.effectiveDate,
+        (counts.get(entry.effectiveDate) ?? 0) + 1,
+      );
+  return {
+    ...parsed,
+    daysOpen: serverActivity.daysOpen ?? null,
+    workDates: serverActivity.workDates.length
+      ? serverActivity.workDates
+      : parsed.workDates.map((summary) => ({
+          ...summary,
+          logCount: counts.get(summary.date) ?? 0,
+        })),
+    activityFeed: serverActivity.activityFeed.length
+      ? serverActivity.activityFeed
+      : activityFeed,
+  };
 }
 
 export async function getWorkItemOptions(): Promise<WorkItemOptions> {

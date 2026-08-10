@@ -30,6 +30,12 @@ async function chooseShadcnOption(page: Page, label: string, option: string) {
   await page.getByRole('option', { name: option, exact: true }).click();
 }
 
+async function chooseTicketChip(page: Page, label: string, option: string) {
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', { name: label, exact: true }).click();
+  await dialog.getByRole('option', { name: option, exact: true }).click();
+}
+
 const listRow = {
   id: itemId,
   displayId,
@@ -265,6 +271,7 @@ async function mocks(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
+        daysOpen: 5,
         workDates: [
           {
             date: '2026-07-20',
@@ -320,6 +327,57 @@ async function mocks(
             labelsBefore: [],
             labelsAfter: [],
             workLog: null,
+          },
+        ],
+      }),
+    }),
+  );
+  await page.route('**/rest/v1/rpc/get_ticket_details_activity', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        daysOpen: 5,
+        workDates: [
+          {
+            date: '2026-07-20',
+            people: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+            workTypes: ['ui_visual_design'],
+            logCount: 2,
+          },
+          {
+            date: '2026-07-22',
+            people: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+            workTypes: ['ui_visual_design'],
+            logCount: 1,
+          },
+        ],
+        activityFeed: [
+          {
+            id: '77000000-0000-4000-8000-000000000001',
+            kind: 'ticket_change',
+            type: 'created',
+            effectiveDate: '2026-07-21T08:00:00Z',
+            occurredAt: '2026-07-21T08:00:00Z',
+            actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+            title: 'created',
+            description: null,
+            workTypeLabel: null,
+            relationship: null,
+            subjectId: itemId,
+          },
+          {
+            id: '79000000-0000-4000-8000-000000000001',
+            kind: 'work_log',
+            type: 'work_log',
+            effectiveDate: '2026-07-20',
+            occurredAt: '2026-07-22T10:00:00Z',
+            actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+            title: 'UI/Visual design',
+            description: '[SYNTHETIC] Backfilled work',
+            workTypeLabel: 'UI/Visual design',
+            relationship: 'primary',
+            subjectId: '78000000-0000-4000-8000-000000000001',
           },
         ],
       }),
@@ -388,7 +446,11 @@ async function mocks(
         contentType: 'application/json',
         body: JSON.stringify(detail(Boolean(options.viewer))),
       });
-    else if (url.includes('get_work_item_history')) await route.fallback();
+    else if (
+      url.includes('get_work_item_history') ||
+      url.includes('get_ticket_details_activity')
+    )
+      await route.fallback();
     else if (url.includes('create_work_item'))
       await route.fulfill({
         status: 200,
@@ -559,9 +621,12 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await page.getByRole('button', { name: 'Close' }).click();
 
     await card.press('Enter');
-    await expect(page).toHaveURL(`/work-items/${displayId}`);
+    await expect(page).toHaveURL(
+      new RegExp(`/work-items/${displayId}\\?.*q=responsive`, 'u'),
+    );
     await page.goBack();
     await expect(page).toHaveURL(/q=responsive/u);
+    await expect(card).toBeFocused();
   } else {
     const expectedHeaders = [
       'Ticket',
@@ -650,9 +715,12 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       name: `Open ${displayId}: ${listRow.title}`,
     });
     await row.press('Enter');
-    await expect(page).toHaveURL(`/work-items/${displayId}`);
+    await expect(page).toHaveURL(
+      new RegExp(`/work-items/${displayId}\\?.*q=responsive`, 'u'),
+    );
     await page.goBack();
     await expect(page).toHaveURL(/q=responsive/u);
+    await expect(row).toBeFocused();
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
@@ -873,6 +941,11 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   }
   await page.getByRole('button', { name: 'Log work', exact: true }).click();
   await expect(page).toHaveURL(`/work-items/${displayId}`);
+  await expect(
+    page
+      .getByRole('dialog')
+      .getByRole('heading', { name: listRow.title, exact: true }),
+  ).toBeVisible();
   expect(
     mutationBodies.filter(({ url }) => url.includes('submit_work_log')),
   ).toHaveLength(1);
@@ -923,12 +996,168 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   await signIn(page);
   await page.goto(`/work-items/${displayId}`);
   await expect(
-    page.getByRole('heading', { name: listRow.title }),
+    page
+      .getByRole('dialog')
+      .getByRole('heading', { name: listRow.title, exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Work Dates' })).toBeVisible();
-  await expect(page.getByText('Jul 20, 2026').first()).toBeVisible();
-  await expect(page.getByText('Work logged')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Activity & Work Log' }),
+  ).toBeVisible();
+  const ticketDialog = page.getByRole('dialog');
+  await expect(
+    ticketDialog.getByRole('button', { name: /subtasks complete/u }),
+  ).toHaveCount(0);
+  await expect(ticketDialog.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'height',
+    '32px',
+  );
+  await expect(ticketDialog.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'text-decoration-line',
+    'none',
+  );
+  await expect(ticketDialog.getByRole('link', { name: 'Log Work' })).toHaveCSS(
+    'font-weight',
+    '600',
+  );
+  const headerAvatar = ticketDialog
+    .getByRole('button', { name: 'Assignee' })
+    .locator('span.relative.flex')
+    .first();
+  await expect(headerAvatar).toHaveCSS('width', '32px');
+  await expect(headerAvatar).toHaveCSS('height', '32px');
+  for (const control of [
+    ticketDialog.getByRole('button', { name: 'Assignee' }),
+    ticketDialog.getByRole('button', { name: 'Area' }),
+    ticketDialog.getByRole('button', { name: 'Status' }),
+    ticketDialog.getByRole('link', { name: 'Log Work' }),
+    ticketDialog.getByRole('button', { name: 'More ticket actions' }),
+  ])
+    await expect(control).toHaveCSS('border-radius', '12px');
+  await expect(ticketDialog.getByRole('button', { name: 'Status' })).toHaveCSS(
+    'background-color',
+    'rgb(234, 245, 253)',
+  );
+  await ticketDialog
+    .getByRole('button', { name: listRow.title, exact: true })
+    .click();
+  await page.getByLabel('Ticket title').fill('[SYNTHETIC] Inline title');
+  await page.getByLabel('Ticket title').press('Enter');
+  await expect(page.getByText('Title saved.', { exact: true })).toBeVisible();
+  expect(
+    mutationBodies.find(({ url }) => url.includes('update_work_item'))?.body,
+  ).toMatchObject({ title: '[SYNTHETIC] Inline title' });
+  await ticketDialog
+    .getByRole('button', {
+      name: '[SYNTHETIC] Detail content for browser acceptance.',
+      exact: true,
+    })
+    .click();
+  await page
+    .getByLabel('Ticket description')
+    .fill('[SYNTHETIC] Inline description');
+  await page.getByLabel('Ticket description').press('Tab');
+  await expect(
+    page.getByText('Description saved.', { exact: true }),
+  ).toBeVisible();
+  expect(
+    mutationBodies.filter(({ url }) => url.includes('update_work_item')).at(-1)
+      ?.body,
+  ).toMatchObject({ description: '[SYNTHETIC] Inline description' });
+  const subtaskCheckbox = page.getByRole('checkbox', {
+    name: '[SYNTHETIC] Keyboard verification',
+    exact: true,
+  });
+  await expect(subtaskCheckbox).not.toBeChecked();
+  await expect(
+    ticketDialog.getByRole('button', {
+      name: 'Remove [SYNTHETIC] Keyboard verification',
+    }),
+  ).toBeHidden();
+  await expect(
+    ticketDialog.getByLabel('Reorder [SYNTHETIC] Keyboard verification'),
+  ).toBeHidden();
+  await ticketDialog
+    .getByRole('button', {
+      name: '[SYNTHETIC] Keyboard verification',
+      exact: true,
+    })
+    .click();
+  await expect(
+    ticketDialog.getByLabel('Rename [SYNTHETIC] Keyboard verification'),
+  ).toBeVisible();
+  await expect(
+    ticketDialog.getByRole('button', {
+      name: 'Remove [SYNTHETIC] Keyboard verification',
+    }),
+  ).toBeVisible();
+  await expect(
+    ticketDialog.getByLabel('Reorder [SYNTHETIC] Keyboard verification'),
+  ).toBeVisible();
+  await expect(subtaskCheckbox).not.toBeChecked();
+  await ticketDialog
+    .getByLabel('Rename [SYNTHETIC] Keyboard verification')
+    .press('Escape');
+  await expect(
+    ticketDialog.getByRole('button', {
+      name: 'Remove [SYNTHETIC] Keyboard verification',
+    }),
+  ).toBeHidden();
+  await expect(
+    ticketDialog.getByLabel('Reorder [SYNTHETIC] Keyboard verification'),
+  ).toBeHidden();
+  await ticketDialog
+    .getByRole('button', { name: listRow.labels[0]!.name, exact: true })
+    .click();
+  await expect(
+    page.getByRole('menuitemcheckbox', { name: '[SYNTHETIC] Foundation' }),
+  ).toBeVisible();
+  await page
+    .getByRole('menu', { name: listRow.labels[0]!.name })
+    .press('Escape');
+  await expect(ticketDialog).toBeVisible();
+  await ticketDialog
+    .getByRole('button', { name: listRow.figmaUrl, exact: true })
+    .click();
+  await expect(ticketDialog.getByLabel('Figma URL')).toBeVisible();
+  await ticketDialog.getByLabel('Figma URL').press('Escape');
+  await ticketDialog.getByRole('button', { name: /Planned start:/u }).click();
+  await expect(page.getByRole('grid', { name: 'July 2026' })).toBeVisible();
+  await page.getByRole('grid', { name: 'July 2026' }).press('Escape');
+  await expect(
+    page.getByRole('button', { name: /Jul 20, 2026: 2 logs/u }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /Jul 20, 2026: 2 logs/u }),
+  ).toHaveCSS('background-color', 'rgb(28, 149, 90)');
+  await expect(
+    page.getByRole('button', { name: /Jul 22, 2026: 1 log/u }),
+  ).toHaveCSS('background-color', 'rgb(127, 227, 172)');
+  await expect(
+    page.getByText('UI/Visual design', { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText('[SYNTHETIC] Backfilled work')).toBeVisible();
+  await expect(
+    page.locator('[data-kind="ticket_change"] > span').nth(1),
+  ).toHaveCSS('background-color', 'rgb(26, 127, 205)');
+  await expect(page.locator('[data-kind="work_log"] > span').nth(1)).toHaveCSS(
+    'background-color',
+    'rgb(31, 193, 107)',
+  );
+  await expect(
+    page.locator('[data-kind="ticket_change"] strong').first(),
+  ).toHaveCSS('font-weight', '600');
+  expect(
+    await page
+      .locator('[data-kind="ticket_change"]')
+      .first()
+      .evaluate((row) => {
+        const avatar = row.firstElementChild as HTMLElement;
+        const railLeft = Number.parseFloat(
+          getComputedStyle(row, '::before').left,
+        );
+        return railLeft + 1 === avatar.offsetLeft + avatar.offsetWidth / 2;
+      }),
+  ).toBe(true);
   await page
     .getByRole('checkbox', {
       name: '[SYNTHETIC] Keyboard verification',
@@ -942,23 +1171,43 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
     mutationBodies.find(({ url }) => url.includes('set_subtask_completion'))
       ?.body,
   ).toMatchObject({ completed: true, expected_completed: false });
-  await page.getByLabel('Status').selectOption('in_progress');
-  await page.getByRole('button', { name: 'Update status' }).click();
+  await chooseTicketChip(page, 'Status', 'Done');
   await expect(
-    page.getByText('Status updated.', { exact: true }),
+    page.getByRole('heading', {
+      name: 'Complete with unfinished subtasks?',
+    }),
   ).toBeVisible();
-  await page.locator('summary').filter({ hasText: 'Add blocker' }).click();
+  await page.getByRole('button', { name: 'Keep current status' }).click();
+  await chooseTicketChip(page, 'Status', 'In Progress');
+  await expect(page.getByText('Status saved.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'More ticket actions' }).click();
+  await expect(page.getByRole('link', { name: 'Edit ticket' })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Manage subtasks' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Add blocker' }).first().click();
   await page.getByLabel('Blocker reason').fill('[SYNTHETIC] Browser blocker');
-  await page.getByRole('button', { name: 'Add blocker' }).click();
+  await page
+    .locator('#add-blocker')
+    .getByRole('button', { name: 'Add blocker' })
+    .click();
   await expect(page.getByText('Blocker added.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Add a subtask' }).click();
   await page.getByLabel('New subtask').fill('[SYNTHETIC] Added subtask');
-  await page.getByRole('button', { name: 'Add subtask' }).click();
+  await page.getByRole('button', { name: 'Save subtask' }).click();
   await expect(page.getByText('Subtask added.', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('New subtask')).toHaveValue('');
+  await expect(page.getByLabel('New subtask')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Add a subtask' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Add a comment...' }).click();
   await page.getByLabel('Add comment').fill('[SYNTHETIC] Browser comment');
-  await page.getByRole('button', { name: 'Add comment' }).click();
+  await page.getByRole('button', { name: 'Send comment' }).click();
   await expect(page.getByText('Comment added.', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('Add comment')).toHaveValue('');
+  await expect(page.getByLabel('Add comment')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Add a comment...' }),
+  ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
@@ -968,21 +1217,27 @@ test('conflicts preserve chosen input and Viewer detail remains read-only', asyn
   await mocks(page, { conflict: true });
   await signIn(page);
   await page.goto(`/work-items/${displayId}`);
-  await page.getByLabel('Status').selectOption('in_progress');
-  await page.getByRole('button', { name: 'Update status' }).click();
+  await chooseTicketChip(page, 'Status', 'In Progress');
   await expect(page.getByRole('alert')).toContainText(
-    'Someone changed this ticket first',
+    'Someone updated this ticket first',
   );
-  await expect(page.getByLabel('Status')).toHaveValue('in_progress');
+  await expect(
+    page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Status', exact: true }),
+  ).toContainText('To Do');
   await page.context().clearCookies();
   await page.unrouteAll({ behavior: 'wait' });
   await mocks(page, { viewer: true });
   await page.goto(`/work-items/${displayId}`);
   await expect(page.getByText('Read-only access.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Update status' })).toHaveCount(
-    0,
-  );
-  await expect(page.getByRole('button', { name: 'Add comment' })).toHaveCount(
+  await expect(
+    page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Status', exact: true }),
+  ).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Send comment' })).toHaveCount(
     0,
   );
 });

@@ -237,15 +237,20 @@ export function WorkLogPage() {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
       queryClient.invalidateQueries({ queryKey: ['reports'] }),
     ]);
-    void navigate(
+    const returnTo = params.get('returnTo');
+    const ticketDestination =
       context === 'ticket' && effectiveDisplayId
-        ? `/work-items/${effectiveDisplayId}`
-        : '/work-items',
-      {
-        replace: true,
-        state: { confirmation: announcement || 'Work logged.' },
+        ? returnTo
+          ? `/work-items/${effectiveDisplayId}${new URL(returnTo, window.location.origin).search}`
+          : `/work-items/${effectiveDisplayId}`
+        : '/work-items';
+    void navigate(ticketDestination, {
+      replace: true,
+      state: {
+        confirmation: announcement || 'Work logged.',
+        ...(returnTo ? { allTicketsUrl: returnTo } : {}),
       },
-    );
+    });
   };
   const runFollowups = async (onlyFailures?: FollowupFailures) => {
     let current = await refreshTicket();

@@ -15,6 +15,8 @@ import {
   FormInput,
   FormSelect,
   FormTextarea,
+  getAvatarTone,
+  getAvatarToneClassName,
   getInitials,
   Separator,
   Sheet,
@@ -88,6 +90,15 @@ describe('team-ready primitives', () => {
 
     expect(screen.getByText('Ready')).toBeVisible();
     expect(screen.getByLabelText('Ada Lovelace')).toHaveTextContent('AL');
+    expect(screen.getByLabelText('Ada Lovelace')).toHaveClass(
+      'rounded-[var(--radius-element)]',
+    );
+    expect(getAvatarTone('00000000-0000-4000-8000-000000000001')).toBe(
+      getAvatarTone('00000000-0000-4000-8000-000000000001'),
+    );
+    expect(
+      getAvatarToneClassName('00000000-0000-4000-8000-000000000001'),
+    ).toContain('color-avatar-');
     expect(getInitials('[SYNTHETIC] Manager + Admin')).toBe('MA');
     expect(screen.queryByRole('separator')).not.toBeInTheDocument();
   });
@@ -107,10 +118,32 @@ describe('team-ready primitives', () => {
     const trigger = screen.getByRole('button', { name: 'Open profile' });
     trigger.focus();
     await user.keyboard('{Enter}');
+    const menu = screen.getByRole('menu');
+    expect(menu).toHaveClass('overflow-y-auto', 'overscroll-contain');
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus();
     await user.keyboard('{Enter}');
     expect(onSelect).toHaveBeenCalledOnce();
     expect(trigger).toHaveFocus();
+  });
+
+  it('keeps long Select option lists touch and wheel scrollable', async () => {
+    const user = userEvent.setup();
+    render(
+      <FormSelect label="Person">
+        {Array.from({ length: 30 }, (_, index) => (
+          <option key={index} value={`person-${index}`}>
+            Person {index + 1}
+          </option>
+        ))}
+      </FormSelect>,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Person' }));
+    expect(document.querySelector('[role="listbox"]')).toHaveClass(
+      'touch-pan-y',
+      'overflow-y-auto',
+      'overscroll-contain',
+    );
   });
 
   it('describes a focused Tooltip trigger and dismisses on Escape', async () => {

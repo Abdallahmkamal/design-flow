@@ -30,7 +30,7 @@ export const DropdownMenuContent = forwardRef<
         sideOffset={sideOffset}
         collisionPadding={collisionPadding}
         className={cn(
-          'z-50 min-w-48 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-popover outline-none data-[state=closed]:animate-out data-[state=open]:animate-in motion-reduce:transition-none',
+          'z-50 max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] min-w-48 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-popover outline-none data-[state=closed]:animate-out data-[state=open]:animate-in motion-reduce:transition-none',
           className,
         )}
         {...props}

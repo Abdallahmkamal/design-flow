@@ -32,6 +32,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  getAvatarToneClassName,
   getInitials,
   Separator,
   Sheet,
@@ -48,6 +49,7 @@ import {
   TooltipTrigger,
 } from '../../ui/primitives';
 import { cn } from '../../ui/lib/cn';
+import styles from './AppShell.module.css';
 import {
   getShellCapabilities,
   getShellDestinations,
@@ -164,6 +166,7 @@ function NotificationControl({
 }
 
 function ProfileMenu({
+  accountId,
   displayName,
   isAdmin,
   isSigningOut,
@@ -171,6 +174,7 @@ function ProfileMenu({
   position,
   mobile = false,
 }: {
+  accountId: string;
   displayName: string;
   isAdmin: boolean;
   isSigningOut: boolean;
@@ -193,7 +197,12 @@ function ProfileMenu({
           )}
           aria-label={`Open profile menu for ${displayName}`}
         >
-          <Avatar className={mobile ? 'size-10' : 'size-8'}>
+          <Avatar
+            className={cn(
+              mobile ? 'size-10' : 'size-8',
+              getAvatarToneClassName(accountId),
+            )}
+          >
             <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
           </Avatar>
           {!mobile ? (
@@ -267,6 +276,7 @@ export function AppShell() {
   const { account, signOut } = useAuthentication();
   const [signOutError, setSignOutError] = useState<string | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [quickActionsOpen, setQuickActionsOpen] = useState(false);
   const quickActionsContentRef = useRef<HTMLDivElement>(null);
   const appEnvironment = getPublicEnvironment().VITE_APP_ENV;
   const unread = useQuery({
@@ -313,6 +323,7 @@ export function AppShell() {
             />
             <ProfileMenu
               mobile
+              accountId={account.id}
               displayName={account.displayName}
               position={account.positionCode}
               isAdmin={account.isAdmin}
@@ -322,7 +333,7 @@ export function AppShell() {
           </div>
         </header>
 
-        <aside className="fixed top-4 left-4 z-30 hidden h-[33.125rem] max-h-[calc(100dvh-2rem)] w-[13.4375rem] flex-col overflow-hidden rounded-shell border-r border-border bg-card pr-px shadow-shell md:flex">
+        <aside className="fixed top-6 left-6 z-30 hidden h-[33.125rem] max-h-[calc(100dvh-3rem)] w-[13.4375rem] flex-col overflow-hidden rounded-shell border-r border-border bg-card pr-px shadow-shell md:flex">
           <div className="flex h-14 items-center gap-0 px-3">
             <Brand />
             <div className="ml-auto flex items-center">
@@ -381,6 +392,7 @@ export function AppShell() {
                 </p>
               ) : null}
               <ProfileMenu
+                accountId={account.id}
                 displayName={account.displayName}
                 position={account.positionCode}
                 isAdmin={account.isAdmin}
@@ -393,18 +405,19 @@ export function AppShell() {
         </aside>
 
         <main
-          className="mt-3 min-h-[calc(100dvh-4.75rem)] min-w-0 bg-background p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] md:mt-0 md:min-h-dvh md:ml-[15.4375rem] md:p-10"
+          className="min-h-[calc(100dvh-4rem)] min-w-0 bg-background p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] md:min-h-dvh md:ml-[15.4375rem] md:p-10"
           id="main-content"
           tabIndex={-1}
         >
           <Outlet />
         </main>
 
-        <div className="fixed inset-x-0 bottom-0 z-40 flex min-h-[5.9375rem] items-start gap-4 bg-card px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:hidden">
-          <nav
-            aria-label="Primary navigation"
-            className="flex h-[3.8125rem] min-w-0 flex-1 items-center rounded-full bg-card p-1 shadow-shell"
-          >
+        <div
+          className={styles.mobileControls}
+          data-menu-open={quickActionsOpen}
+          data-testid="mobile-shell-controls"
+        >
+          <nav aria-label="Primary navigation" className={styles.mobileDock}>
             {destinations.map((destination) => (
               <DestinationLink
                 key={destination.to}
@@ -414,24 +427,25 @@ export function AppShell() {
             ))}
           </nav>
           {capabilities.canLogWork || capabilities.canCreateTicket ? (
-            <Sheet>
+            <Sheet open={quickActionsOpen} onOpenChange={setQuickActionsOpen}>
               <SheetTrigger asChild>
                 <Button
                   size="icon"
-                  className="size-[3.8125rem] rounded-full shadow-shell [&_svg]:size-8"
+                  variant="secondary"
+                  className={cn(styles.quickActionFab, styles.restingFab)}
                   aria-label="Open Quick Actions"
                 >
-                  <Plus className="size-8" aria-hidden="true" />
+                  <Plus className={styles.fabIcon} aria-hidden="true" />
                 </Button>
               </SheetTrigger>
               <SheetPortal>
                 <SheetOverlay
-                  className="z-40 bg-black/30"
+                  className={styles.quickActionsBackdrop}
                   data-testid="quick-actions-scrim"
                 />
                 <SheetPrimitiveContent
                   ref={quickActionsContentRef}
-                  className="pointer-events-none fixed inset-0 z-50 outline-none"
+                  className={styles.quickActionsContent}
                   tabIndex={-1}
                   onOpenAutoFocus={(event) => {
                     event.preventDefault();
@@ -442,11 +456,14 @@ export function AppShell() {
                   <SheetDescription className="sr-only">
                     Start a permitted Design Flow action.
                   </SheetDescription>
-                  <div className="pointer-events-auto fixed inset-x-3 bottom-[calc(6.75rem+env(safe-area-inset-bottom))] grid gap-4">
+                  <div className={styles.quickActionGroup}>
                     {capabilities.canLogWork ? (
                       <SheetClose asChild>
                         <Button
-                          className="h-16 w-full rounded-2xl text-base font-semibold no-underline"
+                          className={cn(
+                            styles.expandedAction,
+                            styles.primaryExpandedAction,
+                          )}
                           asChild
                         >
                           <NavLink to="/work-logs/new">Log Work</NavLink>
@@ -456,7 +473,10 @@ export function AppShell() {
                     {capabilities.canCreateTicket ? (
                       <SheetClose asChild>
                         <Button
-                          className="h-16 w-full rounded-2xl bg-card text-base font-semibold no-underline"
+                          className={cn(
+                            styles.expandedAction,
+                            styles.secondaryExpandedAction,
+                          )}
                           variant="secondary"
                           asChild
                         >
@@ -469,10 +489,10 @@ export function AppShell() {
                     <Button
                       size="icon"
                       variant="secondary"
-                      className="pointer-events-auto fixed right-4 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] size-[3.8125rem] rounded-full bg-card shadow-shell [&_svg]:size-8"
+                      className={cn(styles.quickActionFab, styles.closeFab)}
                       aria-label="Close Quick Actions"
                     >
-                      <X className="size-8" aria-hidden="true" />
+                      <X className={styles.fabIcon} aria-hidden="true" />
                     </Button>
                   </SheetClose>
                 </SheetPrimitiveContent>

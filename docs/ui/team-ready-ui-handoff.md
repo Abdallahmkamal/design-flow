@@ -1,7 +1,7 @@
 # Design Flow — Team-Ready UI Handoff
 
 Status: Approved post-MVP repository contract
-Last updated: 2026-08-08
+Last updated: 2026-08-11
 Figma file: https://www.figma.com/design/2c9QoPS8BLcTdiIoBEeeni/DesignFlow
 
 ## Repository reconciliation — 2026-08-08
@@ -128,10 +128,32 @@ Broader visual consistency and secondary-module refinement must not delay rollou
 - Fix the bottom navigation to the viewport so it remains visible while page content scrolls; it must not sit after the page content or scroll away with it.
 - Keep the circular Quick Actions `+` visually separate at the trailing end of the bottom navigation, regardless of destination count.
 - The `+` is an action, not a selected navigation destination.
-- Tapping it opens a bottom sheet with:
+- Tapping it opens a lightweight floating action group above the navigation with:
   1. Log Work, primary.
   2. Create Ticket, secondary.
 - Filter quick actions by permission.
+- Present the mobile navigation capsule as a translucent frosted-glass dock with
+  Safari-compatible backdrop blur, a subtle edge and restrained elevation; the
+  fixed bottom region itself remains transparent so page content scrolls behind
+  the dock. Preserve safe-area clearance and enough page padding to bring final
+  content fully above the controls.
+- Present the separate Quick Actions control as a glass/white FAB with a red
+  plus and a restrained CSS-only masked conic perimeter glow while resting; the
+  primary effect is a soft, slowly circulating halo populated by asymmetric burgundy,
+  dark-red, brand-red, coral, soft-red, and dim tonal sections. A barely visible
+  edge highlight may define the glass boundary, but it must not read as a
+  decorative gradient ring. Keep the light immediately outside the perimeter,
+  The tonal distribution may orbit the circumference as one calm radial-glow
+  animation; never reduce it to a single travelling accent or diffuse spotlight beneath the button.
+  Opening rotates the plus
+  into a calm close state, fades a light neutral backdrop, and raises a
+  responsive equal-width action stack upward and slightly leftward from the FAB
+  area with a short stagger. Keep that stack right-anchored toward the FAB at
+  roughly 55–70% of the available mobile width rather than centered/full-width.
+  Closing reverses the sequence. Disable continuous and rotational motion under
+  `prefers-reduced-motion` while preserving every action and state.
+- Keep the floating dock visible beneath the expanded action group. The action
+  group is not a bottom sheet and has no full-width opaque footer or container.
 
 ### Theme, notifications, and profile
 

@@ -1,0 +1,397 @@
+.mobileControls,
+.quickActionsContent {
+  --mobile-control-edge: 0.75rem;
+  --mobile-control-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  --mobile-glass-background: rgb(255 255 255 / 16%);
+  --mobile-glass-border: rgb(255 255 255 / 38%);
+  --mobile-fab-background: rgb(255 255 255 / 58%);
+  --mobile-fab-glow-deep: color-mix(
+    in srgb,
+    var(--color-text-accent) 42%,
+    black
+  );
+  --mobile-fab-glow-dark: color-mix(
+    in srgb,
+    var(--color-text-accent) 72%,
+    black
+  );
+  --mobile-fab-glow-warm: color-mix(
+    in srgb,
+    var(--color-text-accent) 82%,
+    #ff8066
+  );
+  --mobile-fab-glow-soft: color-mix(
+    in srgb,
+    var(--color-text-accent) 48%,
+    white
+  );
+  --mobile-fab-glow-dim: color-mix(
+    in srgb,
+    var(--color-text-accent) 12%,
+    transparent
+  );
+}
+
+.mobileControls {
+  position: fixed;
+  z-index: 50;
+  right: var(--mobile-control-edge);
+  bottom: var(--mobile-control-bottom);
+  left: var(--mobile-control-edge);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.mobileDock {
+  display: flex;
+  min-width: 0;
+  height: 4rem;
+  flex: 1;
+  align-items: center;
+  padding: 0.25rem;
+  border: 1px solid var(--mobile-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--mobile-glass-background);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 24%),
+    0 18px 42px -24px rgb(0 0 0 / 32%),
+    0 5px 16px -10px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  pointer-events: auto;
+}
+
+.quickActionFab {
+  position: relative;
+  isolation: isolate;
+  width: 4rem;
+  height: 4rem;
+  flex: 0 0 4rem;
+  overflow: visible;
+  border-color: var(--mobile-glass-border) !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--mobile-fab-background) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 35%),
+    0 16px 34px -20px rgb(0 0 0 / 38%),
+    0 4px 12px -8px rgb(0 0 0 / 20%);
+  color: var(--color-text-accent) !important;
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  pointer-events: auto;
+  transition:
+    opacity 180ms ease-out,
+    transform 220ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+.restingFab::before,
+.restingFab::after {
+  position: absolute;
+  z-index: -1;
+  box-sizing: border-box;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 18deg,
+    var(--mobile-fab-glow-deep) 0%,
+    var(--mobile-fab-glow-dim) 11%,
+    var(--mobile-fab-glow-dark) 21%,
+    var(--color-text-accent) 34%,
+    var(--mobile-fab-glow-warm) 47%,
+    var(--mobile-fab-glow-soft) 57%,
+    var(--mobile-fab-glow-warm) 66%,
+    var(--mobile-fab-glow-dark) 78%,
+    var(--mobile-fab-glow-dim) 89%,
+    var(--mobile-fab-glow-deep) 100%
+  );
+  content: '';
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  transition:
+    opacity 180ms ease-out,
+    transform 240ms ease-out;
+}
+
+.restingFab::before {
+  inset: -0.0625rem;
+  padding: 0.0625rem;
+  filter: blur(0.025rem);
+  opacity: 0.025;
+}
+
+.restingFab::after {
+  inset: -0.4375rem;
+  padding: 0.125rem;
+  animation: mobile-fab-glow-orbit 4.8s linear infinite;
+  filter: blur(0.3125rem);
+  opacity: 0.72;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.fabIcon {
+  width: 2rem !important;
+  height: 2rem !important;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.restingFab .fabIcon {
+  color: var(--color-text-accent) !important;
+}
+
+.closeFab .fabIcon {
+  color: var(--color-text-primary) !important;
+}
+
+.mobileControls[data-menu-open='true'] .restingFab {
+  opacity: 0;
+  transform: rotate(45deg) scale(0.97);
+}
+
+.mobileControls[data-menu-open='true'] .restingFab::before,
+.mobileControls[data-menu-open='true'] .restingFab::after {
+  animation: mobile-fab-glow-finish 280ms ease-out both;
+}
+
+.quickActionsBackdrop {
+  z-index: 40 !important;
+  background: rgb(18 19 19 / 24%) !important;
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+
+.quickActionsBackdrop[data-state='open'] {
+  opacity: 1;
+}
+
+.quickActionsBackdrop[data-state='closed'] {
+  opacity: 0;
+}
+
+.quickActionsContent {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  outline: none;
+  pointer-events: none;
+}
+
+.quickActionGroup {
+  position: fixed;
+  right: calc(var(--mobile-control-edge) + 0.5rem);
+  bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  width: clamp(12rem, 64vw, 17.5rem);
+  max-width: calc(100vw - 2rem);
+  display: grid;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+.expandedAction {
+  width: 100%;
+  height: 3.75rem;
+  border-radius: var(--radius-container) !important;
+  box-shadow: 0 16px 32px -22px rgb(0 0 0 / 42%);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  opacity: 0;
+  transform: translate(0.875rem, 1rem) scale(0.96);
+}
+
+.secondaryExpandedAction {
+  border-color: var(--mobile-glass-border) !important;
+  background: var(--mobile-fab-background) !important;
+  color: var(--color-text-primary) !important;
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+}
+
+.quickActionsContent[data-state='open'] .expandedAction {
+  animation: mobile-action-in 270ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.quickActionsContent[data-state='open'] .primaryExpandedAction {
+  animation-delay: 60ms;
+}
+
+.quickActionsContent[data-state='open'] .secondaryExpandedAction {
+  animation-delay: 110ms;
+}
+
+.quickActionsContent[data-state='closed'] .expandedAction {
+  animation: mobile-action-out 210ms ease-in both;
+}
+
+.closeFab {
+  position: fixed;
+  right: var(--mobile-control-edge);
+  bottom: var(--mobile-control-bottom);
+  z-index: 1;
+  color: var(--color-text-primary) !important;
+}
+
+.quickActionsContent[data-state='open'] .closeFab {
+  animation: mobile-close-fab-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.quickActionsContent[data-state='closed'] .closeFab {
+  animation: mobile-close-fab-out 190ms ease-in both;
+}
+
+@keyframes mobile-fab-glow-finish {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(0.16turn);
+    opacity: 0;
+  }
+}
+
+@keyframes mobile-fab-glow-orbit {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes mobile-action-in {
+  from {
+    opacity: 0;
+    transform: translate(0.875rem, 1rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobile-action-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(0.75rem, 0.75rem) scale(0.97);
+  }
+}
+
+@keyframes mobile-close-fab-in {
+  from {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes mobile-close-fab-out {
+  from {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.97);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quickActionFab:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 40%),
+      0 19px 36px -20px rgb(0 0 0 / 40%),
+      0 6px 14px -8px rgb(0 0 0 / 22%);
+    transform: translateY(-0.125rem);
+  }
+
+  .restingFab:hover::before,
+  .restingFab:focus-visible::before {
+    opacity: 0.05;
+  }
+
+  .restingFab:hover::after,
+  .restingFab:focus-visible::after {
+    opacity: 0.88;
+  }
+}
+
+.quickActionFab:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 22.5rem) {
+  .mobileControls,
+  .quickActionsContent {
+    --mobile-control-edge: 0.5rem;
+  }
+
+  .mobileControls {
+    gap: 0.5rem;
+  }
+
+  .mobileDock {
+    height: 3.75rem;
+  }
+
+  .quickActionFab {
+    width: 3.75rem;
+    height: 3.75rem;
+    flex-basis: 3.75rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .mobileControls {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .restingFab::before,
+  .restingFab::after {
+    animation: none !important;
+    transition: opacity 80ms ease-out;
+  }
+
+  .fabIcon,
+  .quickActionFab,
+  .quickActionsBackdrop {
+    transition-duration: 80ms;
+  }
+
+  .expandedAction,
+  .closeFab {
+    animation-duration: 80ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .mobileDock,
+  .quickActionFab,
+  .secondaryExpandedAction {
+    background: rgb(250 251 251 / 94%) !important;
+  }
+}
+
+:global([data-theme='dark']) .mobileControls,
+:global([data-theme='dark']) .quickActionsContent {
+  --mobile-glass-background: rgb(28 29 29 / 26%);
+  --mobile-glass-border: rgb(255 255 255 / 18%);
+  --mobile-fab-background: rgb(42 44 44 / 72%);
+}

@@ -37,6 +37,7 @@ import {
   DropdownMenuTrigger,
   FormInput,
   FormSelect,
+  getAvatarToneClassName,
   getInitials,
   Popover,
   PopoverContent,
@@ -130,14 +131,6 @@ const activityLabels: Record<string, string> = {
   archived: 'Ticket archived',
   restored: 'Ticket restored',
 };
-const avatarTones = [
-  styles.avatarAqua,
-  styles.avatarAubergine,
-  styles.avatarPharos,
-  styles.avatarTurquoise,
-  styles.avatarViolet,
-] as const;
-
 function useMobileList() {
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
@@ -167,12 +160,6 @@ const days = (value: number | null) =>
 const activityLabel = (value: string) =>
   activityLabels[value] ??
   value.replaceAll('_', ' ').replace(/^./u, (letter) => letter.toUpperCase());
-const stableTone = (id: string) =>
-  avatarTones[
-    [...id].reduce((total, character) => total + character.charCodeAt(0), 0) %
-      avatarTones.length
-  ];
-
 function TicketBadge({ className, ...props }: BadgeProps) {
   return (
     <StatusBadge {...props} className={cn(styles.ticketPill, className)} />
@@ -210,7 +197,7 @@ function People({
         className="flex min-h-10 max-w-full items-center gap-2 rounded-md border-0 bg-transparent p-1 text-left font-sans text-sm text-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={`People on ${row.displayId}: ${people.map((person) => person.displayName).join(', ')}`}
       >
-        <Avatar className={cn('size-7 rounded-lg', stableTone(shown.id))}>
+        <Avatar className={cn('size-7', getAvatarToneClassName(shown.id))}>
           <AvatarFallback className="text-xs">
             {getInitials(shown.displayName)}
           </AvatarFallback>
@@ -650,6 +637,7 @@ function MobileCards({
           <li key={row.id}>
             <article
               className={styles.mobileCard}
+              data-ticket-launcher={row.displayId}
               tabIndex={0}
               aria-label={`Open ${row.displayId}: ${row.title}`}
               onKeyDown={(event) => {
@@ -848,10 +836,35 @@ export function AllTicketsPage() {
   const persistedDimensions = activeDimensions(filters);
   const dimensions = [...new Set([...persistedDimensions, ...extraDimensions])];
   const filterCount = persistedDimensions.length;
-  const openTicket = (row: WorkItemListRow) =>
-    navigate(`/work-items/${row.displayId}`, {
-      state: { allTicketsUrl: `${location.pathname}${location.search}` },
+  const openTicket = (row: WorkItemListRow) => {
+    sessionStorage.setItem('all-tickets-launcher', row.displayId);
+    sessionStorage.setItem('all-tickets-restore-focus', row.displayId);
+    sessionStorage.setItem('all-tickets-scroll-y', String(window.scrollY));
+    void navigate(`/work-items/${row.displayId}${location.search}`, {
+      state: { allTicketsUrl: `/work-items${location.search}` },
     });
+  };
+
+  useEffect(() => {
+    if (location.pathname !== '/work-items' || !list.data) return;
+    const launcher = sessionStorage.getItem('all-tickets-restore-focus');
+    if (!launcher) return;
+    const scrollY = Number(
+      sessionStorage.getItem('all-tickets-scroll-y') ?? '0',
+    );
+    const restoreTimer = window.setTimeout(() => {
+      window.scrollTo({ top: scrollY });
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          `[data-ticket-launcher="${CSS.escape(launcher)}"]`,
+        ),
+      ]
+        .find((candidate) => candidate.getClientRects().length > 0)
+        ?.focus();
+      sessionStorage.removeItem('all-tickets-restore-focus');
+    }, 500);
+    return () => window.clearTimeout(restoreTimer);
+  }, [location.pathname, list.data]);
   const sort = (field: WorkItemSort) =>
     update({
       sort: field,
@@ -1331,6 +1344,7 @@ function TicketRow({
   };
   return (
     <tr
+      data-ticket-launcher={row.displayId}
       tabIndex={0}
       aria-label={`Open ${row.displayId}: ${row.title}`}
       onKeyDown={activate}
