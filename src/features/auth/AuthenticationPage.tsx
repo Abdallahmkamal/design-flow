@@ -1,9 +1,14 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
 
 import styles from './AuthenticationPage.module.css';
 
 interface AuthenticationPageProps extends PropsWithChildren {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   footer?: ReactNode;
@@ -17,14 +22,18 @@ export function AuthenticationPage({
   title,
 }: AuthenticationPageProps) {
   const titleId = `auth-${title.toLowerCase().replaceAll(' ', '-')}`;
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, [title]);
 
   return (
     <main className={styles.page}>
       <section className={styles.panel} aria-labelledby={titleId}>
-        <span className={styles.brand}>Design Flow</span>
         <div className={styles.heading}>
-          <p>{eyebrow}</p>
-          <h1 id={titleId} tabIndex={-1}>
+          {eyebrow ? <p>{eyebrow}</p> : null}
+          <h1 ref={titleRef} id={titleId} tabIndex={-1}>
             {title}
           </h1>
           <span>{description}</span>

@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-07-30 — D-106 removes the pre-release pilot gate
+**Last updated:** 2026-08-11 — records team-ready Slices 1–5 through PR #42
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -362,6 +362,8 @@ slice is deployed.
 
 Branch: `codex/ui-modernization-foundation-shell`.
 
+**Implementation status:** Completed and merged through PRs #37–#38.
+
 Scope:
 
 - Add Vodafone-mapped Tailwind/shadcn configuration, Design Flow-owned
@@ -392,6 +394,8 @@ checks pass. There is no separate branch or deployment between checkpoints.
 ### Slice 2 — Work actions: Log Work and Create Ticket
 
 Branch: `codex/ui-modernization-work-actions`.
+
+**Implementation status:** Completed and merged through PR #39.
 
 Scope:
 
@@ -425,6 +429,8 @@ branch or deployment between checkpoints.
 
 Branch: `codex/ui-modernization-all-tickets`.
 
+**Implementation status:** Completed and merged through PR #40.
+
 Implement the locked desktop sticky-edge table, mobile cards, exact columns,
 Add Filter/chip model, archived-only visibility, People union semantics,
 Days Open/Days Active filters, URL-backed sorting/pagination/page size, exact
@@ -439,6 +445,8 @@ and complete filter/pagination regression coverage.
 
 Branch: `codex/ui-modernization-ticket-details`.
 
+**Implementation status:** Completed and merged through PR #41.
+
 Keep `/work-items/:displayId` canonical while presenting list-launched details
 as the approved wider desktop overlay and mobile full-screen view. Implement
 permissioned inline field edits, one-primary-assignee editing, read-only
@@ -452,6 +460,8 @@ tests.
 ### Slice 5 — Authentication uplift
 
 Branch: `codex/ui-modernization-auth`.
+
+**Implementation status:** Completed through PR #42; deployment remains a separate release step.
 
 Apply the light shadcn uplift while retaining email sign-in, closed account
 provisioning, mandatory first/reset change, inactive handling, autofill, and

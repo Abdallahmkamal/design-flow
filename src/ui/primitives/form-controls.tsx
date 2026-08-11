@@ -94,6 +94,7 @@ function FieldLabel({
 export interface FormInputProps
   extends InputHTMLAttributes<HTMLInputElement>, FieldChromeProps {
   trailingIcon?: ReactNode | undefined;
+  trailingAction?: ReactNode | undefined;
 }
 
 /** Team-ready shadcn-style input with the approved Figma field anatomy. */
@@ -107,6 +108,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       id,
       label,
       required,
+      trailingAction,
       trailingIcon,
       ...props
     },
@@ -117,7 +119,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     const descriptionId = description ? `${controlId}-description` : undefined;
     const errorId = error ? `${controlId}-error` : undefined;
     const describedBy = [descriptionId, errorId].filter(Boolean).join(' ');
-    const hasTrailingIcon = trailingIcon != null ? true : props.type === 'date';
+    const hasTrailingContent =
+      trailingAction != null || trailingIcon != null || props.type === 'date';
 
     return (
       <div className={fieldClass}>
@@ -138,12 +141,16 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             className={cn(
               controlClass,
               'h-12',
-              hasTrailingIcon &&
+              hasTrailingContent &&
                 'pr-10 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0',
               className,
             )}
           />
-          {hasTrailingIcon ? (
+          {trailingAction ? (
+            <span className="absolute top-1/2 right-1 z-10 flex -translate-y-1/2 items-center justify-center">
+              {trailingAction}
+            </span>
+          ) : hasTrailingContent ? (
             <span
               className="pointer-events-none absolute top-1/2 right-3 flex size-5 -translate-y-1/2 items-center justify-center text-foreground [&_svg]:size-[1.125rem]"
               aria-hidden="true"

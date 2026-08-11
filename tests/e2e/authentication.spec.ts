@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 const userId = '00000000-0000-4000-8000-000000000001';
 const email = 'designer@design-flow.example.invalid';
 const temporaryPassword = 'Temporary!Pass2026';
-const replacementPassword = 'Replacement!Pass2026';
+const replacementPassword = 'abcdefgh';
 
 interface AccountState {
   display_name: string;
@@ -412,6 +412,16 @@ test('mandatory password change cannot be bypassed and releases the shell after 
   await page.goto('/reports');
   await expect(page).toHaveURL('/change-password');
 
+  await page.getByLabel(/^New password/).fill('1234567');
+  await page.getByLabel(/^Confirm new password/).fill('1234567');
+  await page
+    .getByRole('button', { name: 'Change password and continue' })
+    .click();
+  await expect(
+    page.getByText('Use at least 8 characters.', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel(/^New password/)).toBeFocused();
+
   await page.getByLabel(/^New password/).fill(replacementPassword);
   await page.getByLabel(/^Confirm new password/).fill(replacementPassword);
   await page
@@ -468,6 +478,16 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   await expect(
     mobileControls.getByRole('navigation', { name: 'Primary navigation' }),
   ).toBeVisible();
+  const mobileNavigation = mobileControls.getByRole('navigation', {
+    name: 'Primary navigation',
+  });
+  await expect(mobileControls).toHaveCSS('backdrop-filter', 'none');
+  await expect(mobileNavigation).toHaveCSS('opacity', '1');
+  await expect(mobileNavigation).toHaveCSS(
+    'backdrop-filter',
+    /blur\(24px\).*saturate\(1\.5\)/u,
+  );
+  await expect(mobileNavigation).toHaveCSS('background-color', /0\.44/u);
   await expect(
     mobileControls.getByRole('link', { name: 'Work Items' }),
   ).toBeVisible();
@@ -577,7 +597,7 @@ test('mobile shell keeps primary navigation and session actions available', asyn
       background: getComputedStyle(dock).backgroundColor,
       border: getComputedStyle(dock).borderTopColor,
     }));
-  expect(dockMaterial.background).toMatch(/0\.16|0\.94/);
+  expect(dockMaterial.background).toMatch(/0\.44|0\.94/);
   expect(dockMaterial.border).toMatch(/0\.38/);
   await expect(page.getByTestId('mobile-shell-controls')).toHaveCSS(
     'background-color',
@@ -706,6 +726,40 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   await expect(page).toHaveURL('/sign-in');
 });
 
+test('mobile glass dock keeps production blur and readable tint from 360 to 430px', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium');
+  await configureAuthMocks(page);
+  await signIn(page);
+
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const dock = page
+      .getByTestId('mobile-shell-controls')
+      .getByRole('navigation', { name: 'Primary navigation' });
+    await expect(dock).toBeVisible();
+    const material = await dock.evaluate((element) => {
+      const computed = getComputedStyle(element);
+      return {
+        backdropFilter: computed.backdropFilter,
+        webkitBackdropFilter: computed.getPropertyValue(
+          '-webkit-backdrop-filter',
+        ),
+        background: computed.backgroundColor,
+        opacity: computed.opacity,
+        right: element.getBoundingClientRect().right,
+      };
+    });
+    expect(material.backdropFilter || material.webkitBackdropFilter).toContain(
+      'blur(24px)',
+    );
+    expect(material.background).toMatch(/0\.44/u);
+    expect(material.opacity).toBe('1');
+    expect(material.right).toBeLessThan(width);
+  }
+});
+
 test('desktop shell uses the team-ready persistent sidebar geometry', async ({
   page,
 }, testInfo) => {
@@ -743,16 +797,36 @@ test('desktop shell uses the team-ready persistent sidebar geometry', async ({
   );
 });
 
-test('Vodafone variable font and default authentication control sizing load', async ({
+test('team-ready authentication controls preserve Vodafone type, autofill, visibility, and reduced motion', async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/sign-in');
 
-  await expect(page.getByLabel(/Work email/)).toHaveCSS('height', '32px');
+  await expect(page.getByLabel(/Work email/)).toHaveCSS('height', '48px');
   await expect(page.getByRole('button', { name: 'Sign in' })).toHaveCSS(
     'height',
-    '32px',
+    '48px',
   );
+  await expect(page.getByLabel(/Work email/)).toHaveAttribute(
+    'autocomplete',
+    'username',
+  );
+  const password = page.getByLabel(/^Password/);
+  await expect(password).toHaveAttribute('autocomplete', 'current-password');
+  await expect(password).toHaveAttribute('type', 'password');
+  await page.getByRole('button', { name: 'Show password' }).click();
+  await expect(password).toHaveAttribute('type', 'text');
+  await expect(
+    page.getByRole('button', { name: 'Hide password' }),
+  ).toBeVisible();
+  expect(
+    await page
+      .locator('main')
+      .evaluate(
+        (element) => getComputedStyle(element, '::before').animationName,
+      ),
+  ).toBe('none');
 
   const fontLoaded = await page.evaluate(async () => {
     await document.fonts.ready;
@@ -764,6 +838,16 @@ test('Vodafone variable font and default authentication control sizing load', as
     'font-family',
     /Vodafone VF/,
   );
+
+  await page.evaluate(() => {
+    window.localStorage.setItem('design-flow-theme', 'dark');
+  });
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+
+  const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+  expect(accessibilityScanResults.violations).toEqual([]);
 });
 
 test('Team is absent from navigation and its former direct route', async ({

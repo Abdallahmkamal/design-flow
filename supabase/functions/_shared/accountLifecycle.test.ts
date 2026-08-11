@@ -1,5 +1,5 @@
 import { AppError } from './http.ts';
-import { generateTemporaryPassword } from './security.ts';
+import { generateTemporaryPassword, validateNewPassword } from './security.ts';
 import type {
   AuthUser,
   EdgeOperationState,
@@ -115,6 +115,22 @@ Deno.test('temporary passwords satisfy the configured password policy', () => {
   assert(/[A-Z]/.test(generated));
   assert(/[0-9]/.test(generated));
   assert(/[^A-Za-z0-9]/.test(generated));
+});
+
+Deno.test('user-chosen passwords enforce only the eight-character minimum', () => {
+  let sevenCharacterError: unknown;
+
+  try {
+    validateNewPassword('1234567');
+  } catch (error) {
+    sevenCharacterError = error;
+  }
+
+  assert(sevenCharacterError instanceof AppError);
+  assertEquals(sevenCharacterError.code, 'DF_VALIDATION');
+  assertEquals(validateNewPassword('abcdefgh'), 'abcdefgh');
+  const longPassword = 'long password '.repeat(20);
+  assertEquals(validateNewPassword(longPassword), longPassword);
 });
 
 Deno.test(

@@ -6,6 +6,8 @@
 
 > **Team-ready amendment (2026-08-08):** Modernization Slice 2 and `team-ready-ui-handoff.md` supersede the MVP presentation with the shared responsive overlay and nested Create Ticket flow. Domain operations remain independent: save the log, refresh state/permissions, attempt status, then independently attempt selected subtasks. Partial success, precise failed-operation retry, no log resubmission, and refresh after each completion are mandatory.
 
+> **Ticket-picker refinement (2026-08-11):** Focusing an empty ticket picker opens a lean `Your tickets` list containing unarchived tickets where the current user is primary assignee or contributor. In Progress, In Review, and To do are prioritized in that order, then recent Backlog or Paused work; Done is omitted from suggestions. Typing switches to the existing server-side global eligible-ticket search, and clearing returns to personalized suggestions.
+
 ## Purpose
 
 Capture actual ticket work by default, or secondary standalone Visual Work,
@@ -32,9 +34,12 @@ the preserved ticket-mode draft, not a submitted state.
 Ticket mode is the initial mode and shows, in order: title/context, searchable
 ticket selection, `Worked by`, one date-row list, the optional once-per-batch
 blocker action, independently authorized optional status change, then Submit.
-Ticket search is a feature-owned Input plus explicit result buttons, not a new
-generic typeahead or an overloaded Select. Results expose ticket ID, title,
-status, and primary assignee; selecting one has a visible selected state.
+The team-ready ticket search uses the existing Design Flow-owned Combobox.
+Focusing the empty field opens approximately six to eight personalized results
+for tickets the user owns or contributes to. Typing performs server-side search
+across all eligible unarchived tickets rather than filtering a previously loaded
+page. Results expose ticket ID, title, status, and primary assignee; selecting
+one has a visible selected state.
 
 Each submission has one to five ordered rows. A row has native `date`, required
 controlled work type, optional detail, and remove action (except the required
