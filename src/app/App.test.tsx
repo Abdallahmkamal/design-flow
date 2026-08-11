@@ -56,6 +56,7 @@ describe('authenticated application routing', () => {
   });
 
   it('redirects signed-out visitors to the closed sign-in form', async () => {
+    const user = userEvent.setup();
     const mock = createSupabaseClientMock();
     getSupabaseClientMock.mockReturnValue(mock.client);
 
@@ -64,7 +65,21 @@ describe('authenticated application routing', () => {
     expect(
       await screen.findByRole('heading', { name: 'Sign in' }),
     ).toBeVisible();
+    expect(screen.queryByText('Design Flow', { exact: true })).toBeNull();
+    expect(screen.queryByText('Closed team access')).toBeNull();
     expect(screen.getByLabelText(/Work email/)).toBeEnabled();
+    expect(screen.getByLabelText(/Work email/)).toHaveAttribute(
+      'autocomplete',
+      'username',
+    );
+    const password = screen.getByLabelText(/^Password/);
+    expect(password).toHaveAttribute('autocomplete', 'current-password');
+    expect(password).toHaveAttribute('type', 'password');
+    await user.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(password).toHaveAttribute('type', 'text');
+    expect(
+      screen.getByRole('button', { name: 'Hide password' }),
+    ).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByText(/register/i)).not.toBeInTheDocument();
   });
 
@@ -157,14 +172,9 @@ describe('authenticated application routing', () => {
 
     render(<App />);
     await screen.findByRole('heading', { name: 'Change your password' });
-    await user.type(
-      screen.getByLabelText(/^New password/),
-      'NewStrong!Pass2026',
-    );
-    await user.type(
-      screen.getByLabelText(/^Confirm new password/),
-      'NewStrong!Pass2026',
-    );
+    expect(screen.queryByText('Account protection')).toBeNull();
+    await user.type(screen.getByLabelText(/^New password/), 'abcdefgh');
+    await user.type(screen.getByLabelText(/^Confirm new password/), 'abcdefgh');
     await user.click(
       screen.getByRole('button', { name: 'Change password and continue' }),
     );
@@ -179,8 +189,30 @@ describe('authenticated application routing', () => {
       { body: { newPassword: string; operationId: string } },
     ];
     expect(invocation[0]).toBe('change_own_password');
-    expect(invocation[1].body.newPassword).toBe('NewStrong!Pass2026');
+    expect(invocation[1].body.newPassword).toBe('abcdefgh');
     expect(invocation[1].body.operationId).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it('rejects a seven-character replacement before calling the Edge Function', async () => {
+    window.history.pushState({}, '', '/change-password');
+    const user = userEvent.setup();
+    const mock = createSupabaseClientMock({
+      initialSession: syntheticSession,
+      accountResponses: [[{ ...activeAccountRow, must_change_password: true }]],
+    });
+    getSupabaseClientMock.mockReturnValue(mock.client);
+
+    render(<App />);
+    await screen.findByRole('heading', { name: 'Change your password' });
+    await user.type(screen.getByLabelText(/^New password/), '1234567');
+    await user.type(screen.getByLabelText(/^Confirm new password/), '1234567');
+    await user.click(
+      screen.getByRole('button', { name: 'Change password and continue' }),
+    );
+
+    expect(screen.getByText('Use at least 8 characters.')).toBeVisible();
+    expect(screen.getByLabelText(/^New password/)).toHaveFocus();
+    expect(mock.invoke).not.toHaveBeenCalled();
   });
 
   it('retries pending password completion with the same operation ID', async () => {

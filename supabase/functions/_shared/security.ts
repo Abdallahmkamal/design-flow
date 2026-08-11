@@ -40,14 +40,7 @@ export function generateTemporaryPassword(length = 20): string {
 }
 
 export function validateNewPassword(password: unknown): string {
-  if (
-    typeof password !== 'string' ||
-    password.length < 12 ||
-    !/[a-z]/.test(password) ||
-    !/[A-Z]/.test(password) ||
-    !/[0-9]/.test(password) ||
-    !/[^A-Za-z0-9]/.test(password)
-  ) {
+  if (typeof password !== 'string' || password.length < 8) {
     throw new AppError(
       'DF_VALIDATION',
       400,

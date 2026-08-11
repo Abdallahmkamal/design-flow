@@ -12,7 +12,13 @@ import {
   Sun,
   X,
 } from 'lucide-react';
-import { useRef, useState, type ComponentType, type SVGProps } from 'react';
+import {
+  useRef,
+  useState,
+  type ComponentType,
+  type CSSProperties,
+  type SVGProps,
+} from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { useAuthentication } from '../../features/auth/authContext';
@@ -57,6 +63,13 @@ import {
 } from './shellPermissions';
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
+
+// Keep both properties inline: the production CSS optimizer otherwise removes
+// the unprefixed declaration, which breaks blur on some Android compositors.
+const mobileDockBackdropStyle: CSSProperties = {
+  backdropFilter: 'var(--mobile-dock-backdrop-filter)',
+  WebkitBackdropFilter: 'var(--mobile-dock-backdrop-filter)',
+};
 
 const destinationDefinitions: Record<
   ShellDestination,
@@ -417,7 +430,11 @@ export function AppShell() {
           data-menu-open={quickActionsOpen}
           data-testid="mobile-shell-controls"
         >
-          <nav aria-label="Primary navigation" className={styles.mobileDock}>
+          <nav
+            aria-label="Primary navigation"
+            className={styles.mobileDock}
+            style={mobileDockBackdropStyle}
+          >
             {destinations.map((destination) => (
               <DestinationLink
                 key={destination.to}

@@ -74,12 +74,12 @@ const listRow = {
   updatedAt: '2026-07-21T08:00:00Z',
 };
 
-function detail(viewer = false) {
+function detail(viewer = false, row = listRow) {
   return {
-    ...listRow,
+    ...row,
     description: '[SYNTHETIC] Detail content for browser acceptance.',
-    area: { ...listRow.area, isActive: true },
-    labels: [{ ...listRow.labels[0], isActive: true }],
+    area: { ...row.area, isActive: true },
+    labels: row.labels.map((label) => ({ ...label, isActive: true })),
     createdBy: { id: userId, displayName: '[SYNTHETIC] Designer' },
     firstWorkedOn: null,
     lastWorkedOn: null,
@@ -146,6 +146,10 @@ async function mocks(
     conflict?: boolean;
     subtaskFailsOnce?: boolean;
     listRows?: (typeof listRow)[];
+    suggestionRows?: (typeof listRow)[];
+    searchRows?: (typeof listRow)[];
+    suggestionDelayMs?: number;
+    listRequestBodies?: unknown[];
     mutationBodies?: { url: string; body: unknown }[];
   } = {},
 ) {
@@ -429,7 +433,22 @@ async function mocks(
         ]),
       });
     else if (url.includes('list_work_items')) {
-      const rows = options.listRows ?? [listRow];
+      const requestBody = route.request().postDataJSON() as {
+        filters?: { peopleIds?: string[]; search?: string };
+      };
+      options.listRequestBodies?.push(requestBody);
+      const rows = (
+        requestBody.filters?.search
+          ? (options.searchRows ?? options.listRows ?? [listRow])
+          : requestBody.filters?.peopleIds?.length
+            ? (options.suggestionRows ?? options.listRows ?? [listRow])
+            : (options.listRows ?? [listRow])
+      ).filter((item) => !item.isArchived);
+      if (requestBody.filters?.peopleIds?.length && options.suggestionDelayMs) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, options.suggestionDelayMs),
+        );
+      }
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -440,13 +459,23 @@ async function mocks(
           pageSize: 25,
         }),
       });
-    } else if (url.includes('get_work_item_detail'))
+    } else if (url.includes('get_work_item_detail')) {
+      const requestedDisplayId = (
+        route.request().postDataJSON() as { display_id?: string }
+      ).display_id;
+      const detailRow = [
+        ...(options.listRows ?? [listRow]),
+        ...(options.suggestionRows ?? []),
+        ...(options.searchRows ?? []),
+      ].find((item) => item.displayId === requestedDisplayId);
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(detail(Boolean(options.viewer))),
+        body: JSON.stringify(
+          detail(Boolean(options.viewer), detailRow ?? listRow),
+        ),
       });
-    else if (
+    } else if (
       url.includes('get_work_item_history') ||
       url.includes('get_ticket_details_activity')
     )
@@ -950,6 +979,102 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     mutationBodies.filter(({ url }) => url.includes('submit_work_log')),
   ).toHaveLength(1);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('Log Work opens personalized suggestions and switches to global server search', async ({
+  page,
+}) => {
+  const contributorTicket = {
+    ...listRow,
+    id: '70000000-0000-4000-8000-000000000002',
+    displayId: 'DF-000002',
+    title: '[SYNTHETIC] Contributor ticket',
+    status: { code: 'in_progress', label: 'In Progress' },
+    assignee: {
+      id: '00000000-0000-4000-8000-000000000002',
+      displayName: '[SYNTHETIC] Lead',
+    },
+    contributors: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+    lastActivityAt: '2026-07-23T10:00:00Z',
+  };
+  const unrelatedTicket = {
+    ...listRow,
+    id: '70000000-0000-4000-8000-000000000003',
+    displayId: 'DF-000003',
+    title: '[SYNTHETIC] Global search ticket',
+    assignee: {
+      id: '00000000-0000-4000-8000-000000000002',
+      displayName: '[SYNTHETIC] Lead',
+    },
+    contributors: [],
+  };
+  const archivedTicket = {
+    ...listRow,
+    id: '70000000-0000-4000-8000-000000000004',
+    displayId: 'DF-000004',
+    title: '[SYNTHETIC] Archived ticket',
+    isArchived: true,
+  };
+  const listRequestBodies: unknown[] = [];
+  await mocks(page, {
+    suggestionRows: [listRow, contributorTicket, archivedTicket],
+    searchRows: [unrelatedTicket],
+    suggestionDelayMs: 300,
+    listRequestBodies,
+  });
+  await signIn(page);
+  await page.goto('/work-logs/new');
+
+  const picker = page.getByLabel('Search tickets');
+  await picker.focus();
+  await expect(page.getByText('Loading your tickets…')).toBeVisible();
+  await expect(
+    page.getByText('No relevant active tickets.', { exact: false }),
+  ).toHaveCount(0);
+  await expect(page.getByText('Your tickets', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('option', { name: /Contributor ticket/u }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('option', { name: /Responsive ticket foundation/u }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('option', { name: /Archived ticket/u }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('option', { name: /Global search ticket/u }),
+  ).toHaveCount(0);
+
+  await picker.fill('global');
+  await expect(page.getByText('Your tickets', { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole('option', { name: /Global search ticket/u }),
+  ).toBeVisible();
+  expect(
+    listRequestBodies.some(
+      (body) =>
+        (body as { filters?: { search?: string } }).filters?.search ===
+        'global',
+    ),
+  ).toBe(true);
+
+  await picker.fill('');
+  await expect(page.getByText('Your tickets', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('option', { name: /Contributor ticket/u }),
+  ).toBeVisible();
+  await picker.press('ArrowDown');
+  await picker.press('Enter');
+  await expect(
+    page.getByRole('textbox', { name: 'Selected ticket' }),
+  ).toHaveValue('DF-000002 — [SYNTHETIC] Contributor ticket');
+  await expect(page.getByText('Loading selected ticket…')).toHaveCount(0);
+  expect(
+    listRequestBodies.some((body) => {
+      const filters = (body as { filters?: { peopleIds?: string[] } }).filters;
+      return filters?.peopleIds?.includes(userId);
+    }),
+  ).toBe(true);
 });
 
 test('partial follow-up failure retries only the failed subtask with its stable operation ID', async ({

@@ -35,7 +35,7 @@ Give every provisioned team member a closed, accessible email-and-password entry
 
 ## Information hierarchy
 
-1. Product identity and the current task: Sign in, Change password, or Account inactive.
+1. The current task: Sign in, Change password, or Account inactive.
 2. Required fields and validation or server feedback.
 3. Closed-access guidance and the safe recovery action.
 
@@ -58,8 +58,13 @@ Give every provisioned team member a closed, accessible email-and-password entry
 
 ## Components to reuse, extend, or create
 
-- Reuse Design Flow `Input` for email and password fields.
-- Reuse Design Flow `Button` for submit and sign-out actions.
+- Reuse the Design Flow-owned team-ready `FormInput` for email and password
+  fields and extend its trailing slot once for accessible interactive actions.
+- Reuse the Design Flow-owned shadcn-style `Button` for submit, password
+  visibility, retry, and sign-out actions.
+- Keep `PasswordInput` feature-owned under Authentication; it preserves paste,
+  autofill, labels, error association, and native password semantics while
+  exposing an explicit show/hide control.
 - Reuse native links only for real navigation.
 - Create feature-owned authentication route guards, status messaging, and form compositions under `src/features/auth/`; no new shared UI component is required for this slice.
 
@@ -67,7 +72,11 @@ Give every provisioned team member a closed, accessible email-and-password entry
 
 - Use one centered, bounded authentication panel on the page canvas.
 - Keep the form in a single column with one clear primary action.
-- Use the verified Input and Button geometry and the existing container/elevation aliases.
+- Keep sign-in and mandatory-password-change cards free of redundant product
+  identity or eyebrow labels; the task heading is the visual entry point.
+- Use the team-ready shared field/Button geometry and existing semantic
+  container/elevation aliases. One low-contrast CSS-only ambient background is
+  permitted behind the form and becomes static under reduced motion.
 
 ## Mobile layout
 

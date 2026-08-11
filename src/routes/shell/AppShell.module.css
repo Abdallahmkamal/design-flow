@@ -2,7 +2,12 @@
 .quickActionsContent {
   --mobile-control-edge: 0.75rem;
   --mobile-control-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-  --mobile-glass-background: rgb(255 255 255 / 16%);
+  --mobile-dock-backdrop-filter: blur(24px) saturate(150%);
+  --mobile-glass-background: color-mix(
+    in srgb,
+    var(--color-surface-default) 44%,
+    transparent
+  );
   --mobile-glass-border: rgb(255 255 255 / 38%);
   --mobile-fab-background: rgb(255 255 255 / 58%);
   --mobile-fab-glow-deep: color-mix(
@@ -58,8 +63,8 @@
     inset 0 1px 0 rgb(255 255 255 / 24%),
     0 18px 42px -24px rgb(0 0 0 / 32%),
     0 5px 16px -10px rgb(0 0 0 / 18%);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: var(--mobile-dock-backdrop-filter);
+  -webkit-backdrop-filter: var(--mobile-dock-backdrop-filter);
   pointer-events: auto;
 }
 
@@ -385,13 +390,21 @@
   .mobileDock,
   .quickActionFab,
   .secondaryExpandedAction {
-    background: rgb(250 251 251 / 94%) !important;
+    background: color-mix(
+      in srgb,
+      var(--color-surface-bg) 94%,
+      transparent
+    ) !important;
   }
 }
 
 :global([data-theme='dark']) .mobileControls,
 :global([data-theme='dark']) .quickActionsContent {
-  --mobile-glass-background: rgb(28 29 29 / 26%);
+  --mobile-glass-background: color-mix(
+    in srgb,
+    var(--color-surface-default) 52%,
+    transparent
+  );
   --mobile-glass-border: rgb(255 255 255 / 18%);
   --mobile-fab-background: rgb(42 44 44 / 72%);
 }

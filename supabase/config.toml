@@ -47,8 +47,8 @@ refresh_token_reuse_interval = 10
 enable_signup = false
 enable_anonymous_sign_ins = false
 enable_manual_linking = false
-minimum_password_length = 12
-password_requirements = "lower_upper_letters_digits_symbols"
+minimum_password_length = 8
+password_requirements = ""
 
 [auth.email]
 # The global auth.enable_signup switch keeps public registration closed.

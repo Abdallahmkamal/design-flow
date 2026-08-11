@@ -3,12 +3,13 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Button } from '../../ui/Button/Button';
-import { Input } from '../../ui/Input/Input';
+import { Button } from '../../ui/primitives/button';
+import { FormInput } from '../../ui/primitives/form-controls';
 import styles from './AuthenticationPage.module.css';
 import { AuthenticationPage } from './AuthenticationPage';
 import { useAuthentication } from './authContext';
 import { AuthenticationActionError } from './authTypes';
+import { PasswordInput } from './PasswordInput';
 
 const signInSchema = z.object({
   email: z.email('Enter a valid work email address.'),
@@ -81,10 +82,9 @@ export function SignInPage() {
 
   return (
     <AuthenticationPage
-      eyebrow="Closed team access"
       title="Sign in"
-      description="Use the work account provisioned by a Design Flow administrator."
-      footer="Need a new account or password reset? Contact a Design Flow administrator. Public registration and self-service reset are not available."
+      description="Use your provisioned work account."
+      footer="Need access or a password reset? Contact a Design Flow administrator."
     >
       <form className={styles.form} onSubmit={submit} noValidate>
         {requestError ? (
@@ -92,7 +92,7 @@ export function SignInPage() {
             {requestError}
           </p>
         ) : null}
-        <Input
+        <FormInput
           label="Work email"
           type="email"
           autoComplete="username"
@@ -101,9 +101,8 @@ export function SignInPage() {
           {...(errors.email?.message ? { error: errors.email.message } : {})}
           {...register('email')}
         />
-        <Input
+        <PasswordInput
           label="Password"
-          type="password"
           autoComplete="current-password"
           required
           {...(errors.password?.message

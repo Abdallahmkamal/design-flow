@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, Trash2, X } from 'lucide-react';
-import { useMemo, useRef, useState, type FormEvent } from 'react';
+import {
+  useDeferredValue,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react';
 import {
   Link,
   useLocation,
@@ -89,6 +95,29 @@ const blankTicket = (assigneeId = ''): WorkItemFormValues => ({
   labelIds: [],
 });
 
+const suggestionStatusPriority = new Map([
+  ['in_progress', 0],
+  ['in_review', 1],
+  ['todo', 2],
+  ['backlog', 3],
+  ['paused', 4],
+]);
+
+function personalizedTickets(rows: WorkItemListRow[]) {
+  return [...rows]
+    .filter((ticket) => suggestionStatusPriority.has(ticket.status.code))
+    .sort((left, right) => {
+      const statusDifference =
+        suggestionStatusPriority.get(left.status.code)! -
+        suggestionStatusPriority.get(right.status.code)!;
+      return (
+        statusDifference ||
+        right.lastActivityAt.localeCompare(left.lastActivityAt)
+      );
+    })
+    .slice(0, 8);
+}
+
 interface FollowupFailures {
   status: boolean;
   subtasks: { id: string; title: string }[];
@@ -114,6 +143,7 @@ export function WorkLogPage() {
   const [blockerDate, setBlockerDate] = useState('');
   const [selectedSubtasks, setSelectedSubtasks] = useState<string[]>([]);
   const [ticketSearch, setTicketSearch] = useState('');
+  const [ticketPickerOpen, setTicketPickerOpen] = useState(false);
   const [createDraft, setCreateDraft] = useState<WorkItemFormValues | null>(
     null,
   );
@@ -129,16 +159,42 @@ export function WorkLogPage() {
     queryKey: ['work-item-options'],
     queryFn: getWorkItemOptions,
   });
-  const tickets = useQuery({
-    queryKey: ['work-log-tickets'],
+  const normalizedTicketSearch = useDeferredValue(ticketSearch.trim());
+  const suggestionTickets = useQuery({
+    queryKey: ['work-log-ticket-suggestions', account?.id],
+    queryFn: () =>
+      listWorkItems({
+        ...parseWorkItemFilters(new URLSearchParams()),
+        peopleIds: account ? [account.id] : [],
+        sort: 'last_activity',
+        direction: 'desc',
+      }),
+    enabled: Boolean(ticketPickerOpen && !normalizedTicketSearch && account),
+  });
+  const searchedTickets = useQuery({
+    queryKey: ['work-log-ticket-search', normalizedTicketSearch],
+    queryFn: () =>
+      listWorkItems({
+        ...parseWorkItemFilters(new URLSearchParams()),
+        search: normalizedTicketSearch,
+        sort: 'last_activity',
+        direction: 'desc',
+      }),
+    enabled: Boolean(ticketPickerOpen && normalizedTicketSearch),
+  });
+  const preselectedTickets = useQuery({
+    queryKey: ['work-log-preselected-ticket', ticketId],
     queryFn: () =>
       listWorkItems({
         ...parseWorkItemFilters(new URLSearchParams()),
         sort: 'ticket',
         direction: 'asc',
       }),
+    enabled: Boolean(ticketId && !ticketDisplayId),
   });
-  const row = tickets.data?.rows.find((item) => item.id === ticketId);
+  const row = preselectedTickets.data?.rows.find(
+    (item) => item.id === ticketId,
+  );
   const effectiveDisplayId = ticketDisplayId || (row?.displayId ?? '');
   const selectedTicket = useQuery({
     queryKey: ['work-log-ticket', effectiveDisplayId],
@@ -150,19 +206,23 @@ export function WorkLogPage() {
     mutationFn: (values: WorkItemFormValues) =>
       createWorkItem(values, createOperation),
   });
-  const filteredTickets = useMemo(() => {
-    const search = ticketSearch.trim().toLowerCase();
-    const rows = tickets.data?.rows ?? [];
-    return (
-      search
-        ? rows.filter((item) =>
-            `${item.displayId} ${item.title} ${item.status.label} ${item.assignee?.displayName ?? ''}`
-              .toLowerCase()
-              .includes(search),
-          )
-        : rows
-    ).slice(0, 8);
-  }, [ticketSearch, tickets.data?.rows]);
+  const visibleTickets = useMemo(
+    () =>
+      normalizedTicketSearch
+        ? (searchedTickets.data?.rows ?? []).slice(0, 8)
+        : personalizedTickets(suggestionTickets.data?.rows ?? []),
+    [
+      normalizedTicketSearch,
+      searchedTickets.data?.rows,
+      suggestionTickets.data?.rows,
+    ],
+  );
+  const activeTicketQuery = normalizedTicketSearch
+    ? searchedTickets
+    : suggestionTickets;
+  const isTicketPickerLoading =
+    activeTicketQuery.isPending ||
+    (activeTicketQuery.isFetching && !activeTicketQuery.data);
   const canChoosePerson = Boolean(
     account &&
     (account.isAdmin || ['lead', 'manager'].includes(account.positionCode)),
@@ -540,21 +600,23 @@ export function WorkLogPage() {
               </ButtonGroup>
             ) : (
               <Combobox
-                items={filteredTickets.map((ticket) => ticket.id)}
-                filteredItems={filteredTickets.map((ticket) => ticket.id)}
+                items={visibleTickets.map((ticket) => ticket.id)}
+                filteredItems={visibleTickets.map((ticket) => ticket.id)}
                 filter={null}
                 value={null}
-                open={Boolean(ticketSearch)}
+                open={ticketPickerOpen}
+                onOpenChange={setTicketPickerOpen}
                 inputValue={ticketSearch}
                 onInputValueChange={(value) => setTicketSearch(value)}
                 onValueChange={(value: string | null) => {
-                  const item = filteredTickets.find(
+                  const item = visibleTickets.find(
                     (ticket) => ticket.id === value,
                   );
                   if (!item) return;
                   setTicketId(item.id);
                   setTicketDisplayId(item.displayId);
                   setTicketSearch('');
+                  setTicketPickerOpen(false);
                   resetTicketOptions();
                 }}
               >
@@ -566,6 +628,7 @@ export function WorkLogPage() {
                     data-slot="input"
                     aria-label="Search tickets"
                     placeholder="Search tickets"
+                    onFocus={() => setTicketPickerOpen(true)}
                   />
                   {canCreateTicket ? (
                     <ModernButton
@@ -583,23 +646,57 @@ export function WorkLogPage() {
                   ) : null}
                 </ButtonGroup>
                 <ComboboxContent>
-                  <ComboboxList>
-                    {filteredTickets.map((item: WorkItemListRow) => (
-                      <ComboboxItem key={item.id} value={item.id}>
-                        {item.displayId} — {item.title} · {item.status.label} ·{' '}
-                        {item.assignee?.displayName ?? 'Unassigned'}
-                      </ComboboxItem>
-                    ))}
-                  </ComboboxList>
-                  <ComboboxEmpty>
-                    No unarchived ticket matches this search.
-                  </ComboboxEmpty>
+                  {isTicketPickerLoading ? (
+                    <p className={styles.ticketPickerState} role="status">
+                      {normalizedTicketSearch
+                        ? 'Searching tickets…'
+                        : 'Loading your tickets…'}
+                    </p>
+                  ) : activeTicketQuery.isError ? (
+                    <div className={styles.ticketPickerState} role="alert">
+                      <p>
+                        {normalizedTicketSearch
+                          ? 'Ticket search could not be loaded.'
+                          : 'Your ticket suggestions could not be loaded.'}
+                      </p>
+                      <ModernButton
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => void activeTicketQuery.refetch()}
+                      >
+                        Retry
+                      </ModernButton>
+                    </div>
+                  ) : (
+                    <>
+                      {!normalizedTicketSearch ? (
+                        <p className={styles.suggestionLabel}>Your tickets</p>
+                      ) : null}
+                      <ComboboxList>
+                        {visibleTickets.map((item: WorkItemListRow) => (
+                          <ComboboxItem key={item.id} value={item.id}>
+                            {item.displayId} — {item.title} ·{' '}
+                            {item.status.label} ·{' '}
+                            {item.assignee?.displayName ?? 'Unassigned'}
+                          </ComboboxItem>
+                        ))}
+                      </ComboboxList>
+                      <ComboboxEmpty>
+                        {normalizedTicketSearch
+                          ? 'No unarchived ticket matches this search.'
+                          : 'No relevant active tickets. Search to find another unarchived ticket.'}
+                      </ComboboxEmpty>
+                    </>
+                  )}
                 </ComboboxContent>
               </Combobox>
             )}
-            {tickets.isPending ? <p role="status">Loading tickets…</p> : null}
-            {tickets.isError ? (
-              <p role="alert">Tickets could not be loaded.</p>
+            {preselectedTickets.isFetching ? (
+              <p role="status">Loading selected ticket…</p>
+            ) : null}
+            {preselectedTickets.isError ? (
+              <p role="alert">The selected ticket could not be loaded.</p>
             ) : null}
           </section>
         ) : (

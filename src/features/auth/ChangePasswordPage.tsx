@@ -4,20 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { createOperationId } from '../../shared/operations/operationId';
-import { Button } from '../../ui/Button/Button';
-import { Input } from '../../ui/Input/Input';
+import { Button } from '../../ui/primitives/button';
 import styles from './AuthenticationPage.module.css';
 import { AuthenticationPage } from './AuthenticationPage';
 import { useAuthentication } from './authContext';
 import { AuthenticationActionError } from './authTypes';
+import { PasswordInput } from './PasswordInput';
 
-const passwordPolicy = z
-  .string()
-  .min(12, 'Use at least 12 characters.')
-  .regex(/[a-z]/, 'Include a lowercase letter.')
-  .regex(/[A-Z]/, 'Include an uppercase letter.')
-  .regex(/[0-9]/, 'Include a number.')
-  .regex(/[^A-Za-z0-9]/, 'Include a symbol.');
+const passwordPolicy = z.string().min(8, 'Use at least 8 characters.');
 
 const changePasswordSchema = z
   .object({
@@ -107,10 +101,9 @@ export function ChangePasswordPage() {
 
   return (
     <AuthenticationPage
-      eyebrow="Account protection"
       title="Change your password"
       description="Replace the temporary password before entering Design Flow."
-      footer="Use at least 12 characters with lowercase and uppercase letters, a number, and a symbol."
+      footer="Use at least 8 characters. Longer passwords are supported."
     >
       <form className={styles.form} onSubmit={submit} noValidate>
         {requestError ? (
@@ -118,9 +111,8 @@ export function ChangePasswordPage() {
             {requestError}
           </p>
         ) : null}
-        <Input
+        <PasswordInput
           label="New password"
-          type="password"
           autoComplete="new-password"
           required
           {...(errors.newPassword?.message
@@ -128,9 +120,8 @@ export function ChangePasswordPage() {
             : {})}
           {...register('newPassword')}
         />
-        <Input
+        <PasswordInput
           label="Confirm new password"
-          type="password"
           autoComplete="new-password"
           required
           {...(errors.confirmPassword?.message

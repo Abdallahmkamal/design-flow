@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button } from '../../ui/Button/Button';
+import { Button } from '../../ui/primitives/button';
 import styles from './AuthenticationPage.module.css';
 import { AuthenticationPage } from './AuthenticationPage';
 import { useAuthentication } from './authContext';

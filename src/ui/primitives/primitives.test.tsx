@@ -61,6 +61,25 @@ describe('team-ready primitives', () => {
     ).toHaveAttribute('aria-checked', 'false');
   });
 
+  it('supports an accessible interactive trailing input action', async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(
+      <FormInput
+        label="Password"
+        trailingAction={
+          <button type="button" onClick={onClick}>
+            Show password
+          </button>
+        }
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText('Password')).toBeVisible();
+  });
+
   it('keeps Button state and activation semantic', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

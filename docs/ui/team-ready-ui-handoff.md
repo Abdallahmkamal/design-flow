@@ -20,11 +20,12 @@ This repository version incorporates the approved implementation reconciliation 
 
 The approved modernization sequence has exactly nine slices:
 
-1. Foundation, shell, and navigation — `codex/ui-modernization-foundation-shell` (two internal checkpoints: foundation/primitives; shell/navigation).
-2. Work actions: Log Work and Create Ticket — `codex/ui-modernization-work-actions` (two internal checkpoints: overlay/Log Work; Create Ticket/nested workflow).
-3. All Tickets.
-4. Route-backed inline Ticket Details.
-5. Authentication uplift.
+1. Foundation, shell, and navigation — `codex/ui-modernization-foundation-shell` (completed and merged through PRs #37–#38; two internal checkpoints: foundation/primitives; shell/navigation).
+2. Work actions: Log Work and Create Ticket — `codex/ui-modernization-work-actions` (completed and merged through PR #39; two internal checkpoints: overlay/Log Work; Create Ticket/nested workflow).
+3. All Tickets — completed and merged through PR #40.
+4. Route-backed inline Ticket Details — completed and merged through PR #41.
+5. Authentication uplift — implementation complete and locally approved;
+   pending publication and deployment.
 6. Dashboard uplift.
 7. Reports uplift and revised exports.
 8. Settings uplift.
@@ -136,7 +137,11 @@ Broader visual consistency and secondary-module refinement must not delay rollou
   Safari-compatible backdrop blur, a subtle edge and restrained elevation; the
   fixed bottom region itself remains transparent so page content scrolls behind
   the dock. Preserve safe-area clearance and enough page padding to bring final
-  content fully above the controls.
+  content fully above the controls. The visible capsule owns its background,
+  border, radius, and backdrop filter directly. Its semantic translucent tint
+  must remain readable if a mobile compositor advertises backdrop-filter support
+  but temporarily fails to sample the page; genuinely unsupported browsers use
+  the more opaque readability fallback.
 - Present the separate Quick Actions control as a glass/white FAB with a red
   plus and a restrained CSS-only masked conic perimeter glow while resting; the
   primary effect is a soft, slowly circulating halo populated by asymmetric burgundy,
