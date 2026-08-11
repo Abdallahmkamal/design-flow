@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-08-11 — records team-ready Slices 1–4 merged and Slice 5 locally approved
+**Last updated:** 2026-08-11 — records team-ready Slices 1–5 through PR #42
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -461,7 +461,7 @@ tests.
 
 Branch: `codex/ui-modernization-auth`.
 
-**Implementation status:** Complete and locally approved; pending publication and deployment.
+**Implementation status:** Completed through PR #42; deployment remains a separate release step.
 
 Apply the light shadcn uplift while retaining email sign-in, closed account
 provisioning, mandatory first/reset change, inactive handling, autofill, and

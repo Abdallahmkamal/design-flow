@@ -24,8 +24,8 @@ The approved modernization sequence has exactly nine slices:
 2. Work actions: Log Work and Create Ticket — `codex/ui-modernization-work-actions` (completed and merged through PR #39; two internal checkpoints: overlay/Log Work; Create Ticket/nested workflow).
 3. All Tickets — completed and merged through PR #40.
 4. Route-backed inline Ticket Details — completed and merged through PR #41.
-5. Authentication uplift — implementation complete and locally approved;
-   pending publication and deployment.
+5. Authentication uplift — completed through PR #42; deployment remains a
+   separate release step.
 6. Dashboard uplift.
 7. Reports uplift and revised exports.
 8. Settings uplift.
