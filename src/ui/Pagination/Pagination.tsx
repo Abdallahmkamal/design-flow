@@ -64,8 +64,11 @@ export function Pagination({
                   <span aria-hidden="true">…</span>
                 ) : null}
                 <Button
-                  variant={candidate === page ? 'primary' : 'ghost'}
+                  variant="ghost"
                   size="small"
+                  className={
+                    candidate === page ? styles.currentPage : undefined
+                  }
                   aria-current={candidate === page ? 'page' : undefined}
                   aria-label={`Page ${candidate}`}
                   onClick={() => onPageChange(candidate)}

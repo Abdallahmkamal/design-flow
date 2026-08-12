@@ -15,6 +15,11 @@ D-110 and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) supersede t
 - Use the locked desktop order Ticket, Area, Status, People, Last Activity, Start Date, Due Date, Days Open, Days Active, Labels, Link. Keep Ticket/Link sticky, with the middle columns horizontally scrollable.
 - Use approved expandable mobile cards rather than compressing the table.
 - Search remains visible; Add Filter creates one removable chip per filter type. Include server-side Days Open/Days Active ranges.
+- Include an optional visible **Unassigned** filter for tickets without a current
+  primary assignee. It uses the ordinary removable-chip/mobile-filter model and
+  exists so Dashboard's Unassigned backlog drill-down remains fully explained.
+  It is incompatible with a People refinement and does not alter People union
+  semantics or assignment authorization.
 - Sorting, filters, page, and desktop page size remain URL-backed. Use 25 rows by default, desktop choices 25/50/100, and fixed 25 on mobile with exact result ranges.
 - Selecting a row/card opens route-backed Ticket Details at `/work-items/:displayId`, preserving list state and browser Back. Direct ticket URLs retain compatibility.
 - Exactly one primary assignee remains; multi-assignee is consciously deferred until after rollout and contributors remain derived.
@@ -122,6 +127,9 @@ Default to **Due date ascending**, with tickets lacking due dates last. Supporte
 - Ticket ID
 
 Ascending/descending direction is available where meaningful. Use a stable Ticket ID tie-breaker so pagination or refresh does not reorder equal values unexpectedly.
+
+The current desktop page number uses the neutral near-black action surface with
+inverse text. Vodafone red remains reserved for actions and focus indication.
 
 ## 8. Mobile card
 

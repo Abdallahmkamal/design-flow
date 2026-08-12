@@ -452,6 +452,41 @@ export function AppShell() {
                   className={cn(styles.quickActionFab, styles.restingFab)}
                   aria-label="Open Quick Actions"
                 >
+                  <svg
+                    className={styles.fabBorderTrace}
+                    viewBox="0 0 66 66"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <defs>
+                      <linearGradient
+                        id="design-flow-mobile-fab-gradient"
+                        x1="33"
+                        y1="1"
+                        x2="33"
+                        y2="65"
+                        gradientUnits="userSpaceOnUse"
+                      >
+                        <stop
+                          offset="0"
+                          stopColor="var(--color-action-accent-background)"
+                        />
+                        <stop
+                          offset="1"
+                          stopColor="var(--color-action-accent-gradient-deep)"
+                        />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      className={styles.fabBorderTrack}
+                      d="M33 1C50.6731 1 65 15.3269 65 33C65 50.6731 50.6731 65 33 65C15.3269 65 1 50.6731 1 33C1 15.3269 15.3269 1 33.0103 1.00103"
+                    />
+                    <path
+                      className={styles.fabBorderProgress}
+                      d="M33 1C50.6731 1 65 15.3269 65 33C65 50.6731 50.6731 65 33 65C15.3269 65 1 50.6731 1 33C1 15.3269 15.3269 1 33.0103 1.00103"
+                      pathLength="1"
+                    />
+                  </svg>
                   <Plus className={styles.fabIcon} aria-hidden="true" />
                 </Button>
               </SheetTrigger>

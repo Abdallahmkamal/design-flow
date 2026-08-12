@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   activeAccountRow,
   createSupabaseClientMock,
+  emptyDashboardResponse,
   syntheticSession,
 } from '../test/supabaseClientMock';
 import { App } from './App';
@@ -51,8 +52,131 @@ describe('authenticated application routing', () => {
         name: 'Open profile menu for Synthetic Designer',
       })[0],
     ).toBeVisible();
-    expect(screen.getByText('Operational overview')).toBeVisible();
+    expect(
+      screen.getByText(/Current ticket state and actual recorded work as of/),
+    ).toBeVisible();
+    const dashboardMain = screen.getByRole('main');
+    expect(
+      within(dashboardMain).queryByRole('link', { name: 'Log work' }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(dashboardMain).queryByRole('link', { name: 'Create ticket' }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(dashboardMain).getByRole('button', { name: /People:/ }),
+    ).toBeVisible();
+    expect(
+      within(dashboardMain).getByRole('combobox', { name: /Area:/ }),
+    ).toBeVisible();
+    const activeSummary = within(dashboardMain).getByRole('link', {
+      name: 'Open Active work items tickets, 0',
+    });
+    expect(activeSummary).toHaveAttribute(
+      'href',
+      `/work-items?people=${activeAccountRow.id}&status=todo%2Cin_progress%2Cin_review`,
+    );
+    expect(within(activeSummary).queryByText('View tickets')).toBeNull();
+    const summaryMeasure = activeSummary.querySelector<HTMLElement>(
+      '[data-slot="card-content"]',
+    );
+    expect(summaryMeasure).not.toBeNull();
+    expect(within(summaryMeasure!).getByText('0')).toBeVisible();
+    expect(
+      within(summaryMeasure!).getByText(
+        '0 To do · 0 In Progress · 0 In Review',
+      ),
+    ).toBeVisible();
+    const quickActions = screen.getByRole('button', {
+      name: 'Open Quick Actions',
+    });
+    expect(
+      quickActions.querySelectorAll('svg[viewBox="0 0 66 66"] path'),
+    ).toHaveLength(2);
+    expect(
+      quickActions.querySelector('#design-flow-mobile-fab-gradient'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Synthetic test environment')).toBeInTheDocument();
+  });
+
+  it('makes Dashboard ticket records complete neutral navigation rows', async () => {
+    const dashboardResponse = {
+      ...emptyDashboardResponse,
+      needsAttention: [
+        {
+          id: '00000000-0000-4000-8000-000000000072',
+          displayId: 'DF-000072',
+          title: 'Resolve chart accessibility blocker',
+          status: { code: 'todo', label: 'To do' },
+          assignee: {
+            id: '00000000-0000-4000-8000-000000000001',
+            displayName: 'Synthetic Designer',
+          },
+          dueDate: '2026-08-13',
+          reasons: ['Blocked', 'Due soon'],
+        },
+      ],
+      recentTicketWork: [
+        {
+          entryId: '00000000-0000-4000-8000-000000000165',
+          workDate: '2026-08-09',
+          workType: { code: 'planning', label: 'Planning & alignment' },
+          person: {
+            id: '00000000-0000-4000-8000-000000000001',
+            displayName: 'Synthetic Designer',
+          },
+          workItem: {
+            id: '00000000-0000-4000-8000-000000000065',
+            displayId: 'DF-000065',
+            title: 'Review export field labels',
+          },
+        },
+      ],
+      managementSignals: {
+        peopleInScope: 1,
+        workRecordedThisWeek: 1,
+        noRecentWork: [],
+        noActiveOwnedTickets: [],
+        reviewWaiting: [
+          {
+            id: '00000000-0000-4000-8000-000000000065',
+            displayId: 'DF-000065',
+            title: 'Review export field labels',
+            waitingSince: '2026-08-09',
+          },
+        ],
+      },
+    };
+    const mock = createSupabaseClientMock({
+      initialSession: syntheticSession,
+      accountResponses: [[activeAccountRow]],
+      rpcResponses: { get_dashboard: dashboardResponse },
+    });
+    getSupabaseClientMock.mockReturnValue(mock.client);
+
+    render(<App />);
+
+    const rowLink = await screen.findByRole('link', {
+      name: 'Open DF-000072: Resolve chart accessibility blocker',
+    });
+    expect(rowLink).toHaveAttribute('href', '/work-items/DF-000072');
+    expect(
+      within(rowLink).getByText('Resolve chart accessibility blocker'),
+    ).toBeVisible();
+    expect(within(rowLink).getByText('Synthetic Designer')).toBeVisible();
+    expect(within(rowLink).getByText('Blocked')).toBeVisible();
+    expect(within(rowLink).getByText('Due soon')).toBeVisible();
+
+    const activityLink = screen.getByRole('link', {
+      name: 'Open DF-000065: Review export field labels, recorded by Synthetic Designer',
+    });
+    expect(activityLink).toHaveAttribute(
+      'href',
+      '/work-items/DF-000065#actual-date-2026-08-09',
+    );
+    expect(
+      within(activityLink).getByText('Planning & alignment'),
+    ).toBeVisible();
+    expect(screen.queryByText('View tickets')).toBeNull();
   });
 
   it('redirects signed-out visitors to the closed sign-in form', async () => {

@@ -39,6 +39,14 @@
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
+.currentPage {
+  color: var(--color-action-primary-text) !important;
+  background: var(--color-action-neutral-background) !important;
+}
+.currentPage:hover:not(:disabled) {
+  color: var(--color-action-primary-text) !important;
+  background: var(--color-action-neutral-background) !important;
+}
 @media (max-width: 35rem) {
   .pagination {
     align-items: stretch;

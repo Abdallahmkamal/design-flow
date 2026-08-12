@@ -1,6 +1,6 @@
 begin;
 
-select plan(31);
+select plan(33);
 
 select is(private.count_working_days(null, date '2026-08-09'), null::integer, 'Days Open is absent without a Start Date');
 select is(private.count_working_days(date '2026-08-09', date '2026-08-09'), 0, 'Days Open is zero when Start Date is today');
@@ -152,6 +152,8 @@ select is(
 );
 select throws_ok($$ select public.list_work_items('{"pageSize":30}'::jsonb) $$, 'P0001', 'DF_VALIDATION', 'unsupported server page sizes are rejected');
 select throws_ok($$ select public.list_work_items('{"peopleIds":["not-a-uuid"]}'::jsonb) $$, 'P0001', 'DF_VALIDATION', 'malformed server filter identifiers use the stable validation error');
+select is((public.list_work_items(jsonb_build_object('search', 'Slice 3 missing', 'unassignedOnly', true)) ->> 'totalCount')::integer, 1, 'Unassigned is a visible server-side refinement');
+select throws_ok($$ select public.list_work_items('{"unassignedOnly":true,"peopleIds":["10000000-0000-4000-8000-000000000002"]}'::jsonb) $$, 'P0001', 'DF_VALIDATION', 'Unassigned rejects a contradictory People refinement');
 
 reset role;
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001', true);

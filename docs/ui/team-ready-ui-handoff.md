@@ -1,7 +1,7 @@
 # Design Flow — Team-Ready UI Handoff
 
 Status: Approved post-MVP repository contract
-Last updated: 2026-08-11
+Last updated: 2026-08-11 — D-112 Dashboard scope refinement
 Figma file: https://www.figma.com/design/2c9QoPS8BLcTdiIoBEeeni/DesignFlow
 
 ## Repository reconciliation — 2026-08-08
@@ -143,20 +143,17 @@ Broader visual consistency and secondary-module refinement must not delay rollou
   but temporarily fails to sample the page; genuinely unsupported browsers use
   the more opaque readability fallback.
 - Present the separate Quick Actions control as a glass/white FAB with a red
-  plus and a restrained CSS-only masked conic perimeter glow while resting; the
-  primary effect is a soft, slowly circulating halo populated by asymmetric burgundy,
-  dark-red, brand-red, coral, soft-red, and dim tonal sections. A barely visible
-  edge highlight may define the glass boundary, but it must not read as a
-  decorative gradient ring. Keep the light immediately outside the perimeter,
-  The tonal distribution may orbit the circumference as one calm radial-glow
-  animation; never reduce it to a single travelling accent or diffuse spotlight beneath the button.
-  Opening rotates the plus
+  plus and a crisp `#e60000` → `#990000` gradient perimeter while resting. Use
+  a one-time two-second path-trim stroke draw matching the approved Ask Maps
+  reference: the stronger perimeter progressively traces once around the static
+  subdued ring over 1.8 seconds and then holds its completed state without
+  rotating the ring, resetting, looping, or adding a diffuse glow. Opening rotates the plus
   into a calm close state, fades a light neutral backdrop, and raises a
   responsive equal-width action stack upward and slightly leftward from the FAB
   area with a short stagger. Keep that stack right-anchored toward the FAB at
   roughly 55–70% of the available mobile width rather than centered/full-width.
-  Closing reverses the sequence. Disable continuous and rotational motion under
-  `prefers-reduced-motion` while preserving every action and state.
+  Closing reverses the sequence. Under `prefers-reduced-motion`, show the full
+  static gradient perimeter while preserving every action and state.
 - Keep the floating dock visible beneath the expanded action group. The action
   group is not a bottom sheet and has no full-width opaque footer or container.
 
@@ -381,6 +378,9 @@ Days Open follows these edge rules:
 - Use a default page size of 25 tickets and offer 25, 50, and 100 tickets per page on desktop. Keep 25 per page on mobile without a page-size selector.
 - Show the exact filtered-result range and total: `1–25 of 137`. Do not use an ambiguous label such as `Showing 25`.
 - On desktop, show the result count, page-size control, page numbers, and Previous/Next controls.
+- Render the current desktop page number on the neutral near-black action
+  surface with inverse text. Do not use Vodafone red as the selected-page fill;
+  red remains reserved for actions and focus indication.
 - On mobile, use the compact `1–25 of 137` label with Previous/Next controls; page numbers are not required.
 - Reset to page 1 when search, filters, page size, or sorting changes.
 - Persist the current page and desktop page size in the URL so opening and closing an inline ticket preserves the user's position.
@@ -552,17 +552,27 @@ The Dashboard receives a surgical usability and component-library uplift rather 
 - Keep spacing, alignment, typography, responsive behavior, and the placement of filters consistent across modules.
 - Do not retain a separate legacy Dashboard header pattern.
 
-### Page-level filtering
+### Permanent page-wide scope controls
 
-- Keep one persistent **People scope** control visibly separate from the standard **Add filter** control.
+- Keep exactly two persistent scope controls in the shared header: **People**
+  and **Area/Squad**.
 - The People scope determines whose Dashboard data is being viewed and applies across every Dashboard card and chart.
 - Role behavior is:
   - **Designer:** **Me** only. The scope is locked and cannot be changed or bypassed through filters or URLs.
   - **Lead:** default to **My reporting group**, with **All people** and **Me** available.
-  - **Manager/Admin:** default to **All people**, with individual reporting groups and **Me** available.
-- Use the same **Add filter** behavior approved for All Tickets: its menu lists available filter dimensions, selected filters appear as removable chips, and all active filters apply across the entire Dashboard dataset.
-- Relevant Add filter dimensions may include Area, Status, Labels, and date range, subject to the existing data and permission contracts.
-- Add filter must refine the selected People scope; it must never override or broaden role permissions.
+  - **Manager/Admin:** default to **All people**, with individual reporting groups, permitted specific people, and **Me** available.
+- Area/Squad defaults to **All**, applies across every applicable Dashboard
+  surface, and retains the existing single-Area contract.
+- Both controls remain visible, expose their label and current value, and reuse
+  the active-filter chip visual language from All Tickets without acquiring a
+  remove action. Use a light outlined resting treatment and only a subtle fill
+  for a restrictive selection; `All` remains the reset/non-restrictive value
+  semantically.
+- Do not duplicate Create ticket or Log work in the Dashboard module header;
+  the persistent sidebar/mobile action surface remains their authorized home.
+- Dashboard has no generic **Add filter** control and no page-wide Status,
+  Labels, or date-range filters. This refinement is Dashboard-only; All Tickets
+  and Reports retain their approved Add filter and removable-chip models.
 
 ### Card-level controls and visual uplift
 
@@ -573,21 +583,48 @@ The Dashboard receives a surgical usability and component-library uplift rather 
 - Apply the Vodafone-mapped shadcn layer to cards, charts, spacing, loading states, empty states, and responsive behavior without changing the underlying Dashboard content model.
 - Preserve each card's current data, calculation, and available local views when consolidating its exposed controls into the dropdown. Do not infer new metrics or controls solely from this structural decision.
 - Further card-specific changes are deferred until actual team feedback is available and must not delay the team-ready release.
+- Remove elevation shadows from Dashboard content cards and sections. Use the
+  approved semantic border, soft gradient, and numeral treatments on summary
+  cards. Summary cards use a small shadow-free upward translation on hover or
+  keyboard focus and a restrained press state that also works on touch; the
+  complete card is the All Tickets link and no nested View tickets CTA is
+  shown. Management signals remain informational without ticket navigation.
+  Keep Needs attention as a compact headerless ticket/people/signals layout;
+  make the complete row the Ticket Details link with a neutral surface hover
+  rather than red link styling. Group recent ticket work by actual work date
+  and make the complete ticket-activity row its dated Work Item link with the
+  same neutral hover.
+- Retain the neutral alphabetical workload table rather than introducing a
+  comparative people chart. Activating a person row opens All Tickets with that
+  person represented by its visible People filter and preserves Area when set.
 
 ### Summary drill-down behavior
 
 - Remove the current behavior in which activating a Dashboard card, metric, or chart segment automatically scrolls the user to embedded source items lower on the same page.
 - Keep Dashboard cards and charts as summary surfaces. Do not duplicate the All Tickets list inside the Dashboard or add a new source-items drawer or modal.
-- When a summary represents a filterable set of tickets, activate an explicit **View tickets** or **View all** action, or a clearly interactive chart segment, to open **All Tickets** with the corresponding filters already applied.
-- Carry the Dashboard's current People scope and compatible page-level filters into All Tickets, together with the metric- or segment-specific filters. Show all transferred criteria as the normal visible filter controls or removable chips.
+- When a summary represents a filterable set of tickets, make the complete
+  summary card a clearly interactive link to **All Tickets** with the
+  corresponding filters already applied. Do not add a nested **View tickets**
+  CTA inside those cards.
+- Carry the Dashboard's current People scope and Area/Squad selection into All Tickets, together with the metric- or segment-specific filters. Show all transferred criteria as the normal visible filter controls or removable chips.
+- The Unassigned backlog destination uses the visible All Tickets **Unassigned**
+  chip together with Backlog. Because an unassigned ticket has no primary
+  assignee, that destination omits the otherwise incompatible People refinement
+  rather than applying a hidden or contradictory criterion.
 - Browser Back must return to the same Dashboard state and practical scroll position.
-- Do not make an entire card clickable when the card contains its own controls or several possible destinations.
+- Do not make an entire card clickable when the card contains its own controls
+  or several possible destinations. The six single-destination summary cards
+  are the approved exception.
 - A named ticket inside an alert or exception card may open Ticket Details directly through the existing route-backed behavior.
 - If a metric cannot be represented accurately through the All Tickets filter model, keep it informational rather than forcing an inaccurate drill-down.
 
 ### Current review verdict
 
-The Dashboard is locked for the team-ready release: use the shared header, persistent People scope, Add filter model, one-dropdown-per-card control pattern, and filtered-All-Tickets drill-down behavior recorded above. Preserve the current cards and defer further card-specific changes until real team feedback is available.
+The Dashboard is locked for the team-ready release: use the shared header,
+persistent People and Area/Squad controls, no generic Add filter, at most one
+meaningful local dropdown per card/chart, and the filtered-All-Tickets
+drill-down behavior recorded above. Preserve the current cards and defer
+further card-specific changes until real team feedback is available.
 
 ## Locked: Reports
 
@@ -739,7 +776,7 @@ When a module is reviewed, add its exact Figma node link directly beneath that m
 | Inline ticket | Locked | Implement the approved wider route-backed overlay, inline editing, work calendar, Activity & Work Log, subtasks, and separate Comments behavior |
 | Work Item | Superseded for primary use | Retain direct-route compatibility as needed; Ticket Details is the primary operational ticket surface |
 | Authentication | Locked | Keep email login, apply the eight-character password minimum, and make only the recorded light shadcn visual uplift |
-| Dashboard | Locked | Implement the shared header, filtering, card-control consolidation, and filtered-All-Tickets drill-down behavior above; preserve current cards and defer further changes until team feedback |
+| Dashboard | Locked | Implement the shared header, permanent People and Area/Squad scope controls without Add filter, card-control consolidation, and filtered-All-Tickets drill-down behavior above; preserve current cards and defer further changes until team feedback |
 | Reports | Locked | Implement the shared header, report context, Designer self-only scope, tab-aware CSV export, and responsive shadcn presentation recorded above |
 | Settings | Locked | Keep it Admin-only, convert anchor scrolling into true tab panels, and apply the shared shadcn visual uplift without changing its underlying workflows |
 

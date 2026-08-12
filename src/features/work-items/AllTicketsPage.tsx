@@ -74,6 +74,7 @@ type FilterDimension =
   | 'due'
   | 'activity'
   | 'archived'
+  | 'unassigned'
   | 'daysOpen'
   | 'daysActive';
 
@@ -104,6 +105,7 @@ const filterLabels: Record<FilterDimension, string> = {
   due: 'Due date',
   activity: 'Activity',
   archived: 'Archived only',
+  unassigned: 'Unassigned',
   daysOpen: 'Days Open',
   daysActive: 'Days Active',
 };
@@ -344,6 +346,7 @@ function activeDimensions(filters: WorkItemFilters): FilterDimension[] {
   if (filters.due) result.push('due');
   if (filters.stale) result.push('activity');
   if (filters.archivedOnly) result.push('archived');
+  if (filters.unassignedOnly) result.push('unassigned');
   if (filters.daysOpenMin !== null || filters.daysOpenMax !== null)
     result.push('daysOpen');
   if (filters.daysActiveMin !== null || filters.daysActiveMax !== null)
@@ -365,6 +368,7 @@ function chipLabel(
       filters.daysActiveMax,
     );
   if (type === 'archived') return 'Archived only';
+  if (type === 'unassigned') return 'Unassigned';
   const counts: Partial<Record<FilterDimension, number>> = {
     people: filters.peopleIds.length,
     status: filters.statusCodes.length,
@@ -420,6 +424,8 @@ function removeFilter(type: FilterDimension): Partial<WorkItemFilters> {
       return { stale: '' };
     case 'archived':
       return { archivedOnly: false };
+    case 'unassigned':
+      return { unassignedOnly: false };
     case 'daysOpen':
       return { daysOpenMin: null, daysOpenMax: null };
     case 'daysActive':
@@ -494,6 +500,12 @@ function FilterEditor({
     );
   if (type === 'archived')
     return <p className="m-0 text-sm">Only archived tickets are included.</p>;
+  if (type === 'unassigned')
+    return (
+      <p className="m-0 text-sm">
+        Only tickets without a primary assignee are included.
+      </p>
+    );
   const value =
     type === 'blocked'
       ? filters.blocked
@@ -795,6 +807,7 @@ export function AllTicketsPage() {
     due: '',
     stale: '',
     archivedOnly: false,
+    unassignedOnly: false,
     daysOpenMin: null,
     daysOpenMax: null,
     daysActiveMin: null,
@@ -982,6 +995,8 @@ export function AllTicketsPage() {
                   key={type}
                   onSelect={() => {
                     if (type === 'archived') update({ archivedOnly: true });
+                    else if (type === 'unassigned')
+                      update({ unassignedOnly: true, peopleIds: [] });
                     else {
                       setExtraDimensions((items) => [...items, type]);
                       setEditingFilter(type);
@@ -1093,6 +1108,8 @@ export function AllTicketsPage() {
                       key={type}
                       onSelect={() => {
                         if (type === 'archived') update({ archivedOnly: true });
+                        else if (type === 'unassigned')
+                          update({ unassignedOnly: true, peopleIds: [] });
                         else setExtraDimensions((items) => [...items, type]);
                       }}
                     >

@@ -12,8 +12,8 @@
 
 Provide one explainable, position-aware operational view of current ticket state
 and recorded work. Every valid active principal may read the Dashboard. Viewer
-is read-only; Designer, Lead, Manager, and valid Admin overlays receive only
-their already-approved quick actions. Inactive, password-restricted, and
+is read-only; Designer, Lead, Manager, and valid Admin overlays retain their
+already-approved global quick actions. Inactive, password-restricted, and
 Viewer+Admin states remain outside the normal application boundary.
 
 The initial people scope is position-owned: Viewer = Everyone, Designer = Me,
@@ -25,18 +25,25 @@ may deliberately select another allowed scope.
 ## Information hierarchy and actions
 
 1. Page heading, current people scope, Area/Squad, and current-week context.
-2. Six linked summary cards: Active, Blocked, Overdue, Due soon, Stale, and
-   Unassigned backlog.
-3. Management people signals when the position or Admin overlay qualifies.
-4. Deduplicated Needs attention tickets with every applicable reason.
+2. Six fully linked summary cards: Active, Due soon, Blocked, Overdue, Stale, and
+   Unassigned backlog, using the approved semantic border, soft-gradient, and
+   numeral treatments without elevation shadows or nested View tickets CTAs.
+3. Informational Management people signals without ticket-navigation CTAs when
+   the position or Admin overlay qualifies.
+4. Deduplicated Needs attention tickets with every applicable reason; each
+   complete headerless row opens Ticket Details and uses a neutral surface hover.
 5. Workload by person, alphabetically ordered.
-6. Recent recorded ticket work, then visibly separate standalone Visual Work.
+6. Recent recorded ticket work with each complete record linked to its dated
+   Work Item anchor, then visibly separate standalone Visual Work.
 
-Create ticket and Log work use existing authorization and routes. Viewer sees
-neither. Every card, count, person signal, and recent-work item links to or
-reveals its controlled source records; ticket totals drill into URL-filtered All
-Tickets, while actual-work records link to the relevant Work Item/date. No
-Reports/export control or nonfunctional Phase 6 affordance appears.
+Create ticket and Log work use existing authorization and routes from the
+persistent sidebar/mobile action surface and are not duplicated in the
+Dashboard header. Viewer sees neither. Every card, count, person signal, and recent-work item links to or
+reveals its controlled source records, except the explicitly informational
+Management signals. Summary cards drill into URL-filtered All Tickets, workload
+people open their visible People filter, and ticket records link to the relevant
+Work Item/date. No Reports/export control or nonfunctional Phase 6 affordance
+appears.
 
 ## Business and content rules
 
@@ -78,9 +85,12 @@ does not reuse ticket status presentation.
 
 Desktop presents filters before a wrapping six-card summary, then readable
 section regions; workload uses a semantic table because values are compared by
-column. Below `48rem`, filters stack, cards remain linked summaries, and each
-workload row becomes a structured expandable record preserving labels, source
-links, and alphabetical order. No required value depends on horizontal scroll.
+column. Each card keeps its title independent and groups the numeral with its
+explanation below. Below `48rem`, filters stack and the six linked summaries use
+a native two-row horizontal scroller sized to reveal part of the next column;
+proximity snapping and browser-native directional gesture handling preserve
+vertical page scrolling. Each workload row becomes a structured expandable
+record preserving labels, source links, and alphabetical order.
 
 Native controls preserve Tab, Shift+Tab, Enter, and Space. Scope changes are
 announced, update the URL/query state, reset dependent pagination, and move

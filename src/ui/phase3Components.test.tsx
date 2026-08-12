@@ -86,6 +86,13 @@ describe('Phase 3 shared components', () => {
     );
     expect(screen.getByText('1–25 of 52')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Page 1' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('button', { name: 'Page 1' }).className).toMatch(
+      /currentPage/u,
+    );
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(onPageChange).toHaveBeenCalledWith(2);
   });
@@ -108,6 +115,7 @@ describe('Phase 3 shared components', () => {
         ]}
         rows={[{ id: 'one', title: 'Synthetic ticket' }]}
         getRowKey={(row) => row.id}
+        getRowAriaLabel={(row) => `Open ${row.title}`}
         onRowActivate={activate}
         renderMobileCard={(row) => <article>{row.title} mobile</article>}
       />,
@@ -120,7 +128,11 @@ describe('Phase 3 shared components', () => {
       id: 'one',
       title: 'Synthetic ticket',
     });
-    expect(row).not.toHaveAttribute('tabindex');
+    expect(row).toHaveAttribute('tabindex', '0');
+    expect(row).toHaveAccessibleName('Open Synthetic ticket');
+    row.focus();
+    await user.keyboard('{Enter}');
+    expect(activate).toHaveBeenCalledTimes(2);
     expect(screen.getByText('Synthetic ticket mobile')).toBeInTheDocument();
   });
 });

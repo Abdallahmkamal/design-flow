@@ -46,3 +46,11 @@ Do not add later-slice primitives here until their owning slice requires them.
 - `ButtonGroup` owns the connected ticket-search input/button geometry. Select
   chevrons, date affordances, and checkbox chrome are source-owned so
   browser-native icon sizing cannot diverge across related fields.
+
+## Slice 6 Dashboard surfaces and feedback
+
+- `Card`, `CardHeader`, `CardContent`, and `CardFooter` provide the reusable
+  semantic surface composition used by Dashboard summaries and sections.
+- `Skeleton` preserves layout during loading, `Empty` appears only after a
+  successful empty result, and `Alert` presents failures without resetting the
+  active URL scope.
