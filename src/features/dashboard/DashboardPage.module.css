@@ -148,16 +148,7 @@
   color: var(--color-text-secondary);
 }
 .attentionList li {
-  display: grid;
-  gap: var(--space-sm);
-  padding-block: var(--space-md);
   border-block-end: var(--border-width) solid var(--color-border-subtle);
-}
-.attentionList li > div {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
 }
 .workList li {
   display: grid;
@@ -187,4 +178,393 @@
   .section {
     padding: var(--space-lg);
   }
+}
+
+.workloadCard {
+  inline-size: 100%;
+}
+
+.scopeChip {
+  min-block-size: 3rem;
+  border: var(--border-width) solid var(--color-border-default);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+}
+
+.scopeChip:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+  background: var(--color-action-neutral-hover);
+}
+
+.scopeChipActive {
+  background: var(--color-surface-raised-prominent);
+}
+
+.scopeChip svg {
+  color: currentcolor;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.summaryMetric {
+  --summary-fill: var(--color-surface-raised);
+  --summary-border: var(--color-border-subtle);
+  --summary-value: var(--color-text-primary);
+
+  min-block-size: 11.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-color: var(--summary-border);
+  color: var(--color-text-primary);
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface-default),
+    var(--summary-fill)
+  );
+  transition: transform var(--motion-duration-fast)
+    var(--motion-easing-standard);
+  text-decoration: none;
+}
+
+.summaryMetric:hover {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.summaryMetric:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .summaryMetric:hover {
+    transform: translateY(-0.25rem);
+  }
+}
+
+.summaryMetric:focus-within {
+  transform: translateY(-0.25rem);
+}
+
+.summaryMetric:active {
+  transform: translateY(-0.125rem);
+}
+
+.summaryValue {
+  color: var(--summary-value);
+  font: var(--font-weight-regular) 3.5rem/3.375rem var(--font-family-primary);
+}
+
+.summaryMeasure {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.successMetric {
+  --summary-fill: var(--color-status-success-background);
+  --summary-border: var(--color-status-success-border);
+  --summary-value: var(--color-status-success-text);
+}
+
+.infoMetric {
+  --summary-fill: var(--color-status-info-background-muted);
+  --summary-border: var(--color-status-info-border);
+  --summary-value: var(--color-status-info-text);
+}
+
+.warningMetric {
+  --summary-fill: var(--color-status-warning-background);
+  --summary-border: var(--color-status-warning-border);
+  --summary-value: var(--color-status-warning-text);
+}
+
+.errorMetric {
+  --summary-fill: var(--color-status-error-background);
+  --summary-border: var(--color-status-error-background);
+  --summary-value: var(--color-status-warning-text);
+}
+
+.neutralMetric {
+  --summary-fill: var(--color-workflow-backlog-background);
+  --summary-border: var(--color-border-subtle);
+  --summary-value: var(--color-workflow-backlog-text);
+}
+
+.attentionRow {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.7fr) minmax(10rem, 0.8fr) minmax(
+      13rem,
+      1fr
+    );
+  min-block-size: 4.5rem;
+  align-items: center;
+  gap: var(--space-lg) !important;
+  padding: var(--space-md);
+  border-radius: var(--radius-element);
+  color: var(--color-text-primary) !important;
+  font: var(--type-body) !important;
+  text-decoration: none;
+  transition: background-color var(--motion-duration-fast)
+    var(--motion-easing-standard);
+}
+
+.attentionRow:hover {
+  color: var(--color-text-primary);
+  background: var(--color-action-neutral-hover);
+  text-decoration: none;
+}
+
+.attentionRow:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+
+.attentionTicket {
+  display: grid !important;
+  align-items: initial !important;
+  gap: 0.125rem !important;
+}
+
+.attentionTicket > span,
+.activityTicket > span {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+
+.attentionTicket strong,
+.activityTicket strong {
+  color: var(--color-text-primary);
+  font: var(--type-body);
+  text-decoration: none;
+}
+
+.attentionPerson,
+.personCell,
+.activityMeta {
+  display: flex !important;
+  min-inline-size: 0;
+  align-items: center;
+  gap: var(--space-sm) !important;
+}
+
+.attentionPerson > span:last-child,
+.personCell > span:last-child,
+.activityMeta > span {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.attentionSignals {
+  display: flex !important;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs) !important;
+}
+
+.workloadPersonLink {
+  display: inline-flex;
+  min-block-size: 3rem;
+  inline-size: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--color-text-primary);
+  font: var(--type-heading-3);
+  text-decoration: none;
+}
+
+.workloadPersonLink:hover span {
+  color: var(--color-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.workloadPersonLink svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.activityGroups,
+.activityGroup {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.activityGroup h4 {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+}
+
+.activityList,
+.visualWorkList {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.visualWorkList li {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+
+.activityList li {
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-element);
+}
+
+.activityRow {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: background-color var(--motion-duration-fast)
+    var(--motion-easing-standard);
+}
+
+.activityRow:hover {
+  color: var(--color-text-primary);
+  background: var(--color-action-neutral-hover);
+  text-decoration: none;
+}
+
+.activityRow:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+
+.activityTicket {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.activityTicket strong {
+  overflow-wrap: anywhere;
+}
+
+.visualWorkList time {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+
+@media (max-width: 63.999rem) {
+  .attentionRow {
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.7fr);
+  }
+
+  .attentionSignals {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 47.999rem) {
+  .summaryGrid {
+    grid-auto-columns: clamp(15rem, 64vw, 28rem);
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 11.25rem);
+    inline-size: calc(100% + (var(--space-lg) * 2));
+    max-inline-size: 100vw;
+    gap: var(--space-md);
+    margin-inline: calc(var(--space-lg) * -1);
+    padding: var(--space-xs) var(--space-lg) var(--space-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: var(--space-lg);
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .summaryGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .summaryMetric {
+    block-size: 11.25rem;
+    min-block-size: 0;
+    scroll-snap-align: start;
+  }
+
+  .attentionRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .attentionSignals {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 79.999rem) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 80rem) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summaryMetric,
+  .summaryMetric:hover,
+  .summaryMetric:focus-within,
+  .summaryMetric:active {
+    transform: none;
+    transition: none;
+  }
+}
+
+.workloadCard summary {
+  min-block-size: 2.75rem;
+  padding: var(--space-md);
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+  cursor: pointer;
+}
+
+.workloadCard summary:focus-visible {
+  border-radius: var(--radius-element);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.workloadCard dl {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md) var(--space-md);
+  margin: 0;
+}
+
+.workloadCard dl > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.7fr) minmax(0, 1fr);
+  gap: var(--space-md);
+}
+
+.workloadCard dt {
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+}
+
+.workloadCard dd {
+  margin: 0;
+  overflow-wrap: anywhere;
 }

@@ -495,7 +495,10 @@ test('mobile shell keeps primary navigation and session actions available', asyn
     page.getByRole('button', { name: 'Open Quick Actions' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('button', { name: 'Open Quick Actions' }).locator('svg'),
+    page
+      .getByRole('button', { name: 'Open Quick Actions' })
+      .locator('svg')
+      .last(),
   ).toHaveCSS('color', 'rgb(230, 0, 0)');
 
   await page.getByRole('button', { name: 'Open Quick Actions' }).click();
@@ -581,6 +584,7 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   const quickActionsIcon = await page
     .getByRole('button', { name: 'Open Quick Actions' })
     .locator('svg')
+    .last()
     .boundingBox();
   const main = await page.locator('#main-content').boundingBox();
 
@@ -612,38 +616,57 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   );
   expect(bottomPadding).toBeGreaterThanOrEqual(navigation?.height ?? 0);
 
-  const restingFabGlow = await page
+  const restingFabBorder = await page
     .getByRole('button', { name: 'Open Quick Actions' })
     .evaluate((button) => {
-      const perimeter = getComputedStyle(button, '::before');
-      const halo = getComputedStyle(button, '::after');
+      const border = button.querySelector('svg[viewBox="0 0 66 66"]');
+      const paths = border?.querySelectorAll('path');
+      const track = paths?.[0];
+      const progress = paths?.[1];
+      const stops = border?.querySelectorAll('stop');
       return {
-        perimeterAnimation: perimeter.animationName,
-        haloAnimation: halo.animationName,
-        haloAnimationDuration: halo.animationDuration,
-        perimeterGradient: perimeter.backgroundImage,
-        perimeterMask: perimeter.maskImage || perimeter.webkitMaskImage,
-        perimeterFilter: perimeter.filter,
-        perimeterOpacity: perimeter.opacity,
-        perimeterPadding: perimeter.paddingTop,
-        haloFilter: halo.filter,
-        haloOpacity: halo.opacity,
-        haloPadding: halo.paddingTop,
+        borderTransform: border ? getComputedStyle(border).transform : null,
+        trackOpacity: track ? getComputedStyle(track).opacity : null,
+        progressAnimation: progress
+          ? getComputedStyle(progress).animationName
+          : null,
+        progressAnimationDuration: progress
+          ? getComputedStyle(progress).animationDuration
+          : null,
+        progressAnimationIterations: progress
+          ? getComputedStyle(progress).animationIterationCount
+          : null,
+        progressAnimationFillMode: progress
+          ? getComputedStyle(progress).animationFillMode
+          : null,
+        progressFilter: progress ? getComputedStyle(progress).filter : null,
+        progressStroke: progress ? getComputedStyle(progress).stroke : null,
+        startColor: stops?.[0] ? getComputedStyle(stops[0]).stopColor : null,
+        endColor: stops?.[1] ? getComputedStyle(stops[1]).stopColor : null,
       };
     });
-  expect(restingFabGlow.perimeterAnimation).toBe('none');
-  expect(restingFabGlow.haloAnimation).toContain('mobile-fab-glow-orbit');
-  expect(restingFabGlow.haloAnimationDuration).toBe('4.8s');
-  expect(restingFabGlow.perimeterGradient).toContain('conic-gradient');
-  expect(restingFabGlow.perimeterGradient).toContain('rgb(230, 0, 0)');
-  expect(restingFabGlow.perimeterGradient).toContain('/ 0.12');
-  expect(restingFabGlow.perimeterMask).toContain('linear-gradient');
-  expect(restingFabGlow.perimeterFilter).toBe('blur(0.4px)');
-  expect(Number(restingFabGlow.perimeterOpacity)).toBeLessThanOrEqual(0.03);
-  expect(restingFabGlow.perimeterPadding).toBe('1px');
-  expect(restingFabGlow.haloFilter).toBe('blur(5px)');
-  expect(Number(restingFabGlow.haloOpacity)).toBeGreaterThanOrEqual(0.7);
-  expect(restingFabGlow.haloPadding).toBe('2px');
+  expect(restingFabBorder.borderTransform).toBe('none');
+  expect(Number(restingFabBorder.trackOpacity)).toBeCloseTo(0.15, 2);
+  expect(restingFabBorder.progressAnimation).toContain(
+    'mobile-fab-border-draw',
+  );
+  expect(restingFabBorder.progressAnimationDuration).toBe('2s');
+  expect(restingFabBorder.progressAnimationIterations).toBe('1');
+  expect(restingFabBorder.progressAnimationFillMode).toBe('both');
+  expect(restingFabBorder.progressFilter).toBe('none');
+  expect(restingFabBorder.progressStroke).toContain(
+    'design-flow-mobile-fab-gradient',
+  );
+  expect(restingFabBorder.startColor).toBe('rgb(230, 0, 0)');
+  expect(restingFabBorder.endColor).toBe('rgb(153, 0, 0)');
+
+  await page.waitForTimeout(2100);
+  await expect(
+    page
+      .getByRole('button', { name: 'Open Quick Actions' })
+      .locator('svg[viewBox="0 0 66 66"] path')
+      .last(),
+  ).toHaveCSS('stroke-dasharray', '1px, 0px');
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(
@@ -656,16 +679,14 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   expect(
     await page
       .getByRole('button', { name: 'Open Quick Actions' })
-      .evaluate((button) => getComputedStyle(button, '::before').animationName),
-  ).toBe('none');
-  expect(
-    await page
-      .getByRole('button', { name: 'Open Quick Actions' })
-      .evaluate((button) => getComputedStyle(button, '::after').animationName),
+      .locator('path')
+      .last()
+      .evaluate((circle) => getComputedStyle(circle).animationName),
   ).toBe('none');
 
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
+    await page.waitForTimeout(50);
     const dock = await page
       .getByTestId('mobile-shell-controls')
       .getByRole('navigation', { name: 'Primary navigation' })

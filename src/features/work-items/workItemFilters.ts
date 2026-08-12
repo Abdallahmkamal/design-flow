@@ -20,6 +20,7 @@ export interface WorkItemFilters {
   due: '' | 'overdue' | 'due_soon' | 'no_due_date';
   stale: '' | 'stale' | 'active';
   archivedOnly: boolean;
+  unassignedOnly: boolean;
   daysOpenMin: number | null;
   daysOpenMax: number | null;
   daysActiveMin: number | null;
@@ -70,6 +71,7 @@ export function parseWorkItemFilters(params: URLSearchParams): WorkItemFilters {
   const rawDaysOpenMax = optionalWholeDays(params.get('daysOpenMax'));
   const rawDaysActiveMin = optionalWholeDays(params.get('daysActiveMin'));
   const rawDaysActiveMax = optionalWholeDays(params.get('daysActiveMax'));
+  const unassignedOnly = params.get('unassigned') === 'true';
   const invalidDaysOpenRange =
     rawDaysOpenMin !== null &&
     rawDaysOpenMax !== null &&
@@ -80,7 +82,7 @@ export function parseWorkItemFilters(params: URLSearchParams): WorkItemFilters {
     rawDaysActiveMin > rawDaysActiveMax;
   return {
     search: params.get('q')?.slice(0, 200) ?? '',
-    peopleIds: split(params.get('people')),
+    peopleIds: unassignedOnly ? [] : split(params.get('people')),
     statusCodes: split(params.get('status')),
     areaIds: split(params.get('areas')),
     labelIds: split(params.get('labels')),
@@ -91,6 +93,7 @@ export function parseWorkItemFilters(params: URLSearchParams): WorkItemFilters {
         : '',
     stale: stale === 'stale' || stale === 'active' ? stale : '',
     archivedOnly: params.get('archived') === 'true',
+    unassignedOnly,
     daysOpenMin: invalidDaysOpenRange ? null : rawDaysOpenMin,
     daysOpenMax: invalidDaysOpenRange ? null : rawDaysOpenMax,
     daysActiveMin: invalidDaysActiveRange ? null : rawDaysActiveMin,
@@ -117,6 +120,7 @@ export function serializeWorkItemFilters(filters: WorkItemFilters) {
   if (filters.due) params.set('due', filters.due);
   if (filters.stale) params.set('stale', filters.stale);
   if (filters.archivedOnly) params.set('archived', 'true');
+  if (filters.unassignedOnly) params.set('unassigned', 'true');
   if (filters.daysOpenMin !== null)
     params.set('daysOpenMin', String(filters.daysOpenMin));
   if (filters.daysOpenMax !== null)
@@ -149,6 +153,7 @@ export function toRpcFilters(filters: WorkItemFilters) {
     stale:
       filters.stale === 'active' ? 'not_stale' : filters.stale || undefined,
     archivedOnly: filters.archivedOnly,
+    unassignedOnly: filters.unassignedOnly,
     daysOpenMin: filters.daysOpenMin ?? undefined,
     daysOpenMax: filters.daysOpenMax ?? undefined,
     daysActiveMin: filters.daysActiveMin ?? undefined,
@@ -170,6 +175,7 @@ export function hasActiveWorkItemFilters(filters: WorkItemFilters) {
     filters.due ||
     filters.stale ||
     filters.archivedOnly ||
+    filters.unassignedOnly ||
     filters.daysOpenMin !== null ||
     filters.daysOpenMax !== null ||
     filters.daysActiveMin !== null ||

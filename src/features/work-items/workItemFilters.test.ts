@@ -30,28 +30,29 @@ describe('work-item URL filters', () => {
   it('round-trips every URL-backed control without legacy or default noise', () => {
     const parsed = parseWorkItemFilters(
       new URLSearchParams(
-        'people=a,b,a&status=todo,in_progress&areas=one&labels=two&blocked=blocked&due=due_soon&stale=active&archived=true&daysOpenMin=5&daysOpenMax=10&daysActiveMin=2&sort=days_open&direction=desc&page=3&pageSize=50',
+        'status=backlog&areas=one&unassigned=true&daysOpenMin=5&daysOpenMax=10&daysActiveMin=2&sort=days_open&direction=desc&page=3&pageSize=50',
       ),
     );
     expect(serializeWorkItemFilters(parsed).toString()).toBe(
-      'people=a%2Cb&status=todo%2Cin_progress&areas=one&labels=two&blocked=blocked&due=due_soon&stale=active&archived=true&daysOpenMin=5&daysOpenMax=10&daysActiveMin=2&sort=days_open&direction=desc&page=3&pageSize=50',
+      'status=backlog&areas=one&unassigned=true&daysOpenMin=5&daysOpenMax=10&daysActiveMin=2&sort=days_open&direction=desc&page=3&pageSize=50',
     );
   });
 
   it('maps browser names to the server read contract', () => {
     const parsed = parseWorkItemFilters(
       new URLSearchParams(
-        'people=person&areas=one&labels=two&due=due_soon&blocked=unblocked&stale=active&archived=true&daysActiveMax=5',
+        'areas=one&labels=two&due=due_soon&blocked=unblocked&stale=active&archived=true&unassigned=true&daysActiveMax=5',
       ),
     );
     expect(toRpcFilters(parsed)).toMatchObject({
-      peopleIds: ['person'],
+      peopleIds: [],
       areaIds: ['one'],
       labelIds: ['two'],
       due: 'due_soon',
       blocked: 'not_blocked',
       stale: 'not_stale',
       archivedOnly: true,
+      unassignedOnly: true,
       daysActiveMax: 5,
       page: 1,
       pageSize: 25,

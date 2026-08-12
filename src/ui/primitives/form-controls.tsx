@@ -266,9 +266,15 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
             aria-invalid={error ? true : undefined}
             className={className}
           >
-            <SelectValue
-              placeholder={placeholder?.label ?? 'Select an option'}
-            />
+            <SelectValue placeholder={placeholder?.label ?? 'Select an option'}>
+              {(selectedValue: string | null) =>
+                parsedOptions.find(
+                  (option) => option.value === (selectedValue ?? ''),
+                )?.label ??
+                placeholder?.label ??
+                'Select an option'
+              }
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {selectableOptions.map((option) => (

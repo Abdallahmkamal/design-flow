@@ -3,14 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  Alert,
   Avatar,
   AvatarFallback,
   Badge,
   Button,
+  Card,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Empty,
   FormCheckbox,
   FormInput,
   FormSelect,
@@ -24,6 +27,7 @@ import {
   SheetDescription,
   SheetTitle,
   SheetTrigger,
+  Skeleton,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -31,6 +35,29 @@ import {
 } from '.';
 
 describe('team-ready primitives', () => {
+  it('provides semantic Dashboard surfaces and feedback states', () => {
+    render(
+      <>
+        <Card>Summary</Card>
+        <Skeleton aria-label="Loading summary" />
+        <Empty>No results</Empty>
+        <Alert>Could not load</Alert>
+      </>,
+    );
+
+    expect(screen.getByText('Summary')).toHaveAttribute('data-slot', 'card');
+    expect(screen.getByText('Summary')).not.toHaveClass('shadow-surface');
+    expect(document.querySelector('[data-slot="skeleton"]')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(screen.getByText('No results')).toHaveAttribute(
+      'data-slot',
+      'empty',
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not load');
+  });
+
   it('keeps the team-ready form controls labelled and described consistently', () => {
     render(
       <>
@@ -159,10 +186,44 @@ describe('team-ready primitives', () => {
 
     await user.click(screen.getByRole('combobox', { name: 'Person' }));
     expect(document.querySelector('[role="listbox"]')).toHaveClass(
+      'flex-1',
       'touch-pan-y',
       'overflow-y-auto',
       'overscroll-contain',
+      '[-webkit-overflow-scrolling:touch]',
     );
+    expect(document.querySelector('[data-slot="select-content"]')).toHaveClass(
+      'flex',
+      'flex-col',
+      'overflow-hidden',
+    );
+    expect(document.querySelectorAll('[data-direction]').length).toBe(0);
+  });
+
+  it('renders the selected FormSelect label instead of its stored value', () => {
+    const areaOptions = (
+      <>
+        <option value="">Area: All</option>
+        <option value="area-uuid">Area: Consumer App</option>
+      </>
+    );
+    const { rerender } = render(
+      <FormSelect label="Area" value="">
+        {areaOptions}
+      </FormSelect>,
+    );
+    rerender(
+      <FormSelect label="Area" value="area-uuid">
+        {areaOptions}
+      </FormSelect>,
+    );
+
+    expect(screen.getByRole('combobox', { name: 'Area' })).toHaveTextContent(
+      'Area: Consumer App',
+    );
+    expect(
+      screen.getByRole('combobox', { name: 'Area' }),
+    ).not.toHaveTextContent('area-uuid');
   });
 
   it('describes a focused Tooltip trigger and dismisses on Escape', async () => {

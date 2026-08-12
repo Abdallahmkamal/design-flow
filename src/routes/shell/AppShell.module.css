@@ -10,31 +10,6 @@
   );
   --mobile-glass-border: rgb(255 255 255 / 38%);
   --mobile-fab-background: rgb(255 255 255 / 58%);
-  --mobile-fab-glow-deep: color-mix(
-    in srgb,
-    var(--color-text-accent) 42%,
-    black
-  );
-  --mobile-fab-glow-dark: color-mix(
-    in srgb,
-    var(--color-text-accent) 72%,
-    black
-  );
-  --mobile-fab-glow-warm: color-mix(
-    in srgb,
-    var(--color-text-accent) 82%,
-    #ff8066
-  );
-  --mobile-fab-glow-soft: color-mix(
-    in srgb,
-    var(--color-text-accent) 48%,
-    white
-  );
-  --mobile-fab-glow-dim: color-mix(
-    in srgb,
-    var(--color-text-accent) 12%,
-    transparent
-  );
 }
 
 .mobileControls {
@@ -75,7 +50,7 @@
   height: 4rem;
   flex: 0 0 4rem;
   overflow: visible;
-  border-color: var(--mobile-glass-border) !important;
+  border: 0 !important;
   border-radius: var(--radius-full) !important;
   background: var(--mobile-fab-background) !important;
   box-shadow:
@@ -92,55 +67,35 @@
     box-shadow 180ms ease-out;
 }
 
-.restingFab::before,
-.restingFab::after {
+.fabBorderTrace {
   position: absolute;
-  z-index: -1;
-  box-sizing: border-box;
-  border-radius: inherit;
-  background: conic-gradient(
-    from 18deg,
-    var(--mobile-fab-glow-deep) 0%,
-    var(--mobile-fab-glow-dim) 11%,
-    var(--mobile-fab-glow-dark) 21%,
-    var(--color-text-accent) 34%,
-    var(--mobile-fab-glow-warm) 47%,
-    var(--mobile-fab-glow-soft) 57%,
-    var(--mobile-fab-glow-warm) 66%,
-    var(--mobile-fab-glow-dark) 78%,
-    var(--mobile-fab-glow-dim) 89%,
-    var(--mobile-fab-glow-deep) 100%
-  );
-  content: '';
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
+  z-index: 1;
+  inset: -0.0625rem auto auto -0.0625rem;
+  width: 4.125rem !important;
+  height: 4.125rem !important;
+  max-width: none !important;
+  max-height: none !important;
+  overflow: visible;
   pointer-events: none;
-  transition:
-    opacity 180ms ease-out,
-    transform 240ms ease-out;
 }
 
-.restingFab::before {
-  inset: -0.0625rem;
-  padding: 0.0625rem;
-  filter: blur(0.025rem);
-  opacity: 0.025;
+.fabBorderTrack,
+.fabBorderProgress {
+  fill: none;
+  stroke: url('#design-flow-mobile-fab-gradient');
+  stroke-linecap: round;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
 }
 
-.restingFab::after {
-  inset: -0.4375rem;
-  padding: 0.125rem;
-  animation: mobile-fab-glow-orbit 4.8s linear infinite;
-  filter: blur(0.3125rem);
-  opacity: 0.72;
-  transform-origin: center;
-  will-change: transform;
+.fabBorderTrack {
+  opacity: 0.15;
+}
+
+.fabBorderProgress {
+  stroke-dasharray: 0 1;
+  stroke-dashoffset: 0;
+  animation: mobile-fab-border-draw 2s linear both;
 }
 
 .fabIcon {
@@ -160,11 +115,6 @@
 .mobileControls[data-menu-open='true'] .restingFab {
   opacity: 0;
   transform: rotate(45deg) scale(0.97);
-}
-
-.mobileControls[data-menu-open='true'] .restingFab::before,
-.mobileControls[data-menu-open='true'] .restingFab::after {
-  animation: mobile-fab-glow-finish 280ms ease-out both;
 }
 
 .quickActionsBackdrop {
@@ -253,19 +203,19 @@
   animation: mobile-close-fab-out 190ms ease-in both;
 }
 
-@keyframes mobile-fab-glow-finish {
-  from {
-    transform: rotate(0turn);
+@keyframes mobile-fab-border-draw {
+  0% {
+    stroke-dasharray: 0 1;
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
   }
-  to {
-    transform: rotate(0.16turn);
-    opacity: 0;
-  }
-}
 
-@keyframes mobile-fab-glow-orbit {
-  to {
-    transform: rotate(1turn);
+  90% {
+    stroke-dasharray: 1 0;
+    animation-timing-function: step-end;
+  }
+
+  100% {
+    stroke-dasharray: 1 0;
   }
 }
 
@@ -321,16 +271,6 @@
       0 6px 14px -8px rgb(0 0 0 / 22%);
     transform: translateY(-0.125rem);
   }
-
-  .restingFab:hover::before,
-  .restingFab:focus-visible::before {
-    opacity: 0.05;
-  }
-
-  .restingFab:hover::after,
-  .restingFab:focus-visible::after {
-    opacity: 0.88;
-  }
 }
 
 .quickActionFab:active {
@@ -356,6 +296,11 @@
     height: 3.75rem;
     flex-basis: 3.75rem;
   }
+
+  .fabBorderTrace {
+    width: 3.875rem !important;
+    height: 3.875rem !important;
+  }
 }
 
 @media (min-width: 48rem) {
@@ -365,10 +310,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .restingFab::before,
-  .restingFab::after {
-    animation: none !important;
-    transition: opacity 80ms ease-out;
+  .fabBorderProgress {
+    stroke-dasharray: 1 0;
+    animation: none;
   }
 
   .fabIcon,

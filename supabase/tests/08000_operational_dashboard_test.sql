@@ -1,6 +1,6 @@
 begin;
 
-select plan(27);
+select plan(31);
 
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000007', true);
@@ -76,6 +76,7 @@ select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001
 set local role authenticated;
 select is(public.get_dashboard()->>'defaultScopeKey', 'all', 'Viewer defaults to All');
 select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Viewer All reconciles three active tickets');
+select throws_ok($$ select public.get_dashboard('me', null, null) $$, 'P0001', 'DF_FORBIDDEN', 'Viewer People scope is read-only at All');
 reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);
@@ -88,10 +89,10 @@ reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000003', true);
 set local role authenticated;
-select is(public.get_dashboard()->>'defaultScopeKey', 'me', 'Designer Admin still defaults to Me');
-select is((public.get_dashboard()->'cards'->>'active')::integer, 1, 'Designer Admin default remains own active ticket');
+select is(public.get_dashboard()->>'defaultScopeKey', 'all', 'Designer Admin defaults to All');
+select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Designer Admin default reconciles all active tickets');
 select is((public.get_dashboard('all')->'cards'->>'active')::integer, 3, 'Designer Admin can deliberately select All');
-select is((select (row->>'missingDueDateCount')::integer from jsonb_array_elements(public.get_dashboard()->'workload') row where row->'person'->>'id' = auth.uid()::text), 1, 'Missing due-date count is disclosed separately');
+select is((select (row->>'missingDueDateCount')::integer from jsonb_array_elements(public.get_dashboard('me')->'workload') row where row->'person'->>'id' = auth.uid()::text), 1, 'Missing due-date count is disclosed separately');
 select is(jsonb_array_length(public.get_dashboard()->'recentVisualWork'), 1, 'Standalone visual work appears in its separate source list');
 reset role;
 
@@ -101,25 +102,28 @@ select is(public.get_dashboard()->>'defaultScopeKey', 'lead:10000000-0000-4000-8
 select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Lead group reconciles Lead and direct-report active tickets');
 select is(jsonb_array_length(public.get_dashboard()->'recentTicketWork'), 1, 'Ticket recent work uses actual ticket work dates');
 select is((public.get_dashboard('people', array['10000000-0000-4000-8000-000000000003'::uuid])->'cards'->>'active')::integer, 1, 'Lead can deliberately select a specific person');
+select is((public.get_dashboard('all')->'cards'->>'active')::integer, 3, 'Lead can deliberately select All');
+select is((public.get_dashboard('me')->'cards'->>'active')::integer, 1, 'Lead can deliberately select Me');
 reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000005', true);
 set local role authenticated;
-select is(public.get_dashboard()->>'defaultScopeKey', 'lead:10000000-0000-4000-8000-000000000005', 'Lead Admin defaults to underlying Lead group');
-select is((public.get_dashboard()->'cards'->>'active')::integer, 0, 'Lead Admin does not silently broaden an empty group');
+select is(public.get_dashboard()->>'defaultScopeKey', 'all', 'Lead Admin defaults to All');
+select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Lead Admin default reconciles all active tickets');
 reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000006', true);
 set local role authenticated;
-select is(public.get_dashboard()->>'defaultScopeKey', 'manager:10000000-0000-4000-8000-000000000006', 'Manager defaults to own Manager group');
-select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Manager group reconciles nested reporting tickets');
+select is(public.get_dashboard()->>'defaultScopeKey', 'all', 'Manager defaults to All');
+select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Manager All reconciles active tickets');
 select is((public.get_dashboard('manager:10000000-0000-4000-8000-000000000007')->'cards'->>'active')::integer, 0, 'Manager can deliberately select another Manager group');
+select is((public.get_dashboard('me')->'cards'->>'active')::integer, 0, 'Manager can deliberately select Me');
 reset role;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000007', true);
 set local role authenticated;
-select is(public.get_dashboard()->>'defaultScopeKey', 'manager:10000000-0000-4000-8000-000000000007', 'Manager Admin defaults to underlying Manager group');
-select is((public.get_dashboard()->'cards'->>'active')::integer, 0, 'Manager Admin default is not All');
+select is(public.get_dashboard()->>'defaultScopeKey', 'all', 'Manager Admin defaults to All');
+select is((public.get_dashboard()->'cards'->>'active')::integer, 3, 'Manager Admin default reconciles all active tickets');
 reset role;
 
 insert into public.operation_requests (

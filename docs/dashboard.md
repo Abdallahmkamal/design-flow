@@ -1,8 +1,8 @@
 # Dashboard specification
 
-**Version:** 1.2
+**Version:** 1.3
 **Decision date:** 2026-07-16  
-**Status:** Approved MVP contract with D-110 team-ready amendments
+**Status:** Approved MVP contract with D-110/D-112 team-ready amendments
 
 The Dashboard is a position-aware view over one team. Reporting groups change the default people scope; they never create separate teams or restrict a Lead's or Manager's visibility.
 
@@ -24,14 +24,31 @@ Where people filtering applies, support:
 
 Designer without Admin is restricted to Me at the authorization boundary; URL or RPC filters cannot broaden that scope. Lead without Admin defaults to My reporting group and may select All or Me. Manager and every Admin-privileged principal default to All and may select individual reporting groups or Me. Viewer remains whole-team read-only at All. Reporting-group scope is a filter preset for broader-authorized principals, not a tenant boundary. These changed defaults and the Designer boundary become effective only when modernization Slice 6 is deployed. They do not narrow assignee choices or ordinary whole-team Work Item visibility.
 
-## 2. Shared filters
+## 2. Permanent page-wide scope controls
 
-- People scope uses the position defaults above.
-- Area/Squad defaults to All.
+- Dashboard has exactly two permanent page-wide scope controls: **People** and
+  **Area/Squad**. Both remain visible in the shared module header and refresh
+  every applicable card, chart, signal, list, and workload row.
+- People uses the position defaults and authorization rules above.
+- Area/Squad defaults to All and preserves the existing single-Area URL and RPC
+  contract. Archived Areas are unavailable for ordinary new selection while a
+  valid historical/current value remains representable under the controlled-list
+  contracts.
+- `All` is the non-restrictive default/reset value where permitted and is not
+  presented as an active restrictive filter.
+- These controls reuse the active-filter chip visual language from All Tickets,
+  but remain persistent scope selectors rather than removable optional filters.
+  They use a light outlined resting treatment; a restrictive selection may use
+  a subtle filled state. They have clear labels and current values and never
+  show remove actions.
+- Dashboard has no generic Add filter control and no page-wide Status, Labels,
+  or date-range filters. This Dashboard-only rule does not change the approved
+  Add filter model on All Tickets or Reports.
 - Archived tickets are excluded.
 - Snapshot cards use the current ticket state.
 - Activity summaries default to the current Sunday-through-Saturday reporting week, ending today, and use actual `work_date` values. Friday/Saturday work appears when manually recorded; working-day thresholds still skip those days.
-- Changing a shared filter refreshes every applicable card, signal, list, and workload row.
+- Valid People and Area values are URL-backed so reload, deep links, navigation,
+  and Browser Back preserve Dashboard scope.
 
 ## 3. Primary cards
 
@@ -45,6 +62,8 @@ Show these six scoped, clickable summary cards:
 6. **Unassigned backlog** — unarchived Backlog tickets without a primary assignee.
 
 Selecting a card filters or opens the relevant ticket list; cards are not dead-end totals.
+Use restrained semantic color on the metric number or a narrow card accent;
+do not use competing full-card color fills or rely on color alone.
 
 ## 4. Stale-work definition
 
@@ -82,6 +101,9 @@ Show a deduplicated ticket list that can expose multiple applicable reasons:
 - Active owned work without a due date
 - Longest-waiting In Review items
 
+Present each result as a compact, headerless three-part row: ticket identity,
+current assignee or Unassigned, and status plus every applicable reason badge.
+
 ### Workload by person
 
 Show one neutral row per person in scope with:
@@ -94,10 +116,16 @@ Show one neutral row per person in scope with:
 - Standalone visual activity shown separately
 
 Default ordering is alphabetical. The UI may prioritize an attention filter, but must not rank people by output or imply that ticket counts equal effort.
+Keep this detailed table rather than replacing it with a comparative people
+chart. Activating a person row opens All Tickets with that person in the visible
+People filter and carries the selected Dashboard Area when present. Mobile
+cards expose the same destination explicitly.
 
 ### Recent recorded work
 
 - Show ticket activity using actual work dates.
+- Group ticket records under their actual work date and prioritize ticket
+  identity/title over person and work-type metadata.
 - Show standalone visual activity in a visibly separate subsection.
 - Backfilled work belongs to the date when the work happened, while audit history retains the later submission time.
 
@@ -114,7 +142,9 @@ Default ordering is alphabetical. The UI may prioritize an attention filter, but
 
 ## 8. Actions and responsive behavior
 
-- Designer, Lead, Manager, and Admin-privileged users see Create ticket and Log work quick actions.
+- Dashboard does not duplicate Create ticket or Log work in its module header;
+  authorized users retain those actions in the persistent application sidebar
+  or mobile action surface.
 - A Viewer sees no mutating actions and cannot hold Admin privilege.
 - Mobile preserves the same definitions and filters; cards may wrap or scroll, and workload rows may become expandable cards.
 - Every aggregate must link to or reveal the source people, tickets, or work records when permissions allow.
@@ -122,6 +152,9 @@ Default ordering is alphabetical. The UI may prioritize an attention filter, but
 ## 9. Acceptance criteria
 
 - Position defaults resolve correctly on first load.
+- People and Area/Squad are the only permanent Dashboard scope controls; no
+  generic Add filter or Dashboard-wide Status, Labels, or date-range control is
+  present.
 - Designer without Admin remains Me-only even with forged URL/RPC scope. Lead without Admin defaults to their group and may select All or Me. Manager/Admin defaults to All and may select approved group/Me refinements. Viewer remains All/read-only.
 - Adding Admin privilege changes the Dashboard default to All without changing organizational position or reporting-line attribution.
 - Reporting-group changes refresh all scoped Dashboard content consistently.

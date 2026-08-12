@@ -475,14 +475,21 @@ first/reset/inactive flows, mobile, reduced-motion, and staging checks.
 
 Branch: `codex/ui-modernization-dashboard`.
 
-Implement the shared header, persistent People scope, Add Filter chips, one
-local dropdown per card, and accurate filtered-All-Tickets drill-down while
+Implement the shared header, exactly two permanent page-wide scope controls
+(People and Area/Squad), at most one meaningful local dropdown per card/chart,
+and accurate filtered-All-Tickets drill-down while
 preserving cards, metrics, formulas, and non-productivity meaning. Enforce
 Designer-without-Admin Me-only scope in the RPC and direct URLs; Lead defaults
 to group with All/Me; Manager/Admin defaults to All; Viewer remains whole-team
-read-only. Exit requires seven-principal scope/tamper tests, filter and card
+read-only. Do not add a generic Dashboard Add filter or Dashboard-wide Status,
+Labels, or date-range filters; All Tickets and Reports retain their approved
+optional Add filter models. Exit requires seven-principal scope/tamper tests, filter and card
 isolation, source reconciliation, Back/scroll restoration, and responsive
 chart/table alternatives.
+
+The Unassigned backlog drill-down uses D-113's visible All Tickets Unassigned
+filter together with Backlog; it does not introduce an assignment-state control
+on Dashboard.
 
 ### Slice 7 — Reports uplift and revised exports
 
