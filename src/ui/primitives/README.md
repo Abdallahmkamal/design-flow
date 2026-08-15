@@ -30,7 +30,7 @@ Do not add later-slice primitives here until their owning slice requires them.
 
 ## Slice 2 form controls
 
-- `FormInput`, `FormSelect`, `FormDatePicker`, `FormTextarea`, and `FormCheckbox`
+- `FormInput`, `FormSelect`, `FormMultiSelect`, `FormDatePicker`, `FormTextarea`, and `FormCheckbox`
   provide the shared field label, required marker, description, validation,
   disabled, hover, and focus states for migrated workflows.
 - Their 48px control height, 12px radius, 1px semantic border, 12px horizontal
@@ -40,6 +40,10 @@ Do not add later-slice primitives here until their owning slice requires them.
   legacy coexistence.
 - `FormSelect` composes the source-owned shadcn Select over Base UI; its trigger
   and popup remain keyboard-accessible when nested in the route-backed sheet.
+  The popup is bounded by both 20rem and the available viewport height; its list
+  owns wheel/touch scrolling with overscroll containment on desktop and mobile.
+- `FormMultiSelect` preserves that labelled field geometry while exposing a
+  scrollable multi-select dropdown and a concise selected-value summary.
 - `FormDatePicker` follows the shadcn Date Picker composition: a Base UI Popover
   contains the source-owned React DayPicker calendar and preserves ISO values at
   the feature boundary.
@@ -54,3 +58,16 @@ Do not add later-slice primitives here until their owning slice requires them.
 - `Skeleton` preserves layout during loading, `Empty` appears only after a
   successful empty result, and `Alert` presents failures without resetting the
   active URL scope.
+
+## Combined Slices 7–8 Reports and Settings
+
+- `Tabs`, `TabsList`, `TabsTrigger`, and `TabsContent` provide URL-controlled
+  tab anatomy with arrow/Home/End keyboard navigation and horizontally
+  scrollable narrow-screen composition.
+- `Table` and its semantic section/cell components provide source-owned shadcn
+  table presentation without changing server pagination or row behavior.
+- `ChartContainer`, `ChartConfig`, tooltip, and legend helpers map Recharts to
+  Vodafone chart variables while leaving exact-value accessible tables to the
+  feature composition.
+- `AlertDialog` provides modal focus management for unsaved-edit decisions;
+  destructive domain confirmations remain separate.

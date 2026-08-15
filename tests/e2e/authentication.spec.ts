@@ -17,6 +17,7 @@ interface AccountState {
 interface AuthMockOptions {
   account?: Partial<AccountState>;
   invalidCredentials?: boolean;
+  notificationUnreadCount?: number;
 }
 
 function base64Url(value: Record<string, unknown>): string {
@@ -121,7 +122,7 @@ async function configureAuthMocks(
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(0),
+        body: JSON.stringify(options.notificationUnreadCount ?? 0),
       });
     },
   );
@@ -392,9 +393,43 @@ test('authenticated shell is navigable and has no detectable accessibility viola
     page.getByRole('heading', { name: 'Reports', exact: true }),
   ).toBeVisible();
   await expect(page.getByText('0 matching records.')).toBeVisible();
-  await expect(page).toHaveURL('/reports');
+  await expect(page).toHaveURL(/\/reports\?tab=tickets.*scope=me/u);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+
+  await page.getByRole('tab', { name: 'Designers' }).click();
+  await expect(page).toHaveURL(/tab=designers/u);
+  await page.goBack();
+  await expect(page.getByRole('tab', { name: 'Tickets' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Edit filters' }).click();
+  await expect(
+    page.getByRole('combobox', { name: 'Area/Squad' }),
+  ).toBeVisible();
 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('notification count is anchored to the bell with the brand treatment', async ({
+  page,
+}) => {
+  await configureAuthMocks(page, { notificationUnreadCount: 3 });
+  await signIn(page);
+
+  const control = page.getByRole('link', {
+    name: 'Notifications, 3 unread',
+  });
+  await expect(control).toBeVisible();
+  await expect(control).toHaveClass(/relative/u);
+  await expect(control.locator('span').filter({ hasText: /^3$/u })).toHaveCSS(
+    'background-color',
+    'rgb(230, 0, 0)',
+  );
 });
 
 test('mandatory password change cannot be bypassed and releases the shell after completion', async ({
@@ -499,7 +534,7 @@ test('mobile shell keeps primary navigation and session actions available', asyn
       .getByRole('button', { name: 'Open Quick Actions' })
       .locator('svg')
       .last(),
-  ).toHaveCSS('color', 'rgb(230, 0, 0)');
+  ).toHaveCSS('color', 'rgb(255, 255, 255)');
 
   await page.getByRole('button', { name: 'Open Quick Actions' }).click();
   await expect(
@@ -616,73 +651,29 @@ test('mobile shell keeps primary navigation and session actions available', asyn
   );
   expect(bottomPadding).toBeGreaterThanOrEqual(navigation?.height ?? 0);
 
-  const restingFabBorder = await page
+  const restingFabPresentation = await page
     .getByRole('button', { name: 'Open Quick Actions' })
     .evaluate((button) => {
-      const border = button.querySelector('svg[viewBox="0 0 66 66"]');
-      const paths = border?.querySelectorAll('path');
-      const track = paths?.[0];
-      const progress = paths?.[1];
-      const stops = border?.querySelectorAll('stop');
+      const icon = button.querySelector('svg');
+      const style = getComputedStyle(button);
       return {
-        borderTransform: border ? getComputedStyle(border).transform : null,
-        trackOpacity: track ? getComputedStyle(track).opacity : null,
-        progressAnimation: progress
-          ? getComputedStyle(progress).animationName
-          : null,
-        progressAnimationDuration: progress
-          ? getComputedStyle(progress).animationDuration
-          : null,
-        progressAnimationIterations: progress
-          ? getComputedStyle(progress).animationIterationCount
-          : null,
-        progressAnimationFillMode: progress
-          ? getComputedStyle(progress).animationFillMode
-          : null,
-        progressFilter: progress ? getComputedStyle(progress).filter : null,
-        progressStroke: progress ? getComputedStyle(progress).stroke : null,
-        startColor: stops?.[0] ? getComputedStyle(stops[0]).stopColor : null,
-        endColor: stops?.[1] ? getComputedStyle(stops[1]).stopColor : null,
+        animationName: style.animationName,
+        background: style.backgroundColor,
+        color: icon ? getComputedStyle(icon).color : null,
+        perimeterCount: button.querySelectorAll('svg[viewBox="0 0 66 66"]')
+          .length,
+        shadow: style.boxShadow,
+        transitionDuration: style.transitionDuration,
       };
     });
-  expect(restingFabBorder.borderTransform).toBe('none');
-  expect(Number(restingFabBorder.trackOpacity)).toBeCloseTo(0.15, 2);
-  expect(restingFabBorder.progressAnimation).toContain(
-    'mobile-fab-border-draw',
-  );
-  expect(restingFabBorder.progressAnimationDuration).toBe('2s');
-  expect(restingFabBorder.progressAnimationIterations).toBe('1');
-  expect(restingFabBorder.progressAnimationFillMode).toBe('both');
-  expect(restingFabBorder.progressFilter).toBe('none');
-  expect(restingFabBorder.progressStroke).toContain(
-    'design-flow-mobile-fab-gradient',
-  );
-  expect(restingFabBorder.startColor).toBe('rgb(230, 0, 0)');
-  expect(restingFabBorder.endColor).toBe('rgb(153, 0, 0)');
-
-  await page.waitForTimeout(2100);
-  await expect(
-    page
-      .getByRole('button', { name: 'Open Quick Actions' })
-      .locator('svg[viewBox="0 0 66 66"] path')
-      .last(),
-  ).toHaveCSS('stroke-dasharray', '1px, 0px');
-
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  expect(
-    Number.parseFloat(
-      await page
-        .getByRole('button', { name: 'Open Quick Actions' })
-        .evaluate((button) => getComputedStyle(button).transitionDuration),
-    ),
-  ).toBeLessThanOrEqual(0.08);
-  expect(
-    await page
-      .getByRole('button', { name: 'Open Quick Actions' })
-      .locator('path')
-      .last()
-      .evaluate((circle) => getComputedStyle(circle).animationName),
-  ).toBe('none');
+  expect(restingFabPresentation).toMatchObject({
+    animationName: 'none',
+    background: 'rgb(230, 0, 0)',
+    color: 'rgb(255, 255, 255)',
+    perimeterCount: 0,
+    transitionDuration: '0s',
+  });
+  expect(restingFabPresentation.shadow).not.toBe('none');
 
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
@@ -948,14 +939,7 @@ test('Admin Settings exposes only approved sections and account-support fields',
   await expect(
     page.getByRole('heading', { name: 'Members and access' }),
   ).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Areas/Squads' }),
-  ).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Labels' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'General' })).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Administration audit' }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/tab=members/u);
   const accountSupport =
     testInfo.project.name === 'mobile-chromium'
       ? page
@@ -967,6 +951,11 @@ test('Admin Settings exposes only approved sections and account-support fields',
   await expect(accountSupport).toBeVisible();
   await expect(page.getByText(/API keys/u)).toHaveCount(0);
 
+  await page.getByRole('tab', { name: 'Areas/Squads' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Areas/Squads' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/tab=areas/u);
   const areas =
     testInfo.project.name === 'mobile-chromium'
       ? page.getByRole('list', { name: 'Active Areas/Squads' })
@@ -990,6 +979,21 @@ test('Admin Settings exposes only approved sections and account-support fields',
   ).toBeFocused();
   await page.getByRole('button', { name: 'Cancel' }).click();
   await expect(archiveArea).toBeFocused();
+
+  await page.getByRole('tab', { name: 'Labels' }).click();
+  await expect(page.getByRole('heading', { name: 'Labels' })).toBeVisible();
+  await page.getByRole('tab', { name: 'Labels' }).press('ArrowRight');
+  await expect(page.getByRole('heading', { name: 'General' })).toBeVisible();
+  await page.getByRole('tab', { name: 'General' }).press('ArrowRight');
+  await expect(
+    page.getByRole('heading', { name: 'Administration audit' }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole('heading', { name: 'General' })).toBeVisible();
+  await page.goForward();
+  await expect(
+    page.getByRole('heading', { name: 'Administration audit' }),
+  ).toBeVisible();
 
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScanResults.violations).toEqual([]);

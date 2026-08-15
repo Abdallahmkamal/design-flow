@@ -27,35 +27,14 @@
   position: sticky;
   z-index: 5;
   inset-block-start: var(--shell-bar-height);
-  overflow-x: auto;
+  overflow: hidden;
   padding-block: var(--space-sm);
   background: var(--color-surface-bg);
 }
 
-.sectionNavigation ul {
-  display: flex;
-  min-inline-size: max-content;
-  gap: var(--space-xs);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.sectionNavigation a {
-  display: inline-flex;
-  min-block-size: var(--control-height-md);
-  align-items: center;
-  padding-inline: var(--space-sm);
-  border-radius: var(--radius-element);
-  color: var(--color-text-secondary);
-  background: var(--color-action-secondary-background);
-  font: var(--type-label);
-  text-decoration: none;
-}
-
-.sectionNavigation a:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: var(--focus-ring-offset);
+.sectionNavigation > div {
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .sections {

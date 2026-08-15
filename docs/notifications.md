@@ -1,7 +1,7 @@
 # Notifications specification
 
-**Version:** 1.0  
-**Decision date:** 2026-07-16  
+**Version:** 1.1
+**Decision date:** 2026-08-15
 **Status:** Approved for MVP planning
 
 Notifications provide a narrow in-app awareness layer for personally relevant ticket events. They complement Dashboard attention signals; they do not become an email, push, reminder, or subscription platform.
@@ -9,11 +9,20 @@ Notifications provide a narrow in-app awareness layer for personally relevant ti
 ## 1. Experience
 
 - Show a notification bell with unread count.
+- Anchor the unread count to the bell control itself in both shells and use the
+  Vodafone brand-red badge treatment; the accessible label carries the same
+  unread count so color is never the only signal.
 - Open a chronological in-app list, newest first.
 - Allow the recipient to mark one notification or all notifications as read.
 - Each notification deep-links to the relevant Work Item.
 - Paginate or progressively load older notifications.
 - Do not provide manual notification deletion in the MVP.
+- Present inbox rows as portal cards with a clear Work Item title, read-state
+  badge, event summary, timestamp, and contextual read action. Unread cards use
+  a narrow red leading accent plus the explicit Unread badge; read cards retain
+  the same hierarchy without the accent.
+- On mobile, preserve the same content order and card hierarchy with compact
+  padding rather than collapsing the row into generic list text.
 
 ## 2. Recipients
 

@@ -465,7 +465,7 @@ remain Design Flow-owned.
 | `Checkbox` | People/multi-value filters and Include comments | Labelled groups; comments default false; `references/astryx/checkbox.md` |
 | `Badge` | Status/relationship/attention metadata | Text remains sufficient without color; `references/astryx/badge.md` |
 | `Avatar` | Neutral person identity | Noninteractive identity only; `references/astryx/avatar.md` |
-| `DataTable` | Detail, source, chart-alternative, and overview data | Native links/buttons are keyboard paths; pointer row activation only; `references/astryx/table.md` |
+| `DataTable` | Detail, source, chart-alternative, and overview data; Reports opts into the All Tickets sticky-header/bordered-cell presentation | Native links/buttons are keyboard paths; pointer row activation only; `references/astryx/table.md` |
 | `Pagination` | Visible report/source pages | Export never inherits page limits; `references/astryx/pagination.md` |
 
 ## New shared component: `TabList`
@@ -488,7 +488,7 @@ wrapped three-item mobile presentation. Reference:
 | --- | --- | --- |
 | `features/reports/ReportFilters` | URL-backed period/scope/group/people/Area and tab refinements | Input, Select, Checkbox, Button |
 | `features/reports/ReportMetricCards` | Period and labelled snapshot values with source actions | Button, Badge |
-| `features/reports/ReportChartFrame` | Token-styled Recharts bar/line plus summary/table and filter refinement | Button; no `src/ui` Recharts dependency |
+| `features/reports/ReportChartFrame` | Muted token-styled Recharts bar/line plus visually hidden exact-value table and filter refinement | Button; no `src/ui` Recharts dependency |
 | `features/reports/TicketReport` | Cards, four charts, ticket detail/source table | DataTable, Pagination, Badge |
 | `features/reports/DesignerReport` | One/two/multi neutral layout, overview and separated detail sections | DataTable, Pagination, Avatar, Badge |
 | `features/reports/RecordedTicketActivity` | One-person valid-entry source table with immutable submitter attribution | DataTable, Pagination, Badge |

@@ -30,25 +30,51 @@
   margin: 0;
   list-style: none;
 }
-.list li {
+.item {
   display: grid;
   justify-items: start;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   padding: var(--space-lg);
-  border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-container);
+  background: var(--color-surface-default);
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    background-color var(--motion-duration-fast) var(--motion-easing-standard);
 }
-.list li p {
+.item p {
   margin: 0;
   overflow-wrap: anywhere;
 }
-.list time,
-.read {
+.message {
+  color: var(--color-text-primary);
+  font: var(--type-body);
+}
+.itemMeta {
+  display: flex;
+  inline-size: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.itemMeta time {
   color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+.read {
+  background: var(--color-surface-raised);
 }
 .unread {
   border-inline-start-color: var(--color-action-accent-background) !important;
-  border-inline-start-width: 3px !important;
+  border-inline-start-width: 4px !important;
+  background: linear-gradient(
+    90deg,
+    color-mix(
+      in srgb,
+      var(--color-action-accent-background) 4%,
+      var(--color-surface-default)
+    ),
+    var(--color-surface-default) 24%
+  );
 }
 .itemHeading {
   display: flex;
@@ -58,7 +84,7 @@
 }
 .itemHeading a {
   color: var(--color-text-accent);
-  font: var(--type-link);
+  font: var(--type-label);
   overflow-wrap: anywhere;
 }
 .empty,
@@ -67,8 +93,9 @@
   justify-items: start;
   gap: var(--space-md);
   padding: var(--space-2xl);
-  border: var(--border-width) dashed var(--color-border-strong);
+  border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-container);
+  background: var(--color-surface-default);
 }
 .empty h2,
 .empty p,
@@ -85,7 +112,10 @@
   .header {
     flex-direction: column;
   }
-  .list li {
+  .item {
     padding: var(--space-md);
+  }
+  .itemHeading {
+    align-items: flex-start;
   }
 }

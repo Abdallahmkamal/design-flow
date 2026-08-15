@@ -8,6 +8,11 @@ const person = z.object({ id: z.string().uuid(), displayName: z.string() });
 const chartPoint = z
   .object({ label: z.union([z.string(), z.number()]) })
   .catchall(z.unknown());
+const cardSource = z.object({
+  key: z.string(),
+  primary: z.string(),
+  secondary: z.string().optional(),
+});
 const reportSchema = z.object({
   tab: z.enum(['tickets', 'designers', 'visual_work']),
   periodStart: z.string(),
@@ -21,6 +26,7 @@ const reportSchema = z.object({
   areaOptions: z.array(z.object({ id: z.string().uuid(), name: z.string() })),
   canExport: z.boolean(),
   cards: z.record(z.string(), z.number()).optional().default({}),
+  cardSources: z.record(z.string(), z.array(cardSource)).optional().default({}),
   charts: z.record(z.string(), z.array(chartPoint)),
   rows: z.array(z.record(z.string(), z.unknown())),
   recordedActivity: z
@@ -41,7 +47,8 @@ const reportSchema = z.object({
 });
 const exportSchema = z.object({
   reportType: z.string(),
-  metadata: z.record(z.string(), z.unknown()),
+  periodStart: z.string(),
+  periodEnd: z.string(),
   rows: z.array(z.record(z.string(), z.unknown())),
 });
 const capabilitiesSchema = z.object({
@@ -52,12 +59,7 @@ const capabilitiesSchema = z.object({
 export type ReportData = z.infer<typeof reportSchema>;
 export type ReportRow = ReportData['rows'][number];
 export type ReportExport = z.infer<typeof exportSchema>;
-export type ReportExportType =
-  | 'ticket_summary'
-  | 'ticket_activity'
-  | 'designer_summary'
-  | 'designer_ticket'
-  | 'visual_work';
+export type ReportExportType = 'designers' | 'tickets' | 'visual_work';
 
 export async function getReportOptions() {
   const client = getSupabaseClient();

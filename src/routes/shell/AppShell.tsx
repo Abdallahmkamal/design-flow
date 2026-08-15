@@ -156,15 +156,15 @@ function NotificationControl({
         <Button
           variant="ghost"
           size="icon"
-          className={mobile ? 'size-10' : 'size-8'}
+          className={`relative overflow-visible ${mobile ? 'size-10' : 'size-8'}`}
           asChild
         >
           <NavLink to="/notifications" aria-label={label}>
             <Bell aria-hidden="true" />
             {unread ? (
               <Badge
-                tone="info"
-                className="absolute -top-1 -right-1 min-h-4 min-w-4 justify-center px-1 text-[10px]"
+                tone="brand"
+                className="absolute -top-1 -right-1 h-4 min-h-4 min-w-4 justify-center px-1 py-0 text-[10px] leading-none shadow-sm"
                 aria-hidden="true"
               >
                 {unread > 99 ? '99+' : unread}
@@ -448,45 +448,10 @@ export function AppShell() {
               <SheetTrigger asChild>
                 <Button
                   size="icon"
-                  variant="secondary"
+                  variant="default"
                   className={cn(styles.quickActionFab, styles.restingFab)}
                   aria-label="Open Quick Actions"
                 >
-                  <svg
-                    className={styles.fabBorderTrace}
-                    viewBox="0 0 66 66"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <defs>
-                      <linearGradient
-                        id="design-flow-mobile-fab-gradient"
-                        x1="33"
-                        y1="1"
-                        x2="33"
-                        y2="65"
-                        gradientUnits="userSpaceOnUse"
-                      >
-                        <stop
-                          offset="0"
-                          stopColor="var(--color-action-accent-background)"
-                        />
-                        <stop
-                          offset="1"
-                          stopColor="var(--color-action-accent-gradient-deep)"
-                        />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      className={styles.fabBorderTrack}
-                      d="M33 1C50.6731 1 65 15.3269 65 33C65 50.6731 50.6731 65 33 65C15.3269 65 1 50.6731 1 33C1 15.3269 15.3269 1 33.0103 1.00103"
-                    />
-                    <path
-                      className={styles.fabBorderProgress}
-                      d="M33 1C50.6731 1 65 15.3269 65 33C65 50.6731 50.6731 65 33 65C15.3269 65 1 50.6731 1 33C1 15.3269 15.3269 1 33.0103 1.00103"
-                      pathLength="1"
-                    />
-                  </svg>
                   <Plus className={styles.fabIcon} aria-hidden="true" />
                 </Button>
               </SheetTrigger>

@@ -1,7 +1,7 @@
 # Design Flow — Team-Ready UI Handoff
 
 Status: Approved post-MVP repository contract
-Last updated: 2026-08-11 — D-112 Dashboard scope refinement
+Last updated: 2026-08-15 — D-117 mobile Quick Actions FAB refinement
 Figma file: https://www.figma.com/design/2c9QoPS8BLcTdiIoBEeeni/DesignFlow
 
 ## Repository reconciliation — 2026-08-08
@@ -27,8 +27,12 @@ The approved modernization sequence has exactly nine slices:
 5. Authentication uplift — completed through PR #42; deployment remains a
    separate release step.
 6. Dashboard uplift.
-7. Reports uplift and revised exports.
-8. Settings uplift.
+7. Reports uplift and revised exports — implemented locally together with Slice
+   8 on `codex/ui-modernization-reports-settings`; its exit gate remains
+   independent and publishing/rollout remain pending user authorization.
+8. Settings uplift — implemented locally together with Slice 7 on
+   `codex/ui-modernization-reports-settings`; its exit gate remains independent
+   and publishing/rollout remain pending user authorization.
 9. Integrated release and staging gate.
 
 The first two slices use their internal checkpoints on one branch and as one staging unit each. Do not split them into separate slices or merge any further slices.
@@ -142,18 +146,16 @@ Broader visual consistency and secondary-module refinement must not delay rollou
   must remain readable if a mobile compositor advertises backdrop-filter support
   but temporarily fails to sample the page; genuinely unsupported browsers use
   the more opaque readability fallback.
-- Present the separate Quick Actions control as a glass/white FAB with a red
-  plus and a crisp `#e60000` → `#990000` gradient perimeter while resting. Use
-  a one-time two-second path-trim stroke draw matching the approved Ask Maps
-  reference: the stronger perimeter progressively traces once around the static
-  subdued ring over 1.8 seconds and then holds its completed state without
-  rotating the ring, resetting, looping, or adding a diffuse glow. Opening rotates the plus
-  into a calm close state, fades a light neutral backdrop, and raises a
+- Present the separate resting Quick Actions control as a static Vodafone-red
+  FAB with a white plus and the same restrained elevation as the floating
+  navigation capsule. Do not animate, trace, rotate, or glow the resting FAB.
+  Opening replaces it with the existing calm close state, fades a light neutral
+  backdrop, and raises a
   responsive equal-width action stack upward and slightly leftward from the FAB
   area with a short stagger. Keep that stack right-anchored toward the FAB at
   roughly 55–70% of the available mobile width rather than centered/full-width.
-  Closing reverses the sequence. Under `prefers-reduced-motion`, show the full
-  static gradient perimeter while preserving every action and state.
+  Closing reverses the action-stack sequence. Preserve every action and state
+  under `prefers-reduced-motion`.
 - Keep the floating dock visible beneath the expanded action group. The action
   group is not a bottom sheet and has no full-width opaque footer or container.
 
@@ -165,6 +167,12 @@ Broader visual consistency and secondary-module refinement must not delay rollou
 - In dark mode, show a sun with the accessible label “Switch to light mode.”
 - Follow the device preference for a first-time user, then persist the user's explicit selection.
 - Keep Notifications accessible from the shell.
+- Anchor the unread-count badge to the notification icon on desktop and mobile,
+  using the solid Vodafone red badge treatment and the same count in the
+  accessible link label.
+- Notifications inbox rows use the portal card hierarchy: linked Work Item,
+  explicit read state, event summary, timestamp, and read action. Mobile keeps
+  the same hierarchy with compact card spacing.
 - The profile dropdown shows the user's name and role as context and Sign out as its only action for this release.
 - Editable profile/display-name functionality may add a profile action later without changing the shell structure.
 
@@ -572,7 +580,8 @@ The Dashboard receives a surgical usability and component-library uplift rather 
   the persistent sidebar/mobile action surface remains their authorized home.
 - Dashboard has no generic **Add filter** control and no page-wide Status,
   Labels, or date-range filters. This refinement is Dashboard-only; All Tickets
-  and Reports retain their approved Add filter and removable-chip models.
+  retains its approved Add filter and removable-chip model; Reports uses its
+  separate slash-summary and Edit filters overlay model.
 
 ### Card-level controls and visual uplift
 
@@ -632,15 +641,23 @@ Retain the existing three Reports tabs—**Designers**, **Tickets**, and **Stand
 
 ### Consistent module header and report context
 
-- Use the same module-header composition approved for All Tickets and Dashboard, adapted with the Reports title and concise supporting text if needed.
-- Keep **Period** and **People scope** permanently visible because together they define the report's fundamental context.
+- Use the same module-header composition approved for All Tickets and Dashboard,
+  adapted to the Reports title only; the report context belongs in the compact
+  filter container rather than repeated supporting text.
+- Keep the applied **Period** and **People scope** permanently visible as plain
+  slash-separated summary text because together they define the report's
+  fundamental context.
 - Role behavior for People scope remains:
   - **Designer:** **Me** only. This is an authorization boundary and cannot be changed or bypassed through filters, exports, or direct URLs.
   - **Lead:** default to **My reporting group**, with **All people** and **Me** available.
   - **Manager/Admin:** default to **All people**, with individual reporting groups and **Me** available.
-- Place the standard **Add filter** control beside the two persistent context controls. Use the same dropdown-and-removable-chip behavior approved for All Tickets.
+- Place a neutral **Edit filters** action beside the summary. It opens the
+  complete vertical field set in a side overlay; there are no filter chips or
+  individual removal actions. Changes remain draft until Apply, Cancel discards
+  them, and Reset restores the authorized defaults inside the draft.
 - Optional filters refine the selected Period and People scope; they must never broaden role permissions.
-- Place **Export CSV** in the top header action area rather than at the bottom of the page.
+- Place the dominant black **Export CSV** action inside the compact filter
+  container rather than in the page header or at the bottom of the page.
 
 ### One contextual export action
 
@@ -729,14 +746,44 @@ Identify the active tab and selected Period in the filename, for example:
 - Use the shared shadcn tab pattern for **Designers**, **Tickets**, and **Standalone Visuals** without changing the existing tab structure, report content, metrics, or calculations.
 - Keep the active tab visually clear and preserve it when Period, People scope, or optional filters change.
 - On mobile, keep all three tabs reachable. Allow the tab list to scroll horizontally when needed rather than compressing, truncating, or wrapping labels awkwardly.
-- Stack or wrap Period, People scope, Add filter, and Export CSV controls cleanly at smaller widths without clipping actions.
-- Report tables may scroll horizontally on mobile; keep the identifying column first and preserve readable targets.
-- Resize or stack charts and summary cards without clipping, and use the shared application patterns for loading, empty, and error states.
+- Wrap the slash-separated summary naturally and stack Edit filters and Export
+  CSV cleanly at smaller widths without clipping actions.
+- Report desktop tables retain the All Tickets-aligned sticky-header treatment.
+  On mobile they become collapsed, expandable structured records with the
+  identifying summary first and the complete field/action set inside.
+- Keep the primary report filters in one vertical column inside a full-width
+  mobile overlay. Present summary
+  cards as a contained two-row horizontal snap scroller and charts as a contained
+  one-row horizontal snap scroller, both with a partial-next-card cue and no
+  page-level horizontal overflow.
+- Report summary cards expose their matching source items in the same compact
+  floating treatment on desktop hover/focus and mobile tap. Keep the period or
+  snapshot label visible; do not replace it with a metric-definition paragraph.
+- Reuse the Log Work `FormSelect` and `FormDatePicker` anatomy for the primary
+  report fields. All source-owned select popups use a viewport-bounded,
+  independently wheel/touch-scrollable option list on desktop and mobile.
+- Inset the desktop Edit filters overlay `24px` from the viewport top, right,
+  and bottom. Labels use the matching multi-select dropdown rather than an
+  exposed checkbox fieldset. When a response has no summary cards, omit the
+  empty card grid so it cannot reserve mobile space.
 - These presentation details are implementation-owned during the shadcn uplift; no additional Reports Figma work is required.
 
 ### Review verdict
 
-Reports is locked for the team-ready release. Implement the shared header, persistent Period and People scope, Add filter behavior, top-positioned contextual export, active-tab CSV schemas, and responsive constraints above. The broken Detail export is removed. Do not reopen the tab structure, calculations, or export model without a concrete data need.
+Reports is locked for the team-ready release. Implement the shared header,
+slash-separated applied context, Edit filters overlay, contextual export inside
+that container, active-tab CSV schemas, and responsive constraints above. The
+broken Detail export is removed. Do not reopen the tab structure, calculations,
+or export model without a concrete data need.
+
+The reviewed implementation refinement uses one Edit filters side overlay on
+desktop and a full-width overlay on narrow screens, with draft Apply/Reset/Cancel
+behavior and no active chips. Chart
+rows no longer expose one filter action per exact value; each populated chart
+card has one `Filter by` composer. Report period presets are Month to date, Last
+month, Last 3 months including month to date, Last 6 months including month to
+date, and Custom range. Status charts use workflow-status colors and all other
+report charts use the approved non-red categorical palette.
 
 ## Locked: Settings
 

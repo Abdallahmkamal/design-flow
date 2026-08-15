@@ -52,50 +52,14 @@
   overflow: visible;
   border: 0 !important;
   border-radius: var(--radius-full) !important;
-  background: var(--mobile-fab-background) !important;
+  background: var(--color-action-accent-background) !important;
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 35%),
-    0 16px 34px -20px rgb(0 0 0 / 38%),
-    0 4px 12px -8px rgb(0 0 0 / 20%);
-  color: var(--color-text-accent) !important;
-  backdrop-filter: blur(20px) saturate(145%);
-  -webkit-backdrop-filter: blur(20px) saturate(145%);
+    inset 0 1px 0 rgb(255 255 255 / 24%),
+    0 18px 42px -24px rgb(0 0 0 / 32%),
+    0 5px 16px -10px rgb(0 0 0 / 18%);
+  color: var(--color-action-primary-text) !important;
   pointer-events: auto;
-  transition:
-    opacity 180ms ease-out,
-    transform 220ms ease-out,
-    box-shadow 180ms ease-out;
-}
-
-.fabBorderTrace {
-  position: absolute;
-  z-index: 1;
-  inset: -0.0625rem auto auto -0.0625rem;
-  width: 4.125rem !important;
-  height: 4.125rem !important;
-  max-width: none !important;
-  max-height: none !important;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.fabBorderTrack,
-.fabBorderProgress {
-  fill: none;
-  stroke: url('#design-flow-mobile-fab-gradient');
-  stroke-linecap: round;
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.fabBorderTrack {
-  opacity: 0.15;
-}
-
-.fabBorderProgress {
-  stroke-dasharray: 0 1;
-  stroke-dashoffset: 0;
-  animation: mobile-fab-border-draw 2s linear both;
+  transition: none !important;
 }
 
 .fabIcon {
@@ -105,7 +69,7 @@
 }
 
 .restingFab .fabIcon {
-  color: var(--color-text-accent) !important;
+  color: var(--color-action-primary-text) !important;
 }
 
 .closeFab .fabIcon {
@@ -192,7 +156,10 @@
   right: var(--mobile-control-edge);
   bottom: var(--mobile-control-bottom);
   z-index: 1;
+  background: var(--mobile-fab-background) !important;
   color: var(--color-text-primary) !important;
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
 }
 
 .quickActionsContent[data-state='open'] .closeFab {
@@ -201,22 +168,6 @@
 
 .quickActionsContent[data-state='closed'] .closeFab {
   animation: mobile-close-fab-out 190ms ease-in both;
-}
-
-@keyframes mobile-fab-border-draw {
-  0% {
-    stroke-dasharray: 0 1;
-    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-  }
-
-  90% {
-    stroke-dasharray: 1 0;
-    animation-timing-function: step-end;
-  }
-
-  100% {
-    stroke-dasharray: 1 0;
-  }
 }
 
 @keyframes mobile-action-in {
@@ -263,18 +214,8 @@
   }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .quickActionFab:hover {
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 40%),
-      0 19px 36px -20px rgb(0 0 0 / 40%),
-      0 6px 14px -8px rgb(0 0 0 / 22%);
-    transform: translateY(-0.125rem);
-  }
-}
-
 .quickActionFab:active {
-  transform: scale(0.97);
+  transform: none;
 }
 
 @media (max-width: 22.5rem) {
@@ -296,11 +237,6 @@
     height: 3.75rem;
     flex-basis: 3.75rem;
   }
-
-  .fabBorderTrace {
-    width: 3.875rem !important;
-    height: 3.875rem !important;
-  }
 }
 
 @media (min-width: 48rem) {
@@ -310,11 +246,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fabBorderProgress {
-    stroke-dasharray: 1 0;
-    animation: none;
-  }
-
   .fabIcon,
   .quickActionFab,
   .quickActionsBackdrop {
@@ -332,7 +263,7 @@
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
 ) {
   .mobileDock,
-  .quickActionFab,
+  .closeFab,
   .secondaryExpandedAction {
     background: color-mix(
       in srgb,

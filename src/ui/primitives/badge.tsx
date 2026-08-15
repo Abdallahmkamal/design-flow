@@ -13,6 +13,7 @@ const badgeVariants = cva(
         success: 'border-transparent bg-success text-success-foreground',
         warning: 'border-transparent bg-warning text-warning-foreground',
         error: 'border-transparent bg-error text-error-foreground',
+        brand: 'border-transparent bg-primary text-primary-foreground',
       },
     },
     defaultVariants: { tone: 'neutral' },

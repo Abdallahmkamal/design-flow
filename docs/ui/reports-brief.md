@@ -22,8 +22,8 @@ Viewer+Admin states remain outside the normal application boundary.
 1. Heading, report period, people scope, Area/Squad, and tab navigation.
 2. Period-activity cards, visually separate from snapshot cards labelled
    `As of <period end>`.
-3. A small approved set of bar/line charts with an always-available semantic
-   summary/table over the same values.
+3. A small approved set of bar/line charts with an always-available, visually
+   hidden semantic table over the same values.
 4. The current tab's detailed table or structured mobile records.
 5. Source drill-down and authorized current-view CSV controls.
 
@@ -48,8 +48,8 @@ period/people/Area filters survive tab changes. Planned dates, actual
   one row per valid standalone entry/date. Ticket lifecycle, planned-date,
   assignee, contributor, blocker, subtask, and comment concepts never appear.
 
-Every card, chart segment, table row, and aggregate exposes controlled source
-records. Chart selection refines the same URL-backed table filters. A visible
+The controlled source-record section remains present without repeating source
+links inside every summary card or chart. Chart selection refines the same URL-backed table filters. A visible
 labelled control provides every refinement so charts are never the only input.
 
 ## Components and ownership
@@ -68,11 +68,29 @@ centralized chart-token roles; shared UI never imports it or calls Supabase.
 
 ## Desktop, mobile, and interaction
 
-Desktop uses the three-tab frame, wrapping filter toolbar, compact metric grid,
-bounded chart grid, and semantic comparison/detail tables. Below `48rem`,
-filters and cards stack, charts remain labelled, and wide tables become
-expandable structured records preserving fields, source links, sort meaning,
+Desktop uses the three-tab frame, compact applied-filter summary, expandable
+metric grid, balanced two-column chart grid, and All Tickets-aligned
+sticky-header comparison/detail tables. The applied values are plain text
+separated by slashes; Edit filters opens a right-side overlay containing the
+vertical field stack, while Export CSV is the dominant black action in the same
+container. Below `48rem`, the overlay becomes full-width; metric cards use a
+two-row horizontal snap scroller and reveal
+explanations on tap; charts use a one-row horizontal snap scroller with a
+partial-next-card cue; and wide tables become collapsed, expandable structured
+records preserving fields, source links, sort meaning,
 and alphabetical order. No definition changes by viewport.
+
+The desktop filter overlay is inset `24px` from the viewport top, right, and
+bottom and uses the shared `16px` overlay radius. Labels use a field-aligned, independently scrollable multi-select
+dropdown. Empty card responses do not retain the mobile card grid's explicit
+rows or reserve blank space.
+
+The header omits explanatory body copy and export actions. Applied filter values
+have no chips or individual removal affordances. Edit filters keeps the neutral
+filled treatment; the overlay holds draft values until Apply and provides Reset
+and Cancel. Its report selects and dates reuse the Log Work form-control family.
+Select popups are height-bounded to the available viewport and their option
+lists scroll independently by wheel, touch, and keyboard.
 
 Tab arrow keys plus Home/End follow the ready Tab List reference. Native links
 and buttons are the only row keyboard destinations; pointer row activation may

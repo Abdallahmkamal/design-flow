@@ -10,6 +10,7 @@ Design Flow-owned responsive columnar data display.
 - optional contextual empty content
 - optional sortable headers and pointer row activation
 - optional feature-owned mobile-card rendering for rows with independent actions
+- optional `all-tickets` presentation for the sticky-header, bordered-cell table treatment
 
 Desktop uses native table semantics. Below the shell breakpoint, the same data
 is rendered as a structured list of records rather than a compressed table.

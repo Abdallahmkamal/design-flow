@@ -6,6 +6,7 @@ import { Select } from '../../ui/Select/Select';
 import { getTeamSettings, setTeamTimezone } from './settingsApi';
 import {
   operationIdFor,
+  announceSettingsSaved,
   settingsErrorMessage,
   type StableOperation,
 } from './settingsUi';
@@ -41,6 +42,7 @@ export function GeneralSettingsSection() {
         ),
       ),
     onSuccess: async () => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-general'] }),

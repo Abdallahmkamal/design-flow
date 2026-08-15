@@ -67,6 +67,13 @@ These are Design Flow components. Their colors and typography resolve through Vo
 
 The technical plan may refine the internal file layout and documentation tooling, but it must preserve the `src/ui/` ownership boundary and zero-Astryx-runtime rule.
 
+The combined team-ready Slices 7–8 run adds owned `Tabs`, `Table`,
+`AlertDialog`, and Recharts-backed `Chart` primitives under
+`src/ui/primitives/`. Their public exports and usage constraints are documented
+in `src/ui/primitives/README.md`. They use Vodafone-mapped semantic tokens,
+no-shadow presentation, native/standard keyboard semantics, contained overflow,
+and reduced-motion-safe styling without adding a shadcn or Astryx runtime.
+
 ## AI-first component workflow
 
 For each shared component:

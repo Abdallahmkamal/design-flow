@@ -53,16 +53,21 @@ describe('reports API', () => {
 
   it('uses the dedicated unpaginated export RPC', async () => {
     rpc.mockResolvedValue({
-      data: { reportType: 'ticket_summary', metadata: {}, rows: [] },
+      data: {
+        reportType: 'tickets',
+        periodStart: '2026-07-01',
+        periodEnd: '2026-07-26',
+        rows: [],
+      },
       error: null,
     });
     await exportReportRows(
-      'ticket_summary',
+      'tickets',
       defaultReportFilters(new Date('2026-07-26T12:00:00Z')),
     );
     expect(rpc).toHaveBeenCalledWith(
       'export_report_rows',
-      expect.objectContaining({ report_type: 'ticket_summary' }),
+      expect.objectContaining({ report_type: 'tickets' }),
     );
   });
 });

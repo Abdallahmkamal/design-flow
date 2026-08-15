@@ -44,6 +44,8 @@
 }
 
 .panel {
+  position: relative;
+  z-index: 1;
   display: grid;
   inline-size: min(100%, 28rem);
   gap: var(--space-xl);
@@ -52,6 +54,32 @@
   border-radius: var(--radius-overlay);
   background: color-mix(in srgb, var(--color-surface-default) 94%, transparent);
   box-shadow: var(--shadow-sm);
+}
+
+.dotField {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.sessionLoadingPage {
+  display: grid;
+  min-block-size: 100dvh;
+  background: var(--color-surface-bg);
+  place-items: center;
+}
+
+.sessionLoadingMark {
+  display: block;
+  block-size: 2.5rem;
+  inline-size: auto;
+  transform-origin: center;
+  will-change: opacity, transform;
+  animation: session-logo-pulse 1.8s infinite;
 }
 
 .heading,
@@ -121,6 +149,36 @@
   .page::before,
   .page::after {
     animation: none;
+  }
+
+  .sessionLoadingMark {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+@keyframes session-logo-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  33.333% {
+    opacity: 0.5;
+    transform: scale(1.2);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  66.667% {
+    opacity: 1;
+    transform: scale(1);
+    animation-timing-function: step-end;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

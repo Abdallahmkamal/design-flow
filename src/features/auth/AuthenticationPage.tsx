@@ -6,12 +6,14 @@ import {
 } from 'react';
 
 import styles from './AuthenticationPage.module.css';
+import { InteractiveDotField } from './InteractiveDotField';
 
 interface AuthenticationPageProps extends PropsWithChildren {
   eyebrow?: string;
   title: string;
   description: string;
   footer?: ReactNode;
+  interactiveBackground?: boolean;
 }
 
 export function AuthenticationPage({
@@ -19,6 +21,7 @@ export function AuthenticationPage({
   description,
   eyebrow,
   footer,
+  interactiveBackground = false,
   title,
 }: AuthenticationPageProps) {
   const titleId = `auth-${title.toLowerCase().replaceAll(' ', '-')}`;
@@ -30,6 +33,7 @@ export function AuthenticationPage({
 
   return (
     <main className={styles.page}>
+      {interactiveBackground ? <InteractiveDotField /> : null}
       <section className={styles.panel} aria-labelledby={titleId}>
         <div className={styles.heading}>
           {eyebrow ? <p>{eyebrow}</p> : null}

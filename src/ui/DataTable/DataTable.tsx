@@ -20,6 +20,7 @@ export interface DataTableProps<Row> {
   renderMobileCard?: (row: Row) => ReactNode;
   onRowActivate?: (row: Row) => void;
   getRowAriaLabel?: (row: Row) => string;
+  presentation?: 'default' | 'all-tickets';
 }
 
 export function DataTable<Row>({
@@ -29,6 +30,7 @@ export function DataTable<Row>({
   getRowAriaLabel,
   getRowKey,
   onRowActivate,
+  presentation = 'default',
   renderMobileCard,
   rows,
 }: DataTableProps<Row>) {
@@ -39,12 +41,14 @@ export function DataTable<Row>({
   return (
     <>
       <div
-        className={styles.tableRegion}
+        className={`${styles.tableRegion} ${presentation === 'all-tickets' ? styles.allTicketsRegion : ''}`}
         role="region"
         aria-label={caption}
         tabIndex={0}
       >
-        <table className={styles.table}>
+        <table
+          className={`${styles.table} ${presentation === 'all-tickets' ? styles.allTicketsTable : ''}`}
+        >
           <caption className={styles.srOnly}>{caption}</caption>
           <thead>
             <tr>

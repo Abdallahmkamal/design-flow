@@ -287,7 +287,7 @@
 .errorMetric {
   --summary-fill: var(--color-status-error-background);
   --summary-border: var(--color-status-error-background);
-  --summary-value: var(--color-status-warning-text);
+  --summary-value: var(--color-dashboard-overdue-text);
 }
 
 .neutralMetric {
