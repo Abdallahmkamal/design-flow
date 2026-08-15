@@ -2,9 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { useAuthentication } from '../auth/authContext';
-import { Badge } from '../../ui/Badge/Badge';
-import { Button } from '../../ui/Button/Button';
 import { Pagination } from '../../ui/Pagination/Pagination';
+import { Badge, Button, Card } from '../../ui/primitives';
 import {
   getNotificationInbox,
   markAllNotificationsRead,
@@ -117,43 +116,49 @@ export function NotificationsPage() {
       {inbox.data.rows.length ? (
         <ul className={styles.list} aria-label="Notifications, newest first">
           {inbox.data.rows.map((item) => (
-            <li
-              className={item.readAt ? styles.read : styles.unread}
-              key={item.id}
-            >
-              <div className={styles.itemHeading}>
-                <Link to={`/work-items/${item.workItem.displayId}`}>
-                  {item.workItem.displayId} · {item.workItem.title}
-                </Link>
-                {item.readAt ? (
-                  <span>Read</span>
-                ) : (
-                  <Badge tone="info">Unread</Badge>
-                )}
-              </div>
-              <p>{summary(item)}</p>
-              <time dateTime={item.createdAt}>{dateTime(item.createdAt)}</time>
-              {!item.readAt ? (
-                <Button
-                  size="small"
-                  variant="ghost"
-                  disabled={readMutation.isPending}
-                  onClick={() => readMutation.mutate(item.id)}
-                >
-                  Mark as read
-                </Button>
-              ) : null}
+            <li key={item.id}>
+              <Card
+                className={`${styles.item} ${item.readAt ? styles.read : styles.unread}`}
+              >
+                <div className={styles.itemHeading}>
+                  <Link to={`/work-items/${item.workItem.displayId}`}>
+                    {item.workItem.displayId} · {item.workItem.title}
+                  </Link>
+                  {item.readAt ? (
+                    <Badge tone="neutral">Read</Badge>
+                  ) : (
+                    <Badge tone="info">Unread</Badge>
+                  )}
+                </div>
+                <p className={styles.message}>{summary(item)}</p>
+                <div className={styles.itemMeta}>
+                  <time dateTime={item.createdAt}>
+                    {dateTime(item.createdAt)}
+                  </time>
+                  {!item.readAt ? (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-primary!"
+                      disabled={readMutation.isPending}
+                      onClick={() => readMutation.mutate(item.id)}
+                    >
+                      Mark as read
+                    </Button>
+                  ) : null}
+                </div>
+              </Card>
             </li>
           ))}
         </ul>
       ) : (
-        <div className={styles.empty}>
+        <Card className={styles.empty}>
           <h2>No notifications yet</h2>
           <p>
             Personally relevant assignment, status, blocker, and comment events
             will appear here.
           </p>
-        </div>
+        </Card>
       )}
       <Pagination
         page={inbox.data.page}

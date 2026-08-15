@@ -447,6 +447,11 @@ Use these tokens in UI implementation. Values shown are resolved for documentati
 | `sem/functional-status/error/icon` | `#FB3748` | `#FFB8BE` | functional-status → error → icon |
 | `sem/functional-status/error/text` | `#5A1117` | `#FFB8BE` | functional-status → error → text |
 | `sem/functional-status/error/text-on-canvas` | `#D12E3C` | `#FF5C6A` | functional-status → error → text-on-canvas |
+
+The Dashboard Overdue numeral has a reviewed component-level foreground alias:
+`--color-dashboard-overdue-text` is `#230709` in light mode and maps back to
+`sem/functional-status/error/text` (`#FFB8BE`) in dark mode. This scoped alias
+does not replace the global functional-status error-text token.
 | `sem/functional-status/info/background` | `#D4EBFB` | `#A9D1F5` | functional-status → info → background |
 | `sem/functional-status/info/border` | `#7BB5ED` | `#00446F` | functional-status → info → border |
 | `sem/functional-status/info/icon` | `#1A7FCD` | `#A9D1F5` | functional-status → info → icon |
@@ -516,6 +521,16 @@ The following product-level semantic aliases are the current Design Flow impleme
 | Archived indicator | `product/indicator/archived` | `#F4F6F7` | `#5E6162` | `#383B3B` | `#BEC1C2` |
 
 Their visible label remains required, and color is never the only carrier of meaning. Border presence, shape, sizing, spacing, and other non-color badge presentation follow verified Astryx guidance under D-099; the former global no-border rule is no longer authoritative. Blocked remains independent of workflow status, and Archived remains a record state rather than a workflow status.
+
+### Report chart color extension
+
+Report charts do not use Vodafone brand red as a data-series color. Their
+chart-only palette uses muted slate, teal, blue, plum, sage, and ochre roles.
+Status distribution charts map each visible status to muted chart-status aliases
+defined in `src/styles/tokens.css`. Non-status series and categorical bars rotate through centralized aqua,
+aubergine, blue, violet, green, and gold chart aliases with Light and Dark
+values in `src/styles/tokens.css`. Labels, semantic exact-value tables, and dash
+patterns remain required so color is never the only differentiator.
 
 These aliases are intentionally centralized and may be remapped during implementation or after a revised Figma decision. A palette change updates token values and visual regression expectations, not persisted work-item data or reporting rules.
 

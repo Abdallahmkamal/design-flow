@@ -85,6 +85,7 @@ export function SignInPage() {
       title="Sign in"
       description="Use your provisioned work account."
       footer="Need access or a password reset? Contact a Design Flow administrator."
+      interactiveBackground
     >
       <form className={styles.form} onSubmit={submit} noValidate>
         {requestError ? (

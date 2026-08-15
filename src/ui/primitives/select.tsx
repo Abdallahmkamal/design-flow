@@ -42,6 +42,7 @@ export function SelectTrigger({
 export function SelectContent({
   className,
   children,
+  style,
   side = 'bottom',
   sideOffset = 4,
   align = 'start',
@@ -63,15 +64,26 @@ export function SelectContent({
       >
         <SelectPrimitive.Popup
           data-slot="select-content"
+          style={{
+            maxHeight:
+              'min(20rem, var(--available-height, calc(100dvh - 2rem)))',
+            ...style,
+          }}
           className={cn(
-            'pointer-events-auto relative z-[80] flex max-h-[min(20rem,var(--available-height))] w-[var(--anchor-width)] min-w-48 origin-[var(--transform-origin)] flex-col overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            'pointer-events-auto relative z-[80] flex w-[var(--anchor-width)] min-w-48 origin-[var(--transform-origin)] flex-col overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           {...props}
         >
           <SelectPrimitive.List
             data-slot="select-list"
-            className="min-h-0 flex-1 touch-pan-y scroll-py-1 overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+            className="min-h-0 flex-1 touch-pan-y scroll-py-1 overflow-x-hidden overflow-y-scroll overscroll-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]"
+            onWheelCapture={(event) => {
+              const list = event.currentTarget;
+              if (list.scrollHeight <= list.clientHeight) return;
+              event.preventDefault();
+              list.scrollTop += event.deltaY;
+            }}
           >
             {children}
           </SelectPrimitive.List>

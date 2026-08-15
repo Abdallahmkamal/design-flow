@@ -40,6 +40,44 @@
   border-block-end: 0;
 }
 
+.allTicketsRegion {
+  overflow: auto;
+  max-block-size: calc(100dvh - 18.5rem);
+  border-radius: 1rem;
+  background: var(--color-surface-default);
+  overscroll-behavior: contain;
+}
+
+.allTicketsTable {
+  border-spacing: 0;
+  border-collapse: separate;
+  background: var(--color-surface-default);
+}
+
+.allTicketsTable th,
+.allTicketsTable td {
+  border-inline-start: var(--border-width) solid var(--color-border-subtle);
+  background: var(--color-surface-bg);
+}
+
+.allTicketsTable th:first-child,
+.allTicketsTable td:first-child {
+  border-inline-start: 0;
+}
+
+.allTicketsTable thead th {
+  position: sticky;
+  z-index: 2;
+  inset-block-start: 0;
+  background: var(--color-surface-raised);
+  white-space: nowrap;
+}
+
+.allTicketsTable tbody tr:hover td,
+.allTicketsTable tbody tr:focus-visible td {
+  background: var(--color-action-secondary-background);
+}
+
 .interactiveRow {
   cursor: pointer;
 }

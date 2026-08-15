@@ -37,7 +37,7 @@ const addDays = (date: Date, days: number) =>
   );
 
 export type ReportPeriodPreset =
-  'this_week' | 'last_week' | 'this_month' | 'last_month' | 'last_30_days';
+  'month_to_date' | 'last_month' | 'last_3_months' | 'last_6_months';
 
 export function reportPresetRange(
   preset: ReportPeriodPreset,
@@ -46,21 +46,44 @@ export function reportPresetRange(
   const day = new Date(
     Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
   );
-  const sunday = addDays(day, -day.getUTCDay());
-  if (preset === 'this_week')
-    return { periodStart: iso(sunday), periodEnd: iso(day) };
-  if (preset === 'last_week')
-    return {
-      periodStart: iso(addDays(sunday, -7)),
-      periodEnd: iso(addDays(sunday, -1)),
-    };
   if (preset === 'last_month') {
     const end = addDays(startOfMonth(day), -1);
     return { periodStart: iso(startOfMonth(end)), periodEnd: iso(end) };
   }
-  if (preset === 'last_30_days')
-    return { periodStart: iso(addDays(day, -29)), periodEnd: iso(day) };
+  if (preset === 'last_3_months')
+    return {
+      periodStart: iso(
+        new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() - 2, 1)),
+      ),
+      periodEnd: iso(day),
+    };
+  if (preset === 'last_6_months')
+    return {
+      periodStart: iso(
+        new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() - 5, 1)),
+      ),
+      periodEnd: iso(day),
+    };
   return { periodStart: iso(startOfMonth(day)), periodEnd: iso(day) };
+}
+
+export function reportPresetForRange(
+  periodStart: string,
+  periodEnd: string,
+  today = new Date(),
+): ReportPeriodPreset | 'custom' {
+  const presets: ReportPeriodPreset[] = [
+    'month_to_date',
+    'last_month',
+    'last_3_months',
+    'last_6_months',
+  ];
+  return (
+    presets.find((preset) => {
+      const range = reportPresetRange(preset, today);
+      return range.periodStart === periodStart && range.periodEnd === periodEnd;
+    }) ?? 'custom'
+  );
 }
 
 export function defaultReportFilters(today = new Date()): ReportFilters {

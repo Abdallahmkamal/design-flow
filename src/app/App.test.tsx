@@ -91,10 +91,10 @@ describe('authenticated application routing', () => {
     });
     expect(
       quickActions.querySelectorAll('svg[viewBox="0 0 66 66"] path'),
-    ).toHaveLength(2);
+    ).toHaveLength(0);
     expect(
       quickActions.querySelector('#design-flow-mobile-fab-gradient'),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Synthetic test environment')).toBeInTheDocument();
   });
 
@@ -191,6 +191,7 @@ describe('authenticated application routing', () => {
     ).toBeVisible();
     expect(screen.queryByText('Design Flow', { exact: true })).toBeNull();
     expect(screen.queryByText('Closed team access')).toBeNull();
+    expect(document.querySelector('canvas[aria-hidden="true"]')).toBeVisible();
     expect(screen.getByLabelText(/Work email/)).toBeEnabled();
     expect(screen.getByLabelText(/Work email/)).toHaveAttribute(
       'autocomplete',

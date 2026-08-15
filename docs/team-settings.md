@@ -4,6 +4,17 @@
 **Decision date:** 2026-07-16  
 **Status:** Approved MVP data/Settings contract with D-110 Team-module amendment
 
+**Implementation note (2026-08-12):** Settings Slice 8 was implemented locally
+in the combined Slices 7–8 run on
+`codex/ui-modernization-reports-settings`. Settings now renders exactly one
+Admin-only URL-backed category panel at
+`/settings?tab=members|areas|labels|general|audit`; invalid or missing values
+replace to `members`, normal tab activation creates browser history, and valid
+deep links restore their panel. Real field edits mark the panel dirty, successful
+mutations clear that state, and an owned Alert Dialog protects direct tab
+switches while `beforeunload` protects supported document navigation. Categories,
+trusted operations, data contracts, and audit semantics are unchanged.
+
 The completed MVP separated a whole-team directory from Admin-only portal administration. D-110 removes Team as a visible route and navigation module in modernization Slice 1. The underlying active-profile, position, Admin-badge, reporting-line, privacy, RLS, and administration contracts remain because Settings, authorization, and reporting depend on them. Organizational position and Admin privilege remain independent for Designer, Lead, and Manager; Viewer is never eligible for Admin privilege.
 
 ## 1. Team directory data contract (no visible team-ready module)

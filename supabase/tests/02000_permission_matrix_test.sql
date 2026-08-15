@@ -260,8 +260,8 @@ select is(
     private.can_manage_settings(),
     private.can_moderate_comments()
   ),
-  'f|f|t|f|f',
-  'Designer receives only the approved base capabilities'
+  'f|t|t|f|f',
+  'Designer receives personal Reports CSV and the approved base capabilities'
 );
 
 reset role;

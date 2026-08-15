@@ -36,6 +36,8 @@ Designer without Admin is restricted to Me at the authorization boundary; URL or
   contracts.
 - `All` is the non-restrictive default/reset value where permitted and is not
   presented as an active restrictive filter.
+- The Area/Squad menu keeps `All` as an explicit selectable option after a
+  restrictive Area has been chosen so the filter can be cleared in place.
 - These controls reuse the active-filter chip visual language from All Tickets,
   but remain persistent scope selectors rather than removable optional filters.
   They use a light outlined resting treatment; a restrictive selection may use
@@ -64,6 +66,9 @@ Show these six scoped, clickable summary cards:
 Selecting a card filters or opens the relevant ticket list; cards are not dead-end totals.
 Use restrained semantic color on the metric number or a narrow card accent;
 do not use competing full-card color fills or rely on color alone.
+The Stale card explanation is `No logged work for five days.` The Overdue
+numeral uses the approved Dashboard-specific error value `#230709`; this is a
+scoped card treatment and does not redefine the global functional-error token.
 
 ## 4. Stale-work definition
 

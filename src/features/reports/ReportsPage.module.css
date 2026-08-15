@@ -4,6 +4,35 @@
   max-inline-size: 90rem;
   margin-inline: auto;
 }
+.moduleHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+.headerExport {
+  display: grid;
+  justify-items: stretch;
+  gap: var(--space-xs);
+  flex: 0 0 auto;
+}
+.headerExport p {
+  margin: 0;
+  font: var(--type-caption);
+}
+.exportButton {
+  color: var(--color-action-primary-text);
+  background: var(--color-action-neutral-background);
+}
+.tabScroller {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.loading {
+  display: grid;
+  gap: var(--space-md);
+}
 .page header p,
 .snapshot {
   max-inline-size: 70ch;
@@ -11,19 +40,87 @@
 }
 .filters,
 .export {
-  display: flex;
-  align-items: end;
-  flex-wrap: wrap;
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-md);
   padding: var(--space-lg);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-container);
   background: var(--color-surface-default);
 }
-.filters h2,
 .export h2 {
   flex-basis: 100%;
   margin: 0;
+}
+.filterSummary {
+  display: flex;
+  min-inline-size: 0;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--type-body-compact);
+}
+.filterSeparator {
+  margin-inline: var(--space-xs);
+  color: var(--color-text-secondary);
+}
+.filterActions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+.filterActions .headerExport p:empty {
+  display: none;
+}
+.filterSheet {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  inset-block: var(--space-xl);
+  inset-inline-end: var(--space-xl);
+  block-size: auto;
+  max-block-size: calc(100dvh - (2 * var(--space-xl)));
+  overflow: hidden;
+  border-radius: var(--radius-overlay);
+}
+.snapshot span {
+  display: block;
+}
+.filterEditorFields {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  margin-block-start: var(--space-lg);
+  padding-block-end: var(--space-lg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.filterSheetFooter {
+  margin-block-start: 0;
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-default);
+}
+.composerHeader {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block-end: var(--space-md);
+}
+.composerTrigger {
+  border-radius: 999px;
+}
+.composerHeader span {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+.composerContent {
+  display: grid;
+  gap: var(--space-md);
+  margin-block-start: var(--space-md);
 }
 .checkGroup {
   display: grid;
@@ -38,11 +135,30 @@
   padding-inline: var(--space-xs);
   font: var(--type-label);
 }
-.cards,
-.charts {
+.peopleCheckGroup {
+  min-block-size: min(12rem, 28dvh);
+  max-block-size: min(18rem, 34dvh);
+}
+.reportPanel {
+  display: grid;
+  min-inline-size: 0;
+  gap: var(--space-xl);
+}
+.reportPanel > section {
+  min-inline-size: 0;
+}
+.reportPanel > section > h2:first-child {
+  margin-block-start: 0;
+}
+.cards {
   display: grid;
   gap: var(--space-md);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg);
 }
 .card,
 .chart {
@@ -53,15 +169,81 @@
   background: var(--color-surface-default);
 }
 .card {
+  position: relative;
   display: grid;
   gap: var(--space-xs);
+  min-block-size: 9.75rem;
+  overflow: clip;
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface-default),
+    var(--color-surface-raised)
+  );
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.card:hover,
+.card:focus-within {
+  border-color: var(--color-border-default);
+  transform: translateY(-2px);
+}
+.cardSummary {
+  display: grid;
+  inline-size: 100%;
+  block-size: 100%;
+  gap: var(--space-xs);
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+}
+.cardSummary:focus-visible {
+  border-radius: var(--radius-inner);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.cardSourceTooltip {
+  display: grid;
+  inline-size: min(22rem, var(--available-width));
+  max-block-size: min(20rem, var(--available-height));
+  gap: var(--space-sm);
+  overflow-y: auto;
+  padding: var(--space-md);
+}
+.cardSourceTooltip ul {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cardSourceTooltip li {
+  display: grid;
+  gap: 0.125rem;
+  padding-block-start: var(--space-sm);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+.cardSourceTooltip p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--type-body-compact);
+}
+.cardSourceTooltip small {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
 }
 .card h3,
 .chart h3 {
   margin: 0;
 }
 .card strong {
-  font: var(--type-display);
+  font: var(--font-weight-regular) 2.75rem/2.75rem var(--font-family-primary);
 }
 .card span {
   color: var(--color-text-secondary);
@@ -72,20 +254,89 @@
   min-block-size: 13.75rem;
 }
 .chartTable {
-  inline-size: 100%;
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.chartActions {
+  display: flex;
   margin-block-start: var(--space-md);
-  border-collapse: collapse;
+}
+.chartFilterChoices {
+  display: grid;
+  max-block-size: 18rem;
+  gap: var(--space-xs);
+  overflow-y: auto;
+}
+.chartFilterChoices button {
+  justify-content: flex-start;
+  inline-size: 100%;
+}
+.mobileRecord summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs) var(--space-md);
+  list-style: none;
+  cursor: pointer;
+  outline: none;
+}
+.mobileRecord summary::-webkit-details-marker {
+  display: none;
+}
+.mobileRecord summary::after {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  color: var(--color-text-secondary);
+  content: '+';
+  font: var(--type-title);
+}
+.mobileRecord[open] summary::after {
+  content: '−';
+}
+.mobileRecord summary:focus-visible {
+  border-radius: var(--radius-inner);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+.mobileRecord summary > span,
+.mobileRecord summary > strong,
+.mobileRecord summary > small {
+  grid-column: 1;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.mobileRecord summary > span,
+.mobileRecord summary > small {
+  color: var(--color-text-secondary);
   font: var(--type-caption);
 }
-.chartTable caption {
-  text-align: start;
-  font: var(--type-label);
+.mobileRecordDetails {
+  display: grid;
+  gap: var(--space-md);
+  padding-block-start: var(--space-md);
+  margin-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-border-subtle);
 }
-.chartTable th,
-.chartTable td {
-  padding: var(--space-xs);
-  border-block-end: 1px solid var(--color-border-subtle);
-  text-align: start;
+.mobileRecordDetails dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin: 0;
+}
+.mobileRecordDetails dt {
+  color: var(--color-text-secondary);
+  font: var(--type-caption);
+}
+.mobileRecordDetails dd {
+  margin: var(--space-2xs) 0 0;
+  overflow-wrap: anywhere;
 }
 .state {
   padding: var(--space-xl);
@@ -138,12 +389,114 @@
   text-align: end;
 }
 @media (max-width: 47.99rem) {
-  .filters,
-  .export {
+  .page {
+    contain: paint;
+    inline-size: 100%;
+    min-inline-size: 0;
+    overflow-x: hidden;
+  }
+  .moduleHeader {
     align-items: stretch;
     flex-direction: column;
   }
+  .filters,
+  .export {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .filters > *,
+  .export > * {
+    inline-size: 100%;
+  }
+  .filterActions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .filterActions > *,
+  .filterActions .headerExport,
+  .filterActions button {
+    inline-size: 100%;
+  }
+  .filterSheet {
+    inset-block: 0;
+    inset-inline-end: 0;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    inline-size: 100vw;
+    max-inline-size: 100vw;
+    border-radius: 0;
+  }
   .chartGraphic {
     min-block-size: 12rem;
+  }
+  .cards {
+    contain: inline-size;
+    grid-auto-columns: clamp(13rem, 64vw, 20rem);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-template-rows: repeat(2, 9.75rem);
+    inline-size: 100%;
+    max-inline-size: 100%;
+    gap: var(--space-md);
+    padding-block: var(--space-xs) var(--space-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: var(--space-lg);
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  .charts {
+    contain: inline-size;
+    grid-auto-columns: clamp(19rem, 82vw, 32rem);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    padding-block: var(--space-xs) var(--space-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: var(--space-lg);
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cards::-webkit-scrollbar,
+  .charts::-webkit-scrollbar {
+    display: none;
+  }
+  .card,
+  .chart {
+    scroll-snap-align: start;
+  }
+  .card:hover,
+  .card:focus-within {
+    transform: none;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 63.999rem) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 22rem) {
+  .mobileRecordDetails dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
   }
 }

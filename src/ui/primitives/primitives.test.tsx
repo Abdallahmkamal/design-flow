@@ -1,9 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
   Alert,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
   Avatar,
   AvatarFallback,
   Badge,
@@ -16,6 +21,7 @@ import {
   Empty,
   FormCheckbox,
   FormInput,
+  FormMultiSelect,
   FormSelect,
   FormTextarea,
   getAvatarTone,
@@ -28,6 +34,16 @@ import {
   SheetTitle,
   SheetTrigger,
   Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -127,6 +143,7 @@ describe('team-ready primitives', () => {
     render(
       <>
         <Badge tone="success">Ready</Badge>
+        <Badge tone="brand">3</Badge>
         <Avatar aria-label="Ada Lovelace">
           <AvatarFallback>{getInitials('Ada Lovelace')}</AvatarFallback>
         </Avatar>
@@ -135,6 +152,7 @@ describe('team-ready primitives', () => {
     );
 
     expect(screen.getByText('Ready')).toBeVisible();
+    expect(screen.getByText('3')).toHaveClass('bg-primary');
     expect(screen.getByLabelText('Ada Lovelace')).toHaveTextContent('AL');
     expect(screen.getByLabelText('Ada Lovelace')).toHaveClass(
       'rounded-[var(--radius-element)]',
@@ -188,7 +206,7 @@ describe('team-ready primitives', () => {
     expect(document.querySelector('[role="listbox"]')).toHaveClass(
       'flex-1',
       'touch-pan-y',
-      'overflow-y-auto',
+      'overflow-y-scroll',
       'overscroll-contain',
       '[-webkit-overflow-scrolling:touch]',
     );
@@ -197,6 +215,16 @@ describe('team-ready primitives', () => {
       'flex-col',
       'overflow-hidden',
     );
+    expect(document.querySelector('[data-slot="select-content"]')).toHaveStyle({
+      maxHeight: 'min(20rem, var(--available-height, calc(100dvh - 2rem)))',
+    });
+    const list = document.querySelector('[data-slot="select-list"]')!;
+    Object.defineProperties(list, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 400 },
+    });
+    fireEvent.wheel(list, { deltaY: 72 });
+    expect(list.scrollTop).toBe(72);
     expect(document.querySelectorAll('[data-direction]').length).toBe(0);
   });
 
@@ -224,6 +252,26 @@ describe('team-ready primitives', () => {
     expect(
       screen.getByRole('combobox', { name: 'Area' }),
     ).not.toHaveTextContent('area-uuid');
+  });
+
+  it('supports multiple selections in the shared dropdown field', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <FormMultiSelect
+        label="Labels"
+        value={[]}
+        placeholder="All labels"
+        onValueChange={onValueChange}
+      >
+        <option value="foundation">Foundation</option>
+        <option value="mobile">Mobile</option>
+      </FormMultiSelect>,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Labels' }));
+    await user.click(screen.getByRole('option', { name: 'Mobile' }));
+    expect(onValueChange).toHaveBeenCalledWith(['mobile']);
   });
 
   it('describes a focused Tooltip trigger and dismisses on Escape', async () => {
@@ -266,5 +314,77 @@ describe('team-ready primitives', () => {
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
+  });
+
+  it('activates Tabs with the standard arrow, Home, and End keys', async () => {
+    const user = userEvent.setup();
+    function Example() {
+      const [value, setValue] = React.useState('one');
+      return (
+        <Tabs value={value} onValueChange={setValue}>
+          <TabsList aria-label="Example sections">
+            <TabsTrigger value="one">One</TabsTrigger>
+            <TabsTrigger value="two">Two</TabsTrigger>
+            <TabsTrigger value="three">Three</TabsTrigger>
+          </TabsList>
+          <TabsContent value={value}>{value}</TabsContent>
+        </Tabs>
+      );
+    }
+    render(<Example />);
+
+    screen.getByRole('tab', { name: 'One' }).focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Two' })).toHaveFocus();
+    expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await user.keyboard('{End}');
+    expect(screen.getByRole('tab', { name: 'Three' })).toHaveFocus();
+    await user.keyboard('{Home}');
+    expect(screen.getByRole('tab', { name: 'One' })).toHaveFocus();
+  });
+
+  it('presents an accessible no-shadow confirmation dialog', () => {
+    render(
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Unsaved edits will be lost.
+          </AlertDialogDescription>
+        </AlertDialogContent>
+      </AlertDialog>,
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Discard changes?' }),
+    ).toHaveClass('shadow-none');
+    expect(screen.getByRole('dialog')).toHaveAccessibleDescription(
+      'Unsaved edits will be lost.',
+    );
+  });
+
+  it('keeps Table anatomy semantic inside a contained overflow region', () => {
+    render(
+      <Table aria-label="People">
+        <TableHeader>
+          <TableRow>
+            <TableHead scope="col">Person</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>Ada</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+
+    expect(screen.getByRole('table', { name: 'People' })).toBeVisible();
+    expect(screen.getByRole('table').parentElement).toHaveClass(
+      'overflow-x-auto',
+    );
   });
 });

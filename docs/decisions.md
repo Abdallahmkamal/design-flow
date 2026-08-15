@@ -2,7 +2,7 @@
 
 **Checkpoint:** MVP specification v1.0  
 **Checkpoint date:** 2026-07-18  
-**Last amended:** 2026-08-11 — D-113 closes the Unassigned Dashboard drill-down contract
+**Last amended:** 2026-08-15 — D-117 restores the primary mobile Quick Actions FAB
 
 This register summarizes approved, rejected, and still-open decisions. Detailed behavior lives in [product-spec.md](product-spec.md), [data-model.md](data-model.md), and [reporting.md](reporting.md); stable cross-product interface direction lives in [ui-direction.md](ui-direction.md).
 
@@ -126,6 +126,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-114 | Dashboard mutation-action placement | Remove Create ticket and Log work from the Dashboard module header because the persistent application sidebar/mobile action surface already provides those authorized routes. Dashboard keeps its module header focused on title, context, and scope; permissions and the existing global actions are unchanged. |
 | D-115 | Dashboard visual hierarchy refinement | Refine Slice 6 after team review without changing metrics or scope: use light outlined persistent scope pills with only a subtle restrictive-state fill; remove elevation shadows from Dashboard content surfaces; apply the approved semantic border, gradient, and numeral treatments to the six summary cards, grouping each numeral with its explanation beneath the independent title and making the complete card the All Tickets link with a small shadow-free upward translation on hover/focus and press feedback on touch; below `48rem`, present the six cards as a native two-row horizontal scroller with a partial next-column cue, proximity snapping, and preserved vertical page gestures; keep Management signals informational without a ticket-navigation CTA; present Needs attention as a headerless three-column ticket/people/signal list whose complete row opens Ticket Details with a neutral surface hover rather than red link styling; group recent ticket work by actual work date and make each complete ticket-activity row open its dated Work Item anchor with the same neutral hover; retain the workload table rather than adding a potentially ranking chart; and make each workload person row open All Tickets with that person represented by the visible People filter, carrying the selected Area when present. |
 | D-116 | Neutral current-page pagination | Use the neutral near-black action surface with inverse text for the currently selected page number in shared pagination. Vodafone red remains reserved for actions and focus indication; pagination behavior, URL state, boundaries, and page-size rules are unchanged. |
+| D-117 | Static primary mobile Quick Actions FAB | Replace D-111's resting glass/white, gradient-traced Quick Actions FAB with a static Vodafone primary-red circle, white plus, and the same restrained shadow as the floating mobile navigation capsule. The resting FAB has no perimeter, hover, tap, or ambient animation. The permission-filtered Quick Actions group, close state, backdrop, safe-area behavior, and reduced-motion accessibility remain unchanged. This refines presentation only and does not change navigation or authorization. |
 
 ## Explicitly rejected or replaced
 

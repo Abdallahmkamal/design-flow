@@ -29,6 +29,7 @@ import {
 import {
   formatDateTime,
   operationIdFor,
+  announceSettingsSaved,
   settingsErrorMessage,
   type StableOperation,
 } from './settingsUi';
@@ -273,6 +274,7 @@ function CreateMemberForm({
         ),
       ),
     onSuccess: async (result) => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-members'] }),
@@ -394,6 +396,7 @@ function EditAccessForm({
         ),
       ),
     onSuccess: async () => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-members'] }),
@@ -487,6 +490,7 @@ function ResetMemberForm({
         operationIdFor(operation, `reset|${member.id}`),
       ),
     onSuccess: async (result) => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-members'] }),
@@ -577,6 +581,7 @@ function DeactivateMemberForm({
         ),
       ),
     onSuccess: async () => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-members'] }),
@@ -708,6 +713,7 @@ function ReactivateMemberForm({
         ),
       ),
     onSuccess: async () => {
+      announceSettingsSaved();
       operation.current = null;
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['settings-members'] }),

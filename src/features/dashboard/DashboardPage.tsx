@@ -88,7 +88,7 @@ const cardDefinitions: {
   {
     key: 'stale',
     label: 'Stale work items',
-    description: 'No valid work after the approved five-day threshold.',
+    description: 'No logged work for five days.',
     tone: 'neutral',
   },
   {
@@ -505,13 +505,18 @@ export function DashboardPage() {
               label="Area"
               aria-label={`Area: ${areaLabel}`}
               className={`${styles.scopeChip} ${areaId ? styles.scopeChipActive : ''} rounded-full px-4`}
-              value={areaId ?? ''}
+              value={areaId ?? '__all__'}
               disabled={pending}
               onChange={(event) =>
-                updateParams({ area: event.target.value || null })
+                updateParams({
+                  area:
+                    event.target.value === '__all__'
+                      ? null
+                      : event.target.value,
+                })
               }
             >
-              <option value="">Area: All</option>
+              <option value="__all__">Area: All</option>
               {data.areaOptions.map((area) => (
                 <option key={area.id} value={area.id}>
                   Area: {area.name}

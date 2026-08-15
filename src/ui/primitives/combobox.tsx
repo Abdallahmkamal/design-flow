@@ -22,6 +22,7 @@ export function ComboboxInput({
 export function ComboboxContent({
   className,
   children,
+  style,
   side = 'bottom',
   sideOffset = 4,
   align = 'start',
@@ -38,8 +39,13 @@ export function ComboboxContent({
       >
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
+          style={{
+            maxHeight:
+              'min(20rem, var(--available-height, calc(100dvh - 2rem)))',
+            ...style,
+          }}
           className={cn(
-            'pointer-events-auto relative z-[80] max-h-[min(20rem,var(--available-height))] w-[var(--anchor-width)] max-w-[var(--available-width)] origin-[var(--transform-origin)] overflow-hidden rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            'pointer-events-auto relative z-[80] w-[var(--anchor-width)] max-w-[var(--available-width)] origin-[var(--transform-origin)] overflow-hidden rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           {...props}
@@ -53,15 +59,24 @@ export function ComboboxContent({
 
 export function ComboboxList({
   className,
+  onWheelCapture,
   ...props
 }: ComboboxPrimitive.List.Props) {
   return (
     <ComboboxPrimitive.List
       data-slot="combobox-list"
       className={cn(
-        'max-h-[min(20rem,var(--available-height))] scroll-py-1 overflow-y-auto overscroll-contain p-1 data-empty:p-0',
+        'max-h-full touch-pan-y scroll-py-1 overflow-y-scroll overscroll-contain p-1 [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch] data-empty:p-0',
         className,
       )}
+      onWheelCapture={(event) => {
+        onWheelCapture?.(event);
+        if (event.defaultPrevented) return;
+        const list = event.currentTarget;
+        if (list.scrollHeight <= list.clientHeight) return;
+        event.preventDefault();
+        list.scrollTop += event.deltaY;
+      }}
       {...props}
     />
   );

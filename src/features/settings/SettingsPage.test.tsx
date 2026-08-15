@@ -54,14 +54,14 @@ function authentication(isAdmin: boolean): AuthenticationContextValue {
   };
 }
 
-function renderSettings(isAdmin = true) {
+function renderSettings(isAdmin = true, initialEntry = '/settings') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return render(
     <QueryClientProvider client={queryClient}>
       <AuthenticationContext.Provider value={authentication(isAdmin)}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={[initialEntry]}>
           <SettingsRoute />
         </MemoryRouter>
       </AuthenticationContext.Provider>
@@ -125,18 +125,23 @@ describe('SettingsRoute', () => {
     expect(api.getTeamSettings).not.toHaveBeenCalled();
   });
 
-  it('renders every approved Admin section and no excluded settings', async () => {
+  it('renders one URL-backed approved Admin panel at a time', async () => {
+    const user = userEvent.setup();
     renderSettings();
 
     expect(
       await screen.findByRole('heading', { name: 'Members and access' }),
     ).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Areas/Squads' })).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Labels' })).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'General' })).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: 'Administration audit' }),
+      screen.queryByRole('heading', { name: 'Areas/Squads' }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: 'General' }));
+    expect(
+      await screen.findByRole('heading', { name: 'General' }),
     ).toBeVisible();
+    expect(
+      screen.queryByRole('heading', { name: 'Members and access' }),
+    ).not.toBeInTheDocument();
     expect(
       await screen.findByRole('button', { name: 'Save timezone' }),
     ).toBeDisabled();
@@ -144,6 +149,49 @@ describe('SettingsRoute', () => {
       screen.queryByText(/notification settings/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/api key/i)).not.toBeInTheDocument();
+  });
+
+  it('supports direct links and replaces invalid tab values with Members', async () => {
+    const { unmount } = renderSettings(true, '/settings?tab=audit');
+    expect(
+      await screen.findByRole('heading', { name: 'Administration audit' }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('heading', { name: 'Members and access' }),
+    ).not.toBeInTheDocument();
+    unmount();
+
+    renderSettings(true, '/settings?tab=unsupported');
+    expect(
+      await screen.findByRole('heading', { name: 'Members and access' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('tab', { name: 'Members and access' }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('protects unsaved form edits before switching categories', async () => {
+    const user = userEvent.setup();
+    renderSettings(true, '/settings?tab=general');
+    await user.selectOptions(
+      await screen.findByRole('combobox', { name: /Team timezone/u }),
+      'Europe/London',
+    );
+    await user.click(screen.getByRole('tab', { name: 'Labels' }));
+
+    expect(
+      screen.getByRole('dialog', { name: 'Discard unsaved changes?' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Keep editing' }));
+    expect(screen.getByRole('heading', { name: 'General' })).toBeVisible();
+
+    await user.click(screen.getByRole('tab', { name: 'Labels' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Discard changes and switch' }),
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'Labels' }),
+    ).toBeVisible();
   });
 
   it('retries account creation with the same operation ID and displays credentials once', async () => {
@@ -202,6 +250,8 @@ describe('SettingsRoute', () => {
       .mockResolvedValueOnce({ status: 'created' });
     renderSettings();
     await screen.findAllByText('Synthetic Manager');
+
+    await user.click(screen.getByRole('tab', { name: 'Areas/Squads' }));
 
     await user.type(
       screen.getByRole('textbox', { name: 'New Area/Squad name' }),

@@ -21,7 +21,14 @@
   margin: 0;
 }
 
-.eyebrow {
-  color: var(--color-text-error);
-  font: var(--type-label);
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+@media (max-width: 30rem) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
 }

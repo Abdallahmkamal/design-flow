@@ -16,6 +16,7 @@ import {
 } from './settingsApi';
 import {
   operationIdFor,
+  announceSettingsSaved,
   settingsErrorMessage,
   type StableOperation,
 } from './settingsUi';
@@ -94,6 +95,7 @@ export function ControlledListSection({ kind }: ControlledListSectionProps) {
       }
     },
     onSuccess: async (_data, completedAction) => {
+      announceSettingsSaved();
       operation.current = null;
       if (completedAction.type === 'create') {
         pendingCreate.current = null;

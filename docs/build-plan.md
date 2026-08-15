@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-08-11 — records team-ready Slices 1–5 through PR #42
+**Last updated:** 2026-08-12 — records the combined local implementation run for team-ready Slices 7–8
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -495,6 +495,11 @@ on Dashboard.
 
 Branch: `codex/ui-modernization-reports`.
 
+Implementation status (2026-08-12): implemented together with Slice 8 on
+`codex/ui-modernization-reports-settings` as one local development run. The
+product boundary and exit gate remain independent from Settings and from Slice
+9. Publishing and rollout remain separate user-authorized steps.
+
 Implement the shared header, persistent Period/People scope, Add Filter chips,
 responsive Designers/Tickets/Standalone Visuals tabs, and one direct tab-aware
 CSV action. Enforce Designer-without-Admin self-only reads and personal CSV in
@@ -509,6 +514,11 @@ of the known 390 px overflow.
 ### Slice 8 — Settings uplift
 
 Branch: `codex/ui-modernization-settings`.
+
+Implementation status (2026-08-12): implemented together with Slice 7 on
+`codex/ui-modernization-reports-settings` as one local development run. The
+Settings product boundary and exit gate remain independent from Reports and
+from Slice 9. Publishing and rollout remain separate user-authorized steps.
 
 Replace anchor navigation with true URL-backed tabs that render one panel,
 preserve Back/Forward and deep links, and protect actual unsaved edits. Apply

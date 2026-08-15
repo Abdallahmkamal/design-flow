@@ -1,6 +1,10 @@
 import { createOperationId } from '../../shared/operations/operationId';
 import { SettingsOperationError } from './settingsApi';
 
+export function announceSettingsSaved() {
+  window.dispatchEvent(new Event('design-flow:settings-saved'));
+}
+
 export interface StableOperation {
   key: string;
   id: string;

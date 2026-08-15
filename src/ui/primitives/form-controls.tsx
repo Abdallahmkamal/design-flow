@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
 import { format, isValid, parseISO } from 'date-fns';
-import { CalendarDays, Check } from 'lucide-react';
+import { CalendarDays, Check, ChevronDown } from 'lucide-react';
 
 import { cn } from '../lib/cn';
 import { Calendar } from './calendar';
@@ -298,6 +298,150 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
     );
   },
 );
+
+export interface FormMultiSelectProps extends FieldChromeProps {
+  children: ReactNode;
+  value?: string[] | undefined;
+  disabled?: boolean | undefined;
+  className?: string | undefined;
+  placeholder?: string | undefined;
+  onValueChange?: ((value: string[]) => void) | undefined;
+}
+
+/** Team-ready multi-select with the same field and popup anatomy as FormSelect. */
+export const FormMultiSelect = forwardRef<
+  HTMLButtonElement,
+  FormMultiSelectProps
+>(function FormMultiSelect(
+  {
+    children,
+    className,
+    description,
+    disabled,
+    error,
+    hideLabel = false,
+    id,
+    label,
+    onValueChange,
+    placeholder = 'Select options',
+    required,
+    value = [],
+  },
+  ref,
+) {
+  const generatedId = useId();
+  const controlId = id ?? generatedId;
+  const descriptionId = description ? `${controlId}-description` : undefined;
+  const errorId = error ? `${controlId}-error` : undefined;
+  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ');
+  const parsedOptions = Children.toArray(children).flatMap((child) => {
+    if (!isValidElement<FormSelectOptionProps>(child)) return [];
+    return [
+      {
+        value: child.props.value ?? '',
+        label: child.props.children,
+        disabled: child.props.disabled ?? false,
+      },
+    ];
+  });
+  const selectableOptions = parsedOptions.filter(
+    (option) => option.value !== '',
+  );
+  const selectedLabels = selectableOptions
+    .filter((option) => value.includes(option.value))
+    .map((option) => option.label)
+    .filter((option): option is string => typeof option === 'string');
+
+  return (
+    <div className={fieldClass}>
+      <FieldLabel
+        hideLabel={hideLabel}
+        id={controlId}
+        label={label}
+        required={required}
+      />
+      <Popover>
+        <PopoverTrigger
+          render={
+            <button
+              ref={ref}
+              id={controlId}
+              type="button"
+              role="combobox"
+              aria-haspopup="listbox"
+              disabled={disabled}
+              aria-describedby={describedBy || undefined}
+              aria-invalid={error ? true : undefined}
+              className={cn(
+                controlClass,
+                'flex h-12 items-center justify-between gap-2',
+                className,
+              )}
+            >
+              <span className="min-w-0 flex-1 truncate text-left">
+                {selectedLabels.length
+                  ? selectedLabels.join(', ')
+                  : placeholder}
+              </span>
+              <ChevronDown
+                className="size-[1.125rem] shrink-0"
+                aria-hidden="true"
+              />
+            </button>
+          }
+        />
+        <PopoverContent
+          aria-label={`${label} options`}
+          className="w-[var(--anchor-width)] max-w-[var(--available-width)] p-1"
+        >
+          <div
+            role="listbox"
+            aria-label={label}
+            aria-multiselectable="true"
+            className="max-h-80 touch-pan-y overflow-y-auto overscroll-contain [scrollbar-gutter:stable] [-webkit-overflow-scrolling:touch]"
+          >
+            {selectableOptions.map((option) => {
+              const selected = value.includes(option.value);
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  disabled={option.disabled}
+                  className="relative flex min-h-10 w-full items-center rounded-sm py-2 pr-8 pl-2 text-left font-sans text-sm outline-none hover:bg-accent focus-visible:bg-accent disabled:pointer-events-none disabled:opacity-50"
+                  onClick={() =>
+                    onValueChange?.(
+                      selected
+                        ? value.filter((item) => item !== option.value)
+                        : [...value, option.value],
+                    )
+                  }
+                >
+                  <span className="min-w-0 flex-1 truncate">
+                    {option.label}
+                  </span>
+                  {selected ? (
+                    <Check
+                      className="absolute right-2 size-4"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <FieldMessages
+        description={description}
+        descriptionId={descriptionId}
+        error={error}
+        errorId={errorId}
+      />
+    </div>
+  );
+});
 
 export interface FormDatePickerProps
   extends

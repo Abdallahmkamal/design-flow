@@ -105,6 +105,7 @@
   --color-status-error-background: #ffe3e6;
   --color-status-error-border: #ff8a94;
   --color-status-error-text: #5a1117;
+  --color-dashboard-overdue-text: #230709;
   --color-status-info-background: #d4ebfb;
   --color-status-info-background-muted: #f4fafe;
   --color-status-info-border: #d4ebfb;
@@ -146,9 +147,21 @@
   --color-text-secondary: #5e6162;
   --color-text-tertiary: #8b8f90;
   --color-focus-ring: #e60000;
-  --chart-series-1: #e60000;
-  --chart-series-2: #00697c;
-  --chart-series-3: #5e2750;
+  --chart-series-1: #5e8f95;
+  --chart-series-2: #8e7183;
+  --chart-series-3: #6f91b0;
+  --chart-categorical-aqua: #5e8f95;
+  --chart-categorical-aubergine: #8e7183;
+  --chart-categorical-blue: #6f91b0;
+  --chart-categorical-violet: #8b7fa2;
+  --chart-categorical-green: #71917d;
+  --chart-categorical-gold: #9b8960;
+  --chart-status-backlog: #7c8587;
+  --chart-status-todo: #6f91b0;
+  --chart-status-in-progress: #5e8f95;
+  --chart-status-in-review: #8e7183;
+  --chart-status-done: #71917d;
+  --chart-status-paused: #9b8960;
   --chart-grid: #dbdedf;
   /* Team-ready deterministic initials palette. These curated aliases use
      Vodafone core colors without reusing brand red or workflow-status roles. */
@@ -184,6 +197,7 @@
   --color-status-error-background: #7a1a22;
   --color-status-error-border: #fb3748;
   --color-status-error-text: #ffb8be;
+  --color-dashboard-overdue-text: #ffb8be;
   --color-status-info-background: #a9d1f5;
   --color-status-info-background-muted: #002e4d;
   --color-status-info-border: #1a7fcd;
@@ -225,9 +239,21 @@
   --color-text-secondary: #bec1c2;
   --color-text-tertiary: #8b8f90;
   --color-focus-ring: #ff5c6a;
-  --chart-series-1: #ff5c6a;
-  --chart-series-2: #90e4f0;
-  --chart-series-3: #d8c0cf;
+  --chart-series-1: #7da8ad;
+  --chart-series-2: #a4899a;
+  --chart-series-3: #86a4be;
+  --chart-categorical-aqua: #7da8ad;
+  --chart-categorical-aubergine: #a4899a;
+  --chart-categorical-blue: #86a4be;
+  --chart-categorical-violet: #a095b3;
+  --chart-categorical-green: #88a190;
+  --chart-categorical-gold: #b1a076;
+  --chart-status-backlog: #899294;
+  --chart-status-todo: #86a4be;
+  --chart-status-in-progress: #7da8ad;
+  --chart-status-in-review: #a4899a;
+  --chart-status-done: #88a190;
+  --chart-status-paused: #b1a076;
   --chart-grid: #444848;
   --color-avatar-aqua-background: #00343d;
   --color-avatar-aqua-text: #c7f1f7;

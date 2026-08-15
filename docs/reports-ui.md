@@ -1,8 +1,21 @@
 # Reports UI and export specification
 
-**Version:** 1.3
-**Decision date:** 2026-07-20
+**Version:** 1.4
+**Decision date:** 2026-08-15
 **Status:** Approved MVP report content with D-110 team-ready scope/export amendments
+
+**Implementation note (2026-08-12):** Slice 7 was implemented locally in the
+combined Slices 7–8 run on `codex/ui-modernization-reports-settings`. The owned
+Tabs, Chart, Table, and Alert Dialog primitives live under `src/ui/primitives/`;
+Charts remain Recharts-backed with exact-value semantic tables. Applied report
+context appears as plain slash-separated text in one compact filter container;
+all fields are edited through a responsive side overlay with draft, Reset,
+Cancel, and Apply behavior and no removable chips. The three-tab strip and
+contained tables scroll without page-level overflow at the 390 px target. The
+contextual export inside the filter container uses the exact schemas below
+and the `20260812100000_modernize_reports_scope_and_exports.sql` migration
+activates the D-110 server scope/export boundary. Publishing is not implied by
+this local implementation record.
 
 Reports turns the approved reporting definitions into three usable views: Tickets, Designers, and Visual Work. Every value must remain traceable to source records and must not imply that recorded activity equals effort, quality, complexity, or performance.
 
@@ -13,12 +26,22 @@ Each report uses the same hierarchy:
 1. Shared period and scope filters
 2. Period-activity cards
 3. Current or period-end snapshot cards, where applicable
-4. A small set of charts
+4. A small set of charts in a balanced two-column desktop grid
 5. A detailed table
 6. Source drill-down
 7. One direct, tab-aware filtered CSV export for every export-authorized scope
 
+The Reports header contains only the title and does not repeat the
+report-definition disclaimer. A compact filter container presents applied
+values as plain slash-separated text and contains a neutral **Edit filters**
+action plus a dominant black **Export CSV** action when authorized. The filter
+overlay's Period and People fields reuse the same `FormSelect` and
+`FormDatePicker` anatomy as Log Work. Labels use the matching dropdown field
+with a scrollable multi-select list rather than an exposed checkbox group.
+
 Period activity and snapshot values must be visually separated. Historical snapshot values are labelled **As of [period end date]**.
+The snapshot date and period-activity range occupy two deliberate text lines on
+every report tab.
 
 ### Tabs
 
@@ -30,11 +53,10 @@ Switching tabs preserves compatible period, people, and Area/Squad filters.
 
 ### Date presets
 
-- This week
-- Last week
-- This month — default
+- Month to date — default
 - Last month
-- Last 30 days
+- Last 3 months, including month to date
+- Last 6 months, including month to date
 - Custom range
 
 Week presets span Sunday through Saturday so manually logged Friday/Saturday work remains reportable. Stale and other working-day calculations still skip Friday and Saturday. Current-period presets end today rather than including future dates.
@@ -54,9 +76,16 @@ Designer without Admin is restricted to Me at the authorization boundary, includ
 
 - Filters, selected tab, date range, and sorting are represented in the URL.
 - Selecting a chart segment applies or refines the corresponding table filter.
-- Every card and chart exposes its source records through drill-down where permissions allow.
+- The detailed source section remains the controlled record destination. Summary
+  cards reveal a compact matching-source preview on desktop hover/focus and
+  mobile tap without replacing their period label; chart frames do not repeat
+  source-anchor links.
 - Charts use accessible labels and patterns/contrast rather than color alone.
-- Mobile stacks cards and charts and converts wide tables into expandable records without changing definitions.
+- Desktop presents charts as a balanced two-by-two grid. Mobile presents both
+  compact metric cards and charts as contained horizontal snap scrollers with a
+  partial-next-card cue; metric cards use two scroller rows and reveal the same
+  matching-source preview on tap that desktop exposes on hover. Wide tables become collapsed, expandable All
+  Tickets-style records without changing definitions.
 - No saved report configurations in the MVP.
 - No Reports PDF in the MVP; the approved Work Item PDF remains separate.
 
@@ -85,6 +114,8 @@ For historical ranges, reconstruct and label these as of the selected period end
 4. **Tickets by Area/Squad** — horizontal bars, with status breakdown where legible.
 
 Avoid pie charts and raw work-entry charts as primary visuals.
+
+Chart exact-value tables remain in the accessibility tree but are visually hidden to avoid duplicating every plotted value below the chart. The visible detailed report table uses the same sticky-header, bordered-cell presentation as All Tickets and retains structured mobile records.
 
 ### Detail table
 
@@ -276,7 +307,7 @@ Exclude ticket ID, status, assignee, contributor, completion, blocker, planned d
 
 ## 5. Team-ready contextual export behavior
 
-Reports owns one direct **Export CSV** action in the module header. All Tickets has no CSV action.
+Reports owns one direct **Export CSV** action in the compact filter container. All Tickets has no CSV action.
 
 - The active tab selects the Designers, Tickets, or Standalone Visuals row model; there is no Summary/Detail menu.
 - Export uses the visible Period, People scope, optional filters, and authorization boundary and includes every matching row beyond the visible page.
@@ -346,10 +377,28 @@ Sort primarily by Work Date. Recorded At remains audit information.
 
 - Use the shared tabs for Designers, Tickets, and Standalone Visuals and preserve the active tab while context/filters change.
 - Keep all three tabs reachable on mobile through horizontal scrolling rather than compression or awkward wrapping.
-- Stack or wrap Period, People scope, Add Filter, and Export CSV without clipping.
-- Report tables may scroll horizontally on mobile while keeping identifying fields readable.
-- Resize or stack charts/cards and use shared loading, empty, and error patterns.
+- Wrap the slash-separated applied values naturally and stack the Edit filters
+  and Export CSV actions without clipping.
+- Inset the desktop Edit filters overlay by exactly `24px` from the viewport
+  top, right, and bottom; mobile retains its full-width, full-height treatment.
+- Use the shared `16px` overlay radius for the inset desktop surface rather than
+  an isolated drawer radius.
+- Report tables become structured record cards on mobile while preserving every field and action.
+- Keep desktop charts/cards bounded and use contained horizontal snap scrollers
+  on mobile without creating page-level horizontal overflow.
+- Period presets are Month to date, Last month, Last 3 months including the
+  current month to date, Last 6 months including the current month to date, and
+  Custom range. Multi-month presets begin on the first day of the earliest
+  included calendar month and end today.
+- Each populated chart card exposes exactly one `Filter by` composer. Its
+  selectable chart values refine the URL-backed report; exact-value table labels
+  remain plain semantic row headers rather than exposed filter actions.
+- Status-distribution bars use centralized muted chart-status colors that retain
+  the workflow mapping. Other report charts use the centralized muted, non-red categorical chart palette; chart
+  color remains supplemented by labels, exact values, and line-dash differences.
 - Modernization Slice 7 must close the known 390 px page-level overflow and record the responsive regression evidence.
+- Do not render an empty summary-card grid when a response has no summary cards;
+  Charts follows the summary explanation at normal spacing.
 
 ## 8. Acceptance criteria
 
