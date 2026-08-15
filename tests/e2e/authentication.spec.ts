@@ -534,7 +534,7 @@ test('mobile shell keeps primary navigation and session actions available', asyn
       .getByRole('button', { name: 'Open Quick Actions' })
       .locator('svg')
       .last(),
-  ).toHaveCSS('color', 'rgb(230, 0, 0)');
+  ).toHaveCSS('color', 'rgb(255, 255, 255)');
 
   await page.getByRole('button', { name: 'Open Quick Actions' }).click();
   await expect(
