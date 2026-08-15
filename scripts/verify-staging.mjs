@@ -1,7 +1,7 @@
 const checkpointMarkers = [
-  'Operational overview',
+  'Ticket summary',
   'Personal inbox',
-  'Activity history',
+  'Activity & Work Log',
   'Standalone Visual Work',
 ];
 const maximumLinkedJavaScriptSources = 64;

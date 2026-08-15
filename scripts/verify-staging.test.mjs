@@ -75,7 +75,7 @@ describe('staging smoke verification', () => {
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
         response(
-          'Operational overview Personal inbox Activity history Standalone Visual Work',
+          'Ticket summary Personal inbox Activity & Work Log Standalone Visual Work',
         ),
       )
       .mockResolvedValueOnce(
@@ -113,7 +113,7 @@ describe('staging smoke verification', () => {
         .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
         .mockResolvedValueOnce(
           response(
-            'Operational overview Personal inbox Activity history Standalone Visual Work',
+            'Ticket summary Personal inbox Activity & Work Log Standalone Visual Work',
           ),
         )
         .mockResolvedValueOnce(
@@ -150,7 +150,7 @@ describe('staging smoke verification', () => {
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
         response(
-          'Operational overview Personal inbox Activity history Standalone Visual Work',
+          'Ticket summary Personal inbox Activity & Work Log Standalone Visual Work',
         ),
       )
       .mockResolvedValueOnce(
@@ -183,7 +183,7 @@ describe('staging smoke verification', () => {
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
         response(
-          'Operational overview Personal inbox Activity history Standalone Visual Work',
+          'Ticket summary Personal inbox Activity & Work Log Standalone Visual Work',
         ),
       )
       .mockResolvedValueOnce(
@@ -225,7 +225,7 @@ describe('staging smoke verification', () => {
       .mockResolvedValueOnce(response('import("./PhaseFivePage.js")'))
       .mockResolvedValueOnce(
         response(
-          'Operational overview Personal inbox Activity history Standalone Visual Work',
+          'Ticket summary Personal inbox Activity & Work Log Standalone Visual Work',
         ),
       )
       .mockResolvedValueOnce(
@@ -264,7 +264,7 @@ describe('staging smoke verification', () => {
     await expect(
       verifyStaging({ environment, fetcher, frontendAttempts: 1 }),
     ).rejects.toThrow(
-      'The live bundle is missing the required marker: Operational overview',
+      'The live bundle is missing the required marker: Ticket summary',
     );
   });
 });
