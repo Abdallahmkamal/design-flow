@@ -2,6 +2,7 @@ import {
   Children,
   forwardRef,
   isValidElement,
+  useCallback,
   useState,
   useId,
   type ChangeEvent,
@@ -207,6 +208,9 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
     ref,
   ) {
     const generatedId = useId();
+    const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+      null,
+    );
     const controlId = id ?? generatedId;
     const descriptionId = description ? `${controlId}-description` : undefined;
     const errorId = error ? `${controlId}-error` : undefined;
@@ -240,6 +244,16 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
         currentTarget: { value: nextValue },
       } as ChangeEvent<HTMLSelectElement>);
     };
+    const setTriggerRef = useCallback(
+      (node: HTMLButtonElement | null) => {
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+        setPortalContainer(
+          node?.closest<HTMLElement>('[role="dialog"]') ?? null,
+        );
+      },
+      [ref],
+    );
 
     return (
       <div className={fieldClass}>
@@ -259,7 +273,7 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
           onValueChange={handleValueChange}
         >
           <SelectTrigger
-            ref={ref}
+            ref={setTriggerRef}
             id={controlId}
             aria-label={ariaLabel}
             aria-describedby={describedBy || undefined}
@@ -276,7 +290,7 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
               }
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent portalContainer={portalContainer ?? undefined}>
             {selectableOptions.map((option) => (
               <SelectItem
                 key={option.value}

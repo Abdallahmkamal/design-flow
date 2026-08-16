@@ -377,6 +377,13 @@ test('authenticated shell is navigable and has no detectable accessibility viola
       exact: true,
     }),
   ).toBeVisible();
+  await page.getByRole('combobox', { name: 'Area: All' }).click();
+  expect(
+    await page
+      .getByRole('listbox')
+      .evaluate((node) => Boolean(node.closest('[role="dialog"]'))),
+  ).toBe(false);
+  await page.getByRole('option', { name: 'Area: All' }).click();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.getByRole('link', { name: 'Notifications' }).click();
@@ -411,6 +418,17 @@ test('authenticated shell is navigable and has no detectable accessibility viola
   await expect(
     page.getByRole('combobox', { name: 'Area/Squad' }),
   ).toBeVisible();
+  await page.getByRole('combobox', { name: 'Date preset' }).click();
+  expect(
+    await page
+      .getByRole('listbox')
+      .evaluate((node) => Boolean(node.closest('[role="dialog"]'))),
+  ).toBe(true);
+  await page.getByRole('option', { name: 'Last month' }).click();
+  await expect(
+    page.getByRole('combobox', { name: 'Date preset' }),
+  ).toContainText('Last month');
+  await expect(page.locator('[data-slot="select-list"]')).toBeHidden();
 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
