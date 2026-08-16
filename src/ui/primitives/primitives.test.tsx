@@ -228,6 +228,25 @@ describe('team-ready primitives', () => {
     expect(document.querySelectorAll('[data-direction]').length).toBe(0);
   });
 
+  it('keeps a modal FormSelect popup inside its dialog scroll boundary', async () => {
+    const user = userEvent.setup();
+    render(
+      <div role="dialog" aria-label="Create ticket">
+        <FormSelect label="Area">
+          <option value="area-1">Area 1</option>
+          <option value="area-2">Area 2</option>
+        </FormSelect>
+      </div>,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Area' }));
+    expect(
+      document
+        .querySelector('[data-slot="select-list"]')
+        ?.closest('[role="dialog"]'),
+    ).toBe(screen.getByRole('dialog', { name: 'Create ticket' }));
+  });
+
   it('renders the selected FormSelect label instead of its stored value', () => {
     const areaOptions = (
       <>

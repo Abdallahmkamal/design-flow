@@ -36,6 +36,37 @@ async function chooseTicketChip(page: Page, label: string, option: string) {
   await dialog.getByRole('option', { name: option, exact: true }).click();
 }
 
+async function scrollOptionList(page: Page, list: ReturnType<Page['locator']>) {
+  const box = await list.boundingBox();
+  expect(box).not.toBeNull();
+
+  if (await page.evaluate(() => matchMedia('(pointer: coarse)').matches)) {
+    const session = await page.context().newCDPSession(page);
+    const x = box!.x + box!.width / 2;
+    const startY = box!.y + box!.height - 24;
+    const endY = box!.y + 24;
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x, y: startY }],
+    });
+    for (let step = 1; step <= 6; step += 1) {
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x, y: startY + ((endY - startY) * step) / 6 }],
+      });
+    }
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchEnd',
+      touchPoints: [],
+    });
+    await session.detach();
+    return;
+  }
+
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await page.mouse.wheel(0, box!.height * 0.8);
+}
+
 const listRow = {
   id: itemId,
   displayId,
@@ -151,6 +182,7 @@ async function mocks(
     suggestionDelayMs?: number;
     listRequestBodies?: unknown[];
     mutationBodies?: { url: string; body: unknown }[];
+    workAreas?: { id: string; name: string; is_active: boolean }[];
   } = {},
 ) {
   let subtaskAttempts = 0;
@@ -201,9 +233,11 @@ async function mocks(
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([
-        { id: listRow.area.id, name: listRow.area.name, is_active: true },
-      ]),
+      body: JSON.stringify(
+        options.workAreas ?? [
+          { id: listRow.area.id, name: listRow.area.name, is_active: true },
+        ],
+      ),
     }),
   );
   await page.route('**/rest/v1/labels**', (route) =>
@@ -837,6 +871,75 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
   await expect(
     page.getByText(`${displayId} created in Backlog.`, { exact: true }),
   ).toBeVisible();
+});
+
+test('Create Ticket Area menu owns overflow scrolling and selects an initially hidden option', async ({
+  page,
+}) => {
+  const workAreas = Array.from({ length: 24 }, (_, index) => ({
+    id: `50000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    name: `[SYNTHETIC] Area ${String(index + 1).padStart(2, '0')}`,
+    is_active: true,
+  }));
+  await mocks(page, { workAreas });
+  await signIn(page);
+  await page.goto('/work-items/new');
+
+  const field = page.getByRole('combobox', { name: 'Area / Squad' });
+  await field.click();
+  const list = page.locator('[data-slot="select-list"]');
+  await expect(list).toBeVisible();
+  expect(
+    await list.evaluate((node) => Boolean(node.closest('[role="dialog"]'))),
+  ).toBe(true);
+  expect(
+    await list.evaluate((node) => node.scrollHeight > node.clientHeight),
+  ).toBe(true);
+  await expect(list).toHaveCSS('overflow-y', 'scroll');
+
+  const initiallyHiddenOption = page.getByRole('option', {
+    name: '[SYNTHETIC] Area 24',
+    exact: true,
+  });
+  const listBox = await list.boundingBox();
+  const optionBox = await initiallyHiddenOption.boundingBox();
+  expect(listBox).not.toBeNull();
+  expect(optionBox).not.toBeNull();
+  expect(optionBox!.y).toBeGreaterThanOrEqual(listBox!.y + listBox!.height);
+
+  const scrollContainer = page
+    .getByRole('dialog', { name: 'Create ticket' })
+    .locator('.overflow-y-auto');
+  const pageScrollBefore = await scrollContainer.evaluate(
+    (node) => node.scrollTop,
+  );
+  await expect
+    .poll(async () => {
+      await scrollOptionList(page, list);
+      return list.evaluate((node) => node.scrollTop);
+    })
+    .toBeGreaterThan(0);
+  expect(await scrollContainer.evaluate((node) => node.scrollTop)).toBe(
+    pageScrollBefore,
+  );
+
+  await expect
+    .poll(async () => {
+      const currentListBox = await list.boundingBox();
+      const currentOptionBox = await initiallyHiddenOption.boundingBox();
+      const reached = Boolean(
+        currentListBox &&
+        currentOptionBox &&
+        currentOptionBox.y >= currentListBox.y &&
+        currentOptionBox.y + currentOptionBox.height <=
+          currentListBox.y + currentListBox.height,
+      );
+      if (!reached) await scrollOptionList(page, list);
+      return reached;
+    })
+    .toBe(true);
+  await initiallyHiddenOption.click();
+  await expect(field).toContainText('[SYNTHETIC] Area 24');
 });
 
 test('nested Create Ticket replaces Log Work, preserves the draft, and submits once', async ({

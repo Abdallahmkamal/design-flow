@@ -40,6 +40,8 @@ Do not add later-slice primitives here until their owning slice requires them.
   legacy coexistence.
 - `FormSelect` composes the source-owned shadcn Select over Base UI; its trigger
   and popup remain keyboard-accessible when nested in the route-backed sheet.
+  Nested modal fields portal their popup into the nearest dialog so the dialog's
+  scroll lock recognizes the option list as an allowed touch-scroll region.
   The popup is bounded by both 20rem and the available viewport height; its list
   owns wheel/touch scrolling with overscroll containment on desktop and mobile.
 - `FormMultiSelect` preserves that labelled field geometry while exposing a
