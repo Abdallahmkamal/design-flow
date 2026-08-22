@@ -2,7 +2,7 @@
 
 **Version:** 0.6  
 **Checkpoint date:** 2026-07-16  
-**Status:** Approved concepts; not yet a SQL migration
+**Status:** Approved concepts with D-118 derived reporting amendments
 
 This document translates the approved product rules into implementation-facing entities and invariants. Exact SQL types, indexes, triggers, functions, and row-level-security policies must be reviewed when the first Supabase migration is written.
 
@@ -426,11 +426,12 @@ Prefer database functions/triggers or transaction-safe repository operations for
 
 ### Dashboard/reporting derivations
 
-- `planned_until` = maximum due date among a person's current unarchived primary-owned tickets in `todo`, `in_progress`, or `in_review`.
+- `planned_until` = maximum Next Deadline (`due_date` internally) among a person's current unarchived primary-owned tickets in `todo` or `in_progress`.
 - Contributor activity is excluded from `planned_until`.
-- Queries must also return the number of qualifying active owned tickets without due dates so the UI never presents a partial horizon as complete.
+- Queries must also return the number of qualifying active owned tickets without next deadlines so the UI never presents a partial horizon as complete.
 - `no_recent_work_recorded` uses the most recent valid ticket or standalone-visual `work_date`, not authentication login time.
-- Ticket `active_work_days` = count of distinct valid ticket `work_date` values across all designers; multiple people or entries on the same date count once.
+- Ticket `active_work_days` is the retained internal response key for Days Active: count distinct valid Sunday–Thursday ticket `work_date` values across all designers; multiple people or entries on the same date count once, while Friday/Saturday logs remain visible.
+- Ticket Reports and CSV default to `not_archived`; an explicit archived-state filter controls the same scoped rows used by cards/counts, charts, tables, pagination, drill-downs, and exports.
 - No availability-period or capacity-inference entity exists in the MVP.
 
 ## 9. Row-level-security intent

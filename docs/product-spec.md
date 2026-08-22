@@ -4,7 +4,7 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-08-08 — D-109 and D-110 add the reconciled team-ready post-MVP contract
+**Last amended:** 2026-08-22 — D-118 canonical calendar, Next Deadline, overdue, duration, and archived-report behavior
 
 This document is the current product source of truth for Design Flow. The completed MVP decisions remain historical context; D-109, D-110, and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) govern the approved team-ready post-MVP amendments. Open decisions must not be invented during implementation.
 
@@ -125,7 +125,7 @@ Viewer is trusted internal, whole-team read-only access:
 | Primary assignee | Optional in Backlog; required for active statuses |
 | Description | Optional |
 | Planned start date | Optional |
-| Due date | Optional |
+| Next Deadline | Optional |
 | Labels | Optional; multiple allowed; selected from an Admin-managed list |
 | Figma URL | Optional; one URL only |
 | Priority | Does not exist in the MVP |
@@ -165,7 +165,7 @@ Status reporting groups:
 
 ### Planned dates versus actual work
 
-Planned start and due date describe an expected delivery window. They do not imply that the designer worked on every date in the window. Actual work comes only from work-log entry dates.
+Planned start and Next Deadline describe an expected delivery window. They do not imply that the designer worked on every date in the window. Actual work comes only from work-log entry dates.
 
 Maintain separate timestamps:
 
@@ -179,15 +179,15 @@ Maintain separate timestamps:
 
 The All Tickets list should show **Last worked on** rather than using an ambiguous Last updated value.
 
-At ticket level, **Active work days** is the number of distinct valid ticket `work_date` values across all designers. Multiple entries or people on the same ticket/date count once.
+At ticket level, **Days Active** is the number of distinct valid Sunday–Thursday ticket `work_date` values across all designers. Multiple entries or people on the same ticket/date count once. Friday/Saturday logs remain visible in work history and exports but do not increase Days Active.
 
 ### Planned until
 
-`Planned until` is the latest due date among a person's current unarchived owned tickets in To do, In Progress, or In Review. It is a planning outlook, not a promise of availability or capacity.
+`Planned until` is the latest Next Deadline among a person's current unarchived owned tickets in To Do or In Progress. It is a planning outlook, not a promise of availability or capacity.
 
 - Contributor activity does not affect it.
-- Partial due-date coverage must remain visible, for example `Planned until 28 Aug · 2 without due dates`.
-- If active owned work has no due dates, show `No due dates set`.
+- Partial Next Deadline coverage must remain visible, for example `Planned until 28 Aug · 2 without next deadlines`.
+- If active owned work has no Next Deadlines, show `No next deadlines set`.
 - If the person has no active owned tickets, show `No active owned tickets`.
 - Do not add manual availability periods or call the date `Available from`.
 
@@ -339,7 +339,7 @@ Fixed visual-work types:
 5. Illustration & iconography
 6. Other visual work
 
-Standalone visual work has no ticket ID, status, assignee, contributor, blocker, subtask, comment, planned date, due date, Figma URL, or label.
+Standalone visual work has no ticket ID, status, assignee, contributor, blocker, subtask, comment, planned date, Next Deadline, Figma URL, or label.
 
 If visual work becomes substantial enough to require ownership, collaboration, planned dates, or lifecycle tracking, create a normal ticket instead.
 
@@ -350,7 +350,7 @@ If visual work becomes substantial enough to require ownership, collaboration, p
 - Archiving does not change status.
 - Restoring returns the ticket with the same status.
 - Archived tickets are excluded from the default All Tickets view but remain searchable through an Archived filter.
-- Archived records remain in historical reports and CSV exports.
+- Reports and CSV exports exclude archived tickets by default. Archived records remain available through the explicit archived-state filter, which applies consistently to report counts, cards, charts, tables, and exports.
 - No automatic archive and no permanent deletion through the product in the MVP.
 
 ## 12. Reporting foundation

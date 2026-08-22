@@ -69,19 +69,19 @@ Summary row:
 
 - Area/Squad and labels with visual overflow;
 - primary assignee and derived contributors;
-- due date with overdue/due-soon text;
+- Next Deadline with overdue/due-soon text;
 - subtask completion badge; and
-- Active work days as a read-only derived count.
+- Days Active as a read-only derived Sunday–Thursday count; Friday/Saturday logs remain visible without increasing it.
 
 Details:
 
 - description;
-- Area/Squad, primary assignee/contributors, planned start, due date, labels,
+- Area/Squad, primary assignee/contributors, planned start, Next Deadline, labels,
   Figma direct link, and created date;
 - first actual work date, Last worked on, and Last activity when present.
 
 Planned dates and actual work dates have separate labels/groups. No continuous
-effort is implied between planned start and due date.
+effort is implied between planned start and Next Deadline.
 
 ## Business rules
 
@@ -101,7 +101,7 @@ effort is implied between planned start and due date.
 ## Editing core fields
 
 - Edit uses the full-page WorkItemForm with current title, description,
-  Area/Squad, planned start, due date, labels, and Figma URL.
+  Area/Squad, planned start, Next Deadline, labels, and Figma URL.
 - Status and assignee are excluded from the edit payload and remain separate
   controlled lifecycle operations.
 - The form preserves changes on validation, network, or conflict failure.
@@ -187,7 +187,7 @@ or work-log timeline UI.
 
 - One ordered flow: header, summary, blocker, details, subtasks, timeline,
   comments.
-- Summary wraps without hiding status, due date, Area/Squad, or Active work
+- Summary wraps without hiding status, Next Deadline, Area/Squad, or Active work
   days. Actions wrap into labelled controls; no icon-only overflow menu.
 - Subtask movement and comment actions remain reachable by touch and keyboard
   without horizontal scrolling.

@@ -435,6 +435,7 @@ export const transitionWorkItem = (
   status: string,
   acknowledge = false,
   operationId = createOperationId(),
+  newNextDeadline: string | null = null,
 ) =>
   mutation(
     'transition_work_item_status',
@@ -444,6 +445,7 @@ export const transitionWorkItem = (
       expected_status_code: item.status.code,
       expected_updated_at: item.updatedAt,
       acknowledge_incomplete_subtasks: acknowledge,
+      new_next_deadline: newNextDeadline,
     },
     operationId,
   );

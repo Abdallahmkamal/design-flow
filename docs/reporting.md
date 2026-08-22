@@ -2,7 +2,7 @@
 
 **Version:** 0.7
 **Checkpoint date:** 2026-07-20
-**Status:** Core attribution/metrics approved with D-110 team-ready scope and CSV amendments
+**Status:** Core attribution/metrics approved with D-110 scope/CSV and D-118 calendar/deadline/archive amendments
 
 Reporting is a primary product outcome. Every metric must be explainable, traceable to source records, and exportable without implying that activity frequency equals effort, quality, complexity, or performance.
 
@@ -37,7 +37,7 @@ The Designers report may include people whose organizational position is Designe
 - Backfilled work appears in the period when it happened.
 - Ticket completion uses the Done transition timestamp.
 - Current-open metrics are snapshots at the report end time.
-- Archived tickets remain available in historical reports and exports.
+- Ticket reports and CSV exports default to not archived. Archived tickets remain available through the explicit archived-state filter; the selected archive scope applies to cards/counts, charts, table rows, source drill-downs, and exported rows.
 
 Example: work performed on 10 July but entered on 15 July belongs to 10 July activity reporting and 15 July audit history.
 
@@ -53,7 +53,7 @@ A distinct date on which a designer has at least one valid ticket-work entry.
 
 ### Ticket-level active work day
 
-A distinct date on which at least one designer has valid work recorded for a particular ticket. Multiple designers or entries on the same ticket/date count once. This is the Work Item header's **Active work days** measure and differs from designer Ticket active days.
+A distinct Sunday–Thursday date on which at least one designer has valid work recorded for a particular ticket. Multiple designers or entries on the same ticket/date count once. Friday/Saturday logs remain visible in history and detail exports but do not increase **Days Active**.
 
 ### Ticket-day
 
@@ -97,16 +97,20 @@ An active-workload ticket with an unresolved blocker. Blocked is independent of 
 
 ### Overdue ticket
 
-An unarchived active-workload ticket whose due date is before the relevant snapshot date and which is not Done or Paused. Tickets without due dates are not overdue.
+An unarchived To Do or In Progress ticket whose Next Deadline is before the relevant team-local snapshot date. Backlog, In Review, Paused, Done, archived tickets, and tickets without a Next Deadline are not overdue.
 
 ### Planned until
 
-The latest due date among a designer's current unarchived primary-owned tickets in To do, In Progress, or In Review.
+The latest Next Deadline among a designer's current unarchived primary-owned tickets in To Do or In Progress.
+
+### Days Open and status durations
+
+Days Open counts Sunday–Thursday dates after planned Start Date through the snapshot date, stopping at the latest applicable Done transition while a ticket is Done and resuming from the original Start Date after reopen. To Do Days, In Progress Days, Review Days, and Paused Days are derived from ordered status history; the status effective at the end of each team-local working date owns that date, so same-day transitions never double count.
 
 - It is a current planning horizon, not availability, capacity, or effort.
 - Contributor tickets do not affect it.
-- Reports must expose how many qualifying active owned tickets have no due date.
-- Use `No due dates set` when all active owned work lacks due dates, and `No active owned tickets` when there is no active ownership.
+- Reports must expose how many qualifying active owned tickets have no next deadline.
+- Use `No next deadlines set` when all active owned work lacks next deadlines, and `No active owned tickets` when there is no active ownership.
 
 ### No recent work recorded
 
@@ -124,7 +128,7 @@ Recommended summary fields:
 - Contributors
 - Current status
 - Active blocker indicator and blocked duration
-- Planned start and due date
+- Planned start and Next Deadline
 - First actual work date
 - Last worked on
 - Distinct active work dates
@@ -166,7 +170,7 @@ Recommended designer summary fields:
 - Current blocked owned tickets
 - Current overdue owned tickets
 - Owned tickets with no work in the selected period
-- Planned until, with the count of active owned tickets lacking due dates
+- Planned until, with the count of active owned tickets lacking next deadlines
 - Last recorded work date and the factual No recent work recorded signal where applicable
 - Visual activity-days, shown in a separate section
 - Overall active calendar days, carefully labeled to avoid summing overlapping categories
@@ -177,7 +181,7 @@ The individual drill-down should separate:
 
 - Ticket
 - Status
-- Due date
+- Next Deadline
 - Designer's actual work dates
 - Contributors
 - Last worked on
@@ -280,7 +284,7 @@ unless hours or another validated effort input is added later.
 
 - Every selected date in a batch is independently reportable with its own work type.
 - The batch may appear once in history but is expanded for date metrics.
-- Friday/Saturday entries count normally when manually logged.
+- Friday/Saturday entries remain visible and count normally in raw entry, designer activity, and standalone-visual reporting when manually logged. They do not increase ticket Days Active or status-duration counters.
 - Corrections move activity to the corrected date/type/context.
 - Withdrawn logs are excluded from normal reports.
 - Contributor and completion summaries must be recalculated after relevant corrections.

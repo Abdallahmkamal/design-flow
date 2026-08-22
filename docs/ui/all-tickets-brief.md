@@ -62,7 +62,7 @@ The URL-backed query supports:
 - multi-select status, Area/Squad, and label IDs;
 - blocked, due, and stale tri/choice filters;
 - case-insensitive partial search over display ID, title, and description;
-- sort: due date, last worked on, created date, status, title, or ticket ID;
+- sort: Next Deadline, last worked on, created date, status, title, or ticket ID;
 - direction; and
 - one-based page.
 
@@ -75,7 +75,7 @@ Defaults:
 - Current unarchived Backlog, To do, In Progress, In Review, and Paused;
 - position-based people scope from `all-tickets.md`;
 - Owned relationship; and
-- due date ascending with null dates last and display ID as stable tie-breaker.
+- Next Deadline ascending with null dates last and display ID as stable tie-breaker.
 
 ## Desktop result table
 
@@ -85,7 +85,7 @@ Columns remain in this order:
 2. Area/Squad.
 3. Workflow status plus separate Blocked/Stale indicators.
 4. Primary assignee plus contributor count trigger.
-5. Planned start/due date with overdue/due-soon text.
+5. Planned start/Next Deadline with overdue/due-soon text.
 6. Last worked on or `No work logged`.
 7. Independent Figma link when present.
 
@@ -101,7 +101,7 @@ Each list item presents, in order:
 - independent Figma action when available;
 - primary assignee and contributor count;
 - Area/Squad and a limited label preview with `+n` overflow; and
-- due date and Last worked on.
+- Next Deadline and Last worked on.
 
 The title/ID are native links. Tapping otherwise noninteractive card space opens
 the same Work Item; Figma and contributor controls remain independent.

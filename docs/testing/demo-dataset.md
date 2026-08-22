@@ -41,7 +41,7 @@ due-this-week tickets; blocked, paused, completed, and archived records; a
 ticket without work logs; a ticket with many logs; multiple contributors;
 clearly different high/low activity volumes; standalone Visual Work; and
 tickets without Figma links. Priority is intentionally not represented because
-the approved MVP replaces Priority with due dates, blockers, status, and team
+the approved MVP replaces Priority with Next Deadlines, blockers, status, and team
 alignment (see `docs/decisions.md`); adding it would be a schema/product change.
 
 ## Official post-MVP Demo Data Generator

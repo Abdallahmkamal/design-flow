@@ -92,7 +92,7 @@ const sortableFields: { value: WorkItemSort; label: string }[] = [
   { value: 'status', label: 'Status' },
   { value: 'last_activity', label: 'Last Activity' },
   { value: 'planned_start_date', label: 'Start Date' },
-  { value: 'due_date', label: 'Due Date' },
+  { value: 'due_date', label: 'Next Deadline' },
   { value: 'days_open', label: 'Days Open' },
   { value: 'days_active', label: 'Days Active' },
 ];
@@ -102,7 +102,7 @@ const filterLabels: Record<FilterDimension, string> = {
   area: 'Area',
   labels: 'Labels',
   blocked: 'Blocker',
-  due: 'Due date',
+  due: 'Next Deadline',
   activity: 'Activity',
   archived: 'Archived only',
   unassigned: 'Unassigned',
@@ -399,7 +399,7 @@ function chipLabel(
     unblocked: 'Not blocked',
     overdue: 'Overdue',
     due_soon: 'Due soon',
-    no_due_date: 'No due date',
+    no_due_date: 'No Next Deadline',
     stale: 'Stale',
     active: 'Recently active',
   };
@@ -538,7 +538,7 @@ function FilterEditor({
         <>
           <option value="overdue">Overdue</option>
           <option value="due_soon">Due soon</option>
-          <option value="no_due_date">No due date</option>
+          <option value="no_due_date">No Next Deadline</option>
         </>
       ) : null}
       {type === 'activity' ? (
@@ -730,7 +730,7 @@ function MobileCards({
                       <dd>{date(row.plannedStartDate)}</dd>
                     </div>
                     <div>
-                      <dt>Due Date</dt>
+                      <dt>Next Deadline</dt>
                       <dd>{date(row.dueDate)}</dd>
                     </div>
                     <div className={styles.mobileDetailWide}>
@@ -1282,7 +1282,7 @@ function AllTicketsSortableTable({
           <th>People</th>
           {header('last_activity', 'Last Activity')}
           {header('planned_start_date', 'Start Date')}
-          {header('due_date', 'Due Date')}
+          {header('due_date', 'Next Deadline')}
           {header('days_open', 'Days Open')}
           {header('days_active', 'Days Active')}
           <th>Labels</th>

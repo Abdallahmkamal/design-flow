@@ -47,7 +47,7 @@ work type, and optional permitted description.
 
 Correction preserves original/audit context while presenting the current valid
 dates. Withdrawal removes entries from Work Dates, contributor/current
-first-last-work derivations, and active work days, while keeping a sanitized
+first-last-work derivations, and Days Active, while keeping a sanitized
 withdrawal event. Normal history never reveals withdrawn comment/work bodies or
 restricted revisions. Ticket work, system/audit events, and comments remain
 visually and semantically distinct.
@@ -112,8 +112,8 @@ None. Material changes require a new readiness decision.
 - DF-000003 exposed distinct actual Work Dates for Jul 21 and Jul 22, with deep
   links into the matching work-log timeline events.
 - Timeline entries retained later submission timestamps and actor attribution;
-  the details rail separately showed planned start, due date, first/last worked
-  dates, last system activity, and 2 active work days.
+  the details rail separately showed planned start, Next Deadline, first/last worked
+  dates, last system activity, and 2 Days Active.
 - Synthetic correction links remained permission-gated, withdrawn content was
   absent, and standalone Visual Work remained outside ticket history.
 - Automated coverage verifies correction/withdrawal recalculation, Viewer and

@@ -1,7 +1,7 @@
 # Design Flow — Team-Ready UI Handoff
 
 Status: Approved post-MVP repository contract
-Last updated: 2026-08-15 — D-117 mobile Quick Actions FAB refinement
+Last updated: 2026-08-22 — D-118 calendar, Next Deadline, duration, and archived-report reconciliation
 Figma file: https://www.figma.com/design/2c9QoPS8BLcTdiIoBEeeni/DesignFlow
 
 ## Repository reconciliation — 2026-08-08
@@ -327,9 +327,9 @@ Use this exact desktop order:
 4. **People** — the primary assignee and derived contributors using the compact cell contract below.
 5. **Last Activity** — date and time of the latest meaningful ticket activity, including work logs, status changes, comments, and ticket edits. Use the event's actual recorded timestamp rather than a backdated work date. Expose the activity type in a tooltip or accessible detail.
 6. **Start Date** — manually managed ticket date; do not derive it from the first work log.
-7. **Due Date** — existing due date.
+7. **Next Deadline** — existing `due_date` value.
 8. **Days Open** — elapsed working days from Start Date using the Design Flow workweek of Sunday through Thursday; exclude Friday and Saturday.
-9. **Days Active** — count distinct dates that contain at least one work log across all people. Multiple logs or people on the same date count as one active day.
+9. **Days Active** — count distinct Sunday–Thursday dates that contain at least one valid ticket work log across all people. Multiple logs or people on the same date count as one active day; Friday/Saturday logs remain visible but do not increase the metric.
 10. **Labels** — existing labels.
 11. **Link** — Figma-link action.
 
@@ -350,7 +350,7 @@ Days Open follows these edge rules:
 - The first click activates the column's useful initial direction: descending for dates and numeric values, ascending for Ticket and Area.
 - Each later click on the active heading alternates between ascending and descending.
 - Allow only one active user-selected sort at a time and persist it in the URL so opening and closing an inline ticket preserves the list state.
-- Sortable columns are Ticket, Area, Status, Last Activity, Start Date, Due Date, Days Open, and Days Active.
+- Sortable columns are Ticket, Area, Status, Last Activity, Start Date, Next Deadline, Days Open, and Days Active.
 - People, Labels, and Link are not sortable and must not show inactive sorting affordances.
 - Keep sorting on mobile even though tickets render as cards. Place a dedicated **Sort** control beside the mobile Filter control; opening it presents the same sortable fields plus ascending/descending direction in a compact bottom sheet.
 - The mobile Sort control has no active treatment in the default list state. After the user chooses a sort, show the selected field and direction and allow a reset to the default ordering.
@@ -414,7 +414,7 @@ Days Open follows these edge rules:
 - Keep the desktop table visually dense enough to scan many tickets without making row actions or text targets too small.
 - The proposed mobile card direction is approved. Do not compress the desktop table into the mobile viewport.
 - A collapsed mobile card shows the ticket ID and name, Figma-link action when available, compact People treatment, Area, Status, subtask progress when applicable, and an expand/collapse control.
-- An expanded mobile card additionally exposes Days Open, Days Active, Start Date, Due Date, and Last Activity. Show the Last Activity date and time using the locked definition rather than a generic `Last updated` value.
+- An expanded mobile card additionally exposes Days Open, Days Active, Start Date, Next Deadline, and Last Activity. Show the Last Activity date and time using the locked definition rather than a generic `Last updated` value.
 - Labels do not need to occupy permanent space in every collapsed mobile card. When present, expose them in the expanded card and in ticket details.
 - Preserve the user's expanded/collapsed choice only for the current rendered list; expanding a card must not navigate or disturb filters, sort, or pagination.
 - The mobile Sort and Filter controls must have accessible text labels even if the compact visual treatment is icon-led. Do not rely on a red dot alone to communicate the active sort/filter state.
@@ -470,7 +470,7 @@ The All Tickets desktop table and mobile card directions are approved for the te
 ### Inline field editing
 
 - Do not add a general Edit mode or separate editing page/drawer.
-- Ticket name, description, status, assignee, area, planned start date, due date, labels, and Figma URL are editable directly from their displayed values, subject to role permissions.
+- Ticket name, description, status, assignee, area, planned start date, Next Deadline, labels, and Figma URL are editable directly from their displayed values, subject to role permissions.
 - Text fields reveal an inline editing state. Compact structured fields use a dropdown, searchable selector, or date picker and save when a selection is confirmed. Description uses explicit Save/Cancel.
 - Values should look like readable content by default; hover, focus, tap, and empty-state prompts reveal editability.
 - Show a concise saving/saved state. On failure, restore the prior value and show an actionable error.
@@ -637,7 +637,7 @@ further card-specific changes until real team feedback is available.
 
 ## Locked: Reports
 
-Retain the existing three Reports tabs—**Designers**, **Tickets**, and **Standalone Visuals**—and their current calculations. Apply the shared module structure and simplify export without creating a second reporting model.
+Retain the existing three Reports tabs—**Designers**, **Tickets**, and **Standalone Visuals**—without creating a second reporting model. D-118 replaces the applicable ticket calendar, deadline, duration, overdue, Planned Until, and default archived-scope calculations; all unaffected report calculations remain unchanged.
 
 ### Consistent module header and report context
 
@@ -656,6 +656,7 @@ Retain the existing three Reports tabs—**Designers**, **Tickets**, and **Stand
   individual removal actions. Changes remain draft until Apply, Cancel discards
   them, and Reset restores the authorized defaults inside the draft.
 - Optional filters refine the selected Period and People scope; they must never broaden role permissions.
+- The ticket archived-state filter defaults to **Not archived**. An explicit **Archived** or **All** selection remains URL-backed and applies identically to report cards/counts, charts, source previews, table rows, pagination, and CSV.
 - Place the dominant black **Export CSV** action inside the compact filter
   container rather than in the page header or at the bottom of the page.
 
@@ -706,15 +707,19 @@ Columns, in order:
 5. `Contributors`
 6. `Labels`
 7. `Planned Start Date`
-8. `Due Date`
+8. `Next Deadline`
 9. `First Worked Date`
 10. `Last Worked Date`
 11. `Days Open`
 12. `Days Active`
-13. `Work Log Entries`
-14. `Last Activity`
-15. `Figma URL`
-16. `Archived`
+13. `To Do Days`
+14. `In Progress Days`
+15. `Review Days`
+16. `Paused Days`
+17. `Work Log Entries`
+18. `Last Activity`
+19. `Figma URL`
+20. `Archived`
 
 This is a ticket-level reporting export, not a complete ticket-history export. Detailed history remains available through the individual ticket export.
 

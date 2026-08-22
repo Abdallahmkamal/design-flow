@@ -2,7 +2,7 @@
 
 **Version:** 1.2
 **Decision date:** 2026-07-16  
-**Status:** Approved MVP baseline with D-110 route-backed Ticket Details amendment
+**Status:** Approved MVP baseline with D-110 route-backed Ticket Details and D-118 metric/deadline amendments
 
 The Work Item page is the complete source for a ticket's current state, planned dates, actual work, ownership and contribution, subtasks, discussion, blockers, and preserved history.
 
@@ -10,7 +10,7 @@ The Work Item page is the complete source for a ticket's current state, planned 
 
 Modernization Slice 4 retains `/work-items/:displayId` as the canonical route but makes Ticket Details the primary operational presentation: a wider right overlay over All Tickets on desktop and full-screen route-backed view on mobile. Direct visits still establish a usable Work Items context. Browser Back/close preserves URL-backed list state and restores launcher focus where possible.
 
-- Ticket name, description, status, one primary assignee, Area, planned start, due date, labels, and Figma URL are edited inline through their existing permissioned operations; no general Edit mode is added.
+- Ticket name, description, status, one primary assignee, Area, planned start, next deadline, labels, and Figma URL are edited inline through their existing permissioned operations; no general Edit mode is added.
 - Contributors remain read-only and derived from work logs. The reviewed multi-assignee direction is intentionally deferred until after rollout.
 - The work calendar shows Sunday–Thursday rows from first through latest valid log week, preserves internal empty weeks, and visualizes log counts rather than effort.
 - Activity & Work Log merges ticket-change events and dated work entries by effective activity date. Comments remain a separate final section even though meaningful comment activity updates Last Activity.
@@ -32,13 +32,13 @@ Modernization Slice 4 retains `/work-items/:displayId` as the canonical route bu
 - Area/Squad
 - Labels, with visual overflow such as `+n`
 - Primary assignee and derived contributors
-- Due date with overdue/due-soon treatment
+- Next Deadline with overdue/due-soon treatment
 - Derived subtask completion badge
-- Active work days
+- Days Active
 
-`Active work days` is the number of distinct dates on which anyone recorded valid ticket work. Multiple people or entries on the same ticket and date still count as one active work day. It is not a duration or effort measure.
+`Days Active` is the number of distinct Sunday–Thursday dates on which anyone recorded valid ticket work. Multiple people or entries on the same ticket and date still count once. Friday/Saturday work remains visible but does not increase the metric. It is not a duration or effort measure.
 
-On narrow screens the summary may wrap or become an expandable summary block, but the status, due date, Area/Squad, and Active work days remain easy to reach.
+On narrow screens the summary may wrap or become an expandable summary block, but the status, Next Deadline, Area/Squad, and Days Active remain easy to reach.
 
 ## 2. Page hierarchy
 
@@ -73,7 +73,7 @@ Show:
 - Description
 - Area/Squad
 - Primary assignee and contributors
-- Planned start and due date
+- Planned start and Next Deadline
 - Labels
 - Figma direct link
 - Created date
@@ -81,7 +81,7 @@ Show:
 - Last worked on
 - Last activity time, clearly distinguished from Last worked on
 
-Planned dates and actual work dates must be visually separated. Never imply continuous work between planned start and due date.
+Planned dates and actual work dates must be visually separated. Never imply continuous work between planned start and Next Deadline.
 
 Status and primary assignee may use direct controlled actions. Other editable fields may use an Edit work item flow. All changes remain subject to position/Admin-privilege permissions and audit history.
 
@@ -150,7 +150,7 @@ The MVP export is a human-readable PDF containing:
 - Description
 - Area/Squad and labels
 - Primary assignee and contributors
-- Planned dates, first/last actual work dates, and Active work days
+- Planned dates, first/last actual work dates, and Days Active
 - Clickable Figma URL without embedding or fetching Figma content
 - Current and historical blockers
 - Subtasks and completion states
@@ -172,8 +172,8 @@ The Work Item PDF is distinct from Reports CSV exports. A machine-oriented ticke
 
 ## 11. Acceptance criteria
 
-- The header exposes Area/Squad, labels, due date, ownership, subtask progress, and Active work days without requiring navigation into details.
-- Active work days count distinct valid ticket work dates without double-counting people or entries.
+- The header exposes Area/Squad, labels, Next Deadline, ownership, subtask progress, and Days Active without requiring navigation into details.
+- Days Active counts distinct valid Sunday–Thursday ticket work dates without double-counting people or entries; Friday/Saturday logs remain visible without increasing it.
 - The blocker remains independent from status and is prominent when active.
 - Planned and actual dates cannot be confused visually or semantically.
 - Subtasks remain parent-only checklist records.

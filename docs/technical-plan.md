@@ -1,7 +1,7 @@
 # Design Flow technical plan
 
 **Status:** Approved MVP architecture with team-ready post-MVP amendments
-**Last updated:** 2026-08-08 — D-109 and D-110 add the incremental UI-modernization architecture
+**Last updated:** 2026-08-22 — D-118 adds the canonical calendar, deadline, and reporting-read architecture
 
 This document records the approved implementation architecture and operating model for Design Flow. The approved module sequence and slice-level completion gates are defined in [build-plan.md](build-plan.md).
 
@@ -39,6 +39,8 @@ Use the smallest appropriate trusted boundary:
 | Authenticated Edge Function | Supabase Auth administration or another operation that requires a server-held secret |
 
 Examples of RPC candidates include reassignment plus assignment history, status transition plus history, blocker create/resolve plus audit, and work-log correction/withdrawal plus recalculation. Exact RPC contracts belong in the schema/build plan.
+
+Derived ticket calendar/reporting values use one shared Postgres policy layer rather than client reconstruction. Days Open, Days Active, overdue, Planned Until, and status-duration reads resolve through the canonical SQL helpers documented in `schema-contract.md`; list, detail, Dashboard, Reports, drill-down, and CSV functions consume those helpers. Persisted `due_date` remains the storage/API field while the UI presents Next Deadline. In Review → In Progress uses the atomic status/deadline RPC contract, and report reads default to not archived while preserving an explicit URL/RPC archived-state override.
 
 Never expose Supabase secret/service-role or Auth-admin credentials in browser code. Edge Functions must authenticate the request and independently verify the caller's current Admin privilege before using elevated credentials. UI capability checks are for usability and never replace RLS or server-side authorization.
 

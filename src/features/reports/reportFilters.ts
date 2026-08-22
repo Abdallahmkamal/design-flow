@@ -99,6 +99,7 @@ export function defaultReportFilters(today = new Date()): ReportFilters {
     labelIds: [],
     workTypes: [],
     visualTypes: [],
+    archived: 'not_archived',
   };
 }
 

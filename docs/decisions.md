@@ -2,7 +2,7 @@
 
 **Checkpoint:** MVP specification v1.0  
 **Checkpoint date:** 2026-07-18  
-**Last amended:** 2026-08-15 — D-117 restores the primary mobile Quick Actions FAB
+**Last amended:** 2026-08-22 — D-118 freezes release calendar, deadline, duration, and archived-report semantics
 
 This register summarizes approved, rejected, and still-open decisions. Detailed behavior lives in [product-spec.md](product-spec.md), [data-model.md](data-model.md), and [reporting.md](reporting.md); stable cross-product interface direction lives in [ui-direction.md](ui-direction.md).
 
@@ -25,7 +25,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-013 | Statuses | Backlog, To do, In Progress, In Review, Done, and Paused |
 | D-014 | Blocked | Separate structured state with one active blocker, not a status or label |
 | D-015 | Archiving | Only Backlog, Paused, and Done may be archived; Lead, Manager, or Admin privilege required |
-| D-016 | Planned dates | Optional planned start and due date; never treated as continuous actual work |
+| D-016 | Planned dates | Optional planned start and Next Deadline; never treated as continuous actual work |
 | D-017 | Actual-work timestamps | Preserve work date, logged-at time, last worked, last activity, and field update separately |
 | D-018 | Subtasks | One-level checklist on Work Item page; derived `completed/total` badge elsewhere |
 | D-019 | Comments | Simple ticket comments distinct from reporting work logs |
@@ -47,15 +47,15 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-035 | Dashboard | Six actionable ticket cards plus needs-attention, workload-by-person, recent-work, and management people-signal sections |
 | D-036 | Stale work | Five Sunday-through-Thursday working days without valid ticket work after the applicable active/planned-start grace point |
 | D-037 | Login recency | Never use last sign-in as a work or performance signal; keep it in Admin account support only |
-| D-038 | Planned until | Latest due date across current active owned tickets, with missing-date disclosure; never present it as availability or capacity |
+| D-038 | Planned until | Latest Next Deadline across current unarchived owned tickets in To Do or In Progress, with missing-date disclosure; never present it as availability or capacity |
 | D-039 | All Tickets default | Current unarchived Backlog, To do, In Progress, In Review, and Paused tickets; Done and Archived are explicit views |
 | D-040 | All Tickets people relationship | Owned is default; Contributed to and Owned or contributed to are explicit alternatives |
 | D-041 | All Tickets presentation | Fixed responsive list; subtask progress belongs in the title cell and contributor count reveals names |
 | D-042 | Direct Figma access | A row/card Figma icon opens the stored URL directly without opening the Work Item |
 | D-043 | All Tickets interaction | URL-backed search/filter/sort; no inline edits, bulk actions, saved views, or customizable columns in the MVP |
 | D-044 | Row Log Work | Designer, Lead, Manager, and Admin-privileged users receive a preselected ticket-work shortcut; Viewer remains read-only |
-| D-045 | Work Item header | Two-level glanceable header includes Area/Squad, labels, ownership, due date, subtask progress, and Active work days |
-| D-046 | Ticket Active work days | Distinct valid ticket work dates across all designers; multiple people/entries on one date count once |
+| D-045 | Work Item header | Two-level glanceable header includes Area/Squad, labels, ownership, Next Deadline, subtask progress, and Days Active |
+| D-046 | Ticket Days Active | Distinct valid Sunday–Thursday ticket work dates across all designers; multiple people/entries on one date count once and Friday/Saturday logs remain visible without increasing the metric |
 | D-047 | Work Item history | Vertical timeline is primary; no monthly calendar in the MVP |
 | D-048 | Work Dates grid | Five-column actual-date index from first to last recorded work date, containing only dates with valid work |
 | D-049 | Work Item export | Human-readable PDF for Designer/Lead/Manager/Admin privilege with comments opt-in and withdrawn bodies excluded |
@@ -127,6 +127,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-115 | Dashboard visual hierarchy refinement | Refine Slice 6 after team review without changing metrics or scope: use light outlined persistent scope pills with only a subtle restrictive-state fill; remove elevation shadows from Dashboard content surfaces; apply the approved semantic border, gradient, and numeral treatments to the six summary cards, grouping each numeral with its explanation beneath the independent title and making the complete card the All Tickets link with a small shadow-free upward translation on hover/focus and press feedback on touch; below `48rem`, present the six cards as a native two-row horizontal scroller with a partial next-column cue, proximity snapping, and preserved vertical page gestures; keep Management signals informational without a ticket-navigation CTA; present Needs attention as a headerless three-column ticket/people/signal list whose complete row opens Ticket Details with a neutral surface hover rather than red link styling; group recent ticket work by actual work date and make each complete ticket-activity row open its dated Work Item anchor with the same neutral hover; retain the workload table rather than adding a potentially ranking chart; and make each workload person row open All Tickets with that person represented by the visible People filter, carrying the selected Area when present. |
 | D-116 | Neutral current-page pagination | Use the neutral near-black action surface with inverse text for the currently selected page number in shared pagination. Vodafone red remains reserved for actions and focus indication; pagination behavior, URL state, boundaries, and page-size rules are unchanged. |
 | D-117 | Static primary mobile Quick Actions FAB | Replace D-111's resting glass/white, gradient-traced Quick Actions FAB with a static Vodafone primary-red circle, white plus, and the same restrained shadow as the floating mobile navigation capsule. The resting FAB has no perimeter, hover, tap, or ambient animation. The permission-filtered Quick Actions group, close state, backdrop, safe-area behavior, and reduced-motion accessibility remain unchanged. This refines presentation only and does not change navigation or authorization. |
+| D-118 | Frozen release calendar and deadline semantics | Canonicalize Sunday–Thursday Days Open, Days Active, and end-of-day-owned status durations behind shared SQL helpers; retain Friday/Saturday logs as visible records without counting them in Days Active; present persisted `due_date` as Next Deadline; define overdue as unarchived To Do/In Progress with a passed Next Deadline; limit Planned Until to To Do/In Progress; require an atomic new Next Deadline on In Review → In Progress; and default Reports to not archived while preserving the explicit archived filter across cards, charts, tables, and CSV. No calculated history is materialized and stale historical review returns are listed for Admin remediation rather than assigned guessed dates. This supersedes the former D-038 inclusion of In Review in Planned Until, the D-045/D-046 Active work days naming and all-valid-date count, any user-facing Due Date wording under D-016, and any D-050/D-055/D-056 interpretation that archived report rows are included without an explicit filter. |
 
 ## Explicitly rejected or replaced
 
@@ -137,7 +138,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | Multiple equal assignees | One primary assignee plus derived contributors |
 | Team-ready multi-assignee expansion | Consciously deferred until after rollout; retain one primary assignee and derived contributors during the nine-slice workstream |
 | Project hierarchy | Area/Squad directly on ticket |
-| Priority field | Due dates, blockers, status, and team alignment |
+| Priority field | Next Deadlines, blockers, status, and team alignment |
 | Generic URLs and attachments | One Figma URL only |
 | Blocked status/label | Structured blocker record alongside workflow status |
 | Cancelled/Not proceeding status | Backlog or Paused, then archive where appropriate |
@@ -149,7 +150,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | Hours/effort/productivity scoring | Explainable activity and ownership measures |
 | Reporting group as a visibility boundary | Full Lead visibility with reporting groups used only as default/filter scope |
 | Last login as a people-management signal | Last recorded ticket/visual work date, clearly labeled |
-| Manual or inferred availability | Due-date-derived Planned until with explicit missing-date states |
+| Manual or inferred availability | Next-Deadline-derived Planned until with explicit missing-date states |
 | Separate subtask table column | Derived subtask badge inside the ticket title cell/card area |
 | Figma hidden behind Work Item navigation | Direct accessible Figma icon on each applicable list row/card |
 | Editable ticket spreadsheet | Navigational list with purpose-built editing and work-log flows |

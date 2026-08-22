@@ -219,6 +219,13 @@ export type Database = {
             foreignKeyName: "blockers_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "blockers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -431,6 +438,13 @@ export type Database = {
             foreignKeyName: "comments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -638,6 +652,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "work_item_events"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
           },
           {
             foreignKeyName: "notifications_work_item_id_fkey"
@@ -1195,6 +1216,13 @@ export type Database = {
             foreignKeyName: "subtasks_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "subtasks_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -1444,6 +1472,13 @@ export type Database = {
             foreignKeyName: "work_item_assignments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "work_item_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -1533,6 +1568,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "operation_requests"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_events_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
           },
           {
             foreignKeyName: "work_item_events_work_item_id_fkey"
@@ -1652,6 +1694,13 @@ export type Database = {
             foreignKeyName: "work_item_labels_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -1730,6 +1779,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "work_item_statuses"
             referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "work_item_status_history_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
           },
           {
             foreignKeyName: "work_item_status_history_work_item_id_fkey"
@@ -2137,6 +2193,13 @@ export type Database = {
             foreignKeyName: "work_log_batches_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -2453,6 +2516,13 @@ export type Database = {
             foreignKeyName: "work_log_batches_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -2514,6 +2584,26 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      review_return_deadline_remediation: {
+        Row: {
+          current_next_deadline: string | null
+          display_id: string | null
+          returned_at: string | null
+          returned_on: string | null
+          status_code: string | null
+          title: string | null
+          work_item_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_items_status_code_fkey"
+            columns: ["status_code"]
+            isOneToOne: false
+            referencedRelation: "work_item_statuses"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       team_directory: {
         Row: {
@@ -2607,6 +2697,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "work_areas"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
           },
           {
             foreignKeyName: "work_log_batches_work_item_id_fkey"
@@ -2730,6 +2827,13 @@ export type Database = {
             foreignKeyName: "comments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
@@ -2777,6 +2881,13 @@ export type Database = {
           work_item_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "work_log_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "review_return_deadline_remediation"
+            referencedColumns: ["work_item_id"]
+          },
           {
             foreignKeyName: "work_log_batches_work_item_id_fkey"
             columns: ["work_item_id"]
@@ -3148,17 +3259,30 @@ export type Database = {
         }
         Returns: Json
       }
-      transition_work_item_status: {
-        Args: {
-          acknowledge_incomplete_subtasks?: boolean
-          expected_status_code: string
-          expected_updated_at: string
-          operation_id?: string
-          target_status_code: string
-          work_item_id: string
-        }
-        Returns: Json
-      }
+      transition_work_item_status:
+        | {
+            Args: {
+              acknowledge_incomplete_subtasks?: boolean
+              expected_status_code: string
+              expected_updated_at: string
+              operation_id?: string
+              target_status_code: string
+              work_item_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              acknowledge_incomplete_subtasks: boolean
+              expected_status_code: string
+              expected_updated_at: string
+              new_next_deadline: string
+              operation_id: string
+              target_status_code: string
+              work_item_id: string
+            }
+            Returns: Json
+          }
       update_work_item: {
         Args: {
           area_id: string

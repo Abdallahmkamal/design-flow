@@ -76,8 +76,8 @@ select is(
     where namespace.nspname = 'public'
       and relation.relkind = 'v'
   ),
-  9,
-  'all approved Phase 1 and Phase 2 read views exist'
+  10,
+  'all approved read and remediation views exist'
 );
 
 select ok(
@@ -126,8 +126,8 @@ select is(
     where namespace.nspname = 'public'
       and function_definition.prokind = 'f'
   ),
-  55,
-  'only the owning application and approved modernization functions are exposed'
+  56,
+  'only the owning application and approved release functions are exposed'
 );
 
 select is(
@@ -319,8 +319,8 @@ select is(
       and coalesce(relation.reloptions, array[]::text[])
         @> array['security_barrier=true']
   ),
-  8,
-  'the eight masked or filtered read views use a security barrier'
+  9,
+  'the nine masked or filtered read views use a security barrier'
 );
 
 with inserted_item as (

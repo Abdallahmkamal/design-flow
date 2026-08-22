@@ -117,7 +117,7 @@ Use only labelled synthetic staging records and verify that:
   the visible source people and Work Items without Admin changing the default;
 - stale and recent-work facts use actual work dates and the configured
   Sunday–Thursday calendar, never authentication recency;
-- Planned until discloses due-date coverage without availability or capacity
+- Planned until discloses Next Deadline coverage without availability or capacity
   language;
 - standalone Visual Work stays distinct from ticket lifecycle activity;
 - the notification inbox is recipient-only, safely summarized, linked only to

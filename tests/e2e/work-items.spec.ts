@@ -698,7 +698,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       'People',
       'Last Activity',
       'Start Date',
-      'Due Date',
+      'Next Deadline',
       'Days Open',
       'Days Active',
       'Labels',
@@ -847,7 +847,7 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     'Area / Squad',
     'Assignee',
     'Planned start',
-    'Due date',
+    'Next deadline',
     'Figma URL',
   ]) {
     await expect(page.getByLabel(label)).toHaveCSS('height', '48px');

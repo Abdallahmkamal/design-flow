@@ -383,7 +383,7 @@ recipients in the browser. Shared components never call Supabase.
 | `/work-items/:displayId` | Resolve optional actual-date fragment and load authoritative detail | Final Work Dates and timeline |
 
 - Database read models own position defaults, alternate-scope expansion,
-  working-day/stale formulas, due-date coverage, source counts, and management
+  working-day/stale formulas, Next Deadline coverage, source counts, and management
   signals. Admin changes capability, never the underlying default.
 - Notification source mutations remain atomic/idempotent RPC effects. Only
   recipient-filtered `read_at` updates are direct browser writes.
@@ -425,7 +425,7 @@ No excluded feature receives a placeholder or disabled control.
   local Supabase/Deno, hosted migration/type, Edge Function, build, Pages, and
   live smoke jobs passed.
 - Authenticated staging checks reconciled Manager and Lead people scopes,
-  Dashboard sources and due-date wording, notification empty state, and
+  Dashboard sources and Next Deadline wording, notification empty state, and
   DF-000003 actual-date history against the three approved briefs.
 - The Phase 5 exit-gate follow-up removes the exposed Phase 6 Reports placeholder
   and upgrades the smoke check to Phase 5 markers with bounded Pages-propagation

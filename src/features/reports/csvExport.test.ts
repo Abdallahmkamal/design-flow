@@ -30,7 +30,7 @@ describe('team-ready report CSV', () => {
     };
     const csv = serializeReportCsv(payload);
     expect(csv.split('\r\n')[0]).toBe(
-      '"Ticket","Area","Status","Primary Assignee","Contributors","Labels","Planned Start Date","Due Date","First Worked Date","Last Worked Date","Days Open","Days Active","Work Log Entries","Last Activity","Figma URL","Archived"',
+      '"Ticket","Area","Status","Primary Assignee","Contributors","Labels","Planned Start Date","Next Deadline","First Worked Date","Last Worked Date","Days Open","Days Active","To Do Days","In Progress Days","Review Days","Paused Days","Work Log Entries","Last Activity","Figma URL","Archived"',
     );
     expect(csv).toContain('"DF-1 — A, ""quoted"" ticket"');
     expect(reportExportFilename(payload)).toBe(

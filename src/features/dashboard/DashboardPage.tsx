@@ -82,7 +82,7 @@ const cardDefinitions: {
   {
     key: 'overdue',
     label: 'Overdue',
-    description: 'Active tickets whose due date has passed.',
+    description: 'To Do or In Progress tickets whose Next Deadline has passed.',
     tone: 'error',
   },
   {
@@ -114,10 +114,10 @@ function useMobileScopeEditor() {
 
 function plannedUntil(row: DashboardWorkload) {
   if (!row.activeOwnedTickets) return 'No active owned tickets';
-  if (!row.plannedUntil) return 'No due dates set';
+  if (!row.plannedUntil) return 'No Next Deadlines set';
   return `Planned until ${date(row.plannedUntil)}${
     row.missingDueDateCount
-      ? ` · ${row.missingDueDateCount} without due dates`
+      ? ` · ${row.missingDueDateCount} without Next Deadlines`
       : ''
   }`;
 }
@@ -450,7 +450,7 @@ export function DashboardPage() {
       header: 'Last recorded work',
       render: (row) => date(row.lastRecordedWorkDate),
     },
-    { key: 'planned', header: 'Due-date outlook', render: plannedUntil },
+    { key: 'planned', header: 'Next Deadline outlook', render: plannedUntil },
     {
       key: 'visual',
       header: 'Standalone visual days',

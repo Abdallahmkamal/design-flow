@@ -2,6 +2,7 @@
 
 **Status:** Approved Phase 0 implementation contract  
 **Decision date:** 2026-07-19  
+**Last amended:** 2026-08-22 — D-118 atomic review-return deadline and canonical derived-report contracts
 **Applies to:** Browser writes, Postgres RPCs, Auth-admin Edge Functions, audit/history, notifications, and recalculation  
 **Companion contracts:** `schema-contract.md` and `permission-matrix.md`
 
@@ -334,7 +335,7 @@ Effects: validate through `pg_timezone_names`, update singleton, and write `team
 
 Caller: D, D+A, L, L+A, M, or M+A.
 
-Input: title, optional description, required active Area/Squad, optional eligible primary assignee, optional planned/due dates, optional Figma URL, active label IDs, operation ID.
+Input: title, optional description, required active Area/Squad, optional eligible primary assignee, optional planned start/next deadline dates, optional Figma URL, active label IDs, operation ID.
 
 Rules:
 
@@ -406,7 +407,7 @@ The captured effective dates make the final assignment on a team-local date the 
 
 Caller: actor satisfying `can_edit_work_item`.
 
-Input: Work Item, target status, expected current status/`updated_at`, `acknowledge_incomplete_subtasks` boolean, operation ID.
+Input: Work Item, target status, expected current status/`updated_at`, `acknowledge_incomplete_subtasks` boolean, operation ID, and a concrete new Next Deadline when returning In Review → In Progress.
 
 Rules:
 
@@ -415,6 +416,7 @@ Rules:
 - transition to Backlog, Paused, or Done is denied while a blocker is active;
 - transition to Done with incomplete current subtasks requires explicit acknowledgment but remains allowed;
 - archived Work Items must first be restored.
+- In Review → In Progress requires a non-null new Next Deadline; status and `due_date` update atomically and the previous deadline remains in the authorized field-change audit event.
 
 Atomic effects:
 
@@ -708,7 +710,7 @@ Private `recalculate_work_items(work_item_ids uuid[])` runs inside work-log subm
 No mutation stores:
 
 - a manual contributor;
-- Active work days;
+- Days Active;
 - ticket-days;
 - planned-until;
 - overdue/due-soon/stale flags;

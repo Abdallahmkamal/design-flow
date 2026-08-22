@@ -2,7 +2,7 @@
 
 **Version:** 1.3
 **Decision date:** 2026-07-16  
-**Status:** Approved MVP contract with D-110/D-112 team-ready amendments
+**Status:** Approved MVP contract with D-110/D-112 team-ready amendments and D-118 reporting semantics
 
 The Dashboard is a position-aware view over one team. Reporting groups change the default people scope; they never create separate teams or restrict a Lead's or Manager's visibility.
 
@@ -58,7 +58,7 @@ Show these six scoped, clickable summary cards:
 
 1. **Active work items** — current unarchived tickets in To do, In Progress, or In Review, with a small status breakdown.
 2. **Blocked** — active work items with an unresolved blocker.
-3. **Overdue** — active work items whose due date is before today; Paused and Done are excluded.
+3. **Overdue** — unarchived To Do or In Progress tickets whose Next Deadline is before today; Backlog, In Review, Paused, and Done are excluded.
 4. **Due soon** — active work items due today or within the next five working days.
 5. **Stale work items** — active work items meeting the stale definition below.
 6. **Unassigned backlog** — unarchived Backlog tickets without a primary assignee.
@@ -103,7 +103,7 @@ Show a deduplicated ticket list that can expose multiple applicable reasons:
 - Due soon
 - Stale
 - Unassigned backlog
-- Active owned work without a due date
+- Active owned work without a next deadline
 - Longest-waiting In Review items
 
 Present each result as a compact, headerless three-part row: ticket identity,
@@ -136,12 +136,12 @@ cards expose the same destination explicitly.
 
 ## 7. Planned until
 
-`Planned until` is a due-date outlook, not availability or capacity.
+`Planned until` is a Next Deadline outlook, not availability or capacity.
 
-- Calculate it from the latest due date among the person's current unarchived owned tickets in To do, In Progress, or In Review.
+- Calculate it from the latest Next Deadline among the person's current unarchived owned tickets in To Do or In Progress only.
 - Contributor activity does not affect it because contribution history does not establish future ownership.
-- If some active owned tickets lack due dates, show the latest date plus the missing-date count, for example `Planned until 28 Aug · 2 without due dates`.
-- If all active owned tickets lack due dates, show `No due dates set`.
+- If some active owned tickets lack next deadlines, show the latest date plus the missing-date count, for example `Planned until 28 Aug · 2 without next deadlines`.
+- If all active owned tickets lack next deadlines, show `No next deadlines set`.
 - If there is no active owned work, show `No active owned tickets`.
 - Do not call the result `Available from`, and do not add manual availability statuses, date ranges, or availability reports in the MVP.
 
@@ -165,6 +165,6 @@ cards expose the same destination explicitly.
 - Reporting-group changes refresh all scoped Dashboard content consistently.
 - Active, blocked, overdue, due-soon, stale, and backlog totals match their documented definitions.
 - Friday and Saturday are excluded from working-day thresholds.
-- Planned until handles complete, partial, and missing due-date states without presenting availability as fact.
+- Planned until handles complete, partial, and missing Next Deadline states without presenting availability as fact.
 - Ticket and standalone-visual activity remain visually and numerically separate.
 - No card, signal, ordering, or label implies a productivity score or designer ranking.
