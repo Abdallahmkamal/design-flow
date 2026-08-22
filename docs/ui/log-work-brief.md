@@ -165,7 +165,7 @@ history, audit, idempotency, and recalculation effects. The UI never sends
   lifecycle timeline exposed all three audited events in order.
 - Work Dates, contributor membership, first/last worked dates, and Active work
   days appeared after submission and returned to their withdrawn state after
-  withdrawal. Planned start and due dates remained unchanged throughout.
+  withdrawal. Planned start and Next Deadlines remained unchanged throughout.
 - Standalone Visual Work submitted through its separate visual vocabulary and
   remained outside the ticket lifecycle, ownership, Work Dates, and aggregate
   paths.

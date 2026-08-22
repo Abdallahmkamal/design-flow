@@ -2,7 +2,7 @@
 
 **Version:** 1.3
 **Decision date:** 2026-07-20
-**Status:** Approved MVP baseline with D-110 team-ready amendments
+**Status:** Approved MVP baseline with D-110 team-ready amendments and D-118 terminology/metric semantics
 
 All Tickets is the primary searchable and filterable ticket list. It is optimized for scanning ownership, status, planned dates, actual work recency, and attention signals without becoming an editable spreadsheet.
 
@@ -12,7 +12,7 @@ D-110 and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) supersede t
 
 - Default to every non-archived status, including Done; Archived only is an explicit boolean filter.
 - Remove the permanent All/Active/Done/Archived tabs and Ownership Relationship filter. People matches the one primary assignee or any derived contributor.
-- Use the locked desktop order Ticket, Area, Status, People, Last Activity, Start Date, Due Date, Days Open, Days Active, Labels, Link. Keep Ticket/Link sticky, with the middle columns horizontally scrollable.
+- Use the locked desktop order Ticket, Area, Status, People, Last Activity, Start Date, Next Deadline, Days Open, Days Active, Labels, Link. Keep Ticket/Link sticky, with the middle columns horizontally scrollable.
 - Use approved expandable mobile cards rather than compressing the table.
 - Search remains visible; Add Filter creates one removable chip per filter type. Include server-side Days Open/Days Active ranges.
 - Include an optional visible **Unassigned** filter for tickets without a current
@@ -68,7 +68,7 @@ Use these columns:
 2. **Area/Squad**.
 3. **Status** — workflow status plus separate Blocked/Stale attention indicators where applicable.
 4. **People** — primary assignee plus contributor count.
-5. **Planned dates** — planned start and due date, with overdue/due-soon treatment.
+5. **Planned dates** — planned start and Next Deadline, with overdue/due-soon treatment.
 6. **Last worked on** — actual ticket work date; show `No work logged` when empty.
 7. **Figma** — a compact direct-link icon only when the ticket has a Figma URL.
 8. **Actions** — the position/Admin-permitted Log Work shortcut and any accessible overflow actions approved elsewhere.
@@ -109,7 +109,7 @@ Support:
 - Area/Squad: multi-select
 - Labels: multi-select
 - Blocked: any, blocked, or not blocked
-- Due state: overdue, due soon, no due date, or any
+- Due state: overdue, due soon, no next deadline, or any
 - Stale: any, stale, or not stale
 - Archived state where it is not already determined by the selected view
 
@@ -117,9 +117,9 @@ Show active filters clearly and provide Clear all. Search, filters, view, and so
 
 ## 7. Sorting
 
-Default to **Due date ascending**, with tickets lacking due dates last. Supported sorts:
+Default to **Next Deadline ascending**, with tickets lacking next deadlines last. Supported sorts:
 
-- Due date
+- Next Deadline
 - Last worked on
 - Created date
 - Status
@@ -142,7 +142,7 @@ Each mobile result card shows:
 - Figma icon when available
 - Primary assignee and contributor count
 - Area/Squad and a limited label preview with `+n` overflow
-- Due date and Last worked on
+- Next Deadline and Last worked on
 
 Selecting the card opens the Work Item. The Figma icon and Log Work action remain independently tappable.
 

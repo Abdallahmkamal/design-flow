@@ -2,7 +2,7 @@
 
 **Version:** 1.4
 **Decision date:** 2026-08-15
-**Status:** Approved MVP report content with D-110 team-ready scope/export amendments
+**Status:** Approved MVP report content with D-110 scope/export and D-118 metric/archive amendments
 
 **Implementation note (2026-08-12):** Slice 7 was implemented locally in the
 combined Slices 7–8 run on `codex/ui-modernization-reports-settings`. The owned
@@ -127,10 +127,11 @@ One row per ticket, never one row per ticket-designer relationship:
 - Status as of period end
 - Primary assignee as of period end
 - Contributors during the period
-- Planned start and due date
+- Planned Start Date and Next Deadline
 - Due state
 - First and last actual work date during the period
-- Active work days during the period
+- Canonical Days Open and Days Active at the snapshot
+- To Do Days, In Progress Days, Review Days, and Paused Days using end-of-day ownership
 - Work-entry count as secondary detail
 - Completion and reopen counts during the period
 - Active blocker as of period end and blocked duration during the period
@@ -140,6 +141,8 @@ One row per ticket, never one row per ticket-designer relationship:
 Selecting a row reveals contribution by designer, primary/contributor activity, logged work types, status/assignment/blocker history, planned versus actual dates, and an Open Work Item action.
 
 ### Ticket filters
+
+The archived-state filter defaults to **Not archived**. Choosing **Archived** or **All** explicitly overrides that default and applies the same scope to cards/counts, charts, source previews, detail rows, pagination, and CSV export. URL-backed filter state preserves an explicit override.
 
 - Shared period, people, and Area/Squad
 - Owned, Contributed to, or Owned or contributed to
@@ -180,7 +183,7 @@ In this report, `Designer` is the work-attribution subject, not a restriction to
 - Owned tickets without work during the selected period
 - Last recorded work date
 - Planned until
-- Active owned tickets without due dates
+- Active owned tickets without next deadlines
 
 ### Charts
 
@@ -197,7 +200,7 @@ One- and two-person views use identical scales. Multi-person charts must not def
 
 - Ticket
 - Status
-- Due date
+- Next Deadline
 - Actual work dates
 - Contributors
 - Last worked on
@@ -259,7 +262,7 @@ Use alphabetical order by default and show:
 - Blocked and overdue owned tickets
 - Owned tickets without period work
 - Last recorded work date
-- Planned until and active owned tickets without due dates
+- Planned until and active owned tickets without next deadlines
 - Visual activity-days in a separate column group
 - Overall active calendar days, clearly labelled
 
@@ -296,7 +299,7 @@ Visual Work contains no ticket workflow concepts.
 - Logged at
 - Edited indicator/time where applicable
 
-Exclude ticket ID, status, assignee, contributor, completion, blocker, planned date, due date, subtask, and comment fields.
+Exclude ticket ID, status, assignee, contributor, completion, blocker, planned date, next deadline, subtask, and comment fields.
 
 ### Visual Work filters
 
@@ -348,15 +351,19 @@ One row per filtered ticket:
 5. Contributors
 6. Labels
 7. Planned Start Date
-8. Due Date
+8. Next Deadline
 9. First Worked Date
 10. Last Worked Date
 11. Days Open
 12. Days Active
-13. Work Log Entries
-14. Last Activity
-15. Figma URL
-16. Archived
+13. To Do Days
+14. In Progress Days
+15. Review Days
+16. Paused Days
+17. Work Log Entries
+18. Last Activity
+19. Figma URL
+20. Archived
 
 One primary assignee remains the schema contract; contributors are derived. The reviewed multi-assignee direction is consciously deferred until after rollout. Priority remains absent.
 

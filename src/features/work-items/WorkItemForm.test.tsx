@@ -89,7 +89,7 @@ describe('WorkItemForm', () => {
     expect(screen.queryByText('Backlog')).not.toBeInTheDocument();
   });
 
-  it('keeps planned and due dates independent as required by the domain contract', async () => {
+  it('keeps planned start and Next Deadline independent as required by the domain contract', async () => {
     const user = userEvent.setup();
     const submit = vi.fn();
     render(
@@ -103,7 +103,7 @@ describe('WorkItemForm', () => {
     await user.type(screen.getByLabelText('Title *'), 'Independent dates');
     await user.selectOptions(screen.getByLabelText('Area / Squad *'), 'area');
     await user.type(screen.getByLabelText('Planned start'), '2026-08-20');
-    await user.type(screen.getByLabelText('Due date'), '2026-08-10');
+    await user.type(screen.getByLabelText('Next Deadline'), '2026-08-10');
     await user.click(screen.getByRole('button', { name: 'Create ticket' }));
     expect(submit).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -150,7 +150,7 @@ limitation, not a successful credential-recovery claim.
 For each rehearsal, record UTC date, environment classification, non-secret
 artifact label/checksum, operator, restore target, start/end/duration, schema and
 fixture reconciliation, Auth limitation/result, failures and corrective
-actions, cleanup, and the next due date. Never record a URL containing
+actions, cleanup, and the next deadline. Never record a URL containing
 credentials or any decrypted content.
 
 ## Production pre-migration evidence — 2026-07-29

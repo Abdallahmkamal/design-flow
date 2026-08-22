@@ -458,8 +458,16 @@ function columnsFor(
       {
         key: 'activity',
         header: 'Recorded activity',
-        render: (row) =>
-          `${display(row.activeWorkDays)} active days · ${display(row.workEntries)} entries`,
+        render: (row) => (
+          <>
+            {display(row.daysOpen)} days open · {display(row.activeWorkDays)}{' '}
+            active days · {display(row.workEntries)} entries
+            <br />
+            To Do {display(row.todoDays)} · In Progress{' '}
+            {display(row.inProgressDays)} · Review {display(row.reviewDays)} ·
+            Paused {display(row.pausedDays)}
+          </>
+        ),
       },
       {
         key: 'source',
@@ -697,7 +705,7 @@ function DesignerMetrics({
     ['owned_without_work', 'Owned tickets without period work'],
     ['last_recorded_work', 'Last recorded work date'],
     ['planned_until', 'Planned until'],
-    ['missing_due', 'Active owned tickets without due dates'],
+    ['missing_due', 'Active owned tickets without Next Deadlines'],
     ['visual_days', 'Visual activity-days'],
     ['active_calendar_days', 'Overall active calendar days'],
   ] as const;
@@ -705,7 +713,7 @@ function DesignerMetrics({
     <section aria-labelledby="designer-metrics-heading">
       <h2 id="designer-metrics-heading">Aligned person metrics</h2>
       <p>
-        Snapshot values are as of {periodEnd}. Planned until is due-date
+        Snapshot values are as of {periodEnd}. Planned until is Next Deadline
         disclosure only, never availability or capacity.
       </p>
       <div className={styles.designerMetrics}>
@@ -847,7 +855,7 @@ export function ReportsPage() {
               ? 'Overdue'
               : filters.due === 'not_overdue'
                 ? 'Not overdue'
-                : 'No due date'
+                : 'No Next Deadline'
           }`,
         ]
       : []),
@@ -926,7 +934,7 @@ export function ReportsPage() {
                   relationship: 'owned_or_contributed' as const,
                   blocked: 'any' as const,
                   due: 'any' as const,
-                  archived: 'all' as const,
+                  archived: 'not_archived' as const,
                   stale: 'any' as const,
                 }
               : {
@@ -941,7 +949,7 @@ export function ReportsPage() {
                         relationship: 'owned_or_contributed' as const,
                         blocked: 'any' as const,
                         due: 'any' as const,
-                        archived: 'all' as const,
+                        archived: 'not_archived' as const,
                         stale: 'any' as const,
                       }
                     : {}),
@@ -1206,7 +1214,7 @@ export function ReportsPage() {
                       <option value="any">Any</option>
                       <option value="overdue">Overdue</option>
                       <option value="not_overdue">Not overdue</option>
-                      <option value="no_due_date">No due date</option>
+                      <option value="no_due_date">No Next Deadline</option>
                     </FormSelect>
                     <FormSelect
                       label="Stale state"
@@ -1518,7 +1526,7 @@ export function ReportsPage() {
                   },
                   {
                     key: 'due',
-                    header: 'Due date',
+                    header: 'Next Deadline',
                     render: (row) => display(row.dueDate),
                   },
                   {
@@ -1530,7 +1538,7 @@ export function ReportsPage() {
                     key: 'state',
                     header: 'Blocked / overdue state',
                     render: (row) =>
-                      `${row.blockedAtPeriodEnd ? 'Blocked' : 'Not blocked'} · ${typeof row.dueDate === 'string' && row.dueDate < data.periodEnd ? 'Past due date' : 'Not past due date'}`,
+                      `${row.blockedAtPeriodEnd ? 'Blocked' : 'Not blocked'} · ${row.dueState === 'overdue' ? 'Overdue' : 'Not overdue'}`,
                   },
                 ]}
               />

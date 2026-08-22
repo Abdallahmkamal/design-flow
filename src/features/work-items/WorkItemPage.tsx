@@ -787,6 +787,8 @@ export function WorkItemPage() {
   const [labelDraft, setLabelDraft] = useState<string[]>([]);
   const [archivePrompt, setArchivePrompt] = useState(false);
   const [donePrompt, setDonePrompt] = useState(false);
+  const [reviewReturnPrompt, setReviewReturnPrompt] = useState(false);
+  const [reviewReturnDeadline, setReviewReturnDeadline] = useState('');
   const [addBlockerOpen, setAddBlockerOpen] = useState(false);
   const [addSubtaskOpen, setAddSubtaskOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
@@ -1094,6 +1096,14 @@ export function WorkItemPage() {
                     }))}
                     onSelect={(target) => {
                       if (
+                        workItem.status.code === 'in_review' &&
+                        target === 'in_progress'
+                      ) {
+                        setReviewReturnDeadline('');
+                        setReviewReturnPrompt(true);
+                        return;
+                      }
+                      if (
                         target === 'done' &&
                         workItem.completedSubtasks < workItem.totalSubtasks
                       ) {
@@ -1195,12 +1205,12 @@ export function WorkItemPage() {
                   }
                 />
                 <MetricDatePicker
-                  label="Due date"
+                  label="Next Deadline"
                   value={workItem.dueDate}
                   canEdit={workItem.capabilities.canEdit}
                   onEditingChange={setInlineEditorActive}
                   onSave={(value) =>
-                    patch('Due date saved.', { dueDate: value })
+                    patch('Next Deadline saved.', { dueDate: value })
                   }
                 />
                 <Field label="First worked on">
@@ -1286,6 +1296,49 @@ export function WorkItemPage() {
                     onClick={() => setDonePrompt(false)}
                   >
                     Keep current status
+                  </Button>
+                </span>
+              </section>
+            ) : null}
+            {reviewReturnPrompt ? (
+              <section className={styles.warning} role="alert">
+                <h2>Set a new Next Deadline</h2>
+                <p>
+                  Returning work from In Review to In Progress requires a new
+                  designer-owned commitment date.
+                </p>
+                <FormInput
+                  label="New Next Deadline"
+                  type="date"
+                  required
+                  value={reviewReturnDeadline}
+                  onChange={(event) =>
+                    setReviewReturnDeadline(event.target.value)
+                  }
+                />
+                <span className={styles.inlineActions}>
+                  <Button
+                    disabled={!reviewReturnDeadline}
+                    onClick={() => {
+                      setReviewReturnPrompt(false);
+                      run('Status and Next Deadline saved.', () =>
+                        transitionWorkItem(
+                          workItem,
+                          'in_progress',
+                          false,
+                          undefined,
+                          reviewReturnDeadline,
+                        ),
+                      );
+                    }}
+                  >
+                    Return to In Progress
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setReviewReturnPrompt(false)}
+                  >
+                    Keep in review
                   </Button>
                 </span>
               </section>

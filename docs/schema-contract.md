@@ -2,6 +2,7 @@
 
 **Status:** Approved Phase 0 implementation contract  
 **Decision date:** 2026-07-19  
+**Last amended:** 2026-08-22 — D-118 canonical calendar, deadline, duration, and archived-report rules
 **Applies to:** First Supabase/Postgres migration and all later migrations  
 **Sources:** `product-spec.md`, `technical-plan.md`, `build-plan.md`, module specifications, `data-model.md`, and `decisions.md`
 
@@ -592,7 +593,9 @@ A **valid work entry** is a `work_log_entries` row where neither the entry nor i
 | Derived value | Formula and source |
 |---|---|
 | Current contributors | Distinct eligible `worked_by` on valid ticket entries whose end-of-work-date assignee is null or different |
-| Ticket Active work days | Count distinct valid ticket `work_date` per ticket |
+| Ticket Days Active | Count distinct valid Sunday–Thursday ticket `work_date` per ticket; Friday/Saturday logs remain visible but do not increase the metric |
+| Ticket Days Open | Policy working days after planned `planned_start_date` through the snapshot date, or through the latest applicable Done transition when Done |
+| Status durations | End-of-day-owned Sunday–Thursday dates derived from append-only status history for To Do, In Progress, In Review, and Paused |
 | `last_worked_on` | Maximum valid ticket `work_date`; null when none |
 | First actual work date | Minimum valid ticket `work_date` |
 | `last_activity_at` | Maximum occurrence timestamp across core events, work-log submit/edit/withdraw, comments, blockers, and subtask activity |
@@ -604,15 +607,16 @@ A **valid work entry** is a `work_log_entries` row where neither the entry nor i
 | Ticket active day | Distinct `(worked_by, work_date)` among valid ticket entries |
 | Visual activity-day | Distinct `(worked_by, work_date)` among valid visual entries |
 | Overall active calendar day | Distinct `(worked_by, work_date)` across both valid contexts |
-| Planned until | Maximum due date over current unarchived owned tickets in active reporting bucket, plus a separate count with null due date |
-| Overdue | Unarchived active-bucket ticket with non-null due date before snapshot local date |
+| Planned until | Maximum Next Deadline over current unarchived owned tickets in `todo` or `in_progress`; In Review and other statuses are excluded |
+| Overdue | Unarchived `todo` or `in_progress` ticket with non-null Next Deadline before the snapshot local date |
+| Ticket report archive scope | Default `not_archived`; explicit `archived` or `all` applies to the same scoped rows used by counts/cards, charts, table/detail rows, pagination, drill-downs, and CSV |
 | Due soon | Unarchived active-bucket ticket due from snapshot local date through `add_working_days(snapshot_date, 5)`, inclusive; the helper skips Friday/Saturday when finding the cutoff |
 | Stale | Unarchived active-bucket ticket for which five working days have elapsed after the latest of last valid work date, start of the current uninterrupted active run, and planned start; a future planned start prevents staleness |
 | No recent work recorded | Active profile with no valid ticket or visual work date in the preceding five working days |
 
 The current active run begins on transition from a non-active reporting bucket into any active-bucket status. Transitions among `todo`, `in_progress`, and `in_review` do not reset it. Working-day functions use the product policy version effective at the evaluated instant.
 
-`working_days_elapsed_after(anchor, as_of)` counts policy working dates where `anchor < date <= as_of`. A ticket becomes stale when that count reaches 5. `add_working_days(date, 5)` advances across five policy working dates after the input date; calendar weekend due dates between the input and cutoff remain included. The No recent work window is the five most recent policy working dates on or before the as-of date. Sunday-through-Saturday period presets are calendar ranges and do not discard valid Friday/Saturday work.
+`working_days_elapsed_after(anchor, as_of)` counts policy working dates where `anchor < date <= as_of`. A ticket becomes stale when that count reaches 5. `add_working_days(date, 5)` advances across five policy working dates after the input date; calendar weekend Next Deadlines between the input and cutoff remain included. The No recent work window is the five most recent policy working dates on or before the as-of date. Sunday-through-Saturday period presets are calendar ranges and do not discard valid Friday/Saturday work.
 
 Historical report snapshots use:
 

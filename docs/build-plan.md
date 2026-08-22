@@ -2,7 +2,7 @@
 
 **Status:** Approved  
 **Decision:** D-095  
-**Last updated:** 2026-08-12 — records the combined local implementation run for team-ready Slices 7–8
+**Last updated:** 2026-08-22 — adds D-118 release semantics and the pre-push canonical-documentation gate
 
 This document defines the required implementation order and completion gates for the Design Flow MVP. Build vertically, keep the application usable at each checkpoint, and do not begin a dependent phase while its prerequisite contracts or behavior remain unresolved.
 
@@ -150,7 +150,7 @@ The component map and each brief must satisfy the common UI readiness gate above
 Implement the core ticket lifecycle:
 
 - ticket creation and editing for the approved creators, with a reusable creation result that later launch contexts can select without submitting another domain operation;
-- required Area/Squad, optional labels, one primary assignee, planned start, due date, and one optional Figma URL;
+- required Area/Squad, optional labels, one primary assignee, planned start, Next Deadline, and one optional Figma URL;
 - Backlog, To do, In Progress, In Review, Done, and Paused transitions;
 - assignment and status history;
 - one active structured blocker with resolve history;
@@ -185,7 +185,7 @@ Implement actual-work capture and correction:
 - an optional ticket status change that runs only after successful work-log submission through the independent transition operation and its permissions;
 - audited correction and soft withdrawal without an edit time limit;
 - automatic contributor derivation from valid ticket work;
-- ticket Active work days, last-worked values, and dependent aggregate recalculation; and
+- ticket Days Active, last-worked values, and dependent aggregate recalculation; and
 - the Work Item Work Dates grid and integrated activity history.
 
 ### Exit gate
@@ -196,7 +196,7 @@ Implement actual-work capture and correction:
 - Work-log and optional-status outcomes are tested independently: a failed log prevents transition, while a failed transition never rolls back a successful log and exposes a precise retry state.
 - Creation, work submission, and status transition retain separate history, audit, notification, validation, and operation IDs with no combined RPC.
 - Correction and withdrawal preserve original/audit context and recalculate every affected contributor, ticket, designer, dashboard, and report source value.
-- Multiple entries or designers on one ticket date count once for ticket Active work days.
+- Multiple entries or designers on one Sunday–Thursday ticket date count once for Days Active; Friday/Saturday logs remain visible but do not increase the metric.
 - Standalone visual work remains outside ticket lifecycle/ownership metrics and is available as a separate reporting source.
 - Work logging is keyboard-usable and clear on mobile for every authorized position; Viewer remains read-only.
 - Ticket and standalone Visual Work staging behavior is verified against the approved Log Work brief.
@@ -211,7 +211,7 @@ Complete the everyday management surfaces:
 
 - final Work Item vertical timeline and five-column actual-date index;
 - Dashboard ticket cards, needs-attention, workload-by-person, recent-work, stale-work, and management people signals;
-- Planned until and missing-due-date disclosure without availability or capacity claims;
+- Planned until and missing-Next-Deadline disclosure without availability or capacity claims;
 - final position-based people scopes and Lead/Manager alternate-scope controls; and
 - minimal in-app notifications, unread state, mark-one/all read, and Work Item deep links.
 
@@ -298,12 +298,13 @@ A slice is complete only when:
 
 1. Its acceptance behavior and permission cases are explicit.
 2. Code, migrations, generated types, tests, and documentation agree.
-3. RLS and trusted-server checks prove both allowed and denied paths.
-4. Loading, empty, error, unauthorized, responsive, keyboard, and accessible-name behavior is implemented where relevant.
-5. Audit/history and derived-data recalculation are covered where relevant.
-6. No production secret or real production data is introduced outside production.
-7. Required checks and the production build pass.
-8. The slice is deployed and verified in staging before it can enter a production release.
+3. Before push, every affected canonical source-of-truth document is reviewed and updated in place; conflicting superseded rules are called out explicitly, no duplicate authority is created, and the pre-push summary lists the documentation files changed.
+4. RLS and trusted-server checks prove both allowed and denied paths.
+5. Loading, empty, error, unauthorized, responsive, keyboard, and accessible-name behavior is implemented where relevant.
+6. Audit/history and derived-data recalculation are covered where relevant.
+7. No production secret or real production data is introduced outside production.
+8. Required checks and the production build pass.
+9. The slice is deployed and verified in staging before it can enter a production release.
 
 ## Sequence change rule
 

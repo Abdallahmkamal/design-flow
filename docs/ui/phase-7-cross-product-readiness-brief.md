@@ -34,7 +34,7 @@ behavior and Design Flow-owned `src/ui/` components.
 | Responsive | Essential workflows remain usable at narrow widths; structured mobile records preserve labels, values, permissions, action names, and reading/focus order. |
 | Accessibility | Semantic HTML, visible focus, accessible names, keyboard operation, focus return, error/status announcements, color-independent meaning, and axe coverage pass. |
 | Required states | Applicable loading, empty, no-results, error, unauthorized, disabled, generating, success, long-content, and partial-success states are present and accurate. |
-| Data meaning | Planned dates, actual `work_date`, and system timestamps stay distinct; `Planned until` remains due-date disclosure; standalone Visual Work stays outside ticket activity. |
+| Data meaning | Planned dates, actual `work_date`, and system timestamps stay distinct; `Planned until` remains Next Deadline disclosure; standalone Visual Work stays outside ticket activity. |
 | Security/privacy | RLS and direct-write denial remain authoritative; exports stay capability-limited; no secret, withdrawn body, personal/production data, source map, analytics, replay, or external client telemetry is exposed. |
 | Performance/quota | Production build size, critical route behavior, provider usage boundaries, security headers, and the approved 70%/85% quota thresholds are reviewed without adding product controls. |
 

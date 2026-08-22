@@ -598,7 +598,11 @@ closed_assignment as (
     statement_timestamp() - interval '10 days',
     statement_timestamp(),
     private.current_team_date() - 10,
-    private.current_team_date(),
+    private.current_team_date() - case extract(dow from private.current_team_date())::integer
+      when 5 then 1
+      when 6 then 2
+      else 0
+    end,
     '10000000-0000-4000-8000-000000000007',
     '80000000-0000-4000-8000-000000000001',
     '80000000-0000-4000-8000-000000000001'
@@ -619,7 +623,11 @@ select
   closed_assignment.work_item_id,
   '10000000-0000-4000-8000-000000000003',
   statement_timestamp(),
-  private.current_team_date(),
+  private.current_team_date() - case extract(dow from private.current_team_date())::integer
+    when 5 then 1
+    when 6 then 2
+    else 0
+  end,
   '10000000-0000-4000-8000-000000000007',
   '80000000-0000-4000-8000-000000000001'
 from closed_assignment;
@@ -660,7 +668,11 @@ insert into public.work_log_entries (
 )
 select
   inserted_batch.id,
-  private.current_team_date(),
+  private.current_team_date() - case extract(dow from private.current_team_date())::integer
+    when 5 then 1
+    when 6 then 2
+    else 0
+  end,
   'ui_visual_design',
   1
 from inserted_batch;

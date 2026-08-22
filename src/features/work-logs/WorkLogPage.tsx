@@ -138,6 +138,7 @@ export function WorkLogPage() {
   const [changeStatus, setChangeStatus] = useState(false);
   const [completeSubtasks, setCompleteSubtasks] = useState(false);
   const [targetStatus, setTargetStatus] = useState('');
+  const [reviewReturnDeadline, setReviewReturnDeadline] = useState('');
   const [addBlocker, setAddBlocker] = useState(false);
   const [blockerReason, setBlockerReason] = useState('');
   const [blockerDate, setBlockerDate] = useState('');
@@ -232,6 +233,9 @@ export function WorkLogPage() {
   const incompleteSubtasks =
     selectedTicket.data?.subtasks.filter((subtask) => !subtask.isCompleted) ??
     [];
+  const requiresReviewReturnDeadline =
+    selectedTicket.data?.status.code === 'in_review' &&
+    targetStatus === 'in_progress';
   const defaultCreate = useMemo(
     () =>
       blankTicket(
@@ -248,7 +252,9 @@ export function WorkLogPage() {
         entry.workDate && entry.workDate <= today && entry.workTypeCode,
     ) &&
     (context !== 'ticket' || ticketId) &&
-    (!changeStatus || targetStatus) &&
+    (!changeStatus ||
+      (targetStatus &&
+        (!requiresReviewReturnDeadline || reviewReturnDeadline))) &&
     (!completeSubtasks || selectedSubtasks.length > 0) &&
     (!addBlocker || blockerReason.trim()),
   );
@@ -263,6 +269,7 @@ export function WorkLogPage() {
     changeStatus ||
     completeSubtasks ||
     targetStatus ||
+    reviewReturnDeadline ||
     addBlocker ||
     selectedSubtasks.length > 0;
   const createDirty =
@@ -273,6 +280,7 @@ export function WorkLogPage() {
     setChangeStatus(false);
     setCompleteSubtasks(false);
     setTargetStatus('');
+    setReviewReturnDeadline('');
     setSelectedSubtasks([]);
     setAddBlocker(false);
     setBlockerReason('');
@@ -331,6 +339,10 @@ export function WorkLogPage() {
             targetStatus,
             false,
             statusOperation.current,
+            current.status.code === 'in_review' &&
+              targetStatus === 'in_progress'
+              ? reviewReturnDeadline
+              : null,
           );
           current = await refreshTicket();
         } catch {
@@ -813,28 +825,46 @@ export function WorkLogPage() {
                   checked={changeStatus}
                   onChange={(event) => {
                     setChangeStatus(event.target.checked);
-                    if (!event.target.checked) setTargetStatus('');
+                    if (!event.target.checked) {
+                      setTargetStatus('');
+                      setReviewReturnDeadline('');
+                    }
                     statusOperation.current = createOperationId();
                   }}
                 />
                 {changeStatus ? (
-                  <FormSelect
-                    label="Status"
-                    hideLabel
-                    required
-                    value={targetStatus}
-                    onChange={(event) => {
-                      setTargetStatus(event.target.value);
-                      statusOperation.current = createOperationId();
-                    }}
-                  >
-                    <option value="">Select status</option>
-                    {options.data?.statuses.map((status) => (
-                      <option key={status.code} value={status.code}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </FormSelect>
+                  <>
+                    <FormSelect
+                      label="Status"
+                      hideLabel
+                      required
+                      value={targetStatus}
+                      onChange={(event) => {
+                        setTargetStatus(event.target.value);
+                        if (event.target.value !== 'in_progress')
+                          setReviewReturnDeadline('');
+                        statusOperation.current = createOperationId();
+                      }}
+                    >
+                      <option value="">Select status</option>
+                      {options.data?.statuses.map((status) => (
+                        <option key={status.code} value={status.code}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </FormSelect>
+                    {requiresReviewReturnDeadline ? (
+                      <FormDatePicker
+                        label="New Next Deadline"
+                        required
+                        value={reviewReturnDeadline}
+                        onChange={(event) => {
+                          setReviewReturnDeadline(event.target.value);
+                          statusOperation.current = createOperationId();
+                        }}
+                      />
+                    ) : null}
+                  </>
                 ) : null}
               </div>
             ) : null}

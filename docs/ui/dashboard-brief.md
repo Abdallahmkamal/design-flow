@@ -59,9 +59,9 @@ appears.
 - Workload rows show active owned status counts, period contributions, blocked
   and overdue owned tickets, last recorded work date, Planned until, and a
   separate standalone-visual fact. Counts never imply effort or rank people.
-- Planned until uses only current active primary-owned ticket due dates. Partial
-  coverage reads `Planned until <date> · <n> without due dates`; all missing
-  reads `No due dates set`; no active ownership reads `No active owned tickets`.
+- Planned until uses only current unarchived primary-owned To Do/In Progress ticket Next Deadlines. Partial
+  coverage reads `Planned until <date> · <n> without next deadlines`; all missing
+  reads `No next deadlines set`; no active ownership reads `No active owned tickets`.
   It is never labelled or described as availability or capacity.
 - Management signals use ticket and standalone-visual work where specified, but
   keep those sources visibly and numerically distinct. The labelled synthetic
@@ -139,6 +139,6 @@ None. Material changes require a new readiness decision.
 - Ticket activity and Standalone Visual Work remained visibly separate. The
   labelled historical standalone fixture was not misrepresented as ticket or
   production activity when it fell outside the current reporting week.
-- Automated fixtures cover every valid position/Admin overlay, missing-due-date
+- Automated fixtures cover every valid position/Admin overlay, missing-Next-Deadline
   disclosures, stale Sunday–Thursday boundaries, all source reconciliation,
   responsive/axe states, and global denial states.

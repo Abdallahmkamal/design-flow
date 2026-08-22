@@ -16,6 +16,7 @@ describe('report URL filters', () => {
       periodStart: '2026-07-01',
       periodEnd: '2026-07-26',
       page: 1,
+      archived: 'not_archived',
     });
   });
 

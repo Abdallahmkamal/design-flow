@@ -56,7 +56,7 @@ without coupling creation to work logging or a status transition.
 | Primary assignee | Optional active Designer/Lead/Manager | Select with `Unassigned` option |
 | Description | Optional plain text | Textarea, three-row start |
 | Planned start | Optional planned date | Input `type="date"` |
-| Due date | Optional planned date | Input `type="date"` |
+| Next Deadline | Optional planned date | Input `type="date"` |
 | Labels | Optional active unique values | Labelled Checkbox group |
 | Figma URL | Optional HTTPS `figma.com` or subdomain URL without credentials | Input `type="url"` with visible helper text |
 | Status | Fixed | Read-only Backlog Badge and explanation; never a form value chosen by the user |
@@ -99,7 +99,7 @@ planned-start/due ordering rule that is absent from the domain contract.
 ## Mobile layout
 
 - One ordered column: title, Area/Squad, assignee, description, planned start,
-  due date, labels, Figma URL, fixed status, actions.
+  Next Deadline, labels, Figma URL, fixed status, actions.
 - Controls fill available width. Checkbox labels wrap and targets remain
   independently tappable.
 - Actions wrap or stack without reversing DOM order or causing horizontal

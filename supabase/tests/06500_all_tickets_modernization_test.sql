@@ -58,8 +58,8 @@ select lives_ok(
 
 select is(
   (select (row ->> 'daysActive')::integer from jsonb_array_elements(public.list_work_items(jsonb_build_object('search', 'Slice 3 core')) -> 'rows') row),
-  2,
-  'Days Active counts distinct actual dates rather than entries'
+  1,
+  'Days Active counts distinct Sunday-through-Thursday dates rather than entries'
 );
 select is(
   (public.list_work_items(jsonb_build_object('peopleIds', jsonb_build_array('10000000-0000-4000-8000-000000000002'))) ->> 'totalCount')::integer,
@@ -88,7 +88,7 @@ select is(
 );
 select is(
   (public.list_work_items(jsonb_build_object(
-    'daysActiveMin', 2, 'daysActiveMax', 2,
+    'daysActiveMin', 1, 'daysActiveMax', 1,
     'daysOpenMin', current_setting('design_flow.slice3_open7')::integer,
     'daysOpenMax', current_setting('design_flow.slice3_open7')::integer
   )) ->> 'totalCount')::integer,
