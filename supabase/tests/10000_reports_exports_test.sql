@@ -4,6 +4,16 @@ select plan(63);
 
 select set_config('request.jwt.claim.role','authenticated',true);
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000007',true);
+select set_config(
+  'design_flow.report_workday',
+  (
+    current_date
+    - ((extract(dow from current_date)::integer - 4 + 7) % 7)
+    - case when extract(dow from current_date)::integer = 4 then 7 else 0 end
+  )::text,
+  true
+);
+select set_config('design_flow.report_weekend', (current_setting('design_flow.report_workday')::date + 1)::text, true);
 set local role authenticated;
 
 select set_config('design_flow.report_item',(
@@ -24,20 +34,20 @@ select public.submit_work_log(
   'ticket',current_setting('design_flow.report_item')::uuid,null,
   '10000000-0000-4000-8000-000000000002',
   jsonb_build_array(
-    jsonb_build_object('work_date',current_date-2,'work_type_code','ui_visual_design','description','[SYNTHETIC TEST] Primary source'),
-    jsonb_build_object('work_date',current_date-1,'work_type_code','review_iteration','description','[SYNTHETIC TEST] Second date')
+    jsonb_build_object('work_date',current_setting('design_flow.report_workday')::date,'work_type_code','ui_visual_design','description','[SYNTHETIC TEST] Primary source'),
+    jsonb_build_object('work_date',current_setting('design_flow.report_weekend')::date,'work_type_code','review_iteration','description','[SYNTHETIC TEST] Second date')
   ),null,'91000000-0000-4000-8000-000000000003'
 );
 select public.submit_work_log(
   'ticket',current_setting('design_flow.report_item')::uuid,null,
   '10000000-0000-4000-8000-000000000003',
-  jsonb_build_array(jsonb_build_object('work_date',current_date-1,'work_type_code','team_support_collaboration','description','[SYNTHETIC TEST] Contribution')),
+  jsonb_build_array(jsonb_build_object('work_date',current_setting('design_flow.report_weekend')::date,'work_type_code','team_support_collaboration','description','[SYNTHETIC TEST] Contribution')),
   null,'91000000-0000-4000-8000-000000000004'
 );
 select public.submit_work_log(
   'standalone_visual',null,'50000000-0000-4000-8000-000000000001',
   '10000000-0000-4000-8000-000000000003',
-  jsonb_build_array(jsonb_build_object('work_date',current_date-1,'work_type_code','new_visual_asset','description','[SYNTHETIC TEST] Standalone source')),
+  jsonb_build_array(jsonb_build_object('work_date',current_setting('design_flow.report_weekend')::date,'work_type_code','new_visual_asset','description','[SYNTHETIC TEST] Standalone source')),
   null,'91000000-0000-4000-8000-000000000005'
 );
 reset role;
