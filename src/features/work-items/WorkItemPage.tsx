@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -201,10 +202,17 @@ function ChipMenu({
   onSelect: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+    null,
+  );
+  const setTriggerRef = useCallback((node: HTMLButtonElement | null) => {
+    setPortalContainer(node?.closest<HTMLElement>('[role="dialog"]') ?? null);
+  }, []);
   return (
     <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button
+          ref={setTriggerRef}
           type="button"
           aria-label={label}
           className={`${styles.chip} ${label === 'Assignee' ? styles.peopleChip : ''}`}
@@ -217,28 +225,25 @@ function ChipMenu({
       <DropdownMenuContent
         align="start"
         className={styles.chipMenuContent}
+        portalContainer={portalContainer ?? undefined}
+        data-ticket-menu-viewport
+        onWheelCapture={(event) => {
+          const viewport = event.currentTarget;
+          if (viewport.scrollHeight <= viewport.clientHeight) return;
+          event.preventDefault();
+          viewport.scrollTop += event.deltaY;
+        }}
         onKeyDown={(event) => {
           if (event.key === 'Tab') setOpen(false);
         }}
       >
-        <div
-          className={styles.chipMenuViewport}
-          data-ticket-menu-viewport
-          onWheelCapture={(event) => {
-            const viewport = event.currentTarget;
-            if (viewport.scrollHeight <= viewport.clientHeight) return;
-            event.preventDefault();
-            viewport.scrollTop += event.deltaY;
-          }}
-        >
-          <DropdownMenuRadioGroup value={value} onValueChange={onSelect}>
-            {options.map((option) => (
-              <DropdownMenuRadioItem key={option.value} value={option.value}>
-                {option.label}
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
-        </div>
+        <DropdownMenuRadioGroup value={value} onValueChange={onSelect}>
+          {options.map((option) => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}>
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -835,6 +840,13 @@ export function WorkItemPage() {
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [labelsOpen, setLabelsOpen] = useState(false);
+  const [labelsPortalContainer, setLabelsPortalContainer] =
+    useState<HTMLElement | null>(null);
+  const setLabelsTriggerRef = useCallback((node: HTMLButtonElement | null) => {
+    setLabelsPortalContainer(
+      node?.closest<HTMLElement>('[role="dialog"]') ?? null,
+    );
+  }, []);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState<string[]>([]);
   const [archivePrompt, setArchivePrompt] = useState(false);
@@ -1003,7 +1015,6 @@ export function WorkItemPage() {
         .map((person) => [person.id, person]),
     ).values(),
   ).slice(0, workItem.assignee ? 2 : 3);
-
   return (
     <Sheet
       open
@@ -1268,12 +1279,12 @@ export function WorkItemPage() {
                   }
                 />
                 <MetricDatePicker
-                  label="Next Deadline"
+                  label="Due Date"
                   value={workItem.dueDate}
                   canEdit={workItem.capabilities.canEdit}
                   onEditingChange={setInlineEditorActive}
                   onSave={(value) =>
-                    patch('Next Deadline saved.', { dueDate: value })
+                    patch('Due Date saved.', { dueDate: value })
                   }
                 />
                 <Field label="First worked on">
@@ -1283,7 +1294,7 @@ export function WorkItemPage() {
                   {date(workItem.lastWorkedOn)}
                 </Field>
                 <Field label="Open days">{daysOpen ?? 'Not set'}</Field>
-                <Field label="Active days">{workItem.activeWorkDays}</Field>
+                <Field label="Days Active">{workItem.activeWorkDays}</Field>
               </dl>
             </header>
 
@@ -1365,13 +1376,13 @@ export function WorkItemPage() {
             ) : null}
             {reviewReturnPrompt ? (
               <section className={styles.warning} role="alert">
-                <h2>Set a new Next Deadline</h2>
+                <h2>Set a new Due Date</h2>
                 <p>
                   Returning work from In Review to In Progress requires a new
                   designer-owned commitment date.
                 </p>
                 <FormInput
-                  label="New Next Deadline"
+                  label="New Due Date"
                   type="date"
                   required
                   value={reviewReturnDeadline}
@@ -1384,7 +1395,7 @@ export function WorkItemPage() {
                     disabled={!reviewReturnDeadline}
                     onClick={() => {
                       setReviewReturnPrompt(false);
-                      run('Status and Next Deadline saved.', () =>
+                      run('Status and Due Date saved.', () =>
                         transitionWorkItem(
                           workItem,
                           'in_progress',
@@ -1673,6 +1684,7 @@ export function WorkItemPage() {
                       >
                         <DropdownMenuTrigger asChild>
                           <button
+                            ref={setLabelsTriggerRef}
                             type="button"
                             className={styles.labelChip}
                             disabled={!workItem.capabilities.canEdit}
@@ -1689,6 +1701,7 @@ export function WorkItemPage() {
                         <DropdownMenuContent
                           align="start"
                           className={styles.labelMenu}
+                          portalContainer={labelsPortalContainer ?? undefined}
                           onKeyDown={(event) => {
                             if (event.key === 'Tab') setLabelsOpen(false);
                           }}

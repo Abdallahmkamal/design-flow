@@ -903,7 +903,7 @@ export function WorkLogPage() {
                     </FormSelect>
                     {requiresReviewReturnDeadline ? (
                       <FormDatePicker
-                        label="New Next Deadline"
+                        label="New Due Date"
                         required
                         value={reviewReturnDeadline}
                         onChange={(event) => {

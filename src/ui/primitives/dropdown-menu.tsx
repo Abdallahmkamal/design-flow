@@ -18,13 +18,23 @@ export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 export const DropdownMenuContent = forwardRef<
   ElementRef<typeof DropdownMenuPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> & {
+    portalContainer?: ComponentPropsWithoutRef<
+      typeof DropdownMenuPrimitive.Portal
+    >['container'];
+  }
 >(function DropdownMenuContent(
-  { className, sideOffset = 6, collisionPadding = 8, ...props },
+  {
+    className,
+    sideOffset = 6,
+    collisionPadding = 8,
+    portalContainer,
+    ...props
+  },
   ref,
 ) {
   return (
-    <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Portal container={portalContainer}>
       <DropdownMenuPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}

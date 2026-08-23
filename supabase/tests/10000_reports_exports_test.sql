@@ -1,15 +1,16 @@
 begin;
 
-select plan(63);
+select plan(67);
 
 select set_config('request.jwt.claim.role','authenticated',true);
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000007',true);
+select set_config('design_flow.report_today', private.current_team_date()::text, true);
 select set_config(
   'design_flow.report_workday',
   (
-    current_date
-    - ((extract(dow from current_date)::integer - 4 + 7) % 7)
-    - case when extract(dow from current_date)::integer = 4 then 7 else 0 end
+    current_setting('design_flow.report_today')::date
+    - ((extract(dow from current_setting('design_flow.report_today')::date)::integer - 4 + 7) % 7)
+    - case when extract(dow from current_setting('design_flow.report_today')::date)::integer = 4 then 7 else 0 end
   )::text,
   true
 );
@@ -20,7 +21,7 @@ select set_config('design_flow.report_item',(
   public.create_work_item(
     '[SYNTHETIC TEST] Phase 6 report source','[SYNTHETIC TEST] PDF description',
     '50000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000002',
-    (current_date-5),(current_date+2),
+    (current_setting('design_flow.report_today')::date-5),(current_setting('design_flow.report_today')::date+2),
     'https://www.figma.com/design/synthetic-phase-6',array['60000000-0000-4000-8000-000000000001']::uuid[],
     '91000000-0000-4000-8000-000000000001'
   )->>'id'
@@ -59,26 +60,30 @@ values('71000000-0000-4000-8000-000000000006',current_setting('design_flow.repor
 
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000001',true);
 set local role authenticated;
-select lives_ok($$select public.get_reports(jsonb_build_object('tab','tickets','periodStart',current_date-10,'periodEnd',current_date))$$,'Viewer reads Reports');
+select lives_ok($$select public.get_reports(jsonb_build_object('tab','tickets','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))$$,'Viewer reads Reports');
 select is(public.get_reports()->>'defaultScopeKey','all','Viewer receives the whole-team read-only default');
-select is((public.get_reports(jsonb_build_object('tab','tickets','periodStart',current_date-10,'periodEnd',current_date))->>'canExport')::boolean,false,'Viewer has no CSV control capability');
+select is((public.get_reports(jsonb_build_object('tab','tickets','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'canExport')::boolean,false,'Viewer has no CSV control capability');
 select throws_ok($$select public.export_report_rows('tickets','{}')$$,'P0001','DF_FORBIDDEN','Viewer cannot export CSV');
 select throws_ok($$select public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),false)$$,'P0001','DF_FORBIDDEN','Viewer cannot export PDF');
 reset role;
 
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000002',true);
 set local role authenticated;
-select is(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->>'defaultScopeKey','me','Designer Reports defaults to Me');
-select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->>'canExport')::boolean,true,'Designer can export personal CSV');
-select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Designer summary has one scoped person');
-select is(jsonb_array_length(public.export_report_rows('designers',jsonb_build_object('periodStart',current_date-10,'periodEnd',current_date))->'rows'),1,'Designer exports one personal Designers row');
+select is(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'defaultScopeKey','me','Designer Reports defaults to Me');
+select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'canExport')::boolean,true,'Designer can export personal CSV');
+select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Designer summary has one scoped person');
+select is(jsonb_array_length(public.export_report_rows('designers',jsonb_build_object('periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),1,'Designer exports one personal Designers row');
 select throws_ok($$select public.get_reports(jsonb_build_object('scopeKey','all'))$$,'P0001','DF_FORBIDDEN','Designer cannot forge an all-people Reports read');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->'recordedActivity'),2,'Recorded activity preserves two valid entry rows');
-select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->'rows'->0->>'ticket_days')::integer,2,'Same ticket on two dates reconciles two ticket-days');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_date-10,'periodEnd',current_date))->'designerTickets'),1,'Individual designer owned/contribution disclosure reconciles one ticket');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'recordedActivity'),2,'Recorded activity preserves two valid entry rows');
+select is((public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'->0->>'ticket_days')::integer,2,'Same ticket on two dates reconciles two ticket-days');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','designers','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'designerTickets'),1,'Individual designer owned/contribution disclosure reconciles one ticket');
 select lives_ok(format('select public.get_work_item_export(%L,false)',(select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid)),'Designer can export visible Work Item PDF projection');
 select is(jsonb_array_length(public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),false)->'comments'),0,'PDF comments default off');
 select is(public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),true)->'comments'->0->>'body',null,'PDF never exposes withdrawn comment body');
+select ok(public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),false)->'workItem' ? 'activeWorkDays','PDF projection exposes canonical Days Active source data');
+select ok(not (public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),false)->'workItem' ? 'capabilities'),'PDF projection strips browser capability data');
+select ok(jsonb_path_exists(public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),false),'$.history.events[*].workLog.entries[*].workTypeLabel'),'PDF history exposes labelled current work types');
+select is(position('[SYNTHETIC TEST] Withdrawn secret body' in public.get_work_item_export((select display_id from public.work_items where id=current_setting('design_flow.report_item')::uuid),true)::text),0,'PDF projection never serializes a withdrawn comment body');
 select throws_ok($$select public.export_report_rows('tickets',jsonb_build_object('scopeKey','all'))$$,'P0001','DF_FORBIDDEN','Designer cannot forge an all-people CSV scope');
 reset role;
 
@@ -86,13 +91,13 @@ select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000003'
 set local role authenticated;
 select is(public.get_reports()->>'defaultScopeKey','all','Designer Admin defaults Reports to All');
 select is((public.get_reports()->>'canExport')::boolean,true,'Designer Admin receives CSV capability');
-select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'rows'),1,'Tickets CSV includes every matching ticket once');
-select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('periodStart',current_date-10,'periodEnd',current_date))->'rows'),1,'Visual CSV stays separate');
-select ok(public.export_report_rows('designers',jsonb_build_object('periodStart',current_date-10,'periodEnd',current_date))->'rows'->0 ? 'ticketsAssigned','Authorized Designers CSV uses the approved summary schema');
-select is((public.export_report_rows('designers',jsonb_build_object('scopeKey','people','peopleIds',jsonb_build_array('10000000-0000-4000-8000-000000000002'),'areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_date-10,'periodEnd',current_date))->'rows'->0->>'workLogEntries')::integer,0,'Designers CSV metrics apply the current Area filter');
-select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_date-10,'periodEnd',current_date))->'rows'),0,'Tickets CSV applies the current Area filter');
-select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('scopeKey','all','areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_date-10,'periodEnd',current_date))->'rows'),0,'Visual CSV applies the current Area filter');
-select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('scopeKey','all','areaUnassigned',true,'periodStart',current_date-10,'periodEnd',current_date))->'rows'),0,'Visual CSV preserves the explicit Unassigned Area filter');
+select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),1,'Tickets CSV includes every matching ticket once');
+select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),1,'Visual CSV stays separate');
+select ok(public.export_report_rows('designers',jsonb_build_object('periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'->0 ? 'ticketsAssigned','Authorized Designers CSV uses the approved summary schema');
+select is((public.export_report_rows('designers',jsonb_build_object('scopeKey','people','peopleIds',jsonb_build_array('10000000-0000-4000-8000-000000000002'),'areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'->0->>'workLogEntries')::integer,0,'Designers CSV metrics apply the current Area filter');
+select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),0,'Tickets CSV applies the current Area filter');
+select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('scopeKey','all','areaIds',jsonb_build_array('50000000-0000-4000-8000-000000000002'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),0,'Visual CSV applies the current Area filter');
+select is(jsonb_array_length(public.export_report_rows('visual_work',jsonb_build_object('scopeKey','all','areaUnassigned',true,'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),0,'Visual CSV preserves the explicit Unassigned Area filter');
 reset role;
 
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000004',true);
@@ -118,21 +123,21 @@ select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000007'
 set local role authenticated;
 select is(public.get_reports()->>'defaultScopeKey','all','Manager Admin defaults Reports to All');
 select lives_ok($$select public.export_report_rows('visual_work','{}')$$,'Manager Admin exports visual CSV');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'cards'->>'ticketsWorkedOn')::integer,1,'Ticket card reconciles one worked-on ticket');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'cardSources'->'ticketsWorkedOn'),1,'Ticket card source preview reconciles independently of paginated detail rows');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'rows'->0->>'activeWorkDays')::integer,1,'Ticket Days Active deduplicates people and excludes the Friday fixture date');
-select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'cards'->>'visualActivityDays')::integer,1,'Visual activity-day reconciles separately');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'cardSources'->'visualActivityDays'),1,'Visual activity-day card source preview reconciles separately');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','statuses',jsonb_build_array('backlog'),'periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Ticket status filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','labelIds',jsonb_build_array('60000000-0000-4000-8000-000000000002'),'periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Ticket label filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','workTypes',jsonb_build_array('ui_visual_design'),'periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Ticket work-type filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','blocked','blocked','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Blocked filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','due','no_due_date','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Due-state filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','archived','archived','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Archived-state filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','stale','stale','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Sunday-through-Thursday stale filter reconciles recent actual work');
-select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','visualTypes',jsonb_build_array('new_visual_asset'),'periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Visual-work type filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','edited','not_edited','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Visual edited-state filter reconciles');
-select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','loggedBy','10000000-0000-4000-8000-000000000007','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Visual submitter filter reconciles without moving work credit');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'cards'->>'ticketsWorkedOn')::integer,1,'Ticket card reconciles one worked-on ticket');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'cardSources'->'ticketsWorkedOn'),1,'Ticket card source preview reconciles independently of paginated detail rows');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'->0->>'activeWorkDays')::integer,1,'Ticket Days Active deduplicates people and excludes the Friday fixture date');
+select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'cards'->>'visualActivityDays')::integer,1,'Visual activity-day reconciles separately');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'cardSources'->'visualActivityDays'),1,'Visual activity-day card source preview reconciles separately');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','statuses',jsonb_build_array('backlog'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Ticket status filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','labelIds',jsonb_build_array('60000000-0000-4000-8000-000000000002'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Ticket label filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','workTypes',jsonb_build_array('ui_visual_design'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Ticket work-type filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','blocked','blocked','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Blocked filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','due','no_due_date','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Due-state filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','archived','archived','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Archived-state filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','stale','stale','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Sunday-through-Thursday stale filter reconciles recent actual work');
+select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','visualTypes',jsonb_build_array('new_visual_asset'),'periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Visual-work type filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','edited','not_edited','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Visual edited-state filter reconciles');
+select is((public.get_reports(jsonb_build_object('tab','visual_work','scopeKey','all','loggedBy','10000000-0000-4000-8000-000000000007','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Visual submitter filter reconciles without moving work credit');
 select public.transition_work_item_status(
   current_setting('design_flow.report_item')::uuid,'done','in_progress',
   (select updated_at from public.work_items where id=current_setting('design_flow.report_item')::uuid),
@@ -143,13 +148,13 @@ select public.archive_work_item(
   (select updated_at from public.work_items where id=current_setting('design_flow.report_item')::uuid),
   '91000000-0000-4000-8000-000000000007'
 );
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,0,'Reports exclude archived tickets from total counts by default');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'rows'),0,'Reports exclude archived tickets from table rows by default');
-select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'charts'->'activityOverTime'),0,'Reports exclude archived tickets from chart sources by default');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'cards'->>'ticketsWorkedOn')::integer,0,'Reports exclude archived tickets from card counts by default');
-select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','periodStart',current_date-10,'periodEnd',current_date))->'rows'),0,'Tickets CSV excludes archived tickets by default');
-select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','archived','all','periodStart',current_date-10,'periodEnd',current_date))->>'totalCount')::integer,1,'Explicit archived all restores the ticket to Reports');
-select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','archived','all','periodStart',current_date-10,'periodEnd',current_date))->'rows'),1,'Explicit archived all restores the ticket to CSV');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,0,'Reports exclude archived tickets from total counts by default');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),0,'Reports exclude archived tickets from table rows by default');
+select is(jsonb_array_length(public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'charts'->'activityOverTime'),0,'Reports exclude archived tickets from chart sources by default');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'cards'->>'ticketsWorkedOn')::integer,0,'Reports exclude archived tickets from card counts by default');
+select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),0,'Tickets CSV excludes archived tickets by default');
+select is((public.get_reports(jsonb_build_object('tab','tickets','scopeKey','all','archived','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->>'totalCount')::integer,1,'Explicit archived all restores the ticket to Reports');
+select is(jsonb_array_length(public.export_report_rows('tickets',jsonb_build_object('scopeKey','all','archived','all','periodStart',current_setting('design_flow.report_today')::date-10,'periodEnd',current_setting('design_flow.report_today')::date))->'rows'),1,'Explicit archived all restores the ticket to CSV');
 select throws_ok($$select public.export_report_rows('unapproved','{}')$$,'P0001','DF_VALIDATION','Unapproved export type is rejected');
 reset role;
 

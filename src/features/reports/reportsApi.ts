@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 import { getSupabaseClient } from '../../shared/supabase/client';
 import type { Json } from '../../shared/supabase/database.types';
+import {
+  workItemExportPayloadSchema,
+  type WorkItemExportPayload,
+} from './workItemPdfModel';
 import { toReportRpcFilters, type ReportFilters } from './reportFilters';
 
 const person = z.object({ id: z.string().uuid(), displayName: z.string() });
@@ -130,11 +134,11 @@ export async function getExportCapabilities() {
 export async function getWorkItemExport(
   displayId: string,
   includeComments: boolean,
-): Promise<Record<string, unknown>> {
+): Promise<WorkItemExportPayload> {
   const { data, error } = await getSupabaseClient().rpc(
     'get_work_item_export',
     { display_id: displayId, include_comments: includeComments },
   );
   if (error) throw error;
-  return z.record(z.string(), z.unknown()).parse(data);
+  return workItemExportPayloadSchema.parse(data);
 }

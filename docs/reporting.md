@@ -2,7 +2,7 @@
 
 **Version:** 0.7
 **Checkpoint date:** 2026-07-20
-**Status:** Core attribution/metrics approved with D-110 scope/CSV and D-118 calendar/deadline/archive amendments
+**Status:** Core attribution/metrics approved with D-110 scope/CSV, D-118 calendar/deadline/archive behavior, and D-123 Due Date wording
 
 Reporting is a primary product outcome. Every metric must be explainable, traceable to source records, and exportable without implying that activity frequency equals effort, quality, complexity, or performance.
 
@@ -97,11 +97,11 @@ An active-workload ticket with an unresolved blocker. Blocked is independent of 
 
 ### Overdue ticket
 
-An unarchived To Do or In Progress ticket whose Next Deadline is before the relevant team-local snapshot date. Backlog, In Review, Paused, Done, archived tickets, and tickets without a Next Deadline are not overdue.
+An unarchived To Do or In Progress ticket whose Due Date is before the relevant team-local snapshot date. Backlog, In Review, Paused, Done, archived tickets, and tickets without a Due Date are not overdue.
 
 ### Planned until
 
-The latest Next Deadline among a designer's current unarchived primary-owned tickets in To Do or In Progress.
+The latest Due Date among a designer's current unarchived primary-owned tickets in To Do or In Progress.
 
 ### Days Open and status durations
 
@@ -109,8 +109,8 @@ Days Open counts Sunday–Thursday dates after planned Start Date through the sn
 
 - It is a current planning horizon, not availability, capacity, or effort.
 - Contributor tickets do not affect it.
-- Reports must expose how many qualifying active owned tickets have no next deadline.
-- Use `No next deadlines set` when all active owned work lacks next deadlines, and `No active owned tickets` when there is no active ownership.
+- Reports must expose how many qualifying active owned tickets have no due date.
+- Use `No due dates set` when all active owned work lacks due dates, and `No active owned tickets` when there is no active ownership.
 
 ### No recent work recorded
 
@@ -128,7 +128,7 @@ Recommended summary fields:
 - Contributors
 - Current status
 - Active blocker indicator and blocked duration
-- Planned start and Next Deadline
+- Planned start and Due Date
 - First actual work date
 - Last worked on
 - Distinct active work dates
@@ -170,7 +170,7 @@ Recommended designer summary fields:
 - Current blocked owned tickets
 - Current overdue owned tickets
 - Owned tickets with no work in the selected period
-- Planned until, with the count of active owned tickets lacking next deadlines
+- Planned until, with the count of active owned tickets lacking due dates
 - Last recorded work date and the factual No recent work recorded signal where applicable
 - Visual activity-days, shown in a separate section
 - Overall active calendar days, carefully labeled to avoid summing overlapping categories
@@ -181,7 +181,7 @@ The individual drill-down should separate:
 
 - Ticket
 - Status
-- Next Deadline
+- Due Date
 - Designer's actual work dates
 - Contributors
 - Last worked on

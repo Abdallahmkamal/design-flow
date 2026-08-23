@@ -2,7 +2,7 @@
 
 **Status:** Approved Phase 0 implementation contract  
 **Decision date:** 2026-07-19  
-**Last amended:** 2026-08-22 — D-118 atomic review-return deadline and canonical derived-report contracts
+**Last amended:** 2026-08-24 — D-123 Due Date presentation wording; D-118 behavior unchanged
 **Applies to:** Browser writes, Postgres RPCs, Auth-admin Edge Functions, audit/history, notifications, and recalculation  
 **Companion contracts:** `schema-contract.md` and `permission-matrix.md`
 
@@ -335,7 +335,7 @@ Effects: validate through `pg_timezone_names`, update singleton, and write `team
 
 Caller: D, D+A, L, L+A, M, or M+A.
 
-Input: title, optional description, required active Area/Squad, optional eligible primary assignee, optional planned start/next deadline dates, optional Figma URL, active label IDs, operation ID.
+Input: title, optional description, required active Area/Squad, optional eligible primary assignee, optional planned start and due dates, optional Figma URL, active label IDs, operation ID.
 
 Rules:
 
@@ -407,7 +407,7 @@ The captured effective dates make the final assignment on a team-local date the 
 
 Caller: actor satisfying `can_edit_work_item`.
 
-Input: Work Item, target status, expected current status/`updated_at`, `acknowledge_incomplete_subtasks` boolean, operation ID, and a concrete new Next Deadline when returning In Review → In Progress.
+Input: Work Item, target status, expected current status/`updated_at`, `acknowledge_incomplete_subtasks` boolean, operation ID, and a concrete new Due Date when returning In Review → In Progress.
 
 Rules:
 
@@ -416,7 +416,7 @@ Rules:
 - transition to Backlog, Paused, or Done is denied while a blocker is active;
 - transition to Done with incomplete current subtasks requires explicit acknowledgment but remains allowed;
 - archived Work Items must first be restored.
-- In Review → In Progress requires a non-null new Next Deadline; status and `due_date` update atomically and the previous deadline remains in the authorized field-change audit event.
+- In Review → In Progress requires a non-null new Due Date; status and `due_date` update atomically and the previous deadline remains in the authorized field-change audit event.
 
 Atomic effects:
 
@@ -763,3 +763,23 @@ prove all of them:
 - same-day reassignment produces the final-assignment work-date attribution;
 - exports and normal views exclude withdrawn bodies/rows; and
 - no application mutation hard-deletes historical records.
+
+## 16. Work Item PDF read/export contract
+
+`get_work_item_export(display_id, include_comments := false)` is an authorized,
+stable, security-definer read projection rather than a mutation. It requires an
+active application principal with `can_export_work_item()`, composes the normal
+Work Item detail and sanitized history read models, strips browser capabilities,
+and returns comments only when explicitly requested. Viewer, inactive, and
+password-restricted principals remain denied by the established application and
+export boundaries.
+
+The client validates this projection into the fixed typed PDF model before any
+layout work. The renderer consumes only explicit readable rows for the current
+snapshot, blockers, subtasks, actual work dates, work logs, supported history
+events, and optional comments. An unknown event renders a safe unsupported-event
+statement without its type or payload. UUIDs, backend keys, raw JSON, raw enum
+codes, `null`, raw ISO timestamps, and restricted prior or withdrawn bodies may
+not cross the rendered-text boundary. Comments remain off by default, withdrawn
+records remain represented only by safe audit wording, and no PDF operation may
+read browser-inaccessible revision tables to reconstruct protected text.
