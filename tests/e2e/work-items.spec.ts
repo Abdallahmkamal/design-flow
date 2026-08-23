@@ -1356,10 +1356,8 @@ test('work-log correction uses a batch overlay with Worked By and whole-log with
   const withdrawButton = reopenedEditor.getByRole('button', {
     name: 'Withdraw work log',
   });
-  await expect(withdrawButton).toHaveCSS(
-    'background-color',
-    'rgba(0, 0, 0, 0)',
-  );
+  await expect(withdrawButton).toHaveClass(/bg-transparent/);
+  await expect(withdrawButton).toHaveClass(/hover:bg-destructive\/10/);
   await expect(withdrawButton).toHaveCSS(
     'border-top-color',
     'rgb(251, 55, 72)',
