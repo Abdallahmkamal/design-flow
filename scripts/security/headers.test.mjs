@@ -21,6 +21,9 @@ describe('Cloudflare Pages security headers', () => {
 
   it('limits network destinations to the application providers', () => {
     expect(headers).toContain("connect-src 'self' https://*.supabase.co");
+    expect(headers).toContain(
+      "img-src 'self' data: blob: https://*.supabase.co",
+    );
     expect(headers).not.toMatch(/unsafe-eval|unsafe-inline|connect-src \*/u);
   });
 });
