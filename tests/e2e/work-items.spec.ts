@@ -479,7 +479,59 @@ async function mocks(
           },
         ]),
       });
-    else if (url.includes('list_work_items')) {
+    else if (url.includes('get_export_capabilities'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          canExportReports: !options.viewer,
+          canExportWorkItem: !options.viewer,
+        }),
+      });
+    else if (url.includes('get_work_item_export')) {
+      const requestBody = route.request().postDataJSON() as {
+        include_comments?: boolean;
+      };
+      const exportedDetail = detail(Boolean(options.viewer));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: '2026-07-26T10:00:00Z',
+          generatedBy: '[SYNTHETIC] Designer',
+          includeComments: Boolean(requestBody.include_comments),
+          workItem: exportedDetail,
+          history: {
+            workDates: [
+              {
+                date: '2026-07-20',
+                people: [{ id: userId, displayName: '[SYNTHETIC] Designer' }],
+                workTypes: ['ui_visual_design'],
+              },
+            ],
+            events: [
+              {
+                id: '77000000-0000-4000-8000-000000000001',
+                type: 'created',
+                actor: { id: userId, displayName: '[SYNTHETIC] Designer' },
+                subjectType: 'work_item',
+                subjectId: itemId,
+                occurredAt: '2026-07-21T08:00:00Z',
+                changedFields: [],
+                statusFrom: null,
+                statusTo: null,
+                assigneeFrom: null,
+                assigneeTo: null,
+                labelsBefore: [],
+                labelsAfter: [],
+                workLog: null,
+              },
+            ],
+          },
+          comments: requestBody.include_comments ? exportedDetail.comments : [],
+        }),
+      });
+    } else if (url.includes('list_work_items')) {
       const requestBody = route.request().postDataJSON() as {
         filters?: { peopleIds?: string[]; search?: string };
       };
@@ -709,7 +761,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       'People',
       'Last Activity',
       'Start Date',
-      'Next Deadline',
+      'Due Date',
       'Days Open',
       'Days Active',
       'Labels',
@@ -858,7 +910,7 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     'Area / Squad',
     'Assignee',
     'Planned start',
-    'Next deadline',
+    'Due Date',
     'Figma URL',
   ]) {
     await expect(page.getByLabel(label)).toHaveCSS('height', '48px');
@@ -1348,6 +1400,9 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   ).toBeVisible();
   const ticketDialog = page.getByRole('dialog');
   await expect(
+    ticketDialog.getByText('Days Active', { exact: true }),
+  ).toBeVisible();
+  await expect(
     ticketDialog.getByRole('button', { name: /subtasks complete/u }),
   ).toHaveCount(0);
   await expect(ticketDialog.getByRole('link', { name: 'Log Work' })).toHaveCSS(
@@ -1579,6 +1634,25 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test('one-ticket export downloads a typed readable PDF without raw identifiers', async ({
+  page,
+}) => {
+  await mocks(page);
+  await signIn(page);
+  await page.goto(`/work-items/${displayId}`);
+
+  await page.getByRole('button', { name: 'More ticket actions' }).click();
+  await page.getByRole('button', { name: 'Export work item' }).click();
+  await expect(
+    page.getByRole('checkbox', { name: 'Include comments' }),
+  ).not.toBeChecked();
+
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download PDF' }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('work-item_#001_2026-07-26.pdf');
+});
+
 test('Ticket Details Area and Assignee menus own overflow scrolling', async ({
   page,
 }) => {
@@ -1606,6 +1680,11 @@ test('Ticket Details Area and Assignee menus own overflow scrolling', async ({
       .click();
     const viewport = page.locator('[data-ticket-menu-viewport]');
     await expect(viewport).toBeVisible();
+    expect(
+      await viewport.evaluate(
+        (node) => node.closest('[role="dialog"]') !== null,
+      ),
+    ).toBe(true);
     expect(
       await viewport.evaluate((node) => node.scrollHeight > node.clientHeight),
     ).toBe(true);

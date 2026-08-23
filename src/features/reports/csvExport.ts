@@ -27,7 +27,7 @@ const schemas: Record<
     ['contributors', 'Contributors'],
     ['labels', 'Labels'],
     ['plannedStartDate', 'Planned Start Date'],
-    ['dueDate', 'Next Deadline'],
+    ['dueDate', 'Due Date'],
     ['firstWorkedDate', 'First Worked Date'],
     ['lastWorkedDate', 'Last Worked Date'],
     ['daysOpen', 'Days Open'],

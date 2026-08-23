@@ -137,10 +137,6 @@
 }
 .chipMenuContent {
   min-width: 14rem;
-  max-height: none;
-  overflow: hidden;
-}
-.chipMenuViewport {
   max-height: min(
     20rem,
     var(--radix-dropdown-menu-content-available-height, calc(100vh - 2rem))

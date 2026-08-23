@@ -150,7 +150,7 @@ The component map and each brief must satisfy the common UI readiness gate above
 Implement the core ticket lifecycle:
 
 - ticket creation and editing for the approved creators, with a reusable creation result that later launch contexts can select without submitting another domain operation;
-- required Area/Squad, optional labels, one primary assignee, planned start, Next Deadline, and one optional Figma URL;
+- required Area/Squad, optional labels, one primary assignee, planned start, Due Date, and one optional Figma URL;
 - Backlog, To do, In Progress, In Review, Done, and Paused transitions;
 - assignment and status history;
 - one active structured blocker with resolve history;
@@ -212,7 +212,7 @@ Complete the everyday management surfaces:
 
 - final Work Item vertical timeline and five-column actual-date index;
 - Dashboard ticket cards, needs-attention, workload-by-person, recent-work, stale-work, and management people signals;
-- Planned until and missing-Next-Deadline disclosure without availability or capacity claims;
+- Planned until and missing-Due-Date disclosure without availability or capacity claims;
 - final position-based people scopes and Lead/Manager alternate-scope controls; and
 - minimal in-app notifications, unread state, mark-one/all read, and Work Item deep links.
 

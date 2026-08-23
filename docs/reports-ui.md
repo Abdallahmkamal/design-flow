@@ -2,7 +2,7 @@
 
 **Version:** 1.4
 **Decision date:** 2026-08-15
-**Status:** Approved MVP report content with D-110 scope/export and D-118 metric/archive amendments
+**Status:** Approved MVP report content with D-110 scope/export, D-118 metric/archive behavior, and D-123 Due Date wording
 
 **Implementation note (2026-08-12):** Slice 7 was implemented locally in the
 combined Slices 7–8 run on `codex/ui-modernization-reports-settings`. The owned
@@ -127,7 +127,7 @@ One row per ticket, never one row per ticket-designer relationship:
 - Status as of period end
 - Primary assignee as of period end
 - Contributors during the period
-- Planned Start Date and Next Deadline
+- Planned Start Date and Due Date
 - Due state
 - First and last actual work date during the period
 - Canonical Days Open and Days Active at the snapshot
@@ -183,7 +183,7 @@ In this report, `Designer` is the work-attribution subject, not a restriction to
 - Owned tickets without work during the selected period
 - Last recorded work date
 - Planned until
-- Active owned tickets without next deadlines
+- Active owned tickets without due dates
 
 ### Charts
 
@@ -200,7 +200,7 @@ One- and two-person views use identical scales. Multi-person charts must not def
 
 - Ticket
 - Status
-- Next Deadline
+- Due Date
 - Actual work dates
 - Contributors
 - Last worked on
@@ -262,7 +262,7 @@ Use alphabetical order by default and show:
 - Blocked and overdue owned tickets
 - Owned tickets without period work
 - Last recorded work date
-- Planned until and active owned tickets without next deadlines
+- Planned until and active owned tickets without due dates
 - Visual activity-days in a separate column group
 - Overall active calendar days, clearly labelled
 
@@ -299,7 +299,7 @@ Visual Work contains no ticket workflow concepts.
 - Logged at
 - Edited indicator/time where applicable
 
-Exclude ticket ID, status, assignee, contributor, completion, blocker, planned date, next deadline, subtask, and comment fields.
+Exclude ticket ID, status, assignee, contributor, completion, blocker, planned date, due date, subtask, and comment fields.
 
 ### Visual Work filters
 
@@ -351,7 +351,7 @@ One row per filtered ticket:
 5. Contributors
 6. Labels
 7. Planned Start Date
-8. Next Deadline
+8. Due Date
 9. First Worked Date
 10. Last Worked Date
 11. Days Open

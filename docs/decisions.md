@@ -2,7 +2,7 @@
 
 **Checkpoint:** MVP specification v1.0  
 **Checkpoint date:** 2026-07-18  
-**Last amended:** 2026-08-23 — D-121 freezes Slice 3 interaction, search, reference, and focus behavior
+**Last amended:** 2026-08-24 — D-123 restores Due Date as the user-facing deadline term
 
 This register summarizes approved, rejected, and still-open decisions. Detailed behavior lives in [product-spec.md](product-spec.md), [data-model.md](data-model.md), and [reporting.md](reporting.md); stable cross-product interface direction lives in [ui-direction.md](ui-direction.md).
 
@@ -25,7 +25,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-013 | Statuses | Backlog, To do, In Progress, In Review, Done, and Paused |
 | D-014 | Blocked | Separate structured state with one active blocker, not a status or label |
 | D-015 | Archiving | Only Backlog, Paused, and Done may be archived; Lead, Manager, or Admin privilege required |
-| D-016 | Planned dates | Optional planned start and Next Deadline; never treated as continuous actual work |
+| D-016 | Planned dates | Optional planned start and Due Date; never treated as continuous actual work |
 | D-017 | Actual-work timestamps | Preserve work date, logged-at time, last worked, last activity, and field update separately |
 | D-018 | Subtasks | One-level checklist on Work Item page; derived `completed/total` badge elsewhere |
 | D-019 | Comments | Simple ticket comments distinct from reporting work logs |
@@ -47,14 +47,14 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-035 | Dashboard | Six actionable ticket cards plus needs-attention, workload-by-person, recent-work, and management people-signal sections |
 | D-036 | Stale work | Five Sunday-through-Thursday working days without valid ticket work after the applicable active/planned-start grace point |
 | D-037 | Login recency | Never use last sign-in as a work or performance signal; keep it in Admin account support only |
-| D-038 | Planned until | Latest Next Deadline across current unarchived owned tickets in To Do or In Progress, with missing-date disclosure; never present it as availability or capacity |
+| D-038 | Planned until | Latest Due Date across current unarchived owned tickets in To Do or In Progress, with missing-date disclosure; never present it as availability or capacity |
 | D-039 | All Tickets default | Current unarchived Backlog, To do, In Progress, In Review, and Paused tickets; Done and Archived are explicit views |
 | D-040 | All Tickets people relationship | Owned is default; Contributed to and Owned or contributed to are explicit alternatives |
 | D-041 | All Tickets presentation | Fixed responsive list; subtask progress belongs in the title cell and contributor count reveals names |
 | D-042 | Direct Figma access | A row/card Figma icon opens the stored URL directly without opening the Work Item |
 | D-043 | All Tickets interaction | URL-backed search/filter/sort; no inline edits, bulk actions, saved views, or customizable columns in the MVP |
 | D-044 | Row Log Work | Designer, Lead, Manager, and Admin-privileged users receive a preselected ticket-work shortcut; Viewer remains read-only |
-| D-045 | Work Item header | Two-level glanceable header includes Area/Squad, labels, ownership, Next Deadline, subtask progress, and Days Active |
+| D-045 | Work Item header | Two-level glanceable header includes Area/Squad, labels, ownership, Due Date, subtask progress, and Days Active |
 | D-046 | Ticket Days Active | Distinct valid Sunday–Thursday ticket work dates across all designers; multiple people/entries on one date count once and Friday/Saturday logs remain visible without increasing the metric |
 | D-047 | Work Item history | Vertical timeline is primary; no monthly calendar in the MVP |
 | D-048 | Work Dates grid | Five-column actual-date index from first to last recorded work date, containing only dates with valid work |
@@ -131,6 +131,8 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | D-119 | Frozen release people and work-entry semantics | Keep `must_change_password` as the affected member's own login/application gate while removing it from target-member assignment, hierarchy, contribution, `worked_by`, and authorized on-behalf logging eligibility; add Admin-audited current display-name and private immutable-path avatar management with signed reads and shared initials fallback; make restored correction UI entry-specific with optimistic concurrency and no sibling/attribution/context/status/subtask mutation; derive Add Date from the earliest selected row by walking backward over unused Sunday–Thursday dates; and default Ticket Work to UI & visual design and Standalone Visual to Resizing & adaptation without overwriting manual Work Type choices. This supersedes the former global interpretation that `must_change_password = false` was required for operational target eligibility, the old batch-editor route as the normal correction UI, the blank Work Type default, and same-day Add Date duplication. |
 | D-120 | Slice 2 avatar and whole-submission correction refinement | Profile-picture selection must immediately show the chosen filename and local preview, Save must expose upload progress, and a stalled Storage request must fail with actionable retry feedback rather than appearing inert. Replace D-119's entry-only normal correction UI with the established whole-submission batch contract: an authorized activity entry is one semantic link without a separate text or icon action and opens its owning batch in the same route-backed overlay and field presentation as Log Work; every current date/type/description is visible; Lead/Manager/Admin may change Worked By for the complete submission; credited Designers may not transfer credit; the original submitter, context/ticket, status, blocker, and subtasks remain fixed; and authorized actors may irreversibly withdraw the complete batch after explicit confirmation. The narrow entry RPC remains compatibility-only. This supersedes only D-119's entry-specific normal-UI and old-batch-editor supersession clauses. |
 | D-121 | Frozen release interaction, search, reference, and reset-focus semantics | All Tickets search runs before pagination across persisted ticket reference, title, Area name, primary-assignee display name, and current-contributor display names, excludes description/internal UUIDs, and normalizes digits-only copied `#` references; no explicit sort defaults to Last Activity newest-first while URL-backed explicit sorts override it; product presentation maps persisted `DF-` plus six-or-more digits to shared `#` plus at least three digits without changing routes/lookups/storage; Create Ticket Area selection retains its complete option list while supporting accumulated typeahead, arrows, Enter, Escape, and touch; Ticket Details popup-like choices use shared dropdown/select semantics, reserve disclosure for real content expansion, and close on selection, outside interaction, Escape, Tab, or Shift+Tab; Reset Password tabs from the first password field directly to the confirmation field while a shared later visibility control remains keyboard accessible. This supersedes D-043 and the prior All Tickets documentation only where they included description search or Next Deadline as the default sort; it does not redefine Last Activity. |
+| D-122 | Frozen release Work Item PDF and final-reconciliation semantics | The one-ticket PDF validates the authorized server projection into a fixed typed model before layout and uses explicit human-readable mappings for snapshot rows, blockers, subtasks, actual work dates, work logs, every supported history event, and optional comments. It uses current names, labelled statuses/Work Types, human-readable dates, Next Deadline, Days Active, compact `#010` references, `Open Figma`, chronological separation, and `None` empty states. Generic object/JSON serialization is removed; unknown events fail safely without their code or payload; UUIDs, backend keys, raw enum/event codes, `null`, raw ISO timestamps, and restricted withdrawn/revision bodies are forbidden in rendered text. Export authorization and comments-off-by-default behavior are unchanged. This refines D-049 without expanding Reports PDF or machine-audit scope. |
+| D-123 | Slice 4 Due Date wording correction | Restore **Due Date** as the sole user-facing term for persisted `due_date` across the application, Reports, CSV, Work Item PDF, filters, labels, accessibility text, tests, fixtures, and current canonical documentation. This supersedes only the **Next Deadline** presentation wording introduced by D-118, referenced by D-121, and carried into D-122; it does not change storage/API field names, overdue or calendar formulas, Planned Until membership, the required atomic date replacement on In Review → In Progress, permissions, history, or any other release behavior. |
 
 ## Explicitly rejected or replaced
 
@@ -141,7 +143,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | Multiple equal assignees | One primary assignee plus derived contributors |
 | Team-ready multi-assignee expansion | Consciously deferred until after rollout; retain one primary assignee and derived contributors during the nine-slice workstream |
 | Project hierarchy | Area/Squad directly on ticket |
-| Priority field | Next Deadlines, blockers, status, and team alignment |
+| Priority field | Due Dates, blockers, status, and team alignment |
 | Generic URLs and attachments | One Figma URL only |
 | Blocked status/label | Structured blocker record alongside workflow status |
 | Cancelled/Not proceeding status | Backlog or Paused, then archive where appropriate |
@@ -153,7 +155,7 @@ This register summarizes approved, rejected, and still-open decisions. Detailed 
 | Hours/effort/productivity scoring | Explainable activity and ownership measures |
 | Reporting group as a visibility boundary | Full Lead visibility with reporting groups used only as default/filter scope |
 | Last login as a people-management signal | Last recorded ticket/visual work date, clearly labeled |
-| Manual or inferred availability | Next-Deadline-derived Planned until with explicit missing-date states |
+| Manual or inferred availability | Due-Date-derived Planned until with explicit missing-date states |
 | Separate subtask table column | Derived subtask badge inside the ticket title cell/card area |
 | Figma hidden behind Work Item navigation | Direct accessible Figma icon on each applicable list row/card |
 | Editable ticket spreadsheet | Navigational list with purpose-built editing and work-log flows |

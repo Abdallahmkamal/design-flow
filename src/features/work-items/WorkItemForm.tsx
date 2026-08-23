@@ -163,14 +163,14 @@ export function WorkItemForm({
         )}
         {teamReadyControls ? (
           <FormDatePicker
-            label="Next Deadline"
+            label="Due Date"
             value={values.dueDate}
             {...(errors.dueDate ? { error: errors.dueDate } : {})}
             onChange={(event) => update('dueDate', event.target.value)}
           />
         ) : (
           <Input
-            label="Next Deadline"
+            label="Due Date"
             type="date"
             value={values.dueDate}
             {...(errors.dueDate ? { error: errors.dueDate } : {})}

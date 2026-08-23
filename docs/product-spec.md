@@ -4,7 +4,7 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-08-23 — D-121 interaction, search, ticket-reference, and authentication focus behavior
+**Last amended:** 2026-08-24 — D-123 Due Date presentation wording
 
 This document is the current product source of truth for Design Flow. The completed MVP decisions remain historical context; D-109, D-110, and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) govern the approved team-ready post-MVP amendments. Open decisions must not be invented during implementation.
 
@@ -27,7 +27,7 @@ The portal must answer:
 - Store structured work records and one optional Figma URL; do not upload files.
 - Do not store sensitive customer or production data.
 - Preserve auditability and portable CSV exports.
-- Provide a human-readable Work Item PDF export for Designer, Lead, Manager, and any Admin-privileged user; comments are optional and off by default.
+- Provide a human-readable Work Item PDF export for Designer, Lead, Manager, and any Admin-privileged user; comments are optional and off by default. The PDF uses a typed authorized projection and explicit readable section/event mappings: it never falls back to generic object or JSON serialization and never renders UUIDs, backend keys, raw enum/event codes, `null`, raw ISO timestamps, or protected withdrawn/revision bodies.
 - Prefer explainable metrics over productivity scores.
 
 ### UI-system architecture
@@ -125,7 +125,7 @@ Viewer is trusted internal, whole-team read-only access:
 | Primary assignee | Optional in Backlog; required for active statuses |
 | Description | Optional |
 | Planned start date | Optional |
-| Next Deadline | Optional |
+| Due Date | Optional |
 | Labels | Optional; multiple allowed; selected from an Admin-managed list |
 | Figma URL | Optional; one URL only |
 | Priority | Does not exist in the MVP |
@@ -167,7 +167,7 @@ Status reporting groups:
 
 ### Planned dates versus actual work
 
-Planned start and Next Deadline describe an expected delivery window. They do not imply that the designer worked on every date in the window. Actual work comes only from work-log entry dates.
+Planned start and Due Date describe an expected delivery window. They do not imply that the designer worked on every date in the window. Actual work comes only from work-log entry dates.
 
 Maintain separate timestamps:
 
@@ -185,11 +185,11 @@ At ticket level, **Days Active** is the number of distinct valid Sunday–Thursd
 
 ### Planned until
 
-`Planned until` is the latest Next Deadline among a person's current unarchived owned tickets in To Do or In Progress. It is a planning outlook, not a promise of availability or capacity.
+`Planned until` is the latest Due Date among a person's current unarchived owned tickets in To Do or In Progress. It is a planning outlook, not a promise of availability or capacity.
 
 - Contributor activity does not affect it.
-- Partial Next Deadline coverage must remain visible, for example `Planned until 28 Aug · 2 without next deadlines`.
-- If active owned work has no Next Deadlines, show `No next deadlines set`.
+- Partial Due Date coverage must remain visible, for example `Planned until 28 Aug · 2 without due dates`.
+- If active owned work has no Due Dates, show `No due dates set`.
 - If the person has no active owned tickets, show `No active owned tickets`.
 - Do not add manual availability periods or call the date `Available from`.
 
@@ -345,7 +345,7 @@ Fixed visual-work types:
 5. Illustration & iconography
 6. Other visual work
 
-Standalone visual work has no ticket ID, status, assignee, contributor, blocker, subtask, comment, planned date, Next Deadline, Figma URL, or label.
+Standalone visual work has no ticket ID, status, assignee, contributor, blocker, subtask, comment, planned date, Due Date, Figma URL, or label.
 
 If visual work becomes substantial enough to require ownership, collaboration, planned dates, or lifecycle tracking, create a normal ticket instead.
 

@@ -2,7 +2,7 @@
 
 **Status:** Approved Phase 0 implementation contract  
 **Decision date:** 2026-07-19  
-**Last amended:** 2026-08-23 — D-121 All Tickets search and default-order contract
+**Last amended:** 2026-08-24 — D-123 Due Date presentation wording; persisted `due_date` unchanged
 **Applies to:** First Supabase/Postgres migration and all later migrations  
 **Sources:** `product-spec.md`, `technical-plan.md`, `build-plan.md`, module specifications, `data-model.md`, and `decisions.md`
 
@@ -616,8 +616,8 @@ A **valid work entry** is a `work_log_entries` row where neither the entry nor i
 | Ticket active day | Distinct `(worked_by, work_date)` among valid ticket entries |
 | Visual activity-day | Distinct `(worked_by, work_date)` among valid visual entries |
 | Overall active calendar day | Distinct `(worked_by, work_date)` across both valid contexts |
-| Planned until | Maximum Next Deadline over current unarchived owned tickets in `todo` or `in_progress`; In Review and other statuses are excluded |
-| Overdue | Unarchived `todo` or `in_progress` ticket with non-null Next Deadline before the snapshot local date |
+| Planned until | Maximum Due Date over current unarchived owned tickets in `todo` or `in_progress`; In Review and other statuses are excluded |
+| Overdue | Unarchived `todo` or `in_progress` ticket with non-null Due Date before the snapshot local date |
 | Ticket report archive scope | Default `not_archived`; explicit `archived` or `all` applies to the same scoped rows used by counts/cards, charts, table/detail rows, pagination, drill-downs, and CSV |
 | Due soon | Unarchived active-bucket ticket due from snapshot local date through `add_working_days(snapshot_date, 5)`, inclusive; the helper skips Friday/Saturday when finding the cutoff |
 | Stale | Unarchived active-bucket ticket for which five working days have elapsed after the latest of last valid work date, start of the current uninterrupted active run, and planned start; a future planned start prevents staleness |
@@ -625,7 +625,7 @@ A **valid work entry** is a `work_log_entries` row where neither the entry nor i
 
 The current active run begins on transition from a non-active reporting bucket into any active-bucket status. Transitions among `todo`, `in_progress`, and `in_review` do not reset it. Working-day functions use the product policy version effective at the evaluated instant.
 
-`working_days_elapsed_after(anchor, as_of)` counts policy working dates where `anchor < date <= as_of`. A ticket becomes stale when that count reaches 5. `add_working_days(date, 5)` advances across five policy working dates after the input date; calendar weekend Next Deadlines between the input and cutoff remain included. The No recent work window is the five most recent policy working dates on or before the as-of date. Sunday-through-Saturday period presets are calendar ranges and do not discard valid Friday/Saturday work.
+`working_days_elapsed_after(anchor, as_of)` counts policy working dates where `anchor < date <= as_of`. A ticket becomes stale when that count reaches 5. `add_working_days(date, 5)` advances across five policy working dates after the input date; calendar weekend Due Dates between the input and cutoff remain included. The No recent work window is the five most recent policy working dates on or before the as-of date. Sunday-through-Saturday period presets are calendar ranges and do not discard valid Friday/Saturday work.
 
 Historical report snapshots use:
 
@@ -662,6 +662,7 @@ No report total, contributor list, workload score, or availability value is a ma
 | Blocker history | `blockers` |
 | Work submissions and dates | `work_log_batches`, `work_log_entries` |
 | Work-log audit | Work-log revision tables and `work_item_events` |
+| Work Item PDF projection | Authorized composition of `get_work_item_detail` and sanitized `get_work_item_history`; typed client transformation owns readable presentation and may not expose restricted revision sources |
 | Notification/read state | `notifications` |
 | Mutation idempotency | `operation_requests` |
 | Unfinished Log Work draft and return state | Client form state only; not persisted in the MVP |

@@ -101,7 +101,7 @@ select throws_ok(
     (select updated_at from public.work_items where id = current_setting('design_flow.slice1_return')::uuid)
   ),
   'P0001', 'DF_NEXT_DEADLINE_REQUIRED',
-  'legacy review return cannot bypass the mandatory Next Deadline'
+  'legacy review return cannot bypass the mandatory Due Date'
 );
 select lives_ok(
   format(
@@ -110,12 +110,12 @@ select lives_ok(
     (select updated_at from public.work_items where id = current_setting('design_flow.slice1_return')::uuid),
     current_setting('design_flow.slice1_today')::date + 5
   ),
-  'review return stores status and a concrete new Next Deadline atomically'
+  'review return stores status and a concrete new Due Date atomically'
 );
 select is(
   (select due_date from public.work_items where id = current_setting('design_flow.slice1_return')::uuid),
   current_setting('design_flow.slice1_today')::date + 5,
-  'the new Next Deadline replaces the stale current value'
+  'the new Due Date replaces the stale current value'
 );
 select is(
   (select previous_values ->> 'due_date' from public.work_item_events

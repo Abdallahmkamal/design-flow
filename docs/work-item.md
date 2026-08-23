@@ -2,7 +2,7 @@
 
 **Version:** 1.2
 **Decision date:** 2026-07-16  
-**Status:** Approved MVP baseline with D-110 route-backed Ticket Details, D-118 metric/deadline amendments, and D-121 interaction/reference semantics
+**Status:** Approved MVP baseline with D-110 route-backed Ticket Details, D-118 metric/deadline behavior, D-121 interaction/reference semantics, and D-123 Due Date wording
 
 The Work Item page is the complete source for a ticket's current state, planned dates, actual work, ownership and contribution, subtasks, discussion, blockers, and preserved history.
 
@@ -10,7 +10,7 @@ The Work Item page is the complete source for a ticket's current state, planned 
 
 Modernization Slice 4 retains `/work-items/:displayId` as the canonical route but makes Ticket Details the primary operational presentation: a wider right overlay over All Tickets on desktop and full-screen route-backed view on mobile. Direct visits still establish a usable Work Items context. Browser Back/close preserves URL-backed list state and restores launcher focus where possible.
 
-- Ticket name, description, status, one primary assignee, Area, planned start, next deadline, labels, and Figma URL are edited inline through their existing permissioned operations; no general Edit mode is added.
+- Ticket name, description, status, one primary assignee, Area, planned start, due date, labels, and Figma URL are edited inline through their existing permissioned operations; no general Edit mode is added.
 - Contributors remain read-only and derived from work logs. The reviewed multi-assignee direction is intentionally deferred until after rollout.
 - The work calendar shows Sunday–Thursday rows from first through latest valid log week, preserves internal empty weeks, and visualizes log counts rather than effort.
 - Activity & Work Log merges ticket-change events and dated work entries by effective activity date. Comments remain a separate final section even though meaningful comment activity updates Last Activity.
@@ -32,13 +32,13 @@ Modernization Slice 4 retains `/work-items/:displayId` as the canonical route bu
 - Area/Squad
 - Labels, with visual overflow such as `+n`
 - Primary assignee and derived contributors
-- Next Deadline with overdue/due-soon treatment
+- Due Date with overdue/due-soon treatment
 - Derived subtask completion badge
 - Days Active
 
 `Days Active` is the number of distinct Sunday–Thursday dates on which anyone recorded valid ticket work. Multiple people or entries on the same ticket and date still count once. Friday/Saturday work remains visible but does not increase the metric. It is not a duration or effort measure.
 
-On narrow screens the summary may wrap or become an expandable summary block, but the status, Next Deadline, Area/Squad, and Days Active remain easy to reach.
+On narrow screens the summary may wrap or become an expandable summary block, but the status, Due Date, Area/Squad, and Days Active remain easy to reach.
 
 ## 2. Page hierarchy
 
@@ -73,7 +73,7 @@ Show:
 - Description
 - Area/Squad
 - Primary assignee and contributors
-- Planned start and Next Deadline
+- Planned start and Due Date
 - Labels
 - Figma direct link
 - Created date
@@ -81,11 +81,11 @@ Show:
 - Last worked on
 - Last activity time, clearly distinguished from Last worked on
 
-Planned dates and actual work dates must be visually separated. Never imply continuous work between planned start and Next Deadline.
+Planned dates and actual work dates must be visually separated. Never imply continuous work between planned start and Due Date.
 
 Status and primary assignee may use direct controlled actions. Other editable fields may use an Edit work item flow. All changes remain subject to position/Admin-privilege permissions and audit history.
 
-Controlled choices in Ticket Details use the shared dropdown/select primitives, including the status/assignee chip menus, overflow actions, and subtask ordering. Area/Squad and Assignee option lists are viewport-bounded and independently wheel/touch scrollable on desktop and mobile. Reserve disclosure semantics for controls that actually reveal or hide content, such as blocker details. A popup closes after a successful selection, outside interaction, Escape, Tab, or Shift+Tab; interaction inside the popup that is not a selection does not close it.
+Controlled choices in Ticket Details use the shared dropdown/select primitives, including the status/assignee chip menus, overflow actions, and subtask ordering. Area/Squad, Assignee, Status, and Labels option lists are portaled within Ticket Details, viewport-bounded, and independently wheel/touch scrollable on desktop and physical mobile devices. Reserve disclosure semantics for controls that actually reveal or hide content, such as blocker details. A popup closes after a successful selection, outside interaction, Escape, Tab, or Shift+Tab; interaction inside the popup that is not a selection does not close it.
 
 ## 5. Subtasks
 
@@ -162,6 +162,8 @@ The MVP export is a human-readable PDF containing:
 
 Provide an **Include comments** option that is off by default. The normal export represents withdrawn content only as a withdrawal event and does not reveal its former body.
 
+The authorized server projection is validated into a typed export model before layout. Snapshot rows, blockers, subtasks, actual work dates, work-log entries, supported history events, and optional comments each have explicit readable mappings. Work-log output identifies who logged, who worked, the labelled Work Type, human-readable date, and current allowed description when present. Unknown future events fail safely with a generic unsupported-event statement and never dump a payload. Empty sections display `None`; chronological entries are visibly separated; the link label is `Open Figma`. UUIDs, backend keys, raw JSON, raw enum/event codes, `null`, raw ISO timestamps, and restricted prior/withdrawn bodies are forbidden in rendered PDF text.
+
 The Work Item PDF is distinct from Reports CSV exports. A machine-oriented ticket audit package is deferred unless a later portability need justifies it.
 
 ## 10. Actions and permissions
@@ -174,7 +176,7 @@ The Work Item PDF is distinct from Reports CSV exports. A machine-oriented ticke
 
 ## 11. Acceptance criteria
 
-- The header exposes Area/Squad, labels, Next Deadline, ownership, subtask progress, and Days Active without requiring navigation into details.
+- The header exposes Area/Squad, labels, Due Date, ownership, subtask progress, and Days Active without requiring navigation into details.
 - Days Active counts distinct valid Sunday–Thursday ticket work dates without double-counting people or entries; Friday/Saturday logs remain visible without increasing it.
 - The blocker remains independent from status and is prominent when active.
 - Planned and actual dates cannot be confused visually or semantically.

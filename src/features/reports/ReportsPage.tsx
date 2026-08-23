@@ -708,7 +708,7 @@ function DesignerMetrics({
     ['owned_without_work', 'Owned tickets without period work'],
     ['last_recorded_work', 'Last recorded work date'],
     ['planned_until', 'Planned until'],
-    ['missing_due', 'Active owned tickets without Next Deadlines'],
+    ['missing_due', 'Active owned tickets without Due Dates'],
     ['visual_days', 'Visual activity-days'],
     ['active_calendar_days', 'Overall active calendar days'],
   ] as const;
@@ -716,7 +716,7 @@ function DesignerMetrics({
     <section aria-labelledby="designer-metrics-heading">
       <h2 id="designer-metrics-heading">Aligned person metrics</h2>
       <p>
-        Snapshot values are as of {periodEnd}. Planned until is Next Deadline
+        Snapshot values are as of {periodEnd}. Planned until is Due Date
         disclosure only, never availability or capacity.
       </p>
       <div className={styles.designerMetrics}>
@@ -858,7 +858,7 @@ export function ReportsPage() {
               ? 'Overdue'
               : filters.due === 'not_overdue'
                 ? 'Not overdue'
-                : 'No Next Deadline'
+                : 'No Due Date'
           }`,
         ]
       : []),
@@ -1217,7 +1217,7 @@ export function ReportsPage() {
                       <option value="any">Any</option>
                       <option value="overdue">Overdue</option>
                       <option value="not_overdue">Not overdue</option>
-                      <option value="no_due_date">No Next Deadline</option>
+                      <option value="no_due_date">No Due Date</option>
                     </FormSelect>
                     <FormSelect
                       label="Stale state"
@@ -1529,7 +1529,7 @@ export function ReportsPage() {
                   },
                   {
                     key: 'due',
-                    header: 'Next Deadline',
+                    header: 'Due Date',
                     render: (row) => display(row.dueDate),
                   },
                   {

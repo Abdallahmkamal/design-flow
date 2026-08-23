@@ -114,7 +114,7 @@ None. Material changes require a new readiness decision.
 - DF-000003 exposed distinct actual Work Dates for Jul 21 and Jul 22, with deep
   links into the matching work-log timeline events.
 - Timeline entries retained later submission timestamps and actor attribution;
-  the details rail separately showed planned start, Next Deadline, first/last worked
+  the details rail separately showed planned start, Due Date, first/last worked
   dates, last system activity, and 2 Days Active.
 - Synthetic correction links remained permission-gated, withdrawn content was
   absent, and standalone Visual Work remained outside ticket history.

@@ -170,10 +170,12 @@ describe('team-ready primitives', () => {
   it('opens a Dropdown Menu and supports keyboard selection', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
+    const portalContainer = document.createElement('div');
+    document.body.append(portalContainer);
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Open profile</DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent portalContainer={portalContainer}>
           <DropdownMenuItem onSelect={onSelect}>Sign out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>,
@@ -183,11 +185,13 @@ describe('team-ready primitives', () => {
     trigger.focus();
     await user.keyboard('{Enter}');
     const menu = screen.getByRole('menu');
+    expect(portalContainer).toContainElement(menu);
     expect(menu).toHaveClass('overflow-y-auto', 'overscroll-contain');
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus();
     await user.keyboard('{Enter}');
     expect(onSelect).toHaveBeenCalledOnce();
     expect(trigger).toHaveFocus();
+    portalContainer.remove();
   });
 
   it('keeps long Select option lists touch and wheel scrollable', async () => {
