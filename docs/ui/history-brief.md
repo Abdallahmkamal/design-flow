@@ -87,6 +87,8 @@ removed targets fall back to the Work Dates heading with an explanation.
 - Long descriptions, names, labels, and event details wrap; recent-row
   disclosure never makes older history inaccessible.
 
+Release Slice 2 makes each authorized work-log activity entry one focusable semantic link without a separate text or icon action. The destination opens that entry's owning submission batch in the Log Work-style overlay, where every current date/type/optional description is visible. Lead/Manager/Admin may change Worked By for the complete batch, and an authorized actor may withdraw the complete batch after irreversible confirmation. Unauthorized entries remain noninteractive, and restricted prior descriptions remain outside ordinary history/PDF presentation.
+
 ## References and acceptance
 
 Presentation and behavior reuse ready notes in

@@ -123,7 +123,7 @@ Compound functions lock in this order to avoid deadlocks:
 | Blocker | `create_blocker`, `resolve_blocker` |
 | Subtask | `add_subtask`, `rename_subtask`, `reorder_subtasks`, `set_subtask_completion`, `withdraw_subtask` |
 | Comment | `add_comment`, `edit_comment`, `withdraw_comment` |
-| Work logging | `submit_work_log`, `correct_work_log`, `withdraw_work_log` |
+| Work logging | `submit_work_log`, `get_work_log_batch`, `correct_work_log`, `withdraw_work_log`; narrow compatibility reads/corrections remain `get_work_log_entry`, `correct_work_log_entry` |
 
 There are no direct browser inserts/updates/deletes for these domains.
 
@@ -612,7 +612,15 @@ Atomic effects:
 
 Standalone visual work creates no ticket lifecycle record or contributor/ownership metric.
 
-### `correct_work_log`
+### `correct_work_log_entry`
+
+Caller: D when the batch `worked_by = auth.uid()`, or L, M, or Admin for any active entry.
+
+Input: stable entry ID, expected entry `updated_at`, desired work date/type/optional description, and operation ID.
+
+The operation locks the owning batch and target entry, rejects stale versions explicitly, validates the existing batch context and chosen type, and permits archived source tickets. It appends exactly one entry revision when values change, updates only the target entry and batch `edited_at`, writes one privacy-safe `work_log_corrected` event, updates ticket activity, and recalculates the affected ticket. It cannot change batch attribution/context, sibling entries, status, blocker, or subtasks. `logged_by` remains immutable. This remains a narrow compatibility contract; the normal correction UI now opens the complete batch.
+
+### Whole-batch `correct_work_log`
 
 Caller:
 
@@ -645,7 +653,7 @@ Atomic effects:
 - update affected ticket activity timestamps to correction time; and
 - leave historical actual dates available only through restricted revisions/timeline metadata when withdrawn.
 
-Reports immediately use the corrected context/date/type/attribution.
+Reports immediately use corrected current values. The normal correction overlay loads the complete authoritative batch and passes the complete current entry set through this contract; it never constructs a one-entry replacement from an activity row.
 
 ### `withdraw_work_log`
 

@@ -173,8 +173,7 @@ Broader visual consistency and secondary-module refinement must not delay rollou
 - Notifications inbox rows use the portal card hierarchy: linked Work Item,
   explicit read state, event summary, timestamp, and read action. Mobile keeps
   the same hierarchy with compact card spacing.
-- The profile dropdown shows the user's name and role as context and Sign out as its only action for this release.
-- Editable profile/display-name functionality may add a profile action later without changing the shell structure.
+- The profile dropdown shows the user's name and role as context and Sign out as its only self-service action. Release Slice 2 adds Admin-managed display-name/avatar controls in Settings without adding a self-edit action to the shell.
 
 ## Shell review verdict
 
@@ -402,6 +401,7 @@ Days Open follows these edge rules:
 - `+N` counts the remaining unique people involved in the ticket; never count the displayed person twice if they are both an assignee and contributor.
 - Hovering or activating the cell reveals a compact detail that separates **Assigned** from **Contributors**.
 - Use a profile image when available and initials as the fallback.
+- All shell, Dashboard, All Tickets, Ticket Details/activity, and Members-and-access portraits consume the shared `ProfileAvatar` source. It resolves a private signed URL by stable profile ID, uses immutable paths for cache safety, and falls back consistently when absent or failed.
 - Assign fallback avatar colors deterministically from the stable user ID so the same person keeps the same color even if their display name changes.
 - Use a curated, muted, accessible palette with light/dark variants. Avoid Vodafone red and status colors so avatar color does not imply product state.
 - Do not add manual avatar-color administration in the MVP.

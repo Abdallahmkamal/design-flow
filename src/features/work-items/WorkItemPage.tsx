@@ -19,9 +19,9 @@ import {
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { WorkItemExportPanel } from '../reports/WorkItemExportPanel';
+import { useAuthentication } from '../auth/authContext';
+import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import {
-  Avatar,
-  AvatarFallback,
   Button,
   Calendar,
   DropdownMenu,
@@ -30,8 +30,6 @@ import {
   DropdownMenuTrigger,
   FormInput,
   FormTextarea,
-  getAvatarToneClassName,
-  getInitials,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -703,6 +701,7 @@ function ActivityFeed({
   selected: string;
   onClear: () => void;
 }) {
+  const { account } = useAuthentication();
   const [shown, setShown] = useState(mobile ? 6 : 10);
   const filtered = selected
     ? entries.filter((entry) => dateKey(entry.effectiveDate) === selected)
@@ -727,20 +726,21 @@ function ActivityFeed({
       ) : null}
       <p className={styles.feedMonth}>{monthLabel}</p>
       <ol className={styles.feed}>
-        {filtered.slice(0, shown).map((entry) => (
-          <li
-            key={entry.id}
-            tabIndex={selected ? -1 : undefined}
-            data-kind={entry.kind}
-          >
-            <Avatar
-              className={`${styles.feedAvatar} ${getAvatarToneClassName(entry.actor.id)}`}
-            >
-              <AvatarFallback>
-                {getInitials(entry.actor.displayName)}
-              </AvatarFallback>
-            </Avatar>
-            <span className={styles.feedDot} aria-hidden="true" />
+        {filtered.slice(0, shown).map((entry) => {
+          const canEditWorkLog = Boolean(
+            entry.kind === 'work_log' &&
+            entry.subjectId &&
+            account &&
+            (entry.actor.id === account.id ||
+              account.isAdmin ||
+              ['lead', 'manager'].includes(account.positionCode)),
+          );
+          const shortDate = new Intl.DateTimeFormat('en', {
+            day: 'numeric',
+            month: 'short',
+            timeZone: 'UTC',
+          }).format(new Date(`${dateKey(entry.effectiveDate)}T00:00:00Z`));
+          const content = (
             <div className={styles.feedContent}>
               <strong>
                 {entry.kind === 'work_log'
@@ -750,15 +750,48 @@ function ActivityFeed({
               </strong>
               {entry.description ? <p>{entry.description}</p> : null}
             </div>
-            <time className={styles.feedDate} dateTime={entry.effectiveDate}>
-              {new Intl.DateTimeFormat('en', {
-                day: 'numeric',
-                month: 'short',
-                timeZone: 'UTC',
-              }).format(new Date(`${dateKey(entry.effectiveDate)}T00:00:00Z`))}
-            </time>
-          </li>
-        ))}
+          );
+          return (
+            <li
+              key={entry.id}
+              tabIndex={selected ? -1 : undefined}
+              data-kind={entry.kind}
+            >
+              <ProfileAvatar
+                profileId={entry.actor.id}
+                displayName={entry.actor.displayName}
+                className={styles.feedAvatar}
+                decorative
+              />
+              <span className={styles.feedDot} aria-hidden="true" />
+              {canEditWorkLog ? (
+                <Link
+                  className={styles.feedContentLink}
+                  to={`/work-logs/${entry.subjectId}/edit`}
+                  aria-label={`Edit work log: ${entry.title}, ${date(entry.effectiveDate)}`}
+                >
+                  {content}
+                  <time
+                    className={styles.feedDate}
+                    dateTime={entry.effectiveDate}
+                  >
+                    {shortDate}
+                  </time>
+                </Link>
+              ) : (
+                <>
+                  {content}
+                  <time
+                    className={styles.feedDate}
+                    dateTime={entry.effectiveDate}
+                  >
+                    {shortDate}
+                  </time>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ol>
       {shown < filtered.length ? (
         <Button
@@ -1027,26 +1060,24 @@ export function WorkItemPage() {
                     summary={
                       <span className={styles.peopleSummary}>
                         {workItem.assignee ? (
-                          <Avatar
-                            className={`${styles.headerAvatar} ${getAvatarToneClassName(workItem.assignee.id)}`}
-                          >
-                            <AvatarFallback>
-                              {getInitials(workItem.assignee.displayName)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <ProfileAvatar
+                            profileId={workItem.assignee.id}
+                            displayName={workItem.assignee.displayName}
+                            className={styles.headerAvatar}
+                            decorative
+                          />
                         ) : null}
                         {workItem.assignee && headerContributors.length ? (
                           <span aria-hidden="true">+</span>
                         ) : null}
                         {headerContributors.map((person) => (
-                          <Avatar
-                            className={`${styles.headerAvatar} ${getAvatarToneClassName(person.id)}`}
+                          <ProfileAvatar
+                            profileId={person.id}
+                            displayName={person.displayName}
+                            className={styles.headerAvatar}
+                            decorative
                             key={person.id}
-                          >
-                            <AvatarFallback>
-                              {getInitials(person.displayName)}
-                            </AvatarFallback>
-                          </Avatar>
+                          />
                         ))}
                       </span>
                     }

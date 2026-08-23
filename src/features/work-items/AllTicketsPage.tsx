@@ -27,9 +27,8 @@ import {
   type BadgeTone,
 } from '../../ui/Badge/Badge';
 import figmaLinkAction from '../../assets/figma-link-action.svg';
+import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import {
-  Avatar,
-  AvatarFallback,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -37,8 +36,6 @@ import {
   DropdownMenuTrigger,
   FormInput,
   FormSelect,
-  getAvatarToneClassName,
-  getInitials,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -199,11 +196,13 @@ function People({
         className="flex min-h-10 max-w-full items-center gap-2 rounded-md border-0 bg-transparent p-1 text-left font-sans text-sm text-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={`People on ${row.displayId}: ${people.map((person) => person.displayName).join(', ')}`}
       >
-        <Avatar className={cn('size-7', getAvatarToneClassName(shown.id))}>
-          <AvatarFallback className="text-xs">
-            {getInitials(shown.displayName)}
-          </AvatarFallback>
-        </Avatar>
+        <ProfileAvatar
+          profileId={shown.id}
+          displayName={shown.displayName}
+          className="size-7"
+          fallbackClassName="text-xs"
+          decorative
+        />
         {hideName ? null : (
           <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
             {shown.displayName}
@@ -859,25 +858,41 @@ export function AllTicketsPage() {
   };
 
   useEffect(() => {
-    if (location.pathname !== '/work-items' || !list.data) return;
+    if (location.pathname !== '/work-items' || !list.isSuccess) return;
     const launcher = sessionStorage.getItem('all-tickets-restore-focus');
     if (!launcher) return;
     const scrollY = Number(
       sessionStorage.getItem('all-tickets-scroll-y') ?? '0',
     );
-    const restoreTimer = window.setTimeout(() => {
+    const restoreFocus = (finalAttempt = false) => {
+      if (sessionStorage.getItem('all-tickets-restore-focus') !== launcher)
+        return;
       window.scrollTo({ top: scrollY });
-      [
+      const target = [
         ...document.querySelectorAll<HTMLElement>(
           `[data-ticket-launcher="${CSS.escape(launcher)}"]`,
         ),
-      ]
-        .find((candidate) => candidate.getClientRects().length > 0)
-        ?.focus();
-      sessionStorage.removeItem('all-tickets-restore-focus');
-    }, 500);
-    return () => window.clearTimeout(restoreTimer);
-  }, [location.pathname, list.data]);
+      ].find((candidate) => candidate.getClientRects().length > 0);
+      if (!target) return;
+      const active = document.activeElement;
+      if (
+        active === document.body ||
+        active === document.documentElement ||
+        active === target
+      )
+        target.focus({ preventScroll: true });
+      else {
+        sessionStorage.removeItem('all-tickets-restore-focus');
+        return;
+      }
+      if (finalAttempt) sessionStorage.removeItem('all-tickets-restore-focus');
+    };
+    const delays = [0, 100, 250, 500, 1_000, 1_500];
+    const timers = delays.map((delay, index) =>
+      window.setTimeout(() => restoreFocus(index === delays.length - 1), delay),
+    );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [location.pathname, list.isSuccess]);
   const sort = (field: WorkItemSort) =>
     update({
       sort: field,

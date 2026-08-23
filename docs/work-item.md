@@ -123,7 +123,7 @@ Include:
 - Primary-assignee changes
 - Blocker creation and resolution
 - Meaningful field and label changes
-- Work-log corrections and withdrawals
+- Whole-submission work-log correction and withdrawal. For its credited Designer or an authorized Lead/Manager/Admin, each visible work-log activity entry is one semantic link that opens its owning batch without a separate text or icon action; unauthorized entries remain noninteractive. The overlay shows every date/type/description; Lead/Manager/Admin may change Worked By for the whole submission, and authorized actors may withdraw the whole submission after confirmation.
 - Subtask changes
 - Archive and restore events
 

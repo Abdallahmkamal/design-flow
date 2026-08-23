@@ -753,6 +753,28 @@ button.subtaskTitle:focus-visible {
   color: var(--color-text-secondary);
   font: var(--type-caption);
 }
+.feedContentLink {
+  display: grid;
+  grid-column: 3 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-sm);
+  align-items: start;
+  margin: calc(var(--space-xs) * -1);
+  padding: var(--space-xs);
+  border-radius: var(--radius-inner);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+}
+.feedContentLink:hover {
+  background: var(--color-surface-raised-prominent);
+}
+.feedContentLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
 .feedDate {
   color: var(--color-text-secondary);
   font: var(--type-caption);

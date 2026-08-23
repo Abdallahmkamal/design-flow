@@ -53,36 +53,27 @@ import {
   type WorkLogContext,
   type WorkLogEntryInput,
 } from './workLogsApi';
+import {
+  defaultWorkTypeByContext,
+  previousUnusedWorkingDate,
+  workTypeForContextChange,
+} from './workLogDefaults';
+import { workTypesForContext } from './workLogOptions';
 import styles from './WorkLogPage.module.css';
-
-const ticketTypes = [
-  ['planning_alignment', 'Planning & alignment'],
-  ['discovery_research', 'Discovery & research'],
-  ['mapping_information_architecture', 'Mapping & information architecture'],
-  ['ideation_wireframing', 'Ideation & wireframing'],
-  ['ui_visual_design', 'UI & visual design'],
-  ['prototyping_interaction', 'Prototyping & interaction'],
-  ['design_system', 'Design system'],
-  ['testing_validation', 'Testing & validation'],
-  ['review_iteration', 'Review & iteration'],
-  ['documentation_handoff', 'Documentation & handoff'],
-  ['design_qa_implementation_support', 'Design QA & implementation support'],
-  ['team_support_collaboration', 'Team support & collaboration'],
-  ['other', 'Other'],
-] as const;
-const visualTypes = [
-  ['new_visual_asset', 'New visual asset'],
-  ['resizing_adaptation', 'Resizing & adaptation'],
-  ['presentation_support', 'Presentation support'],
-  ['image_editing', 'Image editing'],
-  ['illustration_iconography', 'Illustration & iconography'],
-  ['other_visual_work', 'Other visual work'],
-] as const;
 const today = new Date().toISOString().slice(0, 10);
-const newEntry = (): WorkLogEntryInput => ({
-  workDate: today,
-  workTypeCode: '',
+type WorkLogFormEntry = WorkLogEntryInput & {
+  workTypeSource: 'system' | 'manual';
+  savedManualWorkTypes: Partial<Record<WorkLogContext, string>>;
+};
+const newEntry = (
+  context: WorkLogContext,
+  workDate = today,
+): WorkLogFormEntry => ({
+  workDate,
+  workTypeCode: defaultWorkTypeByContext[context],
   description: '',
+  workTypeSource: 'system',
+  savedManualWorkTypes: {},
 });
 const blankTicket = (assigneeId = ''): WorkItemFormValues => ({
   title: '',
@@ -134,7 +125,9 @@ export function WorkLogPage() {
   const [ticketId, setTicketId] = useState(params.get('workItemId') ?? '');
   const [ticketDisplayId, setTicketDisplayId] = useState('');
   const [workedBy, setWorkedBy] = useState(account?.id ?? '');
-  const [entries, setEntries] = useState<WorkLogEntryInput[]>([newEntry()]);
+  const [entries, setEntries] = useState<WorkLogFormEntry[]>([
+    newEntry('ticket'),
+  ]);
   const [changeStatus, setChangeStatus] = useState(false);
   const [completeSubtasks, setCompleteSubtasks] = useState(false);
   const [targetStatus, setTargetStatus] = useState('');
@@ -229,7 +222,7 @@ export function WorkLogPage() {
     (account.isAdmin || ['lead', 'manager'].includes(account.positionCode)),
   );
   const canCreateTicket = account?.positionCode !== 'viewer';
-  const types = context === 'ticket' ? ticketTypes : visualTypes;
+  const types = workTypesForContext(context);
   const incompleteSubtasks =
     selectedTicket.data?.subtasks.filter((subtask) => !subtask.isCompleted) ??
     [];
@@ -263,7 +256,7 @@ export function WorkLogPage() {
     ticketId !== (params.get('workItemId') ?? '') ||
     workedBy !== (account?.id ?? '') ||
     entries.length !== 1 ||
-    Boolean(entries[0]?.workTypeCode) ||
+    entries[0]?.workTypeCode !== defaultWorkTypeByContext[context] ||
     Boolean(entries[0]?.description) ||
     entries[0]?.workDate !== today ||
     changeStatus ||
@@ -552,7 +545,26 @@ export function WorkLogPage() {
                 : 'h-10 rounded-full border-0 bg-transparent px-4'
             }
             aria-pressed={context === 'ticket'}
-            onClick={() => setContext('ticket')}
+            onClick={() => {
+              setContext('ticket');
+              setEntries((current) =>
+                current.map((entry) => {
+                  const next = workTypeForContextChange(
+                    entry.workTypeCode,
+                    entry.workTypeSource,
+                    context,
+                    'ticket',
+                    entry.savedManualWorkTypes,
+                  );
+                  return {
+                    ...entry,
+                    workTypeCode: next.code,
+                    workTypeSource: next.source,
+                    savedManualWorkTypes: next.savedManual,
+                  };
+                }),
+              );
+            }}
           >
             Ticket work
           </ModernButton>
@@ -567,6 +579,23 @@ export function WorkLogPage() {
             aria-pressed={context === 'standalone_visual'}
             onClick={() => {
               setContext('standalone_visual');
+              setEntries((current) =>
+                current.map((entry) => {
+                  const next = workTypeForContextChange(
+                    entry.workTypeCode,
+                    entry.workTypeSource,
+                    context,
+                    'standalone_visual',
+                    entry.savedManualWorkTypes,
+                  );
+                  return {
+                    ...entry,
+                    workTypeCode: next.code,
+                    workTypeSource: next.source,
+                    savedManualWorkTypes: next.savedManual,
+                  };
+                }),
+              );
               setTicketId('');
               setTicketDisplayId('');
               resetTicketOptions();
@@ -762,7 +791,15 @@ export function WorkLogPage() {
                     setEntries(
                       entries.map((value, i) =>
                         i === index
-                          ? { ...value, workTypeCode: event.target.value }
+                          ? {
+                              ...value,
+                              workTypeCode: event.target.value,
+                              workTypeSource: 'manual',
+                              savedManualWorkTypes: {
+                                ...value.savedManualWorkTypes,
+                                [context]: event.target.value,
+                              },
+                            }
                           : value,
                       ),
                     )
@@ -811,7 +848,17 @@ export function WorkLogPage() {
             variant="secondary"
             className="h-8 w-full text-sm font-semibold"
             disabled={entries.length >= 5}
-            onClick={() => setEntries([...entries, newEntry()])}
+            onClick={() =>
+              setEntries([
+                ...entries,
+                newEntry(
+                  context,
+                  previousUnusedWorkingDate(
+                    entries.map((entry) => entry.workDate),
+                  ),
+                ),
+              ])
+            }
           >
             Add another date
           </ModernButton>

@@ -275,7 +275,7 @@ it is not a reusable ARIA-combobox surface.
 | Route | Thin responsibility | Feature surface |
 | --- | --- | --- |
 | `/work-logs/new` | Read optional preselected ticket/return marker; route guard | Log Work form |
-| `/work-logs/:batchId/edit` | Validate batch ID, load authoritative editable batch, route guard | Work-log correction form |
+| `/work-logs/:batchId/edit` | Validate stable batch ID, load the authoritative batch/version, route guard | Log Work-style correction overlay; all current rows are visible, authorized Worked By reassignment and whole-batch withdrawal are available, while context/ticket/submitter/status/blocker/subtasks remain immutable |
 | `/work-items/:displayId` | Continue thin detail composition | Work Dates grid and work-log timeline events |
 
 The feature/domain layer owns operation IDs, API payload shaping, authoritative

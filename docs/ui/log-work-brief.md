@@ -8,6 +8,8 @@
 
 > **Ticket-picker refinement (2026-08-11):** Focusing an empty ticket picker opens a lean `Your tickets` list containing unarchived tickets where the current user is primary assignee or contributor. In Progress, In Review, and To do are prioritized in that order, then recent Backlog or Paused work; Done is omitted from suggestions. Typing switches to the existing server-side global eligible-ticket search, and clearing returns to personalized suggestions.
 
+> **Release Slice 2 amendment (2026-08-22):** Ticket Work defaults to the existing UI & visual design code and Standalone Visual to Resizing & adaptation. A context switch updates a row only while its Work Type remains system-defaulted; a manual selection is never overwritten. Add Date derives the previous unused Sunday–Thursday date from the earliest current row and recalculates after manual date edits. An authorized work-log activity row is one semantic link to its owning submission; correction opens the complete batch in the shared overlay, and the narrow entry RPC remains compatibility-only.
+
 ## Purpose
 
 Capture actual ticket work by default, or secondary standalone Visual Work,
@@ -25,9 +27,19 @@ existing auth boundary before this feature loads.
 Entry is `/work-logs/new` from the authenticated shell, All Tickets' permitted
 Log Work action (with its ticket selected), and the Work Item permitted Log
 Work action. Correction opens `/work-logs/:batchId/edit` from an eligible Work
-Item history event. Successful ticket work returns to the authoritative Work
+Item activity entry. The route-backed correction surface reuses the Log Work
+overlay, Worked By selector, and date/type/description row presentation for the
+complete owning submission. Successful ticket work returns to the authoritative Work
 Item; standalone work returns to its Log Work confirmation. Creation returns to
 the preserved ticket-mode draft, not a submitted state.
+
+Correction keeps context, ticket/related Area, original submitter, status,
+blocker, and subtasks immutable. A credited Designer may correct or withdraw
+their own batch but cannot reassign its credit. Lead, Manager, or Admin may
+select another active operationally eligible Worked By member; that change
+applies to every date in the submission. Withdrawal requires an explicit
+irreversible confirmation and removes the complete batch from normal activity,
+reports, and exports.
 
 ## Flow and fields
 
@@ -59,8 +71,9 @@ no ticket lifecycle, assignee, contributor, planned-date, or status content.
 `Worked by` defaults to the actor. It is shown as a read-only identity for a
 Designer and a bounded eligible-person Select for Lead, Manager, or Admin.
 Correction shows the same complete current batch form plus context-aware
-withdraw action. Withdrawal is a visible labelled destructive action with an
-in-context confirmation; it is not a restore path.
+withdraw action. Withdrawal is a visible red-outlined destructive action with
+an in-context confirmation; the final confirmation remains destructive, and it
+is not a restore path.
 
 ## Integrated ticket operations
 
@@ -91,12 +104,15 @@ horizontal movement while retaining date order and the same destination.
 Timeline work events show actual work date, `worked_by`, primary/contributor
 relationship effective on that date, work type, optional description, and
 submitted/corrected metadata. Normal history and normal reports hide withdrawn
-bodies; withdrawal/correction remains explicit audit metadata.
+bodies; withdrawal/correction remains explicit audit metadata. When correction
+is authorized, the complete work-log content and date form one focusable
+semantic link without a separate text or icon action; read-only events remain
+noninteractive.
 
 ## Layout and responsive behavior
 
-The two Log Work routes are focused full-page forms, preserving deliberate
-context and resilient draft recovery. Desktop uses one readable form column
+The create and correction routes use the shared responsive overlay, preserving
+deliberate context and resilient draft recovery. Desktop uses one readable form column
 with a compact contextual ticket summary; date rows preserve field alignment.
 On narrow screens fields stack in their existing semantic order, date-row
 actions remain adjacent to their row, the primary submit stays after all fields,

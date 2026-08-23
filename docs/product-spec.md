@@ -263,6 +263,8 @@ Each entry has:
 
 Description is optional for every work type, including Other.
 
+Ticket Work defaults Work Type to the existing **UI & visual design** value. Standalone Visual defaults it to **Resizing & adaptation**. These are editable defaults: changing context updates a still-system-defaulted row, but never overwrites a Work Type the user selected manually.
+
 ### Integrated ticket actions
 
 Ticket-mode Log Work adds two launch paths without combining their domain operations:
@@ -297,7 +299,7 @@ Use one primary work type per date. If materially different work happened on the
 
 - Single-date entry is the default and defaults to today.
 - Past dates are allowed; future dates are not.
-- Users may add multiple dates, up to five selected dates in one submission.
+- Users may add multiple dates, up to five selected dates in one submission. Add Date starts from the earliest currently selected row, walks backward, skips Friday/Saturday and every date already present, and recalculates after manual date edits.
 - The working week is Sunday through Thursday.
 - Friday and Saturday are excluded by default but can be selected manually when work actually happened.
 - Week-based reporting periods span Sunday through Saturday so manually recorded Friday/Saturday work remains visible; five-working-day calculations continue to skip Friday and Saturday.
@@ -310,11 +312,13 @@ Store actual `work_date` separately from submission `created_at`. A backfilled e
 
 ### Corrections and withdrawal
 
-- Designers may edit any log where they are `worked_by`, including logs entered on their behalf.
-- Leads, Managers, and Admin-privileged users may edit any work log.
+- Designers may edit an individual entry where they are `worked_by`, including entries logged on their behalf.
+- Leads, Managers, and Admin-privileged users may edit any individual work-log entry.
 - Only Leads, Managers, and Admin-privileged users may change `worked_by` to another designer.
 - There is no correction time limit in the MVP.
-- Edits record previous value, new value, editor, and edit time.
+- The normal correction UI opens the complete submission batch in the same route-backed overlay pattern as Log Work. It may correct each retained date/type/optional description and, for Lead/Manager/Admin actors, change `worked_by` for the complete submission. It cannot change the original submitter, ticket/context, status, blocker, or subtasks.
+- The same overlay may withdraw the complete submission after explicit irreversible confirmation. Withdrawal removes every date in that batch from normal activity, reports, and exports; it is never a per-entry delete or restore operation.
+- Entry edits use optimistic concurrency and record previous value, new value, editor, and edit time.
 - Withdrawn logs disappear from normal activity and reports but remain in the audit trail.
 - Withdrawing or correcting logs recalculates contributors, `last_worked_on`, and report aggregates.
 

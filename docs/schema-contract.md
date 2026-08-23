@@ -198,6 +198,7 @@ Initial notification codes:
 | `is_admin` | `boolean` | Required, default false |
 | `is_active` | `boolean` | Required, default true |
 | `must_change_password` | `boolean` | Required, default true |
+| `avatar_path` | `text` | Nullable immutable object path under `<profile-id>/<uuid>.(jpg|jpeg|png|webp)`; never a URL |
 | `current_reports_to_id` | `uuid` | Nullable FK to `profiles`; cannot equal `id` |
 | `created_by` | `uuid` | Nullable only for first bootstrap |
 | `created_at` | `timestamptz` | Required |
@@ -206,6 +207,12 @@ Initial notification codes:
 Database invariant: `is_admin = false OR position_code <> 'viewer'`. A deferred authorization trigger also verifies `admin_eligible` from the position reference. An active Designer must have an active Lead supervisor; an active Lead must have an active Manager supervisor; Viewer and Manager have no supervisor. Those cross-row rules are enforced by the access-management RPC plus deferred constraint triggers.
 
 Indexes: `(is_active, position_code)`, `current_reports_to_id`, and partial `(id) WHERE is_admin AND is_active`.
+
+`must_change_password` gates the profile's own normal application access only. Target-member eligibility for assignment, hierarchy, and work attribution is based on `is_active` plus the applicable position capability. A password-pending active member therefore remains a valid assignee/`worked_by` subject.
+
+### Private profile-avatar storage
+
+Bucket `profile-avatars` is private. Bucket defenses allow JPEG, PNG, and WebP up to 2 MB. Authenticated normal application users have column-level read access to `profiles.avatar_path` and may create signed reads; only Admin-privileged actors may insert, update, or delete objects. Object paths are immutable/versioned and scoped below the target profile ID. Replacement uploads the new object first, atomically updates/audits `profiles.avatar_path`, and deletes the old object only after success; an orphan is preferable to deleting the valid current image early.
 
 ### `profile_access_periods`
 
@@ -545,7 +552,7 @@ Indexes: `(batch_id, position)`, `(work_date, work_type_code)`, and partial `(ba
 
 Both tables are append-only. Unique indexes enforce `(batch_id, revision_number)` and `(entry_id, revision_number)`; operation/changed-at indexes support audit reconstruction.
 
-The current batch/entry rows are the normal-query source of truth. Revision rows are the audit reconstruction source. A correction transaction recalculates both the old and new affected tickets.
+The current batch/entry rows are the normal-query source of truth. Revision rows are the audit reconstruction source. The normal UI uses `get_work_log_batch`, `correct_work_log`, and `withdraw_work_log` with the batch `edited_at`/created version. It shows the complete current entry set, permits date/type/description correction, and permits Lead/Manager/Admin to change batch `worked_by`; the original submitter, context/ticket, status, blocker, and subtasks remain immutable in this UI. Withdrawal applies to the complete batch. `get_work_log_entry` and `correct_work_log_entry` remain narrow compatibility contracts but are no longer the normal correction route.
 
 ## 8. Notifications and idempotency
 

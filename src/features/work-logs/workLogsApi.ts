@@ -31,6 +31,19 @@ export interface WorkLogBatch {
   canCorrect: boolean;
   canWithdraw: boolean;
 }
+export interface WorkLogEntry {
+  id: string;
+  batchId: string;
+  context: WorkLogContext;
+  workItemId: string | null;
+  workedBy: string;
+  workDate: string;
+  workTypeCode: string;
+  description: string;
+  position: number;
+  version: string;
+  canCorrect: boolean;
+}
 
 const batchSchema = z.object({
   id: z.string().uuid(),
@@ -54,6 +67,22 @@ const batchSchema = z.object({
   canCorrect: z.boolean(),
   canWithdraw: z.boolean(),
 });
+const entrySchema = z.object({
+  id: z.string().uuid(),
+  batchId: z.string().uuid(),
+  context: z.enum(['ticket', 'standalone_visual']),
+  workItemId: z.string().uuid().nullable(),
+  workedBy: z.string().uuid(),
+  workDate: z.string(),
+  workTypeCode: z.string(),
+  description: z
+    .string()
+    .nullable()
+    .transform((value) => value ?? ''),
+  position: z.number(),
+  version: z.string(),
+  canCorrect: z.boolean(),
+});
 
 function throwApiError(error: { message: string; code?: string }) {
   const code = /DF_[A-Z_]+/.exec(error.message)?.[0] ?? error.code ?? 'NETWORK';
@@ -69,7 +98,7 @@ export async function submitWorkLog(input: SubmitWorkLogInput) {
     entries: input.entries.map((entry) => ({
       work_date: entry.workDate,
       work_type_code: entry.workTypeCode,
-      description: entry.description || null,
+      description: entry.description,
     })) as Json,
     blocker: input.blocker?.reason
       ? {
@@ -118,10 +147,36 @@ export async function correctWorkLog(batch: WorkLogBatch) {
       id: entry.id,
       work_date: entry.workDate,
       work_type_code: entry.workTypeCode,
-      description: entry.description || null,
+      description: entry.description,
     })) as Json,
     operation_id: createOperationId(),
   } as never);
+  if (error) throwApiError(error);
+  return data;
+}
+
+export async function getWorkLogEntry(
+  id: string,
+): Promise<WorkLogEntry | null> {
+  const { data, error } = await getSupabaseClient().rpc('get_work_log_entry', {
+    target_entry_id: id,
+  });
+  if (error) throwApiError(error);
+  return data === null ? null : entrySchema.parse(data);
+}
+
+export async function correctWorkLogEntry(entry: WorkLogEntry) {
+  const { data, error } = await getSupabaseClient().rpc(
+    'correct_work_log_entry',
+    {
+      entry_id: entry.id,
+      expected_version: entry.version,
+      work_date: entry.workDate,
+      work_type_code: entry.workTypeCode,
+      description: entry.description,
+      operation_id: createOperationId(),
+    },
+  );
   if (error) throwApiError(error);
   return data;
 }

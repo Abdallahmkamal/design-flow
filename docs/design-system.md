@@ -665,6 +665,8 @@ markers. Vodafone `sem/surface/static/secondary` and semantic text/icon roles
 remain authoritative for color and typography. This is a Design Flow fallback,
 not an Astryx measurement.
 
+Release Slice 2 retains this geometry while making `ProfileAvatar` the shared image/initials implementation. A private signed image fills the same owned primitive when available; absent or failed images retain the deterministic stable-ID palette and initials fallback. Upload policy, file limits, and authorization remain product/security contracts rather than visual-system configuration.
+
 ### Phase 1 font-asset gate
 
 The approved Vodafone VF v4.000 variable WOFF2 asset was supplied and added on 2026-07-20. The runtime loads `Vodafone VF` across its documented `wght` range of 200–900, covering the required Regular, Medium, SemiBold, and Bold roles with real variable-font instances. `font-synthesis` is disabled, and the system stack remains only a network/load-failure fallback rather than the expected rendering.

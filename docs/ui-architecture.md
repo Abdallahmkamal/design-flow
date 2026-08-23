@@ -65,6 +65,8 @@ Shared UI components live under `src/ui/`. The initial expected set includes:
 
 These are Design Flow components. Their colors and typography resolve through Vodafone semantic tokens and text styles. Their remaining presentation and behavior follow verified Astryx notes through centralized Design Flow aliases. Their implementation and API remain owned by this repository.
 
+Release Slice 2 consolidates person rendering behind `ProfileAvatar(profileId, displayName, className?, fallbackClassName?, decorative?, previewUrl?)`. It is the only product-level avatar source: it resolves the private signed image through the shared query cache, uses the stable profile ID for fallback color, derives initials from the current display name, and falls back on absent or failed images. The optional object-URL preview is limited to the Admin profile editor and is never persisted as a source URL. Feature code must not assemble the Radix image/fallback primitive or the retired legacy initials component directly for a person.
+
 The technical plan may refine the internal file layout and documentation tooling, but it must preserve the `src/ui/` ownership boundary and zero-Astryx-runtime rule.
 
 The combined team-ready Slices 7–8 run adds owned `Tabs`, `Table`,

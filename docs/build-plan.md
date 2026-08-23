@@ -179,11 +179,12 @@ Implement actual-work capture and correction:
 
 - ticket work as the default context and standalone visual work as the secondary context;
 - one-to-five explicit date rows with one required work type and optional detail per date;
-- Sunday–Thursday defaults, manual Friday/Saturday selection, past dates, and no future dates;
+- Sunday–Thursday defaults, manual Friday/Saturday selection, past dates, no future dates, and Add Date traversal from the earliest selected row to the previous unused working day;
+- context defaults of UI & visual design for Ticket Work and Resizing & adaptation for Standalone Visual, updating only while still system-defaulted;
 - ticket and visual controlled vocabularies, including optional-detail Other;
 - a ticket-mode Create New Ticket path that preserves the unfinished Log Work draft and selects the independently created ticket on return;
 - an optional ticket status change that runs only after successful work-log submission through the independent transition operation and its permissions;
-- audited correction and soft withdrawal without an edit time limit;
+- audited optimistic-concurrency correction of a complete submission batch through the Log Work-style overlay, including authorized whole-batch `worked_by` reassignment and soft whole-batch withdrawal, without an edit time limit;
 - automatic contributor derivation from valid ticket work;
 - ticket Days Active, last-worked values, and dependent aggregate recalculation; and
 - the Work Item Work Dates grid and integrated activity history.

@@ -34,6 +34,10 @@ export function settingsErrorMessage(error: unknown): string {
       return 'Viewer accounts cannot hold Admin privilege.';
     case 'DF_VALIDATION':
       return 'Check the selected position, reporting relationship, and replacement assignments.';
+    case 'DF_AVATAR_VALIDATION':
+      return 'Choose a JPEG, PNG, or WebP profile picture no larger than 2 MB.';
+    case 'DF_AVATAR_UPLOAD_TIMEOUT':
+      return 'The profile picture upload took too long. Check the local backend connection and try again.';
     case 'DF_PASSWORD_CHANGE_REQUIRED':
       return 'Your account must complete its password change before using Settings.';
     case 'DF_ACCOUNT_INACTIVE':
