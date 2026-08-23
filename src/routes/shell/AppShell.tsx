@@ -27,9 +27,8 @@ import { getPublicEnvironment } from '../../shared/config/env';
 import { useTheme } from '../../shared/theme/themeContext';
 import designFlowMark from '../../assets/design-flow-mark.svg';
 import { SkipLink } from '../../ui/SkipLink/SkipLink';
+import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import {
-  Avatar,
-  AvatarFallback,
   Badge,
   Button,
   DropdownMenu,
@@ -38,8 +37,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  getAvatarToneClassName,
-  getInitials,
   Separator,
   Sheet,
   SheetClose,
@@ -210,14 +207,12 @@ function ProfileMenu({
           )}
           aria-label={`Open profile menu for ${displayName}`}
         >
-          <Avatar
-            className={cn(
-              mobile ? 'size-10' : 'size-8',
-              getAvatarToneClassName(accountId),
-            )}
-          >
-            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-          </Avatar>
+          <ProfileAvatar
+            profileId={accountId}
+            displayName={displayName}
+            className={mobile ? 'size-10' : 'size-8'}
+            decorative
+          />
           {!mobile ? (
             <>
               <span className="min-w-0 flex-1">

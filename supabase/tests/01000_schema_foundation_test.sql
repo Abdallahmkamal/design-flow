@@ -126,7 +126,7 @@ select is(
     where namespace.nspname = 'public'
       and function_definition.prokind = 'f'
   ),
-  56,
+  59,
   'only the owning application and approved release functions are exposed'
 );
 

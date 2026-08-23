@@ -29,9 +29,9 @@ select lives_ok(
   $$ select public.submit_work_log(
     'ticket', current_setting('design_flow.slice3_core')::uuid, null, null,
     jsonb_build_array(
-      jsonb_build_object('work_date', current_setting('design_flow.slice3_team_date')::date - 2, 'work_type_code', 'ui_visual_design'),
-      jsonb_build_object('work_date', current_setting('design_flow.slice3_team_date')::date - 2, 'work_type_code', 'prototyping_interaction'),
-      jsonb_build_object('work_date', current_setting('design_flow.slice3_team_date')::date - 1, 'work_type_code', 'review_iteration')
+      jsonb_build_object('work_date', date '2026-07-09', 'work_type_code', 'ui_visual_design'),
+      jsonb_build_object('work_date', date '2026-07-09', 'work_type_code', 'prototyping_interaction'),
+      jsonb_build_object('work_date', date '2026-07-10', 'work_type_code', 'review_iteration')
     ), null, '91000000-0000-4000-8000-000000000002'
   ) $$,
   'multiple same-day and cross-day work logs can populate the read model'

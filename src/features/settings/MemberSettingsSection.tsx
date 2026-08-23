@@ -12,7 +12,9 @@ import { Button } from '../../ui/Button/Button';
 import { Checkbox } from '../../ui/Checkbox/Checkbox';
 import { DataTable, type DataTableColumn } from '../../ui/DataTable/DataTable';
 import { Input } from '../../ui/Input/Input';
+import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import { Select } from '../../ui/Select/Select';
+import { useAuthentication } from '../auth/authContext';
 import {
   createMember,
   deactivateMember,
@@ -21,6 +23,8 @@ import {
   issueTemporaryPassword,
   reactivateMember,
   setMemberAccess,
+  updateMemberProfile,
+  validateProfileAvatar,
   type AssignedWorkItem,
   type MemberRecord,
   type OneTimeCredentialResult,
@@ -37,6 +41,7 @@ import styles from './SettingsPage.module.css';
 
 type MemberAction =
   | { type: 'create' }
+  | { type: 'profile'; member: MemberRecord }
   | { type: 'edit'; member: MemberRecord }
   | { type: 'reset'; member: MemberRecord }
   | { type: 'deactivate'; member: MemberRecord }
@@ -65,7 +70,6 @@ function supervisorOptions(
     (member) =>
       member.id !== excludedId &&
       member.isActive &&
-      !member.mustChangePassword &&
       member.positionCode === requiredPosition,
   );
 }
@@ -78,7 +82,6 @@ function eligibleAssignees(
     (member) =>
       member.id !== excludedId &&
       member.isActive &&
-      !member.mustChangePassword &&
       member.positionCode !== 'viewer',
   );
 }
@@ -330,6 +333,172 @@ function CreateMemberForm({
           Create member
         </Button>
         <Button
+          variant="ghost"
+          onClick={onCancel}
+          disabled={mutation.isPending}
+        >
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function EditProfileForm({
+  member,
+  onCancel,
+  onComplete,
+}: {
+  member: MemberRecord;
+  onCancel: () => void;
+  onComplete: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const { account, refreshAccount } = useAuthentication();
+  const [displayName, setDisplayName] = useState(member.displayName);
+  const [avatarFile, setAvatarFile] = useState<File>();
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+  const [validationError, setValidationError] = useState('');
+  const [avatarObjectPath, setAvatarObjectPath] = useState<string>();
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string>();
+  const operation = useRef<StableOperation | null>(null);
+  useEffect(
+    () => () => {
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+    },
+    [avatarPreviewUrl],
+  );
+  const mutation = useMutation({
+    mutationFn: () =>
+      updateMemberProfile(
+        {
+          member,
+          displayName,
+          removeAvatar,
+          ...(avatarFile ? { avatarFile } : {}),
+          ...(avatarObjectPath ? { avatarObjectPath } : {}),
+        },
+        operationIdFor(
+          operation,
+          JSON.stringify({
+            member: member.id,
+            displayName,
+            removeAvatar,
+            avatarObjectPath,
+            version: member.updatedAt,
+          }),
+        ),
+      ),
+    onSuccess: async () => {
+      announceSettingsSaved();
+      operation.current = null;
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['settings-members'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['profile-avatar', member.id],
+        }),
+        queryClient.invalidateQueries({ queryKey: ['team-directory'] }),
+        queryClient.invalidateQueries({ queryKey: ['work-items'] }),
+        queryClient.invalidateQueries({ queryKey: ['work-item'] }),
+        queryClient.invalidateQueries({ queryKey: ['work-item-history'] }),
+        queryClient.invalidateQueries({ queryKey: ['work-item-options'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['reports'] }),
+        queryClient.invalidateQueries({ queryKey: ['settings-audit'] }),
+      ]);
+      if (account?.id === member.id) await refreshAccount();
+      onComplete();
+    },
+  });
+
+  return (
+    <form
+      className={styles.actionForm}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!displayName.trim() || validationError) return;
+        mutation.mutate();
+      }}
+    >
+      <h3 tabIndex={-1}>Edit profile for {member.displayName}</h3>
+      <div className={styles.formGrid}>
+        <div className={styles.memberIdentity}>
+          <ProfileAvatar
+            profileId={member.id}
+            displayName={displayName || member.displayName}
+            previewUrl={avatarPreviewUrl}
+          />
+          <span>
+            {avatarFile
+              ? 'Selected profile picture preview'
+              : 'Current profile picture'}
+          </span>
+        </div>
+        <Input
+          label="Display name"
+          value={displayName}
+          maxLength={160}
+          required
+          onChange={(event) => setDisplayName(event.target.value)}
+        />
+        <Input
+          label="Profile picture"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const error = validateProfileAvatar(file);
+            setValidationError(error ?? '');
+            if (error) {
+              setAvatarFile(undefined);
+              setAvatarObjectPath(undefined);
+              setAvatarPreviewUrl(undefined);
+              return;
+            }
+            const extension =
+              file.type === 'image/png'
+                ? 'png'
+                : file.type === 'image/webp'
+                  ? 'webp'
+                  : 'jpg';
+            setAvatarFile(file);
+            setAvatarPreviewUrl(URL.createObjectURL(file));
+            setAvatarObjectPath(
+              `${member.id}/${crypto.randomUUID()}.${extension}`,
+            );
+            setRemoveAvatar(false);
+          }}
+        />
+        <p>JPEG, PNG, or WebP; maximum 2 MB. Images are not cropped.</p>
+        {avatarFile ? <p role="status">Selected: {avatarFile.name}</p> : null}
+        {member.avatarPath ? (
+          <Checkbox
+            label="Remove current profile picture"
+            checked={removeAvatar}
+            onChange={(event) => {
+              setRemoveAvatar(event.target.checked);
+              if (event.target.checked) {
+                setAvatarFile(undefined);
+                setAvatarObjectPath(undefined);
+                setAvatarPreviewUrl(undefined);
+                setValidationError('');
+              }
+            }}
+          />
+        ) : null}
+      </div>
+      {validationError ? <p role="alert">{validationError}</p> : null}
+      {mutation.isPending ? (
+        <p role="status">Uploading and saving the profile picture…</p>
+      ) : null}
+      <FormFeedback error={mutation.error} />
+      <div className={styles.formActions}>
+        <Button type="submit" isLoading={mutation.isPending}>
+          Save changes
+        </Button>
+        <Button
+          type="button"
           variant="ghost"
           onClick={onCancel}
           disabled={mutation.isPending}
@@ -825,8 +994,15 @@ export function MemberSettingsSection() {
       header: 'Member',
       render: (member) => (
         <div className={styles.memberIdentity}>
-          <strong>{member.displayName}</strong>
-          <span>{member.email}</span>
+          <ProfileAvatar
+            profileId={member.id}
+            displayName={member.displayName}
+            decorative
+          />
+          <span>
+            <strong>{member.displayName}</strong>
+            <span>{member.email}</span>
+          </span>
         </div>
       ),
     },
@@ -874,6 +1050,13 @@ export function MemberSettingsSection() {
               <Button
                 variant="ghost"
                 size="small"
+                onClick={() => openAction({ type: 'profile', member })}
+              >
+                Edit profile
+              </Button>
+              <Button
+                variant="ghost"
+                size="small"
                 onClick={() => openAction({ type: 'edit', member })}
               >
                 Edit access
@@ -917,6 +1100,14 @@ export function MemberSettingsSection() {
           setCredential(notice);
           setAction(null);
         }}
+      />
+    );
+  } else if (action?.type === 'profile') {
+    actionContent = (
+      <EditProfileForm
+        member={action.member}
+        onCancel={closeAction}
+        onComplete={closeAction}
       />
     );
   } else if (action?.type === 'edit') {

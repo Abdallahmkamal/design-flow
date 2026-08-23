@@ -174,6 +174,7 @@ async function mocks(
   page: Page,
   options: {
     viewer?: boolean;
+    manager?: boolean;
     conflict?: boolean;
     subtaskFailsOnce?: boolean;
     listRows?: (typeof listRow)[];
@@ -220,8 +221,14 @@ async function mocks(
           id: userId,
           display_name: options.viewer
             ? '[SYNTHETIC] Viewer'
-            : '[SYNTHETIC] Designer',
-          position_code: options.viewer ? 'viewer' : 'designer',
+            : options.manager
+              ? '[SYNTHETIC] Manager'
+              : '[SYNTHETIC] Designer',
+          position_code: options.viewer
+            ? 'viewer'
+            : options.manager
+              ? 'manager'
+              : 'designer',
           is_admin: false,
           is_active: true,
           must_change_password: false,
@@ -449,7 +456,31 @@ async function mocks(
   });
   await page.route('**/rest/v1/rpc/**', async (route) => {
     const url = route.request().url();
-    if (url.includes('get_own_account_state'))
+    if (url.includes('get_work_log_batch'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: '78000000-0000-4000-8000-000000000001',
+          context: 'ticket',
+          workItemId: itemId,
+          relatedAreaId: null,
+          workedBy: userId,
+          version: '2026-07-22T10:00:00Z',
+          entries: [
+            {
+              id: '79000000-0000-4000-8000-000000000001',
+              workDate: '2026-07-20',
+              workTypeCode: 'ui_visual_design',
+              description: '[SYNTHETIC] Backfilled work',
+              position: 1,
+            },
+          ],
+          canCorrect: true,
+          canWithdraw: true,
+        }),
+      });
+    else if (url.includes('get_own_account_state'))
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -458,8 +489,14 @@ async function mocks(
             id: userId,
             display_name: options.viewer
               ? '[SYNTHETIC] Viewer'
-              : '[SYNTHETIC] Designer',
-            position_code: options.viewer ? 'viewer' : 'designer',
+              : options.manager
+                ? '[SYNTHETIC] Manager'
+                : '[SYNTHETIC] Designer',
+            position_code: options.viewer
+              ? 'viewer'
+              : options.manager
+                ? 'manager'
+                : 'designer',
             is_admin: false,
             is_active: true,
             must_change_password: false,
@@ -980,6 +1017,38 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
     'border-radius',
     '12px',
   );
+  await expect(page.getByLabel('Work Type 1')).toContainText(
+    'UI & visual design',
+  );
+  await page.getByRole('button', { name: 'Add another date' }).click();
+  const firstDate = new Date(
+    (await page
+      .getByRole('button', { name: 'Work Date 1', exact: true })
+      .textContent()) ?? '',
+  )
+    .toISOString()
+    .slice(0, 10);
+  const secondDate = new Date(
+    (await page
+      .getByRole('button', { name: 'Work Date 2', exact: true })
+      .textContent()) ?? '',
+  )
+    .toISOString()
+    .slice(0, 10);
+  expect(secondDate < firstDate).toBe(true);
+  expect([5, 6]).not.toContain(new Date(`${secondDate}T00:00:00Z`).getUTCDay());
+  await expect(page.getByLabel('Work Type 2')).toContainText(
+    'UI & visual design',
+  );
+  await page.getByRole('button', { name: 'Standalone Visual Work' }).click();
+  await expect(page.getByLabel('Work Type 1')).toContainText(
+    'Resizing & adaptation',
+  );
+  await page.getByRole('button', { name: 'Ticket work' }).click();
+  await expect(page.getByLabel('Work Type 1')).toContainText(
+    'UI & visual design',
+  );
+  await page.getByRole('button', { name: 'Remove work date 2' }).click();
   for (const label of ['Work Date', 'Work Type', 'Description (optional)']) {
     await expect(
       page.locator('label').filter({ hasText: label }).first(),
@@ -1213,6 +1282,84 @@ test('partial follow-up failure retries only the failed subtask with its stable 
   expect(subtaskMutations[1]?.body).toMatchObject({
     operation_id: (subtaskMutations[0]?.body as { operation_id: string })
       .operation_id,
+  });
+});
+
+test('work-log correction uses a batch overlay with Worked By and whole-log withdrawal', async ({
+  page,
+}) => {
+  const mutationBodies: { url: string; body: unknown }[] = [];
+  await mocks(page, { manager: true, mutationBodies });
+  await signIn(page);
+  await page.goto(`/work-items/${displayId}`);
+
+  const ticketDialog = page.getByRole('dialog');
+  await ticketDialog.getByRole('link', { name: 'Edit work log' }).click();
+  const editor = page.getByRole('dialog', { name: 'Edit work log' });
+  await expect(editor).toBeVisible();
+  await expect(page).toHaveURL(
+    '/work-logs/78000000-0000-4000-8000-000000000001/edit',
+  );
+  await expect(editor.getByLabel('Work Date 1')).toBeVisible();
+  await expect(editor.getByLabel('Work Type 1')).toContainText(
+    'UI & visual design',
+  );
+  await expect(editor.getByLabel('Worked by')).toContainText(
+    '[SYNTHETIC] Designer',
+  );
+  await expect(
+    editor.getByRole('button', { name: 'Save changes' }),
+  ).toBeDisabled();
+
+  await chooseShadcnOption(page, 'Worked by', '[SYNTHETIC] Lead');
+  await editor.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+  expect(
+    mutationBodies.find(({ url }) => url.includes('correct_work_log'))?.body,
+  ).toMatchObject({
+    batch_id: '78000000-0000-4000-8000-000000000001',
+    worked_by: '00000000-0000-4000-8000-000000000002',
+    entries: [
+      {
+        id: '79000000-0000-4000-8000-000000000001',
+        work_date: '2026-07-20',
+        work_type_code: 'ui_visual_design',
+      },
+    ],
+  });
+
+  await page
+    .getByRole('dialog')
+    .getByRole('link', { name: 'Edit work log' })
+    .click();
+  const reopenedEditor = page.getByRole('dialog', { name: 'Edit work log' });
+  const withdrawButton = reopenedEditor.getByRole('button', {
+    name: 'Withdraw work log',
+  });
+  await expect(withdrawButton).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  await expect(withdrawButton).toHaveCSS(
+    'border-top-color',
+    'rgb(251, 55, 72)',
+  );
+  await withdrawButton.click();
+  const confirmation = reopenedEditor.getByRole('alertdialog', {
+    name: 'Withdraw this work log?',
+  });
+  await expect(confirmation).toContainText(
+    'Every date in this submission will leave normal activity, reports, and exports.',
+  );
+  await confirmation
+    .getByRole('button', { name: 'Confirm withdrawal' })
+    .click();
+  await expect(page).toHaveURL(`/work-items/${displayId}`);
+  expect(
+    mutationBodies.find(({ url }) => url.includes('withdraw_work_log'))?.body,
+  ).toMatchObject({
+    batch_id: '78000000-0000-4000-8000-000000000001',
+    expected_version: '2026-07-22T10:00:00Z',
   });
 });
 

@@ -149,6 +149,8 @@ Each event records:
 
 Audit events are append-only and cannot be edited or deleted through the product.
 
+Admins may also update a member's display name and profile picture from Members and access. Display-name changes do not change email/Auth identity and historical presentation resolves the current name. Pictures are optional JPEG/PNG/WebP files up to 2 MB in the private `profile-avatars` bucket; selection immediately shows the chosen filename and local preview, Save exposes an uploading state, a stalled upload becomes a retryable connection error, and successful upload supports safe replacement/removal with initials fallback. Authenticated application users may resolve the saved `avatar_path` metadata to an authorization-protected signed Storage read; the object itself remains private. Members have no self-service write path in this release.
+
 ## 8. Deliberate MVP exclusions
 
 - Custom positions or custom permission builders
@@ -156,7 +158,7 @@ Audit events are append-only and cannot be edited or deleted through the product
 - Notification settings
 - Availability or leave settings
 - Branding or product-name settings
-- Storage, attachment, or Figma-integration settings
+- Generic storage, attachment, or Figma-integration settings; the fixed Admin-managed profile-avatar control is not a configurable storage setting
 - OAuth/SSO configuration
 - API keys, webhooks, or third-party integrations
 - Backup/deployment controls in the product UI

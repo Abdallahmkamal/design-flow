@@ -898,6 +898,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_path: string | null
           created_at: string
           created_by: string | null
           current_reports_to_id: string | null
@@ -911,6 +912,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_path?: string | null
           created_at?: string
           created_by?: string | null
           current_reports_to_id?: string | null
@@ -924,6 +926,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_path?: string | null
           created_at?: string
           created_by?: string | null
           current_reports_to_id?: string | null
@@ -2409,6 +2412,7 @@ export type Database = {
       admin_member_directory: {
         Row: {
           access_administered_at: string | null
+          avatar_path: string | null
           created_at: string | null
           current_reports_to_id: string | null
           display_name: string | null
@@ -2956,6 +2960,17 @@ export type Database = {
         }
         Returns: Json
       }
+      correct_work_log_entry: {
+        Args: {
+          description: string
+          entry_id: string
+          expected_version: string
+          operation_id?: string
+          work_date: string
+          work_type_code: string
+        }
+        Returns: Json
+      }
       create_blocker: {
         Args: {
           expected_resolution_date: string
@@ -3106,6 +3121,7 @@ export type Database = {
         Returns: Json
       }
       get_work_log_batch: { Args: { target_batch_id: string }; Returns: Json }
+      get_work_log_entry: { Args: { target_entry_id: string }; Returns: Json }
       list_work_items: { Args: { filters?: Json }; Returns: Json }
       prepare_first_admin_credential_recovery: {
         Args: { email: string; operation_id: string }
@@ -3283,6 +3299,16 @@ export type Database = {
             }
             Returns: Json
           }
+      update_member_profile: {
+        Args: {
+          avatar_path: string
+          display_name: string
+          expected_updated_at: string
+          operation_id?: string
+          target_profile_id: string
+        }
+        Returns: Json
+      }
       update_work_item: {
         Args: {
           area_id: string

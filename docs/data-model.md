@@ -56,11 +56,14 @@ Suggested fields:
 - `is_admin` — independent portal-administration privilege
 - `is_active`
 - `must_change_password`
+- `avatar_path` — nullable private-bucket object path, never a persisted public/signed URL
 - `current_reports_to_id` — nullable current supervisor snapshot
 - `created_at`
 - `updated_at`
 
 Only Admin-privileged users manage positions, Admin privilege, reporting lines, and active state. Every position, Admin-privilege, and active-state change records actor, time, previous value, and new value. The system must not allow the organization to end with no active Admin-privileged account. Deactivation must prevent normal data access while preserving attribution on historical records.
+
+Admin-privileged users also manage display names and profile pictures. Current display names resolve live in historical presentation rather than being snapshotted. Profile pictures use the private `profile-avatars` Supabase Storage bucket with immutable paths, signed reads, JPEG/PNG/WebP, and a 2 MB limit. This is the approved narrow exception to the generic attachment/storage exclusion.
 
 `is_admin = true` is valid only when `position` is Designer, Lead, or Manager. Account creation and access-management operations reject Viewer + Admin. A position change to Viewer must set `is_admin = false` in the same atomic operation.
 
@@ -454,7 +457,7 @@ Viewer is not Area/Squad-restricted in the MVP. Future PO/external access requir
 - `projects` or `epics`
 - `work_item_assignees` many-to-many ownership
 - priority fields
-- attachment/storage tables
+- generic attachment/storage tables (the private Admin-managed profile-avatar bucket is the sole approved exception)
 - generic-link tables
 - manually editable contributor tables
 - nested-subtask relations

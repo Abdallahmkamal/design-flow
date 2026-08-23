@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuthentication } from '../auth/authContext';
-import { Avatar } from '../../ui/Avatar/Avatar';
+import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import { Badge, type BadgeTone } from '../../ui/Badge/Badge';
 import { DataTable, type DataTableColumn } from '../../ui/DataTable/DataTable';
 import {
@@ -424,7 +424,11 @@ export function DashboardPage() {
       header: 'Person',
       render: (row) => (
         <span className={styles.personCell}>
-          <Avatar name={row.person.displayName} decorative />
+          <ProfileAvatar
+            profileId={row.person.id}
+            displayName={row.person.displayName}
+            decorative
+          />
           <span>{row.person.displayName}</span>
         </span>
       ),
@@ -663,7 +667,11 @@ export function DashboardPage() {
                   <div className={styles.attentionPerson}>
                     {ticket.assignee ? (
                       <>
-                        <Avatar name={ticket.assignee.displayName} decorative />
+                        <ProfileAvatar
+                          profileId={ticket.assignee.id}
+                          displayName={ticket.assignee.displayName}
+                          decorative
+                        />
                         <span>{ticket.assignee.displayName}</span>
                       </>
                     ) : (
@@ -768,8 +776,9 @@ export function DashboardPage() {
                                 <strong>{entry.workItem.title}</strong>
                               </div>
                               <div className={styles.activityMeta}>
-                                <Avatar
-                                  name={entry.person.displayName}
+                                <ProfileAvatar
+                                  profileId={entry.person.id}
+                                  displayName={entry.person.displayName}
                                   decorative
                                 />
                                 <span>{entry.person.displayName}</span>
@@ -808,7 +817,11 @@ export function DashboardPage() {
                     </time>
                     <strong>{entry.workType.label}</strong>
                     <div className={styles.activityMeta}>
-                      <Avatar name={entry.person.displayName} decorative />
+                      <ProfileAvatar
+                        profileId={entry.person.id}
+                        displayName={entry.person.displayName}
+                        decorative
+                      />
                       <span>{entry.person.displayName}</span>
                       {entry.area ? (
                         <Badge tone="neutral">{entry.area.name}</Badge>

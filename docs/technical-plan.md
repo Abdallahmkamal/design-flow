@@ -49,7 +49,8 @@ Never expose Supabase secret/service-role or Auth-admin credentials in browser c
 - Public registration remains disabled.
 - Admin account creation and temporary-password reset use protected Edge Functions.
 - Temporary credentials are generated securely, displayed once to the Admin, and delivered outside the portal.
-- A profile-level `must_change_password` state restricts first-time or reset users to the password-change flow until completed.
+- A profile-level `must_change_password` state restricts the affected member's own application session to the password-change flow until completed. It does not remove an otherwise active, position-eligible member from assignment, hierarchy, contribution, `worked_by`, or authorized on-behalf logging choices.
+- Admin-managed profile pictures use a private Supabase Storage bucket, immutable object paths, one-hour signed browser reads, JPEG/PNG/WebP and 2 MB bucket defenses, and `profiles.avatar_path`. The shared `ProfileAvatar` renderer owns signed-URL caching and initials fallback; no public URLs, cropper, self-service, or server-side processing are introduced.
 - Deactivation updates the application account state and disables the corresponding Supabase Auth account; reactivation reverses both through an authorized Edge Function.
 - Supabase manages browser sessions and token refresh.
 - Never log or store passwords in application or administration audit records.

@@ -22,6 +22,7 @@ export interface MemberRecord {
   createdAt: string;
   accessAdministeredAt: string | null;
   updatedAt: string;
+  avatarPath: string | null;
 }
 
 export interface ControlledValueRecord {
@@ -106,6 +107,7 @@ function mapMembers(rows: MemberRow[]): MemberRecord[] {
         createdAt: row.created_at,
         accessAdministeredAt: row.access_administered_at,
         updatedAt: row.updated_at,
+        avatarPath: row.avatar_path,
       },
     ];
   });
@@ -372,6 +374,101 @@ export async function setMemberAccess(
   });
   if (error) throw new SettingsOperationError(operationCode(error));
   return data;
+}
+
+export const profileAvatarRules = {
+  maxBytes: 2 * 1024 * 1024,
+  mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+} as const;
+export const profileAvatarUploadTimeoutMs = 20_000;
+
+export function validateProfileAvatar(file: File) {
+  if (!(profileAvatarRules.mimeTypes as readonly string[]).includes(file.type))
+    return 'Choose a JPEG, PNG, or WebP image.';
+  if (file.size > profileAvatarRules.maxBytes)
+    return 'Profile pictures must be 2 MB or smaller.';
+  return null;
+}
+
+export async function updateMemberProfile(
+  input: {
+    member: MemberRecord;
+    displayName: string;
+    avatarFile?: File;
+    removeAvatar: boolean;
+    avatarObjectPath?: string;
+  },
+  operationId: string,
+) {
+  const client = getSupabaseClient();
+  const validation = input.avatarFile
+    ? validateProfileAvatar(input.avatarFile)
+    : null;
+  if (validation) throw new SettingsOperationError('DF_AVATAR_VALIDATION');
+
+  const nextPath = input.removeAvatar
+    ? null
+    : input.avatarFile
+      ? input.avatarObjectPath!
+      : input.member.avatarPath;
+  if (input.avatarFile) {
+    const uploadPromise = client.storage
+      .from('profile-avatars')
+      .upload(nextPath!, input.avatarFile, {
+        cacheControl: '31536000',
+        contentType: input.avatarFile.type,
+        upsert: false,
+      });
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    let upload;
+    try {
+      upload = await Promise.race([
+        uploadPromise,
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(
+            () =>
+              reject(new SettingsOperationError('DF_AVATAR_UPLOAD_TIMEOUT')),
+            profileAvatarUploadTimeoutMs,
+          );
+        }),
+      ]);
+    } catch (error) {
+      if (
+        error instanceof SettingsOperationError &&
+        error.code === 'DF_AVATAR_UPLOAD_TIMEOUT'
+      ) {
+        void uploadPromise.then(async (lateUpload) => {
+          if (!lateUpload.error && nextPath) {
+            await client.storage.from('profile-avatars').remove([nextPath]);
+          }
+        });
+      }
+      throw error;
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
+    if (upload.error) throw upload.error;
+  }
+
+  const response = await client.rpc('update_member_profile', {
+    target_profile_id: input.member.id,
+    display_name: input.displayName,
+    avatar_path: nextPath!,
+    expected_updated_at: input.member.updatedAt,
+    operation_id: operationId,
+  });
+  if (response.error) {
+    if (input.avatarFile && nextPath)
+      await client.storage.from('profile-avatars').remove([nextPath]);
+    throw new SettingsOperationError(operationCode(response.error));
+  }
+
+  if (input.member.avatarPath && input.member.avatarPath !== nextPath) {
+    await client.storage
+      .from('profile-avatars')
+      .remove([input.member.avatarPath]);
+  }
+  return response.data;
 }
 
 export async function createControlledValue(

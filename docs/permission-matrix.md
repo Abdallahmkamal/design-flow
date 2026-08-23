@@ -33,10 +33,12 @@ Before any application policy is evaluated:
 
 1. The request must contain a valid Supabase Auth identity matching `profiles.id`.
 2. `profiles.is_active` must be true.
-3. `profiles.must_change_password` must be false, except for the narrowly scoped password-change completion flow.
+3. For the authenticated actor's normal application access, `profiles.must_change_password` must be false, except for the narrowly scoped password-change completion flow.
 4. Viewer + Admin must be impossible.
 
 An inactive profile receives no normal application rows, RPC access, report/export access, or notification access. A `must_change_password` profile may read only the minimum own-account fields needed to complete the password flow, update its Auth password, call the completion RPC, and sign out.
+
+`must_change_password` is an actor/login-readiness gate, not a target-member operational-eligibility rule. An otherwise active Designer, Lead, or Manager remains eligible as a primary assignee, reporting supervisor where their position permits it, contributor/`worked_by` subject, and beneficiary of an authorized on-behalf work log while password change is pending. Target eligibility uses active state and the applicable position capability only. This supersedes the former rule that assignment/replacement/hierarchy validation also required `must_change_password = false`.
 
 Ordinary Work Item, history, and safe profile reads remain whole-team in the single-team model; reporting groups are not tenant partitions. D-110 adds a narrower authorization boundary inside Dashboard/Reports read and export functions for Designer without Admin. Those functions must ignore or reject broader client filters and return only the authenticated Designer's permitted dataset even though underlying ordinary ticket rows remain whole-team readable.
 
@@ -183,6 +185,7 @@ RLS is enabled and forced on every application table in the first migration. Tab
 |---|---|
 | System reference/policy rows needed by UI | `SELECT` for globally eligible authenticated principals |
 | `profiles` | No broad base-table select; own minimal-account view, public Team-directory view, and Admin-only member view |
+| Private `profile-avatars` bucket | Authenticated normal application users may read `profiles.avatar_path` metadata and create signed reads; only Admin-privileged users may upload/remove objects; JPEG/PNG/WebP, maximum 2 MB |
 | `profile_access_periods`, reporting lines | Approved security-invoker reporting/directory views; no email/Auth data |
 | `admin_audit_events` | Admin-only security-invoker view |
 | Areas/Squads, labels | Current and historical values readable by eligible authenticated principals |
@@ -314,7 +317,7 @@ Every affected operation test runs against each applicable valid principal. The 
 
 ### Invariant and race cases
 
-- No mutation can assign a Viewer or inactive profile as primary assignee or `worked_by`.
+- No mutation can assign a Viewer or inactive profile as primary assignee or `worked_by`; pending password change does not make an otherwise eligible target ineligible.
 - No active status commits without a primary assignee.
 - No active blocker is created outside an active status, and no transition to Backlog/Paused/Done commits while one is open.
 - No ticket archives outside Backlog/Paused/Done.
