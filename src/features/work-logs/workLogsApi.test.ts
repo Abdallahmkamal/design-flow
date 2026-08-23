@@ -44,8 +44,40 @@ describe('work-log API operation identity', () => {
     await submitWorkLog(input);
     await submitWorkLog(input);
     expect(rpc).toHaveBeenCalledTimes(2);
-    expect(rpc.mock.calls[0]?.[1]).toMatchObject({ operation_id: operationId });
+    expect(rpc.mock.calls[0]?.[1]).toMatchObject({
+      operation_id: operationId,
+      entries: [expect.objectContaining({ description: null })],
+    });
     expect(rpc.mock.calls[1]?.[1]).toMatchObject({ operation_id: operationId });
+  });
+
+  it('normalizes blank optional descriptions for both work contexts', async () => {
+    for (const context of ['ticket', 'standalone_visual'] as const) {
+      await submitWorkLog({
+        context,
+        workItemId:
+          context === 'ticket' ? '00000000-0000-4000-8000-000000000002' : null,
+        relatedAreaId: null,
+        workedBy: '00000000-0000-4000-8000-000000000003',
+        entries: [
+          {
+            workDate: '2026-08-23',
+            workTypeCode:
+              context === 'ticket' ? 'ui_visual_design' : 'resizing_adaptation',
+            description: '   ',
+          },
+        ],
+      });
+    }
+
+    expect(rpc.mock.calls.at(-2)?.[1]).toMatchObject({
+      context_code: 'ticket',
+      entries: [expect.objectContaining({ description: null })],
+    });
+    expect(rpc.mock.calls.at(-1)?.[1]).toMatchObject({
+      context_code: 'standalone_visual',
+      entries: [expect.objectContaining({ description: null })],
+    });
   });
 
   it('sends only one stable entry through the entry-specific correction RPC', async () => {
@@ -120,6 +152,46 @@ describe('work-log API operation identity', () => {
       expect.objectContaining({
         batch_id: batch.id,
         expected_version: batch.version,
+      }),
+    );
+  });
+
+  it('normalizes blank optional descriptions in both correction contracts', async () => {
+    const entry = {
+      id: '00000000-0000-4000-8000-000000000031',
+      batchId: '00000000-0000-4000-8000-000000000032',
+      context: 'ticket' as const,
+      workItemId: '00000000-0000-4000-8000-000000000033',
+      workedBy: '00000000-0000-4000-8000-000000000034',
+      workDate: '2026-08-23',
+      workTypeCode: 'ui_visual_design',
+      description: ' ',
+      position: 1,
+      version: '2026-08-24T00:00:00.000Z',
+      canCorrect: true,
+    };
+
+    await correctWorkLogEntry(entry);
+    expect(rpc).toHaveBeenLastCalledWith(
+      'correct_work_log_entry',
+      expect.objectContaining({ description: null }),
+    );
+
+    await correctWorkLog({
+      id: entry.batchId,
+      context: entry.context,
+      workItemId: entry.workItemId,
+      relatedAreaId: null,
+      workedBy: entry.workedBy,
+      version: entry.version,
+      entries: [{ ...entry }],
+      canCorrect: true,
+      canWithdraw: true,
+    });
+    expect(rpc).toHaveBeenLastCalledWith(
+      'correct_work_log',
+      expect.objectContaining({
+        entries: [expect.objectContaining({ description: null })],
       }),
     );
   });

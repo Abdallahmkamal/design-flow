@@ -89,6 +89,10 @@ function throwApiError(error: { message: string; code?: string }) {
   throw new WorkItemApiError(error.message, code);
 }
 
+function normalizeOptionalDescription(description: string) {
+  return description.trim() || null;
+}
+
 export async function submitWorkLog(input: SubmitWorkLogInput) {
   const { data, error } = await getSupabaseClient().rpc('submit_work_log', {
     context_code: input.context,
@@ -98,7 +102,7 @@ export async function submitWorkLog(input: SubmitWorkLogInput) {
     entries: input.entries.map((entry) => ({
       work_date: entry.workDate,
       work_type_code: entry.workTypeCode,
-      description: entry.description,
+      description: normalizeOptionalDescription(entry.description),
     })) as Json,
     blocker: input.blocker?.reason
       ? {
@@ -147,7 +151,7 @@ export async function correctWorkLog(batch: WorkLogBatch) {
       id: entry.id,
       work_date: entry.workDate,
       work_type_code: entry.workTypeCode,
-      description: entry.description,
+      description: normalizeOptionalDescription(entry.description),
     })) as Json,
     operation_id: createOperationId(),
   } as never);
@@ -173,9 +177,9 @@ export async function correctWorkLogEntry(entry: WorkLogEntry) {
       expected_version: entry.version,
       work_date: entry.workDate,
       work_type_code: entry.workTypeCode,
-      description: entry.description,
+      description: normalizeOptionalDescription(entry.description),
       operation_id: createOperationId(),
-    },
+    } as never,
   );
   if (error) throwApiError(error);
   return data;
