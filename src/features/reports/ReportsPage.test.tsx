@@ -252,7 +252,7 @@ describe('ReportsPage', () => {
     );
     const record = await waitFor(() => {
       const found = [...container.querySelectorAll('summary')]
-        .find((node) => node.textContent?.includes('DF-000001'))
+        .find((node) => node.textContent?.includes('#001'))
         ?.closest('details');
       expect(found).toBeDefined();
       return found!;

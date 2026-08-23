@@ -109,7 +109,7 @@ describe('NotificationsPage', () => {
     renderPage();
 
     const unreadLink = await screen.findByRole('link', {
-      name: 'DF-000020 · Refine notification cards',
+      name: '#020 · Refine notification cards',
     });
     expect(unreadLink.closest('[data-slot="card"]')).toBeVisible();
     expect(screen.getByText('Unread')).toBeVisible();

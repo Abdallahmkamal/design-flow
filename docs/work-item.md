@@ -2,7 +2,7 @@
 
 **Version:** 1.2
 **Decision date:** 2026-07-16  
-**Status:** Approved MVP baseline with D-110 route-backed Ticket Details and D-118 metric/deadline amendments
+**Status:** Approved MVP baseline with D-110 route-backed Ticket Details, D-118 metric/deadline amendments, and D-121 interaction/reference semantics
 
 The Work Item page is the complete source for a ticket's current state, planned dates, actual work, ownership and contribution, subtasks, discussion, blockers, and preserved history.
 
@@ -20,7 +20,7 @@ Modernization Slice 4 retains `/work-items/:displayId` as the canonical route bu
 
 ### Primary row
 
-- Ticket display ID and title
+- Compact ticket reference and title. Present persisted `DF-000010` as `#010`; keep the raw persisted value for routes and lookups.
 - Workflow status and separate Blocked indicator
 - Open in Figma when a Figma URL exists
 - Log Work for Designer, Lead, Manager, and Admin-privileged users
@@ -84,6 +84,8 @@ Show:
 Planned dates and actual work dates must be visually separated. Never imply continuous work between planned start and Next Deadline.
 
 Status and primary assignee may use direct controlled actions. Other editable fields may use an Edit work item flow. All changes remain subject to position/Admin-privilege permissions and audit history.
+
+Controlled choices in Ticket Details use the shared dropdown/select primitives, including the status/assignee chip menus, overflow actions, and subtask ordering. Area/Squad and Assignee option lists are viewport-bounded and independently wheel/touch scrollable on desktop and mobile. Reserve disclosure semantics for controls that actually reveal or hide content, such as blocker details. A popup closes after a successful selection, outside interaction, Escape, Tab, or Shift+Tab; interaction inside the popup that is not a selection does not close it.
 
 ## 5. Subtasks
 

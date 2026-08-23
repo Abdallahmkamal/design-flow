@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { formatTicketReference } from '../../shared/ticketReference';
 
 import { WorkItemForm } from './WorkItemForm';
 import { valuesFromDetail } from './workItemFormValues';
@@ -57,7 +58,7 @@ export function WorkItemEditPage() {
   if (!item.data.capabilities.canEdit)
     return (
       <div className={styles.state}>
-        <h1>Edit {item.data.displayId}</h1>
+        <h1>Edit {formatTicketReference(item.data.displayId)}</h1>
         <p>You do not have permission to edit this ticket.</p>
         <Link to={`/work-items/${item.data.displayId}`}>Return to ticket</Link>
       </div>
@@ -72,7 +73,7 @@ export function WorkItemEditPage() {
       <header className={styles.pageHeader}>
         <div>
           <Link to={`/work-items/${item.data.displayId}`}>
-            {item.data.displayId}
+            {formatTicketReference(item.data.displayId)}
           </Link>
           <h1>Edit ticket</h1>
         </div>

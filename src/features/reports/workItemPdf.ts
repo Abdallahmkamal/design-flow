@@ -1,3 +1,5 @@
+import { formatTicketReference } from '../../shared/ticketReference';
+
 const humanize = (value: string) =>
   value
     .replaceAll(/([A-Z])/g, ' $1')
@@ -46,7 +48,9 @@ export async function generateWorkItemPdf(payload: Record<string, unknown>) {
         recordKey(a, 'createdAt').localeCompare(recordKey(b, 'createdAt')),
       )
     : [];
-  const displayId = valueText(item.displayId ?? 'work-item');
+  const displayId = formatTicketReference(
+    valueText(item.displayId ?? 'work-item'),
+  );
   const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: false });
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();

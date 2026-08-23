@@ -19,6 +19,6 @@ describe('Work Item PDF', () => {
       comments: [],
     });
     expect(new TextDecoder().decode(output.bytes.slice(0, 4))).toBe('%PDF');
-    expect(output.filename).toBe('work-item_DF-000123_2026-07-26.pdf');
+    expect(output.filename).toBe('work-item_#123_2026-07-26.pdf');
   });
 });

@@ -2,7 +2,7 @@
 
 **Status:** Approved Phase 0 implementation contract  
 **Decision date:** 2026-07-19  
-**Last amended:** 2026-08-22 — D-118 canonical calendar, deadline, duration, and archived-report rules
+**Last amended:** 2026-08-23 — D-121 All Tickets search and default-order contract
 **Applies to:** First Supabase/Postgres migration and all later migrations  
 **Sources:** `product-spec.md`, `technical-plan.md`, `build-plan.md`, module specifications, `data-model.md`, and `decisions.md`
 
@@ -342,7 +342,9 @@ Invariants:
 - `updated_at` changes for title, description, Area/Squad, status, primary assignee, planned dates, Figma URL, labels, and archive state. Work logging, comments, blockers, and subtask-only changes do not change it.
 - `last_activity_at >= created_at`.
 
-Indexes: `display_id`, `(status_code, archived_at)`, `(primary_assignee_id, status_code, archived_at)`, `(area_id, status_code, archived_at)`, `due_date`, `last_worked_on`, `last_activity_at`, plus trigram GIN indexes supporting case-insensitive partial display ID/title/description search.
+Indexes: `display_id`, `(status_code, archived_at)`, `(primary_assignee_id, status_code, archived_at)`, `(area_id, status_code, archived_at)`, `due_date`, `last_worked_on`, `last_activity_at`, plus the existing trigram GIN indexes on display ID/title/description. D-121 removes description from the active All Tickets search contract; the legacy description index remains compatible schema and is not evidence that description is still searchable.
+
+`list_work_items` applies case-insensitive search before pagination across persisted `display_id`, title, joined Area name, primary-assignee display name, and current-contributor display names. A digits-only `#` reference normalizes to the persisted `DF-` plus at least six digits; description and internal UUIDs are excluded. With no explicit sort it uses `last_activity_at DESC` plus the stable ticket tie-breaker; explicit sort/direction input overrides the default. A Slice 3 read-only plan check against the representative synthetic dataset completed in approximately 12 ms, so no speculative joined-name search index is added; reassess indexing with materially larger representative data.
 
 ### `work_item_assignments`
 

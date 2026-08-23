@@ -33,38 +33,7 @@ async function chooseShadcnOption(page: Page, label: string, option: string) {
 async function chooseTicketChip(page: Page, label: string, option: string) {
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('button', { name: label, exact: true }).click();
-  await dialog.getByRole('option', { name: option, exact: true }).click();
-}
-
-async function scrollOptionList(page: Page, list: ReturnType<Page['locator']>) {
-  const box = await list.boundingBox();
-  expect(box).not.toBeNull();
-
-  if (await page.evaluate(() => matchMedia('(pointer: coarse)').matches)) {
-    const session = await page.context().newCDPSession(page);
-    const x = box!.x + box!.width / 2;
-    const startY = box!.y + box!.height - 24;
-    const endY = box!.y + 24;
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchStart',
-      touchPoints: [{ x, y: startY }],
-    });
-    for (let step = 1; step <= 6; step += 1) {
-      await session.send('Input.dispatchTouchEvent', {
-        type: 'touchMove',
-        touchPoints: [{ x, y: startY + ((endY - startY) * step) / 6 }],
-      });
-    }
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchEnd',
-      touchPoints: [],
-    });
-    await session.detach();
-    return;
-  }
-
-  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
-  await page.mouse.wheel(0, box!.height * 0.8);
+  await page.getByRole('menuitemradio', { name: option, exact: true }).click();
 }
 
 const listRow = {
@@ -184,6 +153,11 @@ async function mocks(
     listRequestBodies?: unknown[];
     mutationBodies?: { url: string; body: unknown }[];
     workAreas?: { id: string; name: string; is_active: boolean }[];
+    teamMembers?: {
+      id: string;
+      display_name: string;
+      position_code: string;
+    }[];
   } = {},
 ) {
   let subtaskAttempts = 0;
@@ -264,18 +238,20 @@ async function mocks(
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([
-        {
-          id: userId,
-          display_name: '[SYNTHETIC] Designer',
-          position_code: 'designer',
-        },
-        {
-          id: '00000000-0000-4000-8000-000000000002',
-          display_name: '[SYNTHETIC] Lead',
-          position_code: 'lead',
-        },
-      ]),
+      body: JSON.stringify(
+        options.teamMembers ?? [
+          {
+            id: userId,
+            display_name: '[SYNTHETIC] Designer',
+            position_code: 'designer',
+          },
+          {
+            id: '00000000-0000-4000-8000-000000000002',
+            display_name: '[SYNTHETIC] Lead',
+            position_code: 'lead',
+          },
+        ],
+      ),
     }),
   );
   await page.route('**/rest/v1/work_item_statuses**', (route) =>
@@ -644,7 +620,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
   await expect(results).toBeVisible();
   const figmaLink = page
     .getByRole('link', {
-      name: `Open ${displayId} in Figma (opens in a new tab)`,
+      name: 'Open #001 in Figma (opens in a new tab)',
     })
     .first();
   await expect(figmaLink).toHaveAttribute('href', /figma\.com/u);
@@ -667,10 +643,10 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       page.getByRole('button', { name: 'Filter tickets, 0 active' }),
     ).toBeVisible();
     const card = page.getByRole('article', {
-      name: `Open ${displayId}: ${listRow.title}`,
+      name: `Open #001: ${listRow.title}`,
     });
     const peopleButton = card.getByRole('button', {
-      name: new RegExp(`People on ${displayId}`, 'u'),
+      name: /People on #001/u,
     });
     await expect(peopleButton).not.toContainText(listRow.assignee.displayName);
     await expect(peopleButton).toContainText('+1');
@@ -679,9 +655,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       '6px',
     );
     const listUrl = page.url();
-    await page
-      .getByRole('button', { name: `Expand ${displayId}` })
-      .press('Enter');
+    await page.getByRole('button', { name: 'Expand #001' }).press('Enter');
     await expect(results.getByText('Days Open', { exact: true })).toBeVisible();
     await expect(
       results.getByText('Days Active', { exact: true }),
@@ -790,7 +764,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
         .locator('svg'),
     ).toHaveCSS('width', '20px');
     const firstTicketCell = page
-      .getByRole('row', { name: `Open ${displayId}: ${listRow.title}` })
+      .getByRole('row', { name: `Open #001: ${listRow.title}` })
       .locator('td')
       .first();
     await expect(firstTicketCell).toHaveCSS(
@@ -798,7 +772,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
       'rgb(253, 254, 254)',
     );
     const avatar = page
-      .getByRole('button', { name: new RegExp(`People on ${displayId}`, 'u') })
+      .getByRole('button', { name: /People on #001/u })
       .locator('span')
       .first();
     expect(
@@ -812,7 +786,7 @@ test('All Tickets supports URL filters, direct Figma access, responsive results,
     await expect(page).toHaveURL(/pageSize=50/u);
 
     const row = page.getByRole('row', {
-      name: `Open ${displayId}: ${listRow.title}`,
+      name: `Open #001: ${listRow.title}`,
     });
     await row.press('Enter');
     await expect(page).toHaveURL(
@@ -906,7 +880,7 @@ test('ticket creation uses the responsive overlay, remains Backlog, and navigate
     .click();
   await expect(page).toHaveURL(`/work-items/${displayId}`);
   await expect(
-    page.getByText(`${displayId} created in Backlog.`, { exact: true }),
+    page.getByText('#001 created in Backlog.', { exact: true }),
   ).toBeVisible();
 });
 
@@ -915,7 +889,10 @@ test('Create Ticket Area menu owns overflow scrolling and selects an initially h
 }) => {
   const workAreas = Array.from({ length: 24 }, (_, index) => ({
     id: `50000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    name: `[SYNTHETIC] Area ${String(index + 1).padStart(2, '0')}`,
+    name:
+      index === 23
+        ? 'Cash'
+        : `[SYNTHETIC] Area ${String(index + 1).padStart(2, '0')}`,
     is_active: true,
   }));
   await mocks(page, { workAreas });
@@ -935,48 +912,39 @@ test('Create Ticket Area menu owns overflow scrolling and selects an initially h
   await expect(list).toHaveCSS('overflow-y', 'scroll');
 
   const initiallyHiddenOption = page.getByRole('option', {
-    name: '[SYNTHETIC] Area 24',
+    name: 'Cash',
     exact: true,
   });
-  const listBox = await list.boundingBox();
-  const optionBox = await initiallyHiddenOption.boundingBox();
-  expect(listBox).not.toBeNull();
-  expect(optionBox).not.toBeNull();
-  expect(optionBox!.y).toBeGreaterThanOrEqual(listBox!.y + listBox!.height);
-
+  const initialListBox = await list.boundingBox();
+  const initialOptionBox = await initiallyHiddenOption.boundingBox();
+  expect(initialListBox).not.toBeNull();
+  expect(initialOptionBox).not.toBeNull();
+  expect(initialOptionBox!.y).toBeGreaterThanOrEqual(
+    initialListBox!.y + initialListBox!.height,
+  );
   const scrollContainer = page
     .getByRole('dialog', { name: 'Create ticket' })
     .locator('.overflow-y-auto');
   const pageScrollBefore = await scrollContainer.evaluate(
     (node) => node.scrollTop,
   );
-  await expect
-    .poll(async () => {
-      await scrollOptionList(page, list);
-      return list.evaluate((node) => node.scrollTop);
-    })
-    .toBeGreaterThan(0);
+  await page.keyboard.type('ca');
+  await expect(initiallyHiddenOption).toHaveAttribute('data-highlighted');
+  await expect(page.getByRole('option')).toHaveCount(24);
+  const listBox = await list.boundingBox();
+  const optionBox = await initiallyHiddenOption.boundingBox();
+  expect(listBox).not.toBeNull();
+  expect(optionBox).not.toBeNull();
+  expect(optionBox!.y).toBeGreaterThanOrEqual(listBox!.y);
+  expect(optionBox!.y + optionBox!.height).toBeLessThanOrEqual(
+    listBox!.y + listBox!.height,
+  );
+  expect(await list.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
   expect(await scrollContainer.evaluate((node) => node.scrollTop)).toBe(
     pageScrollBefore,
   );
-
-  await expect
-    .poll(async () => {
-      const currentListBox = await list.boundingBox();
-      const currentOptionBox = await initiallyHiddenOption.boundingBox();
-      const reached = Boolean(
-        currentListBox &&
-        currentOptionBox &&
-        currentOptionBox.y >= currentListBox.y &&
-        currentOptionBox.y + currentOptionBox.height <=
-          currentListBox.y + currentListBox.height,
-      );
-      if (!reached) await scrollOptionList(page, list);
-      return reached;
-    })
-    .toBe(true);
   await initiallyHiddenOption.click();
-  await expect(field).toContainText('[SYNTHETIC] Area 24');
+  await expect(field).toContainText('Cash');
 });
 
 test('nested Create Ticket replaces Log Work, preserves the draft, and submits once', async ({
@@ -1107,7 +1075,7 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   await expect(page.getByTestId('workflow-backdrop')).toHaveCount(1);
   await expect(
     page.getByRole('textbox', { name: 'Selected ticket' }),
-  ).toHaveValue(`${displayId} — ${listRow.title}`);
+  ).toHaveValue(`#001 — ${listRow.title}`);
   await expect(
     page.getByRole('button', { name: 'Remove selected ticket' }),
   ).toBeVisible();
@@ -1117,7 +1085,7 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   await page.getByRole('button', { name: 'Remove selected ticket' }).click();
   await page.getByLabel('Search tickets').fill(displayId);
   const ticketOption = page.getByRole('option', {
-    name: `${displayId} — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
+    name: `#001 — ${listRow.title} · ${listRow.status.label} · ${listRow.assignee.displayName}`,
     exact: true,
   });
   if (testInfo.project.name === 'chromium') {
@@ -1130,7 +1098,7 @@ test('nested Create Ticket replaces Log Work, preserves the draft, and submits o
   await ticketOption.click();
   await expect(
     page.getByRole('textbox', { name: 'Selected ticket' }),
-  ).toHaveValue(`${displayId} — ${listRow.title}`);
+  ).toHaveValue(`#001 — ${listRow.title}`);
   await expect(page.getByLabel('Description 1 (optional)')).toHaveValue(
     '[SYNTHETIC] Preserved nested draft',
   );
@@ -1239,7 +1207,7 @@ test('Log Work opens personalized suggestions and switches to global server sear
   await picker.press('Enter');
   await expect(
     page.getByRole('textbox', { name: 'Selected ticket' }),
-  ).toHaveValue('DF-000002 — [SYNTHETIC] Contributor ticket');
+  ).toHaveValue('#002 — [SYNTHETIC] Contributor ticket');
   await expect(page.getByText('Loading selected ticket…')).toHaveCount(0);
   expect(
     listRequestBodies.some((body) => {
@@ -1412,6 +1380,31 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
     'background-color',
     'rgb(234, 245, 253)',
   );
+  for (const control of [
+    ticketDialog.getByRole('button', { name: 'Assignee' }),
+    ticketDialog.getByRole('button', { name: 'Area' }),
+    ticketDialog.getByRole('button', { name: 'Status' }),
+  ]) {
+    await expect(control).toHaveCSS('border-top-width', '0px');
+  }
+  const assigneeMenuTrigger = ticketDialog.getByRole('button', {
+    name: 'Assignee',
+  });
+  await assigneeMenuTrigger.click();
+  await expect(page.getByRole('menuitemradio').first()).toBeVisible();
+  await ticketDialog
+    .getByRole('heading', { name: listRow.title, exact: true })
+    .click();
+  await expect(page.getByRole('menuitemradio')).toHaveCount(0);
+  await assigneeMenuTrigger.click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menuitemradio')).toHaveCount(0);
+  await assigneeMenuTrigger.click();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('menuitemradio')).toHaveCount(0);
+  await assigneeMenuTrigger.click();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByRole('menuitemradio')).toHaveCount(0);
   await ticketDialog
     .getByRole('button', { name: listRow.title, exact: true })
     .click();
@@ -1560,7 +1553,7 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
   await expect(
     page.getByRole('button', { name: 'Manage subtasks' }),
   ).toHaveCount(0);
-  await page.getByRole('button', { name: 'Add blocker' }).first().click();
+  await page.getByRole('menuitem', { name: 'Add blocker' }).click();
   await page.getByLabel('Blocker reason').fill('[SYNTHETIC] Browser blocker');
   await page
     .locator('#add-blocker')
@@ -1584,6 +1577,46 @@ test('detail exposes lifecycle, blocker, subtask, and comment actions with confi
     page.getByRole('button', { name: 'Add a comment...' }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test('Ticket Details Area and Assignee menus own overflow scrolling', async ({
+  page,
+}) => {
+  const workAreas = Array.from({ length: 24 }, (_, index) => ({
+    id: `50000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    name: `[SYNTHETIC] Area ${String(index + 1).padStart(2, '0')}`,
+    is_active: true,
+  }));
+  const teamMembers = Array.from({ length: 24 }, (_, index) => ({
+    id:
+      index === 0
+        ? userId
+        : `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    display_name: `[SYNTHETIC] Member ${String(index + 1).padStart(2, '0')}`,
+    position_code: index % 2 === 0 ? 'designer' : 'lead',
+  }));
+  await mocks(page, { workAreas, teamMembers });
+  await signIn(page);
+  await page.goto(`/work-items/${displayId}`);
+
+  const ticketDialog = page.getByRole('dialog');
+  for (const label of ['Area', 'Assignee']) {
+    await ticketDialog
+      .getByRole('button', { name: label, exact: true })
+      .click();
+    const viewport = page.locator('[data-ticket-menu-viewport]');
+    await expect(viewport).toBeVisible();
+    expect(
+      await viewport.evaluate((node) => node.scrollHeight > node.clientHeight),
+    ).toBe(true);
+    await expect(viewport).toHaveCSS('overflow-y', 'scroll');
+    await expect(viewport).toHaveCSS('touch-action', 'pan-y');
+    await viewport.dispatchEvent('wheel', { deltaY: 120 });
+    expect(await viewport.evaluate((node) => node.scrollTop)).toBeGreaterThan(
+      0,
+    );
+    await page.keyboard.press('Escape');
+  }
 });
 
 test('conflicts preserve chosen input and Viewer detail remains read-only', async ({
@@ -1610,7 +1643,7 @@ test('conflicts preserve chosen input and Viewer detail remains read-only', asyn
     page
       .getByRole('dialog')
       .getByRole('button', { name: 'Status', exact: true }),
-  ).toHaveAttribute('aria-disabled', 'true');
+  ).toBeDisabled();
   await expect(page.getByRole('link', { name: 'Log Work' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Send comment' })).toHaveCount(
     0,

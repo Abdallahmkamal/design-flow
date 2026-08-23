@@ -3,6 +3,8 @@ import {
   forwardRef,
   isValidElement,
   useCallback,
+  useEffect,
+  useRef,
   useState,
   useId,
   type ChangeEvent,
@@ -211,6 +213,8 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
     const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
       null,
     );
+    const [open, setOpen] = useState(false);
+    const triggerNode = useRef<HTMLButtonElement | null>(null);
     const controlId = id ?? generatedId;
     const descriptionId = description ? `${controlId}-description` : undefined;
     const errorId = error ? `${controlId}-error` : undefined;
@@ -244,8 +248,42 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
         currentTarget: { value: nextValue },
       } as ChangeEvent<HTMLSelectElement>);
     };
+    useEffect(() => {
+      if (!open) return;
+      const closeOnOutsidePointer = (event: PointerEvent) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (
+          triggerNode.current?.contains(target) ||
+          target.closest('[data-slot="select-content"]')
+        )
+          return;
+        setOpen(false);
+      };
+      const closeOnOutsideFocus = (event: FocusEvent) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (
+          triggerNode.current?.contains(target) ||
+          target.closest('[data-slot="select-content"]')
+        )
+          return;
+        setOpen(false);
+      };
+      document.addEventListener('pointerdown', closeOnOutsidePointer, true);
+      document.addEventListener('focusin', closeOnOutsideFocus, true);
+      return () => {
+        document.removeEventListener(
+          'pointerdown',
+          closeOnOutsidePointer,
+          true,
+        );
+        document.removeEventListener('focusin', closeOnOutsideFocus, true);
+      };
+    }, [open]);
     const setTriggerRef = useCallback(
       (node: HTMLButtonElement | null) => {
+        triggerNode.current = node;
         if (typeof ref === 'function') ref(node);
         else if (ref) ref.current = node;
         setPortalContainer(
@@ -266,6 +304,8 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
         <Select
           items={items}
           modal={false}
+          open={open}
+          onOpenChange={setOpen}
           name={name}
           value={value || null}
           disabled={disabled}
@@ -279,6 +319,9 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
             aria-describedby={describedBy || undefined}
             aria-invalid={error ? true : undefined}
             className={className}
+            onKeyDownCapture={(event) => {
+              if (open && event.key === 'Tab') setOpen(false);
+            }}
           >
             <SelectValue placeholder={placeholder?.label ?? 'Select an option'}>
               {(selectedValue: string | null) =>
@@ -290,7 +333,12 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
               }
             </SelectValue>
           </SelectTrigger>
-          <SelectContent portalContainer={portalContainer ?? undefined}>
+          <SelectContent
+            portalContainer={portalContainer ?? undefined}
+            onKeyDownCapture={(event) => {
+              if (event.key === 'Tab') setOpen(false);
+            }}
+          >
             {selectableOptions.map((option) => (
               <SelectItem
                 key={option.value}

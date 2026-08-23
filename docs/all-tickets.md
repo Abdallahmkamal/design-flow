@@ -2,7 +2,7 @@
 
 **Version:** 1.3
 **Decision date:** 2026-07-20
-**Status:** Approved MVP baseline with D-110 team-ready amendments and D-118 terminology/metric semantics
+**Status:** Approved MVP baseline with D-110 team-ready amendments, D-118 terminology/metric semantics, and D-121 interaction/search/reference semantics
 
 All Tickets is the primary searchable and filterable ticket list. It is optimized for scanning ownership, status, planned dates, actual work recency, and attention signals without becoming an editable spreadsheet.
 
@@ -15,12 +15,14 @@ D-110 and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) supersede t
 - Use the locked desktop order Ticket, Area, Status, People, Last Activity, Start Date, Next Deadline, Days Open, Days Active, Labels, Link. Keep Ticket/Link sticky, with the middle columns horizontally scrollable.
 - Use approved expandable mobile cards rather than compressing the table.
 - Search remains visible; Add Filter creates one removable chip per filter type. Include server-side Days Open/Days Active ranges.
+- Search matches the persisted ticket reference, title, Area name, primary-assignee display name, and current-contributor display names before pagination. Description and internal UUIDs are not search targets. A copied reference such as `#010` normalizes to persisted `DF-000010` for lookup.
 - Include an optional visible **Unassigned** filter for tickets without a current
   primary assignee. It uses the ordinary removable-chip/mobile-filter model and
   exists so Dashboard's Unassigned backlog drill-down remains fully explained.
   It is incompatible with a People refinement and does not alter People union
   semantics or assignment authorization.
 - Sorting, filters, page, and desktop page size remain URL-backed. Use 25 rows by default, desktop choices 25/50/100, and fixed 25 on mobile with exact result ranges.
+- When no explicit sort is present, order by **Last Activity — newest first** without adding a default sort parameter to the URL. An explicit URL-backed sort and direction override this default.
 - Selecting a row/card opens route-backed Ticket Details at `/work-items/:displayId`, preserving list state and browser Back. Direct ticket URLs retain compatibility.
 - Exactly one primary assignee remains; multi-assignee is consciously deferred until after rollout and contributors remain derived.
 - All Tickets has no CSV action. Reports remains the sole CSV owner.
@@ -64,7 +66,7 @@ Contribution never turns into primary ownership, and contributor matches do not 
 
 Use these columns:
 
-1. **Ticket** — display ID and title, with labels and the derived subtask badge such as `2/4` inside the same cell.
+1. **Ticket** — displayed reference and title, with labels and the derived subtask badge such as `2/4` inside the same cell. Persisted `DF-000010` is presented as `#010`; routes and lookups retain the persisted value.
 2. **Area/Squad**.
 3. **Status** — workflow status plus separate Blocked/Stale attention indicators where applicable.
 4. **People** — primary assignee plus contributor count.
@@ -92,7 +94,8 @@ The recorded-activity action does not reinterpret this list. All Tickets remains
 
 ## 5. Search
 
-- Search display ID, title, and description.
+- Search the persisted display ID/reference, title, Area name, primary-assignee display name, and current-contributor display names. Do not search description or internal UUIDs.
+- Normalize a copied digits-only `#` reference such as `#010` to `DF-000010` before matching. This is not general advanced query syntax.
 - Use case-insensitive partial matching.
 - Search combines with every active filter rather than replacing them.
 - Do not add advanced query syntax in the MVP.
@@ -117,7 +120,7 @@ Show active filters clearly and provide Clear all. Search, filters, view, and so
 
 ## 7. Sorting
 
-Default to **Next Deadline ascending**, with tickets lacking next deadlines last. Supported sorts:
+For the team-ready list, default to **Last Activity descending** when no explicit sort is selected. Do not serialize this implicit default into the URL. An explicit selection remains URL-backed and overrides it. The completed MVP baseline previously defaulted to Next Deadline ascending; that old default is superseded by D-121. Supported sorts on the current surface are:
 
 - Next Deadline
 - Last worked on
@@ -166,6 +169,8 @@ Pagination method, page size, responsive breakpoints, exact icon treatment, and 
 - Subtask progress appears only within the Ticket/title cell on desktop and the title area on mobile.
 - The Figma icon appears only when a URL exists and opens that URL without opening the Work Item.
 - Search, filters, sorting, and view state survive refresh through the URL.
+- With no explicit sort parameter, Last Activity newest-first is used; explicit sorts continue to survive refresh and override it.
+- Search covers ticket reference/title, Area, primary assignee, and current contributors before pagination, excludes description/UUIDs, and composes with every active filter.
 - Friday/Saturday-aware due-soon and stale definitions match the Dashboard specification.
 - A Viewer never receives a Log Work action and cannot hold Admin privilege.
 - Exactly one specifically selected person exposes a URL-backed route to that person's period-filtered recorded activity without changing the All Tickets relationship result.

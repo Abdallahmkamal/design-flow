@@ -27,6 +27,7 @@ type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 
 export function ChangePasswordPage() {
   const { changePassword, signOut } = useAuthentication();
+  const [passwordsVisible, setPasswordsVisible] = useState(false);
   const navigate = useNavigate();
   const [operationId] = useState(createOperationId);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -113,6 +114,8 @@ export function ChangePasswordPage() {
         ) : null}
         <PasswordInput
           label="New password"
+          showVisibilityToggle={false}
+          visible={passwordsVisible}
           autoComplete="new-password"
           required
           {...(errors.newPassword?.message
@@ -122,6 +125,9 @@ export function ChangePasswordPage() {
         />
         <PasswordInput
           label="Confirm new password"
+          visible={passwordsVisible}
+          onVisibleChange={setPasswordsVisible}
+          visibilityTargetLabel="passwords"
           autoComplete="new-password"
           required
           {...(errors.confirmPassword?.message

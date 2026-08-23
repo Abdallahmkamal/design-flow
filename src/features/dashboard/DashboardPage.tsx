@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuthentication } from '../auth/authContext';
 import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { Badge, type BadgeTone } from '../../ui/Badge/Badge';
 import { DataTable, type DataTableColumn } from '../../ui/DataTable/DataTable';
 import {
@@ -658,10 +659,10 @@ export function DashboardPage() {
                 <Link
                   className={styles.attentionRow}
                   to={`/work-items/${ticket.displayId}`}
-                  aria-label={`Open ${ticket.displayId}: ${ticket.title}`}
+                  aria-label={`Open ${formatTicketReference(ticket.displayId)}: ${ticket.title}`}
                 >
                   <div className={styles.attentionTicket}>
-                    <span>{ticket.displayId}</span>
+                    <span>{formatTicketReference(ticket.displayId)}</span>
                     <strong>{ticket.title}</strong>
                   </div>
                   <div className={styles.attentionPerson}>
@@ -769,10 +770,14 @@ export function DashboardPage() {
                             <Link
                               className={styles.activityRow}
                               to={`/work-items/${entry.workItem.displayId}#actual-date-${entry.workDate}`}
-                              aria-label={`Open ${entry.workItem.displayId}: ${entry.workItem.title}, recorded by ${entry.person.displayName}`}
+                              aria-label={`Open ${formatTicketReference(entry.workItem.displayId)}: ${entry.workItem.title}, recorded by ${entry.person.displayName}`}
                             >
                               <div className={styles.activityTicket}>
-                                <span>{entry.workItem.displayId}</span>
+                                <span>
+                                  {formatTicketReference(
+                                    entry.workItem.displayId,
+                                  )}
+                                </span>
                                 <strong>{entry.workItem.title}</strong>
                               </div>
                               <div className={styles.activityMeta}>

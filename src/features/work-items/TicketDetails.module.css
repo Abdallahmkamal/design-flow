@@ -89,22 +89,16 @@
   height: 2rem;
   border-radius: var(--radius-element);
 }
-.chipMenu {
-  position: relative;
-}
-.chipMenu > summary {
-  list-style: none;
-}
-.chipMenu > summary::-webkit-details-marker {
-  display: none;
-}
 .chip {
+  appearance: none;
   display: inline-flex;
   min-height: 2rem;
   align-items: center;
   justify-content: center;
   padding-inline: 0.6667rem;
+  border: 0;
   border-radius: var(--radius-element);
+  box-shadow: none;
   background: var(--color-surface-raised-prominent);
   color: var(--color-text-primary);
   font: var(--type-label);
@@ -134,47 +128,29 @@
   background: var(--color-workflow-done-background);
   color: var(--color-workflow-done-text);
 }
-.chip[aria-disabled='true'] {
+.chip:disabled {
   cursor: default;
 }
-.chipMenu:first-child > .chip {
+.peopleChip {
   padding: 0;
   background: transparent;
 }
-.chipMenu > div {
-  position: absolute;
-  z-index: 4;
-  top: calc(100% + var(--space-xs));
-  left: 0;
-  display: grid;
+.chipMenuContent {
   min-width: 14rem;
-  max-height: min(20rem, calc(100vh - 2rem));
-  padding: var(--space-xs);
-  border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-element);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-sm);
-  overflow-y: auto;
+  max-height: none;
+  overflow: hidden;
+}
+.chipMenuViewport {
+  max-height: min(
+    20rem,
+    var(--radix-dropdown-menu-content-available-height, calc(100vh - 2rem))
+  );
+  overflow-x: hidden;
+  overflow-y: scroll;
   overscroll-behavior: contain;
-}
-.chipMenu > div button {
-  display: flex;
-  min-height: 2.5rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding-inline: var(--space-sm);
-  border: 0;
-  border-radius: var(--radius-inner);
-  background: transparent;
-  color: var(--color-text-primary);
-  font: var(--type-body-compact);
-  text-align: left;
-  cursor: pointer;
-}
-.chipMenu > div button:hover,
-.chipMenu > div button:focus-visible {
-  background: var(--color-action-secondary-background);
+  scrollbar-gutter: stable;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 .peopleSummary,
 .personPair {
@@ -192,7 +168,7 @@
   background: var(--color-border-subtle);
 }
 .figmaAction,
-.overflow > summary {
+.overflowTrigger {
   min-width: 2rem;
   height: 2rem;
   display: inline-grid;
@@ -205,7 +181,7 @@
   cursor: pointer;
 }
 .figmaAction img,
-.overflow svg,
+.overflowTrigger svg,
 .editableValue svg {
   width: 1rem;
   height: 1rem;
@@ -218,31 +194,14 @@
 :global([data-theme='dark']) .figmaAction img {
   filter: invert(1);
 }
-.overflow {
-  position: relative;
-}
-.overflow > summary {
-  list-style: none;
-}
-.overflow > summary::-webkit-details-marker {
-  display: none;
-}
-.overflow > div {
-  position: absolute;
-  z-index: 2;
-  top: calc(100% + var(--space-xs));
-  right: 0;
+.overflowMenu {
   display: grid;
   gap: var(--space-sm);
   min-width: 13rem;
   padding: var(--space-md);
-  border: var(--border-width) solid var(--color-border-default);
-  border-radius: var(--radius-container);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-sm);
 }
-.overflow > div > a,
-.overflow > div > button {
+.overflowMenu > a,
+.overflowMenu > button {
   width: 100%;
   height: 2.5rem;
   min-height: 2.5rem;
@@ -254,14 +213,11 @@
   color: var(--color-text-primary) !important;
   text-decoration: none;
 }
-.overflow > div > a:hover,
-.overflow > div > button:hover,
-.overflow > div > a:focus-visible,
-.overflow > div > button:focus-visible {
+.overflowMenu > a:hover,
+.overflowMenu > button:hover,
+.overflowMenu > a:focus-visible,
+.overflowMenu > button:focus-visible {
   background: var(--color-action-secondary-background);
-}
-.overflow > div > button.destructiveMenuAction {
-  color: var(--color-text-error) !important;
 }
 .logWorkButton {
   height: 2rem;
@@ -532,8 +488,7 @@ button.subtaskTitle:focus-visible {
   opacity: 1;
   pointer-events: auto;
 }
-.subtaskActions > button,
-.subtaskOrder > summary {
+.subtaskActions > button {
   display: inline-grid;
   width: 2rem;
   height: 2rem;
@@ -541,58 +496,9 @@ button.subtaskTitle:focus-visible {
   padding: 0;
   border-radius: var(--radius-element);
 }
-.subtaskOrder {
-  position: relative;
-}
-.subtaskOrder > summary {
-  list-style: none;
-  cursor: pointer;
-}
-.subtaskOrder > summary::-webkit-details-marker {
-  display: none;
-}
-.subtaskOrder > summary:hover,
-.subtaskOrder > summary:focus-visible {
-  background: var(--color-action-secondary-background);
-}
-.subtaskOrder > summary svg,
 .subtaskActions > button svg {
   width: 1rem;
   height: 1rem;
-}
-.subtaskOrder > div {
-  position: absolute;
-  z-index: 4;
-  top: calc(100% + var(--space-xs));
-  right: 0;
-  display: grid;
-  min-width: 8rem;
-  padding: var(--space-xs);
-  border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-element);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-sm);
-}
-.subtaskOrder > div button {
-  display: flex;
-  min-height: 2.5rem;
-  align-items: center;
-  gap: var(--space-sm);
-  padding-inline: var(--space-sm);
-  border: 0;
-  border-radius: var(--radius-inner);
-  background: transparent;
-  color: var(--color-text-primary);
-  font: var(--type-body-compact);
-  cursor: pointer;
-}
-.subtaskOrder > div button:hover,
-.subtaskOrder > div button:focus-visible {
-  background: var(--color-action-secondary-background);
-}
-.subtaskOrder > div button:disabled {
-  cursor: default;
-  opacity: var(--control-disabled-opacity);
 }
 .inlineSubtaskDraft {
   display: grid;

@@ -21,12 +21,16 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { WorkItemExportPanel } from '../reports/WorkItemExportPanel';
 import { useAuthentication } from '../auth/authContext';
 import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
+import { formatTicketReference } from '../../shared/ticketReference';
 import {
   Button,
   Calendar,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
   FormInput,
   FormTextarea,
@@ -196,37 +200,47 @@ function ChipMenu({
   statusCode?: string;
   onSelect: (value: string) => void;
 }) {
-  const ref = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
   return (
-    <details className={styles.chipMenu} ref={ref}>
-      <summary
-        role="button"
-        aria-label={label}
-        className={styles.chip}
-        data-status={statusCode}
-        aria-disabled={disabled ? true : undefined}
-        onClick={(event) => disabled && event.preventDefault()}
+    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          className={`${styles.chip} ${label === 'Assignee' ? styles.peopleChip : ''}`}
+          data-status={statusCode}
+          disabled={disabled}
+        >
+          {summary}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className={styles.chipMenuContent}
+        onKeyDown={(event) => {
+          if (event.key === 'Tab') setOpen(false);
+        }}
       >
-        {summary}
-      </summary>
-      <div role="listbox" aria-label={label}>
-        {options.map((option) => (
-          <button
-            type="button"
-            role="option"
-            aria-selected={option.value === value}
-            key={option.value}
-            onClick={() => {
-              onSelect(option.value);
-              if (ref.current) ref.current.open = false;
-            }}
-          >
-            <span>{option.label}</span>
-            {option.value === value ? <span aria-hidden="true">✓</span> : null}
-          </button>
-        ))}
-      </div>
-    </details>
+        <div
+          className={styles.chipMenuViewport}
+          data-ticket-menu-viewport
+          onWheelCapture={(event) => {
+            const viewport = event.currentTarget;
+            if (viewport.scrollHeight <= viewport.clientHeight) return;
+            event.preventDefault();
+            viewport.scrollTop += event.deltaY;
+          }}
+        >
+          <DropdownMenuRadioGroup value={value} onValueChange={onSelect}>
+            {options.map((option) => (
+              <DropdownMenuRadioItem key={option.value} value={option.value}>
+                {option.label}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -399,6 +413,7 @@ function SubtaskRow({
   run: (label: string, task: () => Promise<unknown>) => void;
 }) {
   const [renaming, setRenaming] = useState(false);
+  const [orderMenuOpen, setOrderMenuOpen] = useState(false);
   const [title, setTitle] = useState(subtask.title);
   const titleInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -478,37 +493,40 @@ function SubtaskRow({
       )}
       {item.capabilities.canEditSubtasks ? (
         <div className={styles.subtaskActions}>
-          <details className={styles.subtaskOrder}>
-            <summary aria-label={`Reorder ${subtask.title}`}>
-              <GripVertical />
-            </summary>
-            <div>
-              <button
-                type="button"
+          <DropdownMenu
+            modal={false}
+            open={orderMenuOpen}
+            onOpenChange={setOrderMenuOpen}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label={`Reorder ${subtask.title}`}
+              >
+                <GripVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              onKeyDown={(event) => {
+                if (event.key === 'Tab') setOrderMenuOpen(false);
+              }}
+            >
+              <DropdownMenuItem
                 disabled={index === 0}
-                onClick={(event) => {
-                  move(-1);
-                  event.currentTarget
-                    .closest('details')
-                    ?.removeAttribute('open');
-                }}
+                onSelect={() => move(-1)}
               >
                 <ArrowUp /> Move up
-              </button>
-              <button
-                type="button"
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 disabled={index === item.subtasks.length - 1}
-                onClick={(event) => {
-                  move(1);
-                  event.currentTarget
-                    .closest('details')
-                    ?.removeAttribute('open');
-                }}
+                onSelect={() => move(1)}
               >
                 <ArrowDown /> Move down
-              </button>
-            </div>
-          </details>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             size="icon"
             variant="ghost"
@@ -817,6 +835,7 @@ export function WorkItemPage() {
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [labelsOpen, setLabelsOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
   const [labelDraft, setLabelDraft] = useState<string[]>([]);
   const [archivePrompt, setArchivePrompt] = useState(false);
   const [donePrompt, setDonePrompt] = useState(false);
@@ -1007,7 +1026,7 @@ export function WorkItemPage() {
           onPointerDownOutside={(event) => event.preventDefault()}
         >
           <SheetTitle className="sr-only">
-            {workItem.displayId}: {workItem.title}
+            {formatTicketReference(workItem.displayId)}: {workItem.title}
           </SheetTitle>
           <SheetDescription className="sr-only">
             Ticket Details
@@ -1025,7 +1044,8 @@ export function WorkItemPage() {
               <div className={styles.titleRow}>
                 <div className={styles.titleBlock}>
                   <p className={styles.eyebrow}>
-                    {workItem.area.name} / {workItem.displayId}
+                    {workItem.area.name} /{' '}
+                    {formatTicketReference(workItem.displayId)}
                   </p>
                   {!workItem.capabilities.canEdit ? (
                     <p className={styles.readOnly}>Read-only access.</p>
@@ -1160,7 +1180,7 @@ export function WorkItemPage() {
                           href={workItem.figmaUrl}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`Open ${workItem.displayId} in Figma (opens in a new tab)`}
+                          aria-label={`Open ${formatTicketReference(workItem.displayId)} in Figma (opens in a new tab)`}
                         >
                           <img
                             src={figmaLinkAction}
@@ -1183,46 +1203,58 @@ export function WorkItemPage() {
                       </Link>
                     </Button>
                   ) : null}
-                  <details className={styles.overflow}>
-                    <summary role="button" aria-label="More ticket actions">
-                      <Ellipsis />
-                    </summary>
-                    <div>
+                  <DropdownMenu
+                    modal={false}
+                    open={actionsOpen}
+                    onOpenChange={setActionsOpen}
+                  >
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className={styles.overflowTrigger}
+                        aria-label="More ticket actions"
+                      >
+                        <Ellipsis />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className={styles.overflowMenu}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Tab') setActionsOpen(false);
+                      }}
+                    >
                       <WorkItemExportPanel displayId={workItem.displayId} />
                       {workItem.capabilities.canArchive ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className={`${styles.destructiveMenuAction} text-[var(--color-text-error)]!`}
-                          onClick={() => setArchivePrompt(true)}
+                        <DropdownMenuItem
+                          destructive
+                          onSelect={() => setArchivePrompt(true)}
                         >
                           Archive
-                        </Button>
+                        </DropdownMenuItem>
                       ) : null}
                       {workItem.capabilities.canRestore ? (
-                        <Button
-                          variant="secondary"
-                          onClick={() =>
+                        <DropdownMenuItem
+                          onSelect={() =>
                             run('Ticket restored.', () =>
                               restoreWorkItem(workItem),
                             )
                           }
                         >
                           Restore
-                        </Button>
+                        </DropdownMenuItem>
                       ) : null}
                       {workItem.capabilities.canCreateBlocker &&
                       !workItem.activeBlocker ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setAddBlockerOpen(true)}
+                        <DropdownMenuItem
+                          onSelect={() => setAddBlockerOpen(true)}
                         >
                           Add blocker
-                        </Button>
+                        </DropdownMenuItem>
                       ) : null}
-                    </div>
-                  </details>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               <dl className={styles.metrics}>
@@ -1621,6 +1653,7 @@ export function WorkItemPage() {
                   <dl className={styles.details}>
                     <Field label="Labels">
                       <DropdownMenu
+                        modal={false}
                         open={labelsOpen}
                         onOpenChange={(open) => {
                           if (open) {
@@ -1656,6 +1689,9 @@ export function WorkItemPage() {
                         <DropdownMenuContent
                           align="start"
                           className={styles.labelMenu}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Tab') setLabelsOpen(false);
+                          }}
                         >
                           {optionData.labels
                             .filter(
