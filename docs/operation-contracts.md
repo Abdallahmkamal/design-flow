@@ -576,7 +576,7 @@ The existing optional blocker action remains an atomic part of `submit_work_log`
 - One to five active entry rows.
 - Every date is no later than team-local today. Friday/Saturday remain valid.
 - Each work type is selectable and matches context.
-- Descriptions are optional, including Other.
+- Descriptions are optional, including Other. The client normalizes an empty or whitespace-only optional description to database `null` before submission or correction; the database does not persist blank description strings.
 - Ticket context requires a visible, unarchived Work Item and null related Area for a new submission.
 - Visual context requires null Work Item and optional active related Area.
 
