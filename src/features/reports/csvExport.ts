@@ -1,4 +1,5 @@
 import type { ReportExport, ReportExportType } from './reportsApi';
+import { formatTicketReference } from '../../shared/ticketReference';
 
 const schemas: Record<
   ReportExportType,
@@ -64,6 +65,12 @@ const text = (value: unknown): string =>
           ? String(value)
           : '';
 const escape = (value: unknown) => `"${text(value).replaceAll('"', '""')}"`;
+const ticket = (value: unknown) => {
+  const rendered = text(value);
+  const separator = rendered.indexOf(' — ');
+  if (separator < 0) return formatTicketReference(rendered);
+  return `${formatTicketReference(rendered.slice(0, separator))}${rendered.slice(separator)}`;
+};
 
 export function serializeReportCsv(payload: ReportExport): string {
   const type = payload.reportType as ReportExportType;
@@ -72,7 +79,9 @@ export function serializeReportCsv(payload: ReportExport): string {
   return [
     columns.map(([, label]) => escape(label)).join(','),
     ...payload.rows.map((row) =>
-      columns.map(([key]) => escape(row[key])).join(','),
+      columns
+        .map(([key]) => escape(key === 'ticket' ? ticket(row[key]) : row[key]))
+        .join(','),
     ),
   ].join('\r\n');
 }

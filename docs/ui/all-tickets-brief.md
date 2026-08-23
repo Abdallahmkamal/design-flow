@@ -8,6 +8,8 @@
 
 > **Team-ready amendment (2026-08-08):** Modernization Slice 3 and `team-ready-ui-handoff.md` supersede the MVP columns, tabs/filter model, responsive list, pagination, and opening behavior. The team-ready list uses route-backed Ticket Details, retains one primary assignee plus derived contributors, and has no CSV action.
 
+> **Release Slice 3 amendment (2026-08-23):** D-121 supersedes the legacy search/default below. Current search covers persisted ticket reference/title, Area name, primary-assignee display name, and current-contributor display names before pagination; it excludes description and UUIDs and accepts copied `#010` references. With no explicit URL sort, Last Activity newest-first is the default. Explicit URL-backed sorts continue to override it.
+
 ## Purpose
 
 Provide the primary whole-team ticket list for scanning ownership, workflow,
@@ -61,7 +63,7 @@ The URL-backed query supports:
 - `relationship`: Owned, Contributed to, Owned or contributed to;
 - multi-select status, Area/Squad, and label IDs;
 - blocked, due, and stale tri/choice filters;
-- case-insensitive partial search over display ID, title, and description;
+- case-insensitive partial search over the D-121 ticket-reference/title/Area/assignee/current-contributor set;
 - sort: Next Deadline, last worked on, created date, status, title, or ticket ID;
 - direction; and
 - one-based page.
@@ -75,7 +77,7 @@ Defaults:
 - Current unarchived Backlog, To do, In Progress, In Review, and Paused;
 - position-based people scope from `all-tickets.md`;
 - Owned relationship; and
-- Next Deadline ascending with null dates last and display ID as stable tie-breaker.
+- Last Activity descending with display ID as stable tie-breaker when no explicit sort is selected.
 
 ## Desktop result table
 

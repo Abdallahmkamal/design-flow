@@ -31,6 +31,17 @@ export interface WorkItemFilters {
   pageSize: WorkItemPageSize;
 }
 
+export const defaultWorkItemSort: WorkItemSort = 'last_activity';
+export const defaultWorkItemSortDirection = 'desc' as const;
+
+export function effectiveWorkItemSort(filters: WorkItemFilters) {
+  return filters.sort || defaultWorkItemSort;
+}
+
+export function effectiveWorkItemSortDirection(filters: WorkItemFilters) {
+  return filters.sort ? filters.direction : defaultWorkItemSortDirection;
+}
+
 const sorts = new Set<WorkItemSort>([
   'ticket',
   'area',

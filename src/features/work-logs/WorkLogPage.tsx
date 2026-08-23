@@ -15,6 +15,7 @@ import {
 } from 'react-router-dom';
 
 import { createOperationId } from '../../shared/operations/operationId';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { Button as ModernButton } from '../../ui/primitives/button';
 import { ButtonGroup } from '../../ui/primitives/button-group';
 import {
@@ -486,7 +487,7 @@ export function WorkLogPage() {
                   setTicketSearch('');
                   setView('log');
                   setAnnouncement(
-                    `${result.display_id} created in Backlog and selected. Finish the work log when ready.`,
+                    `${formatTicketReference(result.display_id)} created in Backlog and selected. Finish the work log when ready.`,
                   );
                 },
               })
@@ -618,7 +619,7 @@ export function WorkLogPage() {
                 <input
                   data-slot="input"
                   aria-label="Selected ticket"
-                  value={`${effectiveDisplayId} — ${selectedTicket.data?.title ?? row?.title ?? 'Loading…'}`}
+                  value={`${formatTicketReference(effectiveDisplayId)} — ${selectedTicket.data?.title ?? row?.title ?? 'Loading…'}`}
                   readOnly
                 />
                 <ModernButton
@@ -717,8 +718,8 @@ export function WorkLogPage() {
                       <ComboboxList>
                         {visibleTickets.map((item: WorkItemListRow) => (
                           <ComboboxItem key={item.id} value={item.id}>
-                            {item.displayId} — {item.title} ·{' '}
-                            {item.status.label} ·{' '}
+                            {formatTicketReference(item.displayId)} —{' '}
+                            {item.title} · {item.status.label} ·{' '}
                             {item.assignee?.displayName ?? 'Unassigned'}
                           </ComboboxItem>
                         ))}

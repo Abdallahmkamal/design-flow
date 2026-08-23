@@ -15,6 +15,7 @@ Notifications provide a narrow in-app awareness layer for personally relevant ti
 - Open a chronological in-app list, newest first.
 - Allow the recipient to mark one notification or all notifications as read.
 - Each notification deep-links to the relevant Work Item.
+- Present the linked ticket with the shared compact `#001`/`#010`/`#1000` reference while retaining the persisted `DF-…` value in the route.
 - Paginate or progressively load older notifications.
 - Do not provide manual notification deletion in the MVP.
 - Present inbox rows as portal cards with a clear Work Item title, read-state

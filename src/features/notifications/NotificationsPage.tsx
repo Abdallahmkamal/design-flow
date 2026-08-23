@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuthentication } from '../auth/authContext';
 import { Pagination } from '../../ui/Pagination/Pagination';
 import { Badge, Button, Card } from '../../ui/primitives';
+import { formatTicketReference } from '../../shared/ticketReference';
 import {
   getNotificationInbox,
   markAllNotificationsRead,
@@ -122,7 +123,8 @@ export function NotificationsPage() {
               >
                 <div className={styles.itemHeading}>
                   <Link to={`/work-items/${item.workItem.displayId}`}>
-                    {item.workItem.displayId} · {item.workItem.title}
+                    {formatTicketReference(item.workItem.displayId)} ·{' '}
+                    {item.workItem.title}
                   </Link>
                   {item.readAt ? (
                     <Badge tone="neutral">Read</Badge>

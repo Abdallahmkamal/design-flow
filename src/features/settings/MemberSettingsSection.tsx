@@ -14,6 +14,7 @@ import { DataTable, type DataTableColumn } from '../../ui/DataTable/DataTable';
 import { Input } from '../../ui/Input/Input';
 import { ProfileAvatar } from '../../ui/ProfileAvatar/ProfileAvatar';
 import { Select } from '../../ui/Select/Select';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { useAuthentication } from '../auth/authContext';
 import {
   createMember,
@@ -195,7 +196,7 @@ function AssignmentReplacementFields({
         return (
           <Select
             key={item.id}
-            label={`${item.displayId}: ${item.title}`}
+            label={`${formatTicketReference(item.displayId)}: ${item.title}`}
             value={values[item.id] ?? ''}
             onChange={(event) => onChange(item.id, event.target.value)}
             required

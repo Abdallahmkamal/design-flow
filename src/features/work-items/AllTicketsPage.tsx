@@ -50,9 +50,12 @@ import {
   TooltipTrigger,
 } from '../../ui/primitives';
 import { cn } from '../../ui/lib/cn';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { Pagination } from '../../ui/Pagination/Pagination';
 import {
   hasActiveWorkItemFilters,
+  effectiveWorkItemSort,
+  effectiveWorkItemSortDirection,
   parseWorkItemFilters,
   serializeWorkItemFilters,
   type WorkItemFilters,
@@ -194,7 +197,7 @@ function People({
       <PopoverTrigger
         render={<button type="button" />}
         className="flex min-h-10 max-w-full items-center gap-2 rounded-md border-0 bg-transparent p-1 text-left font-sans text-sm text-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`People on ${row.displayId}: ${people.map((person) => person.displayName).join(', ')}`}
+        aria-label={`People on ${formatTicketReference(row.displayId)}: ${people.map((person) => person.displayName).join(', ')}`}
       >
         <ProfileAvatar
           profileId={shown.id}
@@ -240,7 +243,7 @@ function People({
 
 function FigmaLink({ row }: { row: WorkItemListRow }) {
   if (!row.figmaUrl) return <span aria-label="No Figma link">—</span>;
-  const label = `Open ${row.displayId} in Figma (opens in a new tab)`;
+  const label = `Open ${formatTicketReference(row.displayId)} in Figma (opens in a new tab)`;
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -576,11 +579,11 @@ function SortControls({
     <div className="grid gap-4">
       <FormSelect
         label="Sort field"
-        value={filters.sort || 'ticket'}
+        value={effectiveWorkItemSort(filters)}
         onChange={(event) =>
           update({
             sort: event.target.value as WorkItemSort,
-            direction: filters.sort ? filters.direction : 'asc',
+            direction: effectiveWorkItemSortDirection(filters),
           })
         }
       >
@@ -592,10 +595,10 @@ function SortControls({
       </FormSelect>
       <FormSelect
         label="Direction"
-        value={filters.sort ? filters.direction : 'asc'}
+        value={effectiveWorkItemSortDirection(filters)}
         onChange={(event) =>
           update({
-            sort: filters.sort || 'ticket',
+            sort: effectiveWorkItemSort(filters),
             direction: event.target.value as 'asc' | 'desc',
           })
         }
@@ -650,7 +653,7 @@ function MobileCards({
               className={styles.mobileCard}
               data-ticket-launcher={row.displayId}
               tabIndex={0}
-              aria-label={`Open ${row.displayId}: ${row.title}`}
+              aria-label={`Open ${formatTicketReference(row.displayId)}: ${row.title}`}
               onKeyDown={(event) => {
                 if (
                   event.target === event.currentTarget &&
@@ -670,7 +673,7 @@ function MobileCards({
               <div className="flex items-start gap-3">
                 <div className="min-w-0 flex-1">
                   <span className="text-xs text-muted-foreground">
-                    {row.displayId}
+                    {formatTicketReference(row.displayId)}
                   </span>
                   <h2
                     className={cn(
@@ -700,7 +703,7 @@ function MobileCards({
                   className="ml-auto size-10"
                   aria-expanded={open}
                   aria-controls={`ticket-${row.id}-details`}
-                  aria-label={`${open ? 'Collapse' : 'Expand'} ${row.displayId}`}
+                  aria-label={`${open ? 'Collapse' : 'Expand'} ${formatTicketReference(row.displayId)}`}
                   onClick={() => toggle(row.id)}
                 >
                   {open ? (
@@ -874,17 +877,7 @@ export function AllTicketsPage() {
         ),
       ].find((candidate) => candidate.getClientRects().length > 0);
       if (!target) return;
-      const active = document.activeElement;
-      if (
-        active === document.body ||
-        active === document.documentElement ||
-        active === target
-      )
-        target.focus({ preventScroll: true });
-      else {
-        sessionStorage.removeItem('all-tickets-restore-focus');
-        return;
-      }
+      target.focus({ preventScroll: true });
       if (finalAttempt) sessionStorage.removeItem('all-tickets-restore-focus');
     };
     const delays = [0, 100, 250, 500, 1_000, 1_500];
@@ -897,8 +890,8 @@ export function AllTicketsPage() {
     update({
       sort: field,
       direction:
-        filters.sort === field
-          ? filters.direction === 'asc'
+        effectiveWorkItemSort(filters) === field
+          ? effectiveWorkItemSortDirection(filters) === 'asc'
             ? 'desc'
             : 'asc'
           : [
@@ -987,7 +980,7 @@ export function AllTicketsPage() {
           <FormInput
             hideLabel
             label="Search tickets"
-            placeholder="Search..."
+            placeholder="Search ticket, Area, assignee, contributor, or #010"
             value={filters.search}
             trailingIcon={<Search />}
             onChange={(event) =>
@@ -1035,7 +1028,11 @@ export function AllTicketsPage() {
               variant="secondary"
               size="icon"
               className="size-12 md:hidden"
-              aria-label={`Sort${filters.sort ? `, ${sortableFields.find((field) => field.value === filters.sort)?.label} ${filters.direction === 'asc' ? 'ascending' : 'descending'}` : ', not active'}`}
+              aria-label={
+                filters.sort
+                  ? `Sort, ${sortableFields.find((field) => field.value === effectiveWorkItemSort(filters))?.label} ${effectiveWorkItemSortDirection(filters) === 'asc' ? 'ascending' : 'descending'}`
+                  : 'Sort, not active'
+              }
             >
               <ListFilter aria-hidden="true" />
             </Button>
@@ -1257,15 +1254,12 @@ function AllTicketsSortableTable({
 }) {
   const header = (field: WorkItemSort, label: string, className?: string) => {
     const active = filters.sort === field;
+    const direction = effectiveWorkItemSortDirection(filters);
     return (
       <th
         className={className}
         aria-sort={
-          active
-            ? filters.direction === 'asc'
-              ? 'ascending'
-              : 'descending'
-            : 'none'
+          active ? (direction === 'asc' ? 'ascending' : 'descending') : 'none'
         }
       >
         <button
@@ -1275,7 +1269,7 @@ function AllTicketsSortableTable({
         >
           {label}
           {active ? (
-            filters.direction === 'asc' ? (
+            direction === 'asc' ? (
               <ArrowUp aria-hidden="true" />
             ) : (
               <ArrowDown aria-hidden="true" />
@@ -1378,7 +1372,7 @@ function TicketRow({
     <tr
       data-ticket-launcher={row.displayId}
       tabIndex={0}
-      aria-label={`Open ${row.displayId}: ${row.title}`}
+      aria-label={`Open ${formatTicketReference(row.displayId)}: ${row.title}`}
       onKeyDown={activate}
       onClick={(event) => {
         if (
@@ -1391,7 +1385,9 @@ function TicketRow({
     >
       <td className={styles.stickyLeft}>
         <div className={styles.ticketColumn}>
-          <span className="text-xs text-muted-foreground">{row.displayId}</span>
+          <span className="text-xs text-muted-foreground">
+            {formatTicketReference(row.displayId)}
+          </span>
           <strong>{row.title}</strong>
           <span className="flex flex-wrap gap-1">
             {row.totalSubtasks ? (

@@ -228,6 +228,33 @@ describe('team-ready primitives', () => {
     expect(document.querySelectorAll('[data-direction]').length).toBe(0);
   });
 
+  it('dismisses FormSelect on outside interaction and forward or reverse Tab', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">Before</button>
+        <FormSelect label="Area">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+        </FormSelect>
+        <button type="button">After</button>
+      </>,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Area' });
+    await user.click(trigger);
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'After' }));
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.click(trigger);
+    fireEvent.keyDown(trigger, { key: 'Tab' });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.click(trigger);
+    fireEvent.keyDown(trigger, { key: 'Tab', shiftKey: true });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
   it('keeps a modal FormSelect popup inside its dialog scroll boundary', async () => {
     const user = userEvent.setup();
     render(

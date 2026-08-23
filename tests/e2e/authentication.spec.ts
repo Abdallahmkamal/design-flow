@@ -465,8 +465,29 @@ test('mandatory password change cannot be bypassed and releases the shell after 
   await page.goto('/reports');
   await expect(page).toHaveURL('/change-password');
 
-  await page.getByLabel(/^New password/).fill('1234567');
-  await page.getByLabel(/^Confirm new password/).fill('1234567');
+  const newPassword = page.getByLabel(/^New password/);
+  const confirmPassword = page.getByLabel(/^Confirm new password/);
+  await newPassword.focus();
+  await newPassword.press('Tab');
+  await expect(confirmPassword).toBeFocused();
+  await confirmPassword.press('Tab');
+  const visibilityToggle = page.getByRole('button', {
+    name: 'Show passwords',
+  });
+  await expect(visibilityToggle).toBeFocused();
+  await expect(visibilityToggle).toHaveCSS('width', '40px');
+  await expect(visibilityToggle).toHaveCSS('height', '40px');
+  await expect(
+    confirmPassword
+      .locator('..')
+      .getByRole('button', { name: 'Show passwords' }),
+  ).toHaveCount(1);
+  await visibilityToggle.press('Enter');
+  await expect(newPassword).toHaveAttribute('type', 'text');
+  await expect(confirmPassword).toHaveAttribute('type', 'text');
+
+  await newPassword.fill('1234567');
+  await confirmPassword.fill('1234567');
   await page
     .getByRole('button', { name: 'Change password and continue' })
     .click();
@@ -475,8 +496,8 @@ test('mandatory password change cannot be bypassed and releases the shell after 
   ).toBeVisible();
   await expect(page.getByLabel(/^New password/)).toBeFocused();
 
-  await page.getByLabel(/^New password/).fill(replacementPassword);
-  await page.getByLabel(/^Confirm new password/).fill(replacementPassword);
+  await newPassword.fill(replacementPassword);
+  await confirmPassword.fill(replacementPassword);
   await page
     .getByRole('button', { name: 'Change password and continue' })
     .click();

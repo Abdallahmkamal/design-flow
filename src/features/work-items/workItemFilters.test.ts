@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  effectiveWorkItemSort,
+  effectiveWorkItemSortDirection,
   hasActiveWorkItemFilters,
   parseWorkItemFilters,
   serializeWorkItemFilters,
@@ -25,6 +27,14 @@ describe('work-item URL filters', () => {
       daysActiveMin: null,
       search: 'synthetic',
     });
+  });
+
+  it('uses Last Activity newest first without adding implicit URL state', () => {
+    const filters = parseWorkItemFilters(new URLSearchParams());
+    expect(effectiveWorkItemSort(filters)).toBe('last_activity');
+    expect(effectiveWorkItemSortDirection(filters)).toBe('desc');
+    expect(serializeWorkItemFilters(filters).toString()).toBe('');
+    expect(toRpcFilters(filters).sort).toBeUndefined();
   });
 
   it('round-trips every URL-backed control without legacy or default noise', () => {

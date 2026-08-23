@@ -53,6 +53,7 @@ import {
   type ChartConfig,
 } from '../../ui/primitives';
 import { getWorkItemHistory } from '../work-items/workItemsApi';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { downloadCsv } from './csvExport';
 import {
   defaultReportFilters,
@@ -120,6 +121,8 @@ const display = (value: unknown): string => {
     ? String(value)
     : '—';
 };
+const ticketReference = (value: unknown) =>
+  formatTicketReference(display(value));
 const field = (row: ReportRow, ...keys: string[]) =>
   keys.map((key) => row[key]).find((value) => value !== undefined);
 
@@ -426,7 +429,7 @@ function columnsFor(
         render: (row) => (
           <>
             <Link to={`/work-items/${display(row.displayId)}`}>
-              {display(row.displayId)}
+              {ticketReference(row.displayId)}
             </Link>
             <br />
             {display(row.title)}
@@ -574,7 +577,7 @@ function MobileReportRecord({
   const summary =
     tab === 'tickets'
       ? {
-          eyebrow: display(row.displayId),
+          eyebrow: ticketReference(row.displayId),
           title: display(row.title),
           meta: `${display(row.area)} · ${display(row.status)}`,
         }
@@ -634,7 +637,7 @@ function TicketSourceDisclosure({
     >
       <div>
         <h3 id="ticket-source-heading">
-          {display(row.displayId)} source disclosure
+          {ticketReference(row.displayId)} source disclosure
         </h3>
         <Button size="small" variant="ghost" onClick={onClose}>
           Close source
@@ -1515,7 +1518,7 @@ export function ReportsPage() {
                     header: 'Ticket',
                     render: (row) => (
                       <Link to={`/work-items/${display(row.displayId)}`}>
-                        {display(row.displayId)} — {display(row.title)}
+                        {ticketReference(row.displayId)} — {display(row.title)}
                       </Link>
                     ),
                   },
@@ -1559,7 +1562,7 @@ export function ReportsPage() {
                     header: 'Ticket',
                     render: (row) => (
                       <Link to={`/work-items/${display(row.displayId)}`}>
-                        {display(row.displayId)} — {display(row.title)}
+                        {ticketReference(row.displayId)} — {display(row.title)}
                       </Link>
                     ),
                   },
@@ -1617,7 +1620,8 @@ export function ReportsPage() {
                       const item = row.workItem as Record<string, unknown>;
                       return (
                         <Link to={`/work-items/${display(item.displayId)}`}>
-                          {display(item.displayId)} — {display(item.title)}
+                          {ticketReference(item.displayId)} —{' '}
+                          {display(item.title)}
                         </Link>
                       );
                     },

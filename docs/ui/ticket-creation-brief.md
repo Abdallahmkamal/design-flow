@@ -115,6 +115,7 @@ fixed-status explanation do not change.
 
 - Native form order matches the visual order. Enter does not unexpectedly
   submit while focus is in Textarea.
+- On the team-ready Create Ticket surface, the required Area select always keeps the complete option list available. Multi-character typing moves the active option by accumulated typeahead without filtering/removing choices; Arrow keys, Enter, Escape, Tab/Shift+Tab, and touch follow the shared select contract. A no-match type sequence leaves the list intact.
 - Submit validates client-known requirements, exposes a linked error summary,
   and focuses the summary or first invalid field.
 - While the request is pending, Create ticket reports busy state and duplicate

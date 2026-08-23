@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuthentication } from '../auth/authContext';
 import { createOperationId } from '../../shared/operations/operationId';
+import { formatTicketReference } from '../../shared/ticketReference';
 import { Button } from '../../ui/primitives/button';
 import { WorkflowOverlay } from '../../ui/WorkflowOverlay/WorkflowOverlay';
 import { WorkItemForm } from './WorkItemForm';
@@ -69,7 +70,9 @@ export function WorkItemCreatePage() {
     onSuccess: (result) => {
       void navigate(`/work-items/${result.display_id}`, {
         replace: true,
-        state: { confirmation: `${result.display_id} created in Backlog.` },
+        state: {
+          confirmation: `${formatTicketReference(result.display_id)} created in Backlog.`,
+        },
       });
     },
   });

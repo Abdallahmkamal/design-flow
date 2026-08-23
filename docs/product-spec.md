@@ -4,7 +4,7 @@
 **Checkpoint date:** 2026-07-16  
 **Status:** Approved product documentation checkpoint; technical and build plans approved
 
-**Last amended:** 2026-08-22 — D-118 canonical calendar, Next Deadline, overdue, duration, and archived-report behavior
+**Last amended:** 2026-08-23 — D-121 interaction, search, ticket-reference, and authentication focus behavior
 
 This document is the current product source of truth for Design Flow. The completed MVP decisions remain historical context; D-109, D-110, and [ui/team-ready-ui-handoff.md](ui/team-ready-ui-handoff.md) govern the approved team-ready post-MVP amendments. Open decisions must not be invented during implementation.
 
@@ -130,6 +130,8 @@ Viewer is trusted internal, whole-team read-only access:
 | Figma URL | Optional; one URL only |
 | Priority | Does not exist in the MVP |
 | Project | Does not exist in the MVP |
+
+The database persists the generated Ticket ID as `DF-` plus at least six zero-padded digits. Product UI, notifications, reports, CSV, and Work Item PDF presentation use the shared compact reference `#` plus at least three digits: `DF-000001` → `#001`, `DF-000010` → `#010`, `DF-000127` → `#127`, and `DF-001000` → `#1000`. Routes, RPC arguments, foreign keys, and stored values continue to use the persisted `DF-…` form. All Tickets search accepts copied digits-only `#` references and also matches title, Area name, primary-assignee display name, and current-contributor display names; it does not search description or internal UUIDs.
 
 The Figma URL may point to a Figma design file, page, node, prototype, FigJam board, or Make file. The portal stores only the URL and does not fetch or cache Figma content.
 

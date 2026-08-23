@@ -156,7 +156,7 @@ describe('authenticated application routing', () => {
     render(<App />);
 
     const rowLink = await screen.findByRole('link', {
-      name: 'Open DF-000072: Resolve chart accessibility blocker',
+      name: 'Open #072: Resolve chart accessibility blocker',
     });
     expect(rowLink).toHaveAttribute('href', '/work-items/DF-000072');
     expect(
@@ -167,7 +167,7 @@ describe('authenticated application routing', () => {
     expect(within(rowLink).getByText('Due soon')).toBeVisible();
 
     const activityLink = screen.getByRole('link', {
-      name: 'Open DF-000065: Review export field labels, recorded by Synthetic Designer',
+      name: 'Open #065: Review export field labels, recorded by Synthetic Designer',
     });
     expect(activityLink).toHaveAttribute(
       'href',

@@ -199,7 +199,7 @@ Rules:
 Suggested fields:
 
 - `id`
-- `display_id` — human-readable generated ticket ID
+- `display_id` — generated persisted ticket ID in `DF-` plus six-or-more zero-padded digit form. Shared presentation renders the same number as `#` plus at least three digits; storage, routes, relationships, and RPC lookups keep the persisted value.
 - `title`
 - `description` — nullable
 - `area_id` — required

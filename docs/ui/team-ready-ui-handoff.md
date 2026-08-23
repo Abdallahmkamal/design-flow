@@ -1,7 +1,7 @@
 # Design Flow — Team-Ready UI Handoff
 
 Status: Approved post-MVP repository contract
-Last updated: 2026-08-22 — D-118 calendar, Next Deadline, duration, and archived-report reconciliation
+Last updated: 2026-08-23 — D-121 Slice 3 interaction, search, reference, and focus reconciliation
 Figma file: https://www.figma.com/design/2c9QoPS8BLcTdiIoBEeeni/DesignFlow
 
 ## Repository reconciliation — 2026-08-08
@@ -286,6 +286,11 @@ Ticket details are not locked by this decision. Whether ticket details use a rou
 - If the creator is not an eligible assignee under the current permission/data rules, leave the field unselected and require a valid choice rather than bypassing those rules.
 - This is form-default behavior, not a new automatic post-creation assignment rule and not a database default.
 
+### Area selection
+
+- Keep the full active Area option list present whenever the select opens; typing must not filter or remove options.
+- Accumulated multi-character typeahead moves the highlighted option for quick selection. Arrow keys navigate, Enter selects, Escape closes, Tab/Shift+Tab close and continue focus order, and touch selection remains available. A no-match sequence leaves the complete list intact.
+
 ### Implementation boundary
 
 - Reuse the current ticket-creation operation, assignee relationship, permissions, and validation.
@@ -343,6 +348,7 @@ Days Open follows these edge rules:
 
 ### Column sorting
 
+- With no explicit sort selected, order by **Last Activity — newest first**. Keep this default implicit: the URL has no sort parameter and the column headings/mobile Sort control retain their documented default-state presentation.
 - On desktop, sort from the column heading itself; do not add a separate desktop Sort control.
 - In the default list state, show no sort icon on any column heading.
 - An icon appears only beside the actively selected sort column.
@@ -358,6 +364,7 @@ Days Open follows these edge rules:
 ### Filters
 
 - Keep Search permanently visible.
+- Search the persisted ticket reference, ticket name, Area name, primary-assignee display name, and current-contributor display names before pagination. Exclude description and internal UUIDs. Normalize a digits-only copied reference such as `#010` to persisted `DF-000010` for matching.
 - Remove the existing All, Active, Done, and Archived tabs. They mix ticket status with archival visibility and must not remain as a parallel navigation/filtering model.
 - By default, show only non-archived tickets across every status.
 - Continue to expose Done through the existing Status filter rather than through a permanent tab.
@@ -424,6 +431,7 @@ Days Open follows these edge rules:
 - Codex may compose the pagination controls from the Vodafone-mapped shadcn Pagination, Select, and Button primitives; no separate bespoke Figma component is required before implementation. The resulting component must still satisfy the exact range, page-size, URL-state, disabled-state, desktop, and mobile behaviors locked above.
 - Codex may create the avatar fallback component from the shadcn Avatar primitive, but shadcn does not supply the product palette or deterministic assignment rule. Implement the curated semantic avatar tokens and stable-user-ID mapping recorded above, then keep that palette in the Design Flow component/token layer for future maintenance.
 - Generic radius, border, elevation, icon sizing, focus treatment, and menu styling should be resolved through the shared Vodafone-mapped shadcn primitives rather than copied as isolated screen-specific values.
+- Across the migrated surface, display ticket identifiers with the shared compact reference (`DF-000010` → `#010`) while retaining persisted identifiers for routes, RPC arguments, and lookups.
 
 ### Visual review verdict
 
@@ -472,6 +480,7 @@ The All Tickets desktop table and mobile card directions are approved for the te
 - Do not add a general Edit mode or separate editing page/drawer.
 - Ticket name, description, status, assignee, area, planned start date, Next Deadline, labels, and Figma URL are editable directly from their displayed values, subject to role permissions.
 - Text fields reveal an inline editing state. Compact structured fields use a dropdown, searchable selector, or date picker and save when a selection is confirmed. Description uses explicit Save/Cancel.
+- Status/assignee chip choices, overflow actions, and subtask ordering use the shared dropdown/select primitives. Area/Squad and Assignee option lists are viewport-bounded and independently wheel/touch scrollable on desktop and mobile. Reserve disclosure behavior for controls that reveal or hide actual content. These popups close after a successful selection, outside interaction, Escape, Tab, or Shift+Tab; non-selection interaction inside remains open.
 - Values should look like readable content by default; hover, focus, tap, and empty-state prompts reveal editability.
 - Show a concise saving/saved state. On failure, restore the prior value and show an actionable error.
 - Record every successful ticket-field change in Ticket Activity.
@@ -539,6 +548,7 @@ Authentication does not require another detailed Figma redesign before implement
 
 ### Visual uplift boundary
 
+- In the required-password-reset form, Tab from the first password field moves directly to the confirmation field. Use one compact visibility icon inside the confirmation field to show or hide both passwords; keep it keyboard accessible immediately after the confirmation input with an appropriate label, visible focus, and correct pressed/state semantics. Do not render password visibility as a separate full-width action before the primary CTA.
 - Shorten overly explanatory copy where the action and field labels are already self-evident.
 - Use the shared shadcn primitives and Vodafone-mapped tokens to improve spacing, hierarchy, responsive behavior, focus states, and validation presentation.
 - Codex may add one restrained ambient treatment, such as a slow background gradient or abstract shape movement, without introducing a heavy animation dependency solely for Authentication.
